@@ -4,5 +4,5 @@ import app.views
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("", app.views.index, name="index"),
-    path("login/", app.views.login, name="login"),
+    path("login/", app.views.login_api, name="login"),
 ]
