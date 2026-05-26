@@ -1,23 +1,10 @@
-import 'bootstrap/dist/css/bootstrap.min.css'
-// import Login from "./pages/Login";
-// import Home from "./pages/Home";
-// import { BrowserRouter, Routes, Route, createBrowserRouter, RouterProvider } from 'react-router-dom';
-import { Routes } from "./Routes";
-// const router = createBrowserRouter([
-//   {
-//     path: "/",
-//     element: <Login />,
-//   },
-//   {
-//     path: "/home",
-//     element: <Home />,
-//   }
-// ]);
+import './App.css';
+import AppRoutes from './Routes';
 
 function App() {
   return (
-    <Routes />
-  )
+    <AppRoutes />
+  );
 }
 
 export default App;
