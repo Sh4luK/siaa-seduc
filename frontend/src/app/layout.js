@@ -1,3 +1,4 @@
+import "bootstrap/dist/css/bootstrap.min.css";
 export const metadata = {
   title: "SIAA - Sistema Integrado de Acompanhamento Acadêmico",
   description: "Sistema de integração desenvolvido por alunos da rede de ensino da escola CETI Calisto Lobo, juntamente com a SEDUC-PI",
