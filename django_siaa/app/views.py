@@ -21,9 +21,23 @@ def login_api(request):
             user = authenticate(username=username, password=password)
             if user:
                 login(request, user)
-                return JsonResponse({"message": "Login successful", "status": "success", "user": {"username": user.username, "email": user.email}}, status=200)
+                return JsonResponse(
+                    {
+                        "message": "Login successful",
+                        "status": "success",
+                        "user": {
+                            "username": user.username,
+                            "email": user.email,
+                            "password": user.password,
+                            "id": user.id
+                            }
+                    }, status=200)
             else:
-                return JsonResponse({"error": "Invalid credentials", "status": "error"}, status=401)
+                return JsonResponse(
+                    {
+                        "error": "Invalid credentials",
+                        "status": "error"
+                    }, status=401)
         except json.JSONDecodeError:
             return JsonResponse({"error": "Invalid JSON", "status": "error"}, status=400)
 
@@ -44,7 +58,16 @@ def register_api(request):
                 return JsonResponse({"error": "User already exists", "status": "error"}, status=400)
             else:
                 User.objects.create_user(username=username, password=password, email=email)
-                return JsonResponse({"message": "Registration successful", "status": "success"}, status=201)
+                return JsonResponse(
+                    {
+                        "message": "Registration successful",
+                        "status": "success",
+                        "user": {
+                            "username": username,
+                            "email": email,
+                            "id": User.objects.get(username=username).id
+                        }
+                    }, status=201)
         except json.JSONDecodeError:
             return JsonResponse({"error": "Invalid JSON", "status": "error"}, status=400)
 
