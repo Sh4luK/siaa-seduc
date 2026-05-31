@@ -1,5 +1,5 @@
 import "bootstrap/dist/css/bootstrap.min.css";
-import logo from "../assets/logo.jpeg";
+import logo from "../assets/logo.png";
 import Image from "next/image";
 
 export const metadata = {
@@ -14,16 +14,16 @@ export default function RootLayout({ children }) {
       // className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body>
-        <header className="p-3 mb-3 border-bottom">
+        {/* <header className="p-3 mb-3 border-bottom " >
           <div className="container">
             <div className="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
-              <a href="/" className="d-flex align-items-center mb-2 mb-lg-0 text-dark text-decoration-none">
-                <Image src={logo} alt="Logo" width={50} height={50} style={{ borderRadius: "50%" }} />
+              <a href="/" className="d-flex alin-items-center mb-2 mb-lg-0 text-dark text-decoration-none">
+                <Image src={logo} alt="Logo" width={100} height={100} style={{ borderRadius: "50%" }} />
               </a>
               <span className="fs-4 ms-3">SIAA - Sistema Integrado de Acompanhamento Acadêmico</span>
             </div>
           </div>
-        </header>
+        </header> */}
 
         {children}
       </body>
