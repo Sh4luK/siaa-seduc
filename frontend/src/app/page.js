@@ -1,23 +1,18 @@
-async function createJson(){
-  const data = {
-    "username": "admin",
-    "password": "admin123"
-  }
-  const url = "https://animated-parakeet-97456gj46g96fp4gp-8000.app.github.dev/login/"
+import axios from "axios";
 
-  const response = await fetch(url, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify(data)
-  })
-  const result = await response.json();
-  console.log(result);
+async function fetchProtectedData() {
+  try {
+    const loginResponse = await axios.post("https://animated-parakeet-97456gj46g96fp4gp-8000.app.github.dev/api/login/", {
+      username: "joseiraildes",
+      password: "cipriano.500"
+    });
+    console.log(loginResponse.data);
+  } catch (error) {
+    console.error("Error fetching protected data:", error);
+  } 
 }
-
 export default function Home() {
-  createJson();
+  fetchProtectedData();
   return (
     <div>
       <h1>Hello World</h1>
