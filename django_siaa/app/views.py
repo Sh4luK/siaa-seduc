@@ -91,6 +91,6 @@ def protected_api(request):
                 "id": request.user.id
                 
             }
-        }, status=200)
+        })
     else:
-        return JsonResponse({"error": "Unauthorized", "status": "error"}, status=401)
+        return JsonResponse({"error": "Unauthorized", "status": "error"})
