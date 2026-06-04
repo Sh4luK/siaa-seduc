@@ -1,13 +1,20 @@
 import "bootstrap/dist/css/bootstrap.min.css";
 import logo from "../assets/logo.png";
 import Image from "next/image";
-
+import axios from "axios"
+import { redirect } from "next/navigation"
 export const metadata = {
   title: "SIAA - Sistema Integrado de Acompanhamento Acadêmico",
   description: "Sistema de integração desenvolvido por alunos da rede de ensino da escola CETI Calisto Lobo, juntamente com a SEDUC-PI",
 };
 
 export default function RootLayout({ children }) {
+  // user authentication check
+
+  const base_url = "https://animated-parakeet-97456gj46g96fp4gp-8000.app.github.dev"
+  const login_url = `${base_url}/api/login/`;
+  const auth_url = `${base_url}/api/auth/`;
+
   return (
     <html
       lang="pt-br"
