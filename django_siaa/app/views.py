@@ -4,6 +4,7 @@ from django.views.decorators.csrf import csrf_exempt
 # from .models import User
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login
+from django.contrib.auth.hashers import check_password
 import json
 
 @csrf_exempt
@@ -17,27 +18,31 @@ def login_api(request):
             data = json.loads(request.body)
             username = data.get("username")
             password = data.get("password")
-            print(f"Received login attempt with username: {username} and password: {password}")
-            user = authenticate(username=username, password=password)
-            if user:
-                login(request, user)
-                return JsonResponse(
-                    {
-                        "message": "Login successful",
-                        "status": "success",
-                        "user": {
-                            "username": user.username,
-                            "email": user.email,
-                            "password": user.password,
-                            "id": user.id
-                            }
-                    }, status=200)
-            else:
-                return JsonResponse(
-                    {
-                        "error": "Invalid credentials",
-                        "status": "error"
-                    }, status=401)
+            userVerify = User.objects.filter(username=username).first()
+            passwordVerify = check_password(password, userVerify.password)
+            if passwordVerify == True:
+                print("Password is correct.")
+                print(passwordVerify)
+                user = authenticate(username=username, password=password)
+                if user:
+                    login(request, user)
+                    return JsonResponse(
+                        {
+                            "message": "Login successful",
+                            "status": "success",
+                            "user": {
+                                "username": user.username,
+                                "email": user.email,
+                                "password": user.password,
+                                "id": user.id
+                                }
+                        }, status=200)
+                else:
+                    return JsonResponse(
+                        {
+                            "error": "Invalid credentials",
+                            "status": "error"
+                        }, status=401)
         except json.JSONDecodeError:
             return JsonResponse({"error": "Invalid JSON", "status": "error"}, status=400)
 
@@ -73,9 +78,19 @@ def register_api(request):
 
     return JsonResponse({"error": "Invalid method", "status": "error"}, status=405)
 
-@csrf_exempt
+
 def protected_api(request):
     if request.user.is_authenticated:
-        return JsonResponse({"message": "This is a protected API endpoint", "status": "success"}, status=200)
+        return JsonResponse({
+            "message": "This is a protected API endpoint.",
+            "status": "success",
+            "user": {
+                "username": request.user.username,
+                "email": request.user.email,
+                "password": request.user.password,
+                "id": request.user.id
+                
+            }
+        }, status=200)
     else:
         return JsonResponse({"error": "Unauthorized", "status": "error"}, status=401)
