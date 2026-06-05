@@ -1,96 +1,44 @@
 from django.shortcuts import render, redirect
+import requests
 from django.http import HttpResponse, JsonResponse, request
 from django.views.decorators.csrf import csrf_exempt
-# from .models import User
+import os
+from dotenv import load_dotenv
+from .models import User
 # from django.contrib.auth.models import User
 # from django.contrib.auth import authenticate, login
 # from django.contrib.auth.hashers import check_password
 import json
 
+load_dotenv()
+
+api = os.getenv("IP_API")
+
 @csrf_exempt
 def index(request):
-    return HttpResponse("Hello, world! This is the SIAA API.")
+    return HttpResponse("Olá usuario! Esta é a API do SIAA.")
 
 @csrf_exempt
 def login_api(request):
-    # if request.method == "POST":
-    #     try:
-    #         data = json.loads(request.body)
-    #         username = data.get("username")
-    #         password = data.get("password")
-            # userVerify = User.objects.filter(username=username).first()
-            # passwordVerify = check_password(password, userVerify.password)
-            # if passwordVerify == True:
-            #     print("Password is correct.")
-            #     print(passwordVerify)
-            #     user = authenticate(username=username, password=password)
-        #         if user:
-        #             login(request, user)
-        #             return JsonResponse(
-        #                 {
-        #                     "message": "Login successful",
-        #                     "status": "success",
-        #                     "user": {
-        #                         "username": user.username,
-        #                         "email": user.email,
-        #                         "password": user.password,
-        #                         "id": user.id
-        #                         }
-        #                 }, status=200)
-        #         else:
-        #             return JsonResponse(
-        #                 {
-        #                     "error": "Invalid credentials",
-        #                     "status": "error"
-        #                 }, status=401)
-        # except json.JSONDecodeError:
-        #     return JsonResponse({"error": "Invalid JSON", "status": "error"}, status=400)
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+            registration = data.get("registration")
+            password = data.get("password")
+            user = User.objects.filter(registration=registration, password=password).first()
+            if not user:
+                return JsonResponse({"error": "Matrícula ou senha inválidos."})
+            
+            print(user.full_name)
+            return JsonResponse({"message": f"Login bem-sucedido para matrícula {registration}."})
 
-    return JsonResponse({"error": "Invalid method", "status": "error"}, status=405)
+        except json.JSONDecodeError:
+            return JsonResponse({"error": "Dados inválidos."}, status=400)
+
+    return HttpResponse("Login API - Metodo de requisição invalido.")
 
 
 @csrf_exempt
 def register_api(request):
-    # if request.method == "POST":
-        # try:
-        #     data = json.loads(request.body)
-        #     username = data.get("username")
-        #     password = data.get("password")
-        #     email = data.get("email")
-        #     print(f"Received registration attempt with username: {username} and password: {password}")
-        #     user = User.objects.filter(username=username, email=email).first()
-        #     if user:
-        #         return JsonResponse({"error": "User already exists", "status": "error"}, status=400)
-        #     else:
-        #         User.objects.create_user(username=username, password=password, email=email)
-        #         return JsonResponse(
-        #             {
-        #                 "message": "Registration successful",
-        #                 "status": "success",
-        #                 "user": {
-        #                     "username": username,
-        #                     "email": email,
-        #                     "id": User.objects.get(username=username).id
-        #                 }
-        #             }, status=201)
-        # except json.JSONDecodeError:
-        #     return JsonResponse({"error": "Invalid JSON", "status": "error"}, status=400)
 
-    return JsonResponse({"error": "Invalid method", "status": "error"}, status=405)
-
-
-# def protected_api(request):
-#     if request.user.is_authenticated:
-#         return JsonResponse({
-#             "message": "This is a protected API endpoint.",
-#             "status": "success",
-#             "user": {
-#                 "username": request.user.username,
-#                 "email": request.user.email,
-#                 "password": request.user.password,
-#                 "id": request.user.id
-                
-#             }
-#         })
-#     else:
-#         return JsonResponse({"error": "Unauthorized", "status": "error"})
+    return HttpResponse("Cadastro API - Metodo de requisição invalido.")
