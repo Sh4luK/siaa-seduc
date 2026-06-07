@@ -5,6 +5,7 @@ from django.views.decorators.csrf import csrf_exempt
 import os
 from dotenv import load_dotenv
 from .models import User
+from .funcs import ip
 # from django.contrib.auth.models import User
 # from django.contrib.auth import authenticate, login
 # from django.contrib.auth.hashers import check_password
@@ -20,25 +21,9 @@ def index(request):
 
 @csrf_exempt
 def login_api(request):
-    if request.method == "POST":
-        try:
-            data = json.loads(request.body)
-            registration = data.get("registration")
-            password = data.get("password")
-            user = User.objects.filter(registration=registration, password=password).first()
-            if not user:
-                return JsonResponse({"error": "Matrícula ou senha inválidos."})
-            
-            print(user.full_name)
-            return JsonResponse({"message": f"Login bem-sucedido para matrícula {registration}."})
-
-        except json.JSONDecodeError:
-            return JsonResponse({"error": "Dados inválidos."}, status=400)
-
-    return HttpResponse("Login API - Metodo de requisição invalido.")
+    pass
 
 
 @csrf_exempt
 def register_api(request):
-
-    return HttpResponse("Cadastro API - Metodo de requisição invalido.")
+    pass
