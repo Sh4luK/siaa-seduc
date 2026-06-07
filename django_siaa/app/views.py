@@ -26,4 +26,4 @@ def login_api(request):
 
 @csrf_exempt
 def register_api(request):
-    pass
+    passcd 
