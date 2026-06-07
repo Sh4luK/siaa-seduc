@@ -130,4 +130,6 @@ CSRF_COOKIE_HTTPONLY = True
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000", # Porta padrão do Next.js
+    "https://animated-parakeet-97456gj46g96fp4gp-3000.app.github.dev",
 ]
+CORS_ALLOW_CREDENTIALS = True
