@@ -4,7 +4,6 @@ from django.http import HttpResponse, JsonResponse, request
 from django.views.decorators.csrf import csrf_exempt
 import os
 from dotenv import load_dotenv
-from .models import User
 from .funcs import ip
 # from django.contrib.auth.models import User
 # from django.contrib.auth import authenticate, login
@@ -26,4 +25,4 @@ def login_api(request):
 
 @csrf_exempt
 def register_api(request):
-    passcd 
+    pass
