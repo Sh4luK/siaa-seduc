@@ -38,8 +38,9 @@ export default function Home() {
         <div className="card-body text-center">
           <img src={logo.src} alt="Logo" className="mb-4" style={{ width: "200px", height: "auto" }} />
           <h2 className="card-title">Bem-vindo ao SIAA</h2>
-          <small className="text-muted mb-3">Sistema Integrado de Acompanhamento Acadêmico</small>
-          <p className="card-text mb-4"></p>
+          <small className="text-muted mb-1
+          ">Sistema Integrado de Acompanhamento Acadêmico</small>
+          {/* <p className="card-text mb-4"></p> */}
           <p className="card-text mb-4">Como deseja acessar o sistema?</p>
           <div className="d-grid gap-2">
             <a href="/aluno/login" className="btn btn-success">Aluno</a>
