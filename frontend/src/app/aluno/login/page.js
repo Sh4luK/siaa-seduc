@@ -40,7 +40,7 @@ export default function AlunoLoginPage(){
                             )}
                             
                         </div>
-                        <label class="form-label">
+                        <label className="form-label">
                             Senha <strong className="text-danger">*</strong>
                         </label>
                         <input
