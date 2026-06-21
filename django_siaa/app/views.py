@@ -26,3 +26,10 @@ def login_api(request):
 @csrf_exempt
 def register_api(request):
     pass
+
+@csrf_exempt
+def AdminApiLoginSuperUser(request):
+    if request.method == "POST":
+        data = json.loads(request.POST)
+        cpf = data.get("cpf")
+        password = data.get("password")
