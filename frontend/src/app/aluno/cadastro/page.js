@@ -59,7 +59,7 @@ export default function AlunoCadastroPage() {
                             <input
                                 type="password"
                                 className="form-control"
-                                placeholder="Informe uma senha de até 16 caracteres."
+                                placeholder="Até 16 caracteres."
                             />
                         </div>
                         <div className="mb-2 d-grid gap-2">
