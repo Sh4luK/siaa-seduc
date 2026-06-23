@@ -1,0 +1,1094 @@
+{
+    "Pagina_1": {
+        "escola": "22057498 - CETI CALISTO LOBO",
+        "modo_de_ensino": "ENSINO MEDIO TECNICO PROFISSIONAL",
+        "serie": "1ª SERIE - INTEGRAL",
+        "periodo": "2026/1",
+        "curso": "TECNICO EM ADMINISTRACAO COM",
+        "turma": "1 \nCURSO  CURSO TECNICO EM ADMINISTRACAO COM \nEMTPADM-ENF-EMP-1ª SERIE - INTEGRAL-I-A",
+        "alunos": [
+            {
+                "posicao_ordem": 1,
+                "nome_completo": "ACKSON MIGUEL MACEDO DE SOUSA"
+            },
+            {
+                "posicao_ordem": 2,
+                "nome_completo": "ANA LIVIA CAVALCANTE DE MELO"
+            },
+            {
+                "posicao_ordem": 3,
+                "nome_completo": "ANNA VICTHORIA BEZERRA DE SOUZA"
+            },
+            {
+                "posicao_ordem": 4,
+                "nome_completo": "ANTONIO JOSE DA SILVA APLONONIO DOS ANJOS"
+            },
+            {
+                "posicao_ordem": 5,
+                "nome_completo": "ANTONIO OLIVEIRA DE SOUZA"
+            },
+            {
+                "posicao_ordem": 6,
+                "nome_completo": "ARTHUR CARVALHO DOS SANTOS"
+            },
+            {
+                "posicao_ordem": 7,
+                "nome_completo": "DENISE DUARTE DE SOUSA"
+            },
+            {
+                "posicao_ordem": 8,
+                "nome_completo": "ELLOAH VICTORIA DE CARVALHO"
+            },
+            {
+                "posicao_ordem": 9,
+                "nome_completo": "EMERSON BATISTA ALVES"
+            },
+            {
+                "posicao_ordem": 10,
+                "nome_completo": "EMILLY VITÓRIA DE SOUSA GONÇALVES"
+            },
+            {
+                "posicao_ordem": 11,
+                "nome_completo": "FRANCISCO BARROS DE MORAIS"
+            },
+            {
+                "posicao_ordem": 12,
+                "nome_completo": "GRAZIELLA GOMES COSTA MENESES"
+            },
+            {
+                "posicao_ordem": 13,
+                "nome_completo": "GUILHERME OLIVEIRA DA SILVA"
+            },
+            {
+                "posicao_ordem": 14,
+                "nome_completo": "HUAM EMMANUELL INÁCIO FELIX MACEDO"
+            },
+            {
+                "posicao_ordem": 15,
+                "nome_completo": "ICARO FERNANDES DE SOUZA SANTOS"
+            },
+            {
+                "posicao_ordem": 16,
+                "nome_completo": "ISABELA CASTRO MEDEIROS"
+            },
+            {
+                "posicao_ordem": 17,
+                "nome_completo": "ISABELLA LARANGEIRA RODRIGUES"
+            },
+            {
+                "posicao_ordem": 18,
+                "nome_completo": "JOSÉ DANIEL DE OLIVEIRA PAZ"
+            },
+            {
+                "posicao_ordem": 19,
+                "nome_completo": "JOYCE NIKELLY SILVA SOUSA"
+            },
+            {
+                "posicao_ordem": 20,
+                "nome_completo": "JUAN LUCAS DA SILVA GOMES"
+            },
+            {
+                "posicao_ordem": 21,
+                "nome_completo": "KASSIANO PACHECO DO NASCIMENTO"
+            },
+            {
+                "posicao_ordem": 22,
+                "nome_completo": "KAYLA GABRYELE DA SILVA REIS"
+            },
+            {
+                "posicao_ordem": 23,
+                "nome_completo": "LAIS PEREIRA DA SILVA"
+            },
+            {
+                "posicao_ordem": 24,
+                "nome_completo": "LUIZ FILIPE FERREIRA BATISTA"
+            },
+            {
+                "posicao_ordem": 25,
+                "nome_completo": "MARIA CLARA DA SILVA RODRIGUES"
+            },
+            {
+                "posicao_ordem": 26,
+                "nome_completo": "MARIA CLARA MENDES VIEIRA RIBEIRO DA SILVA"
+            },
+            {
+                "posicao_ordem": 27,
+                "nome_completo": "MARIA EDUARDA FEITOSA SILVA"
+            },
+            {
+                "posicao_ordem": 28,
+                "nome_completo": "MAYSA SOARES DE SOUSA"
+            },
+            {
+                "posicao_ordem": 29,
+                "nome_completo": "MIRELLY CRISTINNY DO NASCIMENTO OLIVEIRA"
+            },
+            {
+                "posicao_ordem": 30,
+                "nome_completo": "NYLMARA NYCOLY ALVES DE SOUSA"
+            },
+            {
+                "posicao_ordem": 31,
+                "nome_completo": "SAYURE VICTORIA COSTA LEAL"
+            }
+        ]
+    },
+    "Pagina_2": {
+        "escola": "22057498 - CETI CALISTO LOBO",
+        "modo_de_ensino": "ENSINO MEDIO TECNICO PROFISSIONAL",
+        "serie": "1ª SERIE - INTEGRAL",
+        "periodo": "2026/1",
+        "curso": "TECNICO EM ADMINISTRACAO COM",
+        "turma": "1 \nCURSO  CURSO TECNICO EM ADMINISTRACAO COM \nEMTPADM-ENF-EMP-1ª SERIE - INTEGRAL-I-B",
+        "alunos": [
+            {
+                "posicao_ordem": 1,
+                "nome_completo": "ALANNA DIAS MUNIZ MORAES"
+            },
+            {
+                "posicao_ordem": 2,
+                "nome_completo": "ANDRE ALVES DE SOUSA"
+            },
+            {
+                "posicao_ordem": 3,
+                "nome_completo": "DAVI EMANUEL ROCHA CASTRO"
+            },
+            {
+                "posicao_ordem": 4,
+                "nome_completo": "DOUGLAS DE SOUZA SILVA"
+            },
+            {
+                "posicao_ordem": 5,
+                "nome_completo": "EMILY YASMIM FERREIRA SALES"
+            },
+            {
+                "posicao_ordem": 6,
+                "nome_completo": "FABRICIA DOS SANTOS NASCIMENTO"
+            },
+            {
+                "posicao_ordem": 7,
+                "nome_completo": "IAGO DA SILVA SOUZA"
+            },
+            {
+                "posicao_ordem": 8,
+                "nome_completo": "ILLA RAVENNA MARTINS SOARES"
+            },
+            {
+                "posicao_ordem": 9,
+                "nome_completo": "ISABELA DE OLIVEIRA SILVA DA ROCHA"
+            },
+            {
+                "posicao_ordem": 10,
+                "nome_completo": "JOSÉ GABRIEL CASSEMIRO ALMEIDA"
+            },
+            {
+                "posicao_ordem": 11,
+                "nome_completo": "KÁREN JOKAS SANTANA RODRIGUES"
+            },
+            {
+                "posicao_ordem": 12,
+                "nome_completo": "KAWANE IZABELA VELOZO VIANA"
+            },
+            {
+                "posicao_ordem": 13,
+                "nome_completo": "KAYKE OLIVEIRA BARBOSA"
+            },
+            {
+                "posicao_ordem": 14,
+                "nome_completo": "LUIS EDUARDO DIAS OLIVEIRA"
+            },
+            {
+                "posicao_ordem": 15,
+                "nome_completo": "MARIA CLARA AVELINO SIQUEIRA"
+            },
+            {
+                "posicao_ordem": 16,
+                "nome_completo": "MARIA CLARA DE OLIVEIRA SOUZA"
+            },
+            {
+                "posicao_ordem": 17,
+                "nome_completo": "MARIA EDUARDA DE OLIVEIRA SOUZA"
+            },
+            {
+                "posicao_ordem": 18,
+                "nome_completo": "MARIA EDUARDA RODRIGUES DOS SANTOS"
+            },
+            {
+                "posicao_ordem": 19,
+                "nome_completo": "MIRYAN AVELINO DO NASCIMENTO"
+            },
+            {
+                "posicao_ordem": 20,
+                "nome_completo": "MOISÉS SARAIVA DA SILVA PENHA"
+            },
+            {
+                "posicao_ordem": 21,
+                "nome_completo": "PEDRO VICTOR DE SOUSA LOPES"
+            },
+            {
+                "posicao_ordem": 22,
+                "nome_completo": "RAQUEL FERREIRA COSTA"
+            },
+            {
+                "posicao_ordem": 23,
+                "nome_completo": "RIANNY GABRIELLY DA SILVA FEITOSA"
+            },
+            {
+                "posicao_ordem": 24,
+                "nome_completo": "SAMILA NICOLE MARCELINO ALVES"
+            },
+            {
+                "posicao_ordem": 25,
+                "nome_completo": "SANDRYELSON SILVA DE AZEVEDO"
+            },
+            {
+                "posicao_ordem": 26,
+                "nome_completo": "TALISSON VICTOR MARTINS DOS SANTOS OLIVEIRA"
+            },
+            {
+                "posicao_ordem": 27,
+                "nome_completo": "THAYNÁ MARIA SOUSA SILVA"
+            },
+            {
+                "posicao_ordem": 28,
+                "nome_completo": "THAYNARA DE JESUS SANTANA DA SILVA"
+            }
+        ]
+    },
+    "Pagina_3": {
+        "escola": "22057498 - CETI CALISTO LOBO",
+        "modo_de_ensino": "ENSINO MEDIO TECNICO PROFISSIONAL",
+        "serie": "1ª SERIE - INTEGRAL",
+        "periodo": "2026/1",
+        "curso": "TECNICO EM DESENVOLVIMENTO DE",
+        "turma": "1 \nCURSO  CURSO TECNICO EM DESENVOLVIMENTO DE \nEMTPDES-SIS-1ª SERIE - INTEGRAL-I-A",
+        "alunos": [
+            {
+                "posicao_ordem": 1,
+                "nome_completo": "ALEXANDRE KERLON VIEIRA DE OLIVEIRA"
+            },
+            {
+                "posicao_ordem": 2,
+                "nome_completo": "ANTONIO RANGEL SILVA MORAES"
+            },
+            {
+                "posicao_ordem": 3,
+                "nome_completo": "ARTHUR MARTINS NOLETO"
+            },
+            {
+                "posicao_ordem": 4,
+                "nome_completo": "ARTUR COSTA SOARES"
+            },
+            {
+                "posicao_ordem": 5,
+                "nome_completo": "DANIEL ALVES PEREIRA"
+            },
+            {
+                "posicao_ordem": 6,
+                "nome_completo": "DHEYVID RAWAN MELLO DA SILVA"
+            },
+            {
+                "posicao_ordem": 7,
+                "nome_completo": "EMILLY SOPHYA DE SOUSA MELO"
+            },
+            {
+                "posicao_ordem": 8,
+                "nome_completo": "ENZO VITAL DE SOUSA CAMÊLO"
+            },
+            {
+                "posicao_ordem": 9,
+                "nome_completo": "ERICK MARLEY SOUSA PIMENTEL"
+            },
+            {
+                "posicao_ordem": 10,
+                "nome_completo": "GUILHERME FERREIRA DOS SANTOS"
+            },
+            {
+                "posicao_ordem": 11,
+                "nome_completo": "IGOR SAMUK SILVA MOURA"
+            },
+            {
+                "posicao_ordem": 12,
+                "nome_completo": "IKARO CARVALHO FERREIRA DOS SANTOS"
+            },
+            {
+                "posicao_ordem": 13,
+                "nome_completo": "ISABELLA DA COSTA MACEDO"
+            },
+            {
+                "posicao_ordem": 14,
+                "nome_completo": "JHONATAN VIANA DE MOURA CARVALHO"
+            },
+            {
+                "posicao_ordem": 16,
+                "nome_completo": "JOAO WICTOR DA SILVA MUNIZ"
+            },
+            {
+                "posicao_ordem": 17,
+                "nome_completo": "JOSÉ RENATO DOS SANTOS DIAS"
+            },
+            {
+                "posicao_ordem": 18,
+                "nome_completo": "KARLA EMANUELLY NUNES COELHO"
+            },
+            {
+                "posicao_ordem": 19,
+                "nome_completo": "KAUAN LUCAS DE SOUSA MORAES"
+            },
+            {
+                "posicao_ordem": 21,
+                "nome_completo": "LARA DA SILVA SOUSA"
+            },
+            {
+                "posicao_ordem": 22,
+                "nome_completo": "LARISSA VICTORIA GUEDES GOMES"
+            },
+            {
+                "posicao_ordem": 23,
+                "nome_completo": "LEONARDO FELIX DAMASCENO"
+            },
+            {
+                "posicao_ordem": 24,
+                "nome_completo": "LEVÍ ELTON PEREIRA DA SILVA"
+            },
+            {
+                "posicao_ordem": 25,
+                "nome_completo": "LUIS PHELIPE MORAIS LIMA DE SOUSA"
+            },
+            {
+                "posicao_ordem": 26,
+                "nome_completo": "MABILLY RAWENNA SOUSA SILVA"
+            },
+            {
+                "posicao_ordem": 27,
+                "nome_completo": "MARCOS VENÍCIUS DOS SANTOS DAMASCENO"
+            },
+            {
+                "posicao_ordem": 28,
+                "nome_completo": "MATEUS BORGES ARAUJO"
+            },
+            {
+                "posicao_ordem": 29,
+                "nome_completo": "NOSLEAM DOS SANTOS LUZ"
+            },
+            {
+                "posicao_ordem": 30,
+                "nome_completo": "PABLO MATHEUS ALVES FRANÇA"
+            },
+            {
+                "posicao_ordem": 31,
+                "nome_completo": "PEDRO HENRIQUE DE SOUSA NUNES"
+            },
+            {
+                "posicao_ordem": 32,
+                "nome_completo": "PEDRO HENRIQUE LIMA DE SOUSA"
+            },
+            {
+                "posicao_ordem": 33,
+                "nome_completo": "RAWAN MENDES DA ROCHA"
+            },
+            {
+                "posicao_ordem": 34,
+                "nome_completo": "RUAN LUCAS VELOSO SILVA"
+            },
+            {
+                "posicao_ordem": 35,
+                "nome_completo": "VANUSA DA SILVA OLIVEIRA"
+            },
+            {
+                "posicao_ordem": 36,
+                "nome_completo": "YCARO DE JESUS MESQUITA"
+            }
+        ]
+    },
+    "Pagina_4": {
+        "escola": "22057498 - CETI CALISTO LOBO",
+        "modo_de_ensino": "ENSINO MEDIO TECNICO PROFISSIONAL",
+        "serie": "1ª SERIE - INTEGRAL",
+        "periodo": "2026/1",
+        "curso": "TECNICO EM ENFERMAGEM",
+        "turma": "1 \nCURSO  CURSO TECNICO EM ENFERMAGEM \nEMTPENF-1ª SERIE - INTEGRAL-I-B",
+        "alunos": [
+            {
+                "posicao_ordem": 1,
+                "nome_completo": "ALEXANDRE DE SOUSA LIMA"
+            },
+            {
+                "posicao_ordem": 2,
+                "nome_completo": "ANA CAROLINE RODRIGUES GONCALVES"
+            },
+            {
+                "posicao_ordem": 3,
+                "nome_completo": "BIANCA MESQUITA DOS REIS"
+            },
+            {
+                "posicao_ordem": 4,
+                "nome_completo": "BRUNO HENRIQUE DE SOUSA RODRIGUES"
+            },
+            {
+                "posicao_ordem": 5,
+                "nome_completo": "CAMILA NASCIMENTO DA SILVA"
+            },
+            {
+                "posicao_ordem": 6,
+                "nome_completo": "CARLOS EDUARDO DE SOUSA"
+            },
+            {
+                "posicao_ordem": 7,
+                "nome_completo": "CLARA EDUARDA DE SOUSA PINTO"
+            },
+            {
+                "posicao_ordem": 8,
+                "nome_completo": "ELLOARA JENNYFER DA SILVA CARVALHO"
+            },
+            {
+                "posicao_ordem": 9,
+                "nome_completo": "ELOA VITORIA DE LIMA SILVA"
+            },
+            {
+                "posicao_ordem": 10,
+                "nome_completo": "EMYLY RAMONA SOUSA SILVA"
+            },
+            {
+                "posicao_ordem": 11,
+                "nome_completo": "ERIC MACIEL DA SILVA"
+            },
+            {
+                "posicao_ordem": 12,
+                "nome_completo": "GABRIEL ARAUJO DA SILVA"
+            },
+            {
+                "posicao_ordem": 13,
+                "nome_completo": "HENRIQUE RODRIGUES DA SILVA CAVALCANTE"
+            },
+            {
+                "posicao_ordem": 14,
+                "nome_completo": "HIAGO LIMA DE OLIVEIRA"
+            },
+            {
+                "posicao_ordem": 15,
+                "nome_completo": "IURY SILVA SOARES"
+            },
+            {
+                "posicao_ordem": 16,
+                "nome_completo": "IZADORA DA SILVA GONZAGA"
+            },
+            {
+                "posicao_ordem": 17,
+                "nome_completo": "JÔNATAS GABRYEL FERREIRA DA SILVA"
+            },
+            {
+                "posicao_ordem": 18,
+                "nome_completo": "JOSEILTON IRINEU DA SILVA JORGE"
+            },
+            {
+                "posicao_ordem": 19,
+                "nome_completo": "LARA EVELEN SOUSA DO NASCIMENTO"
+            },
+            {
+                "posicao_ordem": 20,
+                "nome_completo": "LUIS DIEGO DA SILVA COSTA"
+            },
+            {
+                "posicao_ordem": 21,
+                "nome_completo": "MARIA CLARA BORGES FERREIRA"
+            },
+            {
+                "posicao_ordem": 22,
+                "nome_completo": "MARIA FERNANDA SANTOS DA SILVA CAETANO"
+            },
+            {
+                "posicao_ordem": 23,
+                "nome_completo": "MARIA FRANCIELLE MUNIZ MONTEIRO"
+            },
+            {
+                "posicao_ordem": 24,
+                "nome_completo": "MARIA VITORIA FERREIRA DA ROCHA"
+            },
+            {
+                "posicao_ordem": 25,
+                "nome_completo": "MARIA VITORIA FERREIRA DA SILVA"
+            },
+            {
+                "posicao_ordem": 26,
+                "nome_completo": "MARYA CLARA OLIVEIRA PEREIRA"
+            },
+            {
+                "posicao_ordem": 27,
+                "nome_completo": "NYCOLAS COSTA CARDOSO"
+            },
+            {
+                "posicao_ordem": 28,
+                "nome_completo": "RAYNARA DE SOUSA RODRIGUES"
+            },
+            {
+                "posicao_ordem": 29,
+                "nome_completo": "RAYSSA SOBRINHO DE SOUZA"
+            },
+            {
+                "posicao_ordem": 30,
+                "nome_completo": "SAMUEL DE SOUSA SILVA"
+            },
+            {
+                "posicao_ordem": 31,
+                "nome_completo": "VICTOR HUGO PEREIRA DE SOUSA RIBEIRO"
+            }
+        ]
+    },
+    "Pagina_5": {
+        "escola": "22057498 - CETI CALISTO LOBO",
+        "modo_de_ensino": "ENSINO MEDIO TECNICO PROFISSIONAL",
+        "serie": "1ª SERIE - INTEGRAL",
+        "periodo": "2026/1",
+        "curso": "TECNICO EM FARMACIA",
+        "turma": "1 \nCURSO CURSO TECNICO EM FARMACIA \nEMTPFARM-1ª SERIE - INTEGRAL-I-A",
+        "alunos": [
+            {
+                "posicao_ordem": 1,
+                "nome_completo": "ANA KAROLINA MOREIRA MARTINS"
+            },
+            {
+                "posicao_ordem": 2,
+                "nome_completo": "ANA LUIZA BARROS LIMA"
+            },
+            {
+                "posicao_ordem": 3,
+                "nome_completo": "ANA VITÓRIA PEREIRA DE OLIVEIRA"
+            },
+            {
+                "posicao_ordem": 5,
+                "nome_completo": "ANNA BEATRIZ DAMASCENO DE OLIVEIRA"
+            },
+            {
+                "posicao_ordem": 6,
+                "nome_completo": "BEATRIZ NOVAIS DE OLIVEIRA"
+            },
+            {
+                "posicao_ordem": 7,
+                "nome_completo": "BRUNA RAFAELLA BORGES DA SILVA"
+            },
+            {
+                "posicao_ordem": 8,
+                "nome_completo": "CIBELLE DA SILVA LIMA"
+            },
+            {
+                "posicao_ordem": 9,
+                "nome_completo": "CLARA EVELIN MENDES DE ARAUJO"
+            },
+            {
+                "posicao_ordem": 11,
+                "nome_completo": "FRANCISCA RAFAELLA SOBRAL DE AZEVEDO"
+            },
+            {
+                "posicao_ordem": 12,
+                "nome_completo": "GABRIELLI RODRIGUES DE CARVALHO"
+            },
+            {
+                "posicao_ordem": 13,
+                "nome_completo": "GEDSON SILVESTRE BATISTA BRITO"
+            },
+            {
+                "posicao_ordem": 14,
+                "nome_completo": "GERLLANY DE SOUSA MOREIRA"
+            },
+            {
+                "posicao_ordem": 15,
+                "nome_completo": "GUSTAVO ARAUJO DA COSTA LIMA"
+            },
+            {
+                "posicao_ordem": 16,
+                "nome_completo": "HELOYSE RAYANE ALVES DOS SANTOS"
+            },
+            {
+                "posicao_ordem": 17,
+                "nome_completo": "JAQUELINE ALVES DE SOUSA"
+            },
+            {
+                "posicao_ordem": 18,
+                "nome_completo": "JOAO OLIVEIRA DE MORAES NETO"
+            },
+            {
+                "posicao_ordem": 19,
+                "nome_completo": "JOICY DE SOUSA FEITOSA VELOSO"
+            },
+            {
+                "posicao_ordem": 20,
+                "nome_completo": "KARITA CECILY CRONEMBERGER QUIXABEIRA"
+            },
+            {
+                "posicao_ordem": 21,
+                "nome_completo": "KLARA LEAL SANTOS"
+            },
+            {
+                "posicao_ordem": 22,
+                "nome_completo": "LARAH VITTÓRIA RAMOS FEITOSA"
+            },
+            {
+                "posicao_ordem": 23,
+                "nome_completo": "LARISSA KELLY CARVALHO DOS SANTOS"
+            },
+            {
+                "posicao_ordem": 24,
+                "nome_completo": "LAURA OHANA DE SOUSA DA SILVA"
+            },
+            {
+                "posicao_ordem": 25,
+                "nome_completo": "LAYSA CAROLINNE MORAIS SALDANHA"
+            },
+            {
+                "posicao_ordem": 26,
+                "nome_completo": "LUAN VITOR LIMA ROCHA"
+            },
+            {
+                "posicao_ordem": 27,
+                "nome_completo": "LUCAS EMANUEL VEIRA DA COSTA"
+            },
+            {
+                "posicao_ordem": 28,
+                "nome_completo": "MARCILEYA RODRIGUES DA SILVA MACEDO"
+            },
+            {
+                "posicao_ordem": 29,
+                "nome_completo": "MARIA APARECIDA DA SILVA SOUSA"
+            },
+            {
+                "posicao_ordem": 30,
+                "nome_completo": "MARIA SOLANGE DE SOUSA ANDRADE"
+            },
+            {
+                "posicao_ordem": 31,
+                "nome_completo": "MARYA EDHUARDA DE SOUSA NEVES"
+            },
+            {
+                "posicao_ordem": 32,
+                "nome_completo": "MIRELLA CRISTINA DA SILVA SOUSA"
+            },
+            {
+                "posicao_ordem": 33,
+                "nome_completo": "NAYRA JACIELLE SILVA DE SOUZA"
+            },
+            {
+                "posicao_ordem": 34,
+                "nome_completo": "PAULO HENRIQUE LEAL DE SA"
+            },
+            {
+                "posicao_ordem": 35,
+                "nome_completo": "PEDRO HENRIQUE BATISTA DA SILVA"
+            },
+            {
+                "posicao_ordem": 36,
+                "nome_completo": "PYÊTHRO KAUÊ DA SILVA"
+            }
+        ]
+    },
+    "Pagina_6": {
+        "escola": "22057498 - CETI CALISTO LOBO",
+        "modo_de_ensino": "ENSINO MEDIO TECNICO PROFISSIONAL",
+        "serie": "1ª SERIE - INTEGRAL",
+        "periodo": "2026/1",
+        "curso": "TECNICO EM FARMACIA",
+        "turma": "1 \nCURSO CURSO TECNICO EM FARMACIA \nEMTPFARM-1ª SERIE - INTEGRAL-I-B",
+        "alunos": [
+            {
+                "posicao_ordem": 1,
+                "nome_completo": "AGDA NICOLE CENI DUARTE DA CUNHA"
+            },
+            {
+                "posicao_ordem": 2,
+                "nome_completo": "ALINNE DA SILVA LIMA"
+            },
+            {
+                "posicao_ordem": 3,
+                "nome_completo": "ALYCE RAQUEL FERREIRA DE SOUSA"
+            },
+            {
+                "posicao_ordem": 4,
+                "nome_completo": "ANA BEATRIZ PEREIRA DA SILVA"
+            },
+            {
+                "posicao_ordem": 5,
+                "nome_completo": "ANA VITÓRIA DA SILVA MACÊDO"
+            },
+            {
+                "posicao_ordem": 6,
+                "nome_completo": "ANIVLIS RANIELLY DOS SANTOS SILVA"
+            },
+            {
+                "posicao_ordem": 7,
+                "nome_completo": "ANNY REBECA MEDEIROS REIS"
+            },
+            {
+                "posicao_ordem": 8,
+                "nome_completo": "BIANCA AVELINO ALVES"
+            },
+            {
+                "posicao_ordem": 9,
+                "nome_completo": "CARLOS EMANOEL PAZ OLIVEIRA"
+            },
+            {
+                "posicao_ordem": 10,
+                "nome_completo": "CLARA CECILYA MATOS SOBRINHO"
+            },
+            {
+                "posicao_ordem": 11,
+                "nome_completo": "DAVI MAXIMO VELOSO"
+            },
+            {
+                "posicao_ordem": 12,
+                "nome_completo": "EMILLY VITORIA MOURA MORAIS"
+            },
+            {
+                "posicao_ordem": 13,
+                "nome_completo": "FABRICIA DE CARVALHO FERREIRA"
+            },
+            {
+                "posicao_ordem": 14,
+                "nome_completo": "GABRIEL PEREIRA VIANA"
+            },
+            {
+                "posicao_ordem": 15,
+                "nome_completo": "GEANE DE SOUSA NOGUEIRA"
+            },
+            {
+                "posicao_ordem": 16,
+                "nome_completo": "GUSTAVO RODRIGUES PEREIRA"
+            },
+            {
+                "posicao_ordem": 17,
+                "nome_completo": "ISADORA DE ALMEIDA CHAVES DIAS"
+            },
+            {
+                "posicao_ordem": 18,
+                "nome_completo": "JAMILLY VITORIA LAURINDO DE SOUSA"
+            },
+            {
+                "posicao_ordem": 20,
+                "nome_completo": "JULIANA MUNIZ DE SOUZA TORRES"
+            },
+            {
+                "posicao_ordem": 21,
+                "nome_completo": "KEILANE MORAIS DA SILVA"
+            },
+            {
+                "posicao_ordem": 22,
+                "nome_completo": "LARA RAFAELLA DA CONCEICAO CLEMENTINO"
+            },
+            {
+                "posicao_ordem": 23,
+                "nome_completo": "LARISSA LISBOA FEITOSA"
+            },
+            {
+                "posicao_ordem": 24,
+                "nome_completo": "LAYLA WANESSA DA SILVA SANTANA"
+            },
+            {
+                "posicao_ordem": 25,
+                "nome_completo": "LUCIANA KAUANE BORGES SOUSA"
+            },
+            {
+                "posicao_ordem": 26,
+                "nome_completo": "MARIA CECILIA DA SILVA FERREIRA"
+            },
+            {
+                "posicao_ordem": 27,
+                "nome_completo": "MARIA GABRIELLY DE SOUSA FRANCO"
+            },
+            {
+                "posicao_ordem": 28,
+                "nome_completo": "MAYSA DA SILVA RODRIGUES"
+            },
+            {
+                "posicao_ordem": 29,
+                "nome_completo": "MELANIE FERREIRA CARNEIRO DA SILVA"
+            },
+            {
+                "posicao_ordem": 30,
+                "nome_completo": "NAUANE MESSIAS BARBOSA"
+            },
+            {
+                "posicao_ordem": 31,
+                "nome_completo": "PEDRO JADSON SOARES FRANÇA"
+            },
+            {
+                "posicao_ordem": 32,
+                "nome_completo": "REJANE APARECIDA DE SOUSA RIBEIRO"
+            },
+            {
+                "posicao_ordem": 33,
+                "nome_completo": "RITA DE CÁSSIA CARVALHO DO NASCIMENTO"
+            },
+            {
+                "posicao_ordem": 34,
+                "nome_completo": "RONALDO OLIVEIRA TAVARES"
+            },
+            {
+                "posicao_ordem": 35,
+                "nome_completo": "SAFHIRA ALVES PEREIRA DOS SANTOS CASTRO"
+            },
+            {
+                "posicao_ordem": 36,
+                "nome_completo": "SARAH FERREIRA RODRIGUES"
+            },
+            {
+                "posicao_ordem": 37,
+                "nome_completo": "THIAGO MESQUITA DE CARVALHO"
+            },
+            {
+                "posicao_ordem": 38,
+                "nome_completo": "VICTOR NUNES SOUSA"
+            },
+            {
+                "posicao_ordem": 39,
+                "nome_completo": "YSABELLA FELLÍCYA ARAÚJO SOUSA"
+            }
+        ]
+    },
+    "Pagina_7": {
+        "escola": "22057498 - CETI CALISTO LOBO",
+        "modo_de_ensino": "ENSINO MEDIO TECNICO PROFISSIONAL",
+        "serie": "1ª SERIE - INTEGRAL",
+        "periodo": "2026/1",
+        "curso": "TECNICO EM PROGRAMACAO DE JOGOS",
+        "turma": "1 \nCURSO  CURSO TECNICO EM PROGRAMACAO DE JOGOS \nEMTPPROG-JOG-DIG-1ª SERIE - INTEGRAL-I-A",
+        "alunos": [
+            {
+                "posicao_ordem": 1,
+                "nome_completo": "ANA BEATRIZ DOS SANTOS CHAVES"
+            },
+            {
+                "posicao_ordem": 2,
+                "nome_completo": "ANTONILDO SALATYEL DE SOUSA VIEIRA"
+            },
+            {
+                "posicao_ordem": 3,
+                "nome_completo": "CÉLLYO MICKAEL ARAÚJO DA COSTA"
+            },
+            {
+                "posicao_ordem": 5,
+                "nome_completo": "EMERSON ALVES DA SILVA VIANA"
+            },
+            {
+                "posicao_ordem": 6,
+                "nome_completo": "ENYELLEN SILVA DE ALMEIDA"
+            },
+            {
+                "posicao_ordem": 7,
+                "nome_completo": "EVELLYN MARIA NOGUEIRA CLEMENTINO"
+            },
+            {
+                "posicao_ordem": 8,
+                "nome_completo": "FRANK WILLIAMIS ALVES FERREIRA CARNEIRO"
+            },
+            {
+                "posicao_ordem": 9,
+                "nome_completo": "GEOVANNA CAMELO DOS SANTOS"
+            },
+            {
+                "posicao_ordem": 10,
+                "nome_completo": "GRAZIELLE FERREIRA DE SA"
+            },
+            {
+                "posicao_ordem": 11,
+                "nome_completo": "JAMERSON BORGES FERREIRA"
+            },
+            {
+                "posicao_ordem": 12,
+                "nome_completo": "JOAO PEDRO FERREIRA DE SA"
+            },
+            {
+                "posicao_ordem": 15,
+                "nome_completo": "KAYO OLIVEIRA BARBOSA"
+            },
+            {
+                "posicao_ordem": 16,
+                "nome_completo": "KLEBSON VINICIUS DE SOUSA SILVA"
+            },
+            {
+                "posicao_ordem": 17,
+                "nome_completo": "LAUA SOUZA COSTA"
+            },
+            {
+                "posicao_ordem": 18,
+                "nome_completo": "LUIS GUILHERME ALVES DA SILVA"
+            },
+            {
+                "posicao_ordem": 19,
+                "nome_completo": "LUIS JACKSON SOUSA FERNANDES"
+            },
+            {
+                "posicao_ordem": 20,
+                "nome_completo": "LUIZ GABRIEL RIBEIRO MARTINS"
+            },
+            {
+                "posicao_ordem": 21,
+                "nome_completo": "MANOEL SOUSA PIRES"
+            },
+            {
+                "posicao_ordem": 22,
+                "nome_completo": "MARCOS DIEGO GONÇALVES DOS SANTOS SOARES"
+            },
+            {
+                "posicao_ordem": 23,
+                "nome_completo": "MARCOS FELIPE VIEIRA RODRIGUES"
+            },
+            {
+                "posicao_ordem": 24,
+                "nome_completo": "MARCOS VENICYOS MINEIRO SARAIVA"
+            },
+            {
+                "posicao_ordem": 25,
+                "nome_completo": "MARIA NATHALIA BORGES DOS SANTOS"
+            },
+            {
+                "posicao_ordem": 26,
+                "nome_completo": "OTAVIO ALVES BENVINDO"
+            },
+            {
+                "posicao_ordem": 27,
+                "nome_completo": "RAMON FELIPE VIEIRA DE CARVALHO"
+            },
+            {
+                "posicao_ordem": 28,
+                "nome_completo": "RENAN RABELO SOUSA"
+            },
+            {
+                "posicao_ordem": 29,
+                "nome_completo": "RODRIGO DOS SANTOS NASCIMENTO"
+            },
+            {
+                "posicao_ordem": 30,
+                "nome_completo": "SAMUEL JACKSON RODRIGUES CARVALHO DA SILVA"
+            },
+            {
+                "posicao_ordem": 32,
+                "nome_completo": "YURY FERNANDO CARVALHO PIRES"
+            }
+        ]
+    },
+    "Pagina_8": {
+        "escola": "22057498 - CETI CALISTO LOBO",
+        "modo_de_ensino": "ENSINO MEDIO TECNICO PROFISSIONAL",
+        "serie": "1ª SERIE - INTEGRAL",
+        "periodo": "2026/1",
+        "curso": "TECNICO EM SEGURANCA DO TRABALHO",
+        "turma": "1 \nCURSO  CURSO TECNICO EM SEGURANCA DO TRABALHO \nEMTPSEG-TRAB-1ª SERIE - INTEGRAL-I-A",
+        "alunos": [
+            {
+                "posicao_ordem": 1,
+                "nome_completo": "ALÍCYA LORRANI ROCHA PACHÊCO"
+            },
+            {
+                "posicao_ordem": 2,
+                "nome_completo": "ANA VITORIA SOUSA MARTINS"
+            },
+            {
+                "posicao_ordem": 3,
+                "nome_completo": "ANANDA SAWANY BRITO ALVES"
+            },
+            {
+                "posicao_ordem": 4,
+                "nome_completo": "BELNICE DUARTE BORGES"
+            },
+            {
+                "posicao_ordem": 5,
+                "nome_completo": "BIENA MARY DE SOUSA"
+            },
+            {
+                "posicao_ordem": 6,
+                "nome_completo": "CAMILA SOUSA SANTOS"
+            },
+            {
+                "posicao_ordem": 7,
+                "nome_completo": "DANIEL HENRIQUE RODRIGUES CAMELO"
+            },
+            {
+                "posicao_ordem": 8,
+                "nome_completo": "ENZO GABRIEL DA SILVA MENESES"
+            },
+            {
+                "posicao_ordem": 9,
+                "nome_completo": "GUSTAVO CARVALHO SILVA"
+            },
+            {
+                "posicao_ordem": 10,
+                "nome_completo": "GUSTAVO GONÇALVES DE LIMA"
+            },
+            {
+                "posicao_ordem": 11,
+                "nome_completo": "HELOANE DE SOUSA MENDES"
+            },
+            {
+                "posicao_ordem": 12,
+                "nome_completo": "ISABELLA NASCIMENTO MOURA"
+            },
+            {
+                "posicao_ordem": 14,
+                "nome_completo": "JONATAS PEREIRA DA SILVA"
+            },
+            {
+                "posicao_ordem": 15,
+                "nome_completo": "JOYCE APARECIDA SILVA MORAES"
+            },
+            {
+                "posicao_ordem": 16,
+                "nome_completo": "KLEISLAINE SANTOS QUIRINO"
+            },
+            {
+                "posicao_ordem": 18,
+                "nome_completo": "LUIS FELIPE DA ROCHA GUIMARAES"
+            },
+            {
+                "posicao_ordem": 19,
+                "nome_completo": "LUIS HENRIQUE DE MOURA SALES"
+            },
+            {
+                "posicao_ordem": 20,
+                "nome_completo": "MARCOS FELIPE PEREIRA DA SILVA"
+            },
+            {
+                "posicao_ordem": 21,
+                "nome_completo": "MARCOS VINICIUS MORAIS DE CARVALHO"
+            },
+            {
+                "posicao_ordem": 22,
+                "nome_completo": "MARIA CLARA DA SILVA RODRIGUES"
+            },
+            {
+                "posicao_ordem": 23,
+                "nome_completo": "MARIA EDUARDA OLIVEIRA MELO"
+            },
+            {
+                "posicao_ordem": 24,
+                "nome_completo": "MARIA LUIZA ALVES DE LIMA ARAÚJO"
+            },
+            {
+                "posicao_ordem": 25,
+                "nome_completo": "MURILO CASTILHO PEREIRA LIMA"
+            },
+            {
+                "posicao_ordem": 26,
+                "nome_completo": "NARA RAYANNE LIMA DA SILVA"
+            },
+            {
+                "posicao_ordem": 27,
+                "nome_completo": "NICHOLAS MORONE DE OLIVEIRA MENEZES"
+            },
+            {
+                "posicao_ordem": 28,
+                "nome_completo": "PIETRA DOS SANTOS SILVA BORGES"
+            },
+            {
+                "posicao_ordem": 29,
+                "nome_completo": "SOPHIA COSTA TORRES DA SILVA"
+            },
+            {
+                "posicao_ordem": 30,
+                "nome_completo": "WALLASE SAMUEL DE SOUSA VELOSO"
+            },
+            {
+                "posicao_ordem": 31,
+                "nome_completo": "YSADORA ALVES CAVALCANTE SOUSA"
+            }
+        ]
+    }
+}
