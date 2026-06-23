@@ -33,3 +33,9 @@ def AdminApiLoginSuperUser(request):
         data = json.loads(request.POST)
         cpf = data.get("cpf")
         password = data.get("password")
+        return JsonResponse({
+            cpf,
+            password
+        })
+    else:
+        return HttpResponse("error")
