@@ -20,21 +20,39 @@ export default function AlunoLoginPage(){
         setMessage("")
 
         try{
-            const response = await fetch(`${encodeURIComponent(nome)}`);
+            const response = await fetch(`https://animated-parakeet-97456gj46g96fp4gp-8000.app.github.dev/api/students/search?fullname=${encodeURIComponent(fullName)}`);
             const data = await response.json();
+            const clearName = (text) => {
+                if (!text) return '';
+                return text
+                    .normalize('NFD')
+                    .replace(/[\u0300-\u036f]/g, '')
+                    .toUpperCase()
+                    .trim()
+                    .replace(/\s+/g, ' ');
+                };
+            const nameSearched = clearName(fullName.trim().toUpperCase().replace(/\s+/g, ' '))
+            const studentNameOnDataBase = clearName(data?.estudante[0]?.nome_completo)
+                ? data.estudante[0].nome_completo.trim().toUpperCase().replace(/\s+/g, ' ')
+                : '';
+            
+            console.log(studentNameOnDataBase)
 
-            if (response.ok && data.existe) {
-                setSenhaReadOnly(false);
-                setMensagem('Usuário encontrado! Agora insira sua senha.');
+
+            if (studentNameOnDataBase && studentNameOnDataBase === nameSearched) {
+                console.log("total encontrado => 1")
+                setPassReadOnly(false);
+                setMessage('Usuário encontrado! Agora insira sua senha.');
             } else {
-                setSenhaReadOnly(true);
-                setMensagem('Estudante não encontrado no sistema.');
+                setPassReadOnly(true);
+                setMessage('Estudante não encontrado no sistema.');
             }
         } catch (error) {
-            setMensagem('Erro ao conectar com o servidor.');
-            setSenhaReadOnly(true);
+            console.log(error)
+            setMessage('Erro ao conectar com o servidor.');
+            setPassReadOnly(true);
         } finally {
-            setCarregando(false);
+            setLoading(false);
         }
     }
 
@@ -53,8 +71,12 @@ export default function AlunoLoginPage(){
                                 type="text"
                                 className="form-control mx-1"
                                 name="full_name"
+                                value={fullName}
+                                onChange={(e) => setFullName(e.target.value)}
                             />
-                            <button className="btn btn-primary btn-sm" type="button">Verificar</button>
+                            <button onClick={verify_full_name} className="btn btn-primary btn-sm" disabled={loading}>
+                                {loading ? 'Verificando...' : 'Verificar Nome'}
+                            </button>
                         </div>
                         <div className="mb-2">
                             <label className="form-label">
@@ -62,9 +84,12 @@ export default function AlunoLoginPage(){
                             </label>
                             <input
                                 type="password"
+                                readOnly={passReadOnly} 
+                                placeholder={passReadOnly ? "Verifique o nome primeiro" : "Digite sua senha"}
+                                style={{ background: passReadOnly ? '#e9e9e9' : '#fff' }}
                                 className="form-control"
-                                readOnly
                             />
+                            {message && <p>{message}</p>}
                         </div>
                         <div className="d-grid gap-2">
                             <button type="submit" className="btn btn-success"><strong>Entrar</strong></button>
