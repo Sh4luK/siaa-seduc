@@ -60,7 +60,9 @@ export default function AlunoLoginPage(){
         <div className="d-flex justify-content-center align-items-center vh-100" style={{ backgroundColor: "#8cddaf" }}>
             <div className="card shadow" style={{ borderRadius: "10px", padding: "10px" }}>
                 <div className="card-body">
-                    <img src={logo.src} alt="Logo" className="" style={{ width: "200px", height: "auto" }} />
+                    <div className="text-center">
+                        <img src={logo.src} alt="Logo" className="" style={{ width: "200px", height: "auto" }} />
+                    </div>
                     <h2 className="card-title text-center">Login do Aluno</h2>
                     <form className="form" method="POST">
                         <label className="form-label">
@@ -75,7 +77,7 @@ export default function AlunoLoginPage(){
                                 onChange={(e) => setFullName(e.target.value)}
                             />
                             <button onClick={verify_full_name} className="btn btn-primary btn-sm" disabled={loading}>
-                                {loading ? 'Verificando...' : 'Verificar Nome'}
+                                {loading ? 'Verificando...' : 'Verificar'}
                             </button>
                         </div>
                         <div className="mb-2">
