@@ -4,8 +4,8 @@
         "modo_de_ensino": "ENSINO MEDIO TECNICO PROFISSIONAL",
         "serie": "1ª SERIE - INTEGRAL",
         "periodo": "2026/1",
-        "curso": "GOVERNO DO ESTADO DO PIAUÍ \nSECRETARIA ESTADUAL DE EDUCAÇÃO - SEDUC \nSUPERINTENDÊNCIA DE ENSINO - SUPEN \nESCOLA",
-        "turma": "1 \nCURSO  CURSO TECNICO EM ADMINISTRACAO COM \nEMTPADM-ENF-EMP-1ª SERIE - INTEGRAL-I-A",
+        "curso": "TECNICO EM ADMINISTRACAO",
+        "turma": "EMTPADM-ENF-EMP-1ª SERIE-INTEGRAL-I-A",
         "alunos": [
             {
                 "posicao_ordem": 1,
@@ -138,8 +138,8 @@
         "modo_de_ensino": "ENSINO MEDIO TECNICO PROFISSIONAL",
         "serie": "1ª SERIE - INTEGRAL",
         "periodo": "2026/1",
-        "curso": "GOVERNO DO ESTADO DO PIAUÍ \nSECRETARIA ESTADUAL DE EDUCAÇÃO - SEDUC \nSUPERINTENDÊNCIA DE ENSINO - SUPEN \nESCOLA",
-        "turma": "1 \nCURSO  CURSO TECNICO EM ADMINISTRACAO COM \nEMTPADM-ENF-EMP-1ª SERIE - INTEGRAL-I-B",
+        "curso": "TECNICO EM ADMINISTRACAO",
+        "turma": "EMTPADM-ENF-EMP-1ª SERIE-INTEGRAL-I-B",
         "alunos": [
             {
                 "posicao_ordem": 1,
@@ -260,8 +260,8 @@
         "modo_de_ensino": "ENSINO MEDIO TECNICO PROFISSIONAL",
         "serie": "1ª SERIE - INTEGRAL",
         "periodo": "2026/1",
-        "curso": "GOVERNO DO ESTADO DO PIAUÍ \nSECRETARIA ESTADUAL DE EDUCAÇÃO - SEDUC \nSUPERINTENDÊNCIA DE ENSINO - SUPEN \nESCOLA",
-        "turma": "1 \nCURSO  CURSO TECNICO EM DESENVOLVIMENTO DE \nEMTPDES-SIS-1ª SERIE - INTEGRAL-I-A",
+        "curso": "  TECNICO EM DESENVOLVIMENTO DE SISTEMA",
+        "turma": "EMTPDES-SIS-1ª SERIE-INTEGRAL-I-A",
         "alunos": [
             {
                 "posicao_ordem": 1,
@@ -321,7 +321,7 @@
             },
             {
                 "posicao_ordem": 15,
-                "nome_completo": "JOÃO PEDRO NASCIMENTO SOUSA"
+                "nome_completo": "JOÁO PEDRO NASCIMENTO SOUSA"
             },
             {
                 "posicao_ordem": 16,
@@ -341,7 +341,7 @@
             },
             {
                 "posicao_ordem": 20,
-                "nome_completo": "LANNA VITÓRIA PAIXÃO LIAL"
+                "nome_completo": "LANNA VITÓRIA PAIXÁO LIAL"
             },
             {
                 "posicao_ordem": 21,
@@ -414,8 +414,8 @@
         "modo_de_ensino": "ENSINO MEDIO TECNICO PROFISSIONAL",
         "serie": "1ª SERIE - INTEGRAL",
         "periodo": "2026/1",
-        "curso": "GOVERNO DO ESTADO DO PIAUÍ \nSECRETARIA ESTADUAL DE EDUCAÇÃO - SEDUC \nSUPERINTENDÊNCIA DE ENSINO - SUPEN \nESCOLA",
-        "turma": "1 \nCURSO  CURSO TECNICO EM ENFERMAGEM \nEMTPENF-1ª SERIE - INTEGRAL-I-B",
+        "curso": "TECNICO EM ENFERMAGEM",
+        "turma": "EMTPENF-1ª SERIE-INTEGRAL-I-B",
         "alunos": [
             {
                 "posicao_ordem": 1,
@@ -548,8 +548,8 @@
         "modo_de_ensino": "ENSINO MEDIO TECNICO PROFISSIONAL",
         "serie": "1ª SERIE - INTEGRAL",
         "periodo": "2026/1",
-        "curso": "GOVERNO DO ESTADO DO PIAUÍ \nSECRETARIA ESTADUAL DE EDUCAÇÃO - SEDUC \nSUPERINTENDÊNCIA DE ENSINO - SUPEN \nESCOLA",
-        "turma": "1 \nCURSO CURSO TECNICO EM FARMACIA \nEMTPFARM-1ª SERIE - INTEGRAL-I-A",
+        "curso": "TECNICO EM FARMACIA",
+        "turma": "EMTPFARM-1ª SERIE-INTEGRAL-I-A",
         "alunos": [
             {
                 "posicao_ordem": 1,
@@ -565,7 +565,7 @@
             },
             {
                 "posicao_ordem": 4,
-                "nome_completo": "ANGÉLICA CRYSLANNY DA CONCEIÇÃO DE SOUSA"
+                "nome_completo": "ANGÉLICA CRYSLANNY DA CONCEIÇÁO DE SOUSA"
             },
             {
                 "posicao_ordem": 5,
@@ -589,7 +589,7 @@
             },
             {
                 "posicao_ordem": 10,
-                "nome_completo": "ÉRIKA LORRANY RODRIGUES SANTOS CONCEIÇÃO"
+                "nome_completo": "ÉRIKA LORRANY RODRIGUES SANTOS CONCEIÇÁO"
             },
             {
                 "posicao_ordem": 11,
@@ -702,8 +702,8 @@
         "modo_de_ensino": "ENSINO MEDIO TECNICO PROFISSIONAL",
         "serie": "1ª SERIE - INTEGRAL",
         "periodo": "2026/1",
-        "curso": "GOVERNO DO ESTADO DO PIAUÍ \nSECRETARIA ESTADUAL DE EDUCAÇÃO - SEDUC \nSUPERINTENDÊNCIA DE ENSINO - SUPEN \nESCOLA",
-        "turma": "1 \nCURSO CURSO TECNICO EM FARMACIA \nEMTPFARM-1ª SERIE - INTEGRAL-I-B",
+        "curso": "TECNICO EM FARMACIA",
+        "turma": "EMTPFARM-1ª SERIE-INTEGRAL-I-B",
         "alunos": [
             {
                 "posicao_ordem": 1,
@@ -779,7 +779,7 @@
             },
             {
                 "posicao_ordem": 19,
-                "nome_completo": "JOÃO VICTOR BEZERRA ALVES"
+                "nome_completo": "JOÁO VICTOR BEZERRA ALVES"
             },
             {
                 "posicao_ordem": 20,
@@ -868,8 +868,8 @@
         "modo_de_ensino": "ENSINO MEDIO TECNICO PROFISSIONAL",
         "serie": "1ª SERIE - INTEGRAL",
         "periodo": "2026/1",
-        "curso": "GOVERNO DO ESTADO DO PIAUÍ \nSECRETARIA ESTADUAL DE EDUCAÇÃO - SEDUC \nSUPERINTENDÊNCIA DE ENSINO - SUPEN \nESCOLA",
-        "turma": "1 \nCURSO  CURSO TECNICO EM PROGRAMACAO DE JOGOS \nEMTPPROG-JOG-DIG-1ª SERIE - INTEGRAL-I-A",
+        "curso": "TECNICO EM PROGRAMACAO DE JOGOS",
+        "turma": "EMTPPROG-JOG-DIG-1ª SERIE-INTEGRAL-I-A",
         "alunos": [
             {
                 "posicao_ordem": 1,
@@ -885,7 +885,7 @@
             },
             {
                 "posicao_ordem": 4,
-                "nome_completo": "CLAUDIO VIEIRA BRANDÃO"
+                "nome_completo": "CLAUDIO VIEIRA BRANDÁO"
             },
             {
                 "posicao_ordem": 5,
@@ -921,11 +921,11 @@
             },
             {
                 "posicao_ordem": 13,
-                "nome_completo": "JOÃO PEDRO SANTANA MACHADO"
+                "nome_completo": "JOÁO PEDRO SANTANA MACHADO"
             },
             {
                 "posicao_ordem": 14,
-                "nome_completo": "JOSÉ DAVI GUIMARÃES GOMES CARDOSO"
+                "nome_completo": "JOSÉ DAVI GUIMARÁES GOMES CARDOSO"
             },
             {
                 "posicao_ordem": 15,
@@ -993,7 +993,7 @@
             },
             {
                 "posicao_ordem": 31,
-                "nome_completo": "SOFIA ALVES GUIMARÃES"
+                "nome_completo": "SOFIA ALVES GUIMARÁES"
             },
             {
                 "posicao_ordem": 32,
@@ -1006,8 +1006,8 @@
         "modo_de_ensino": "ENSINO MEDIO TECNICO PROFISSIONAL",
         "serie": "1ª SERIE - INTEGRAL",
         "periodo": "2026/1",
-        "curso": "GOVERNO DO ESTADO DO PIAUÍ \nSECRETARIA ESTADUAL DE EDUCAÇÃO - SEDUC \nSUPERINTENDÊNCIA DE ENSINO - SUPEN \nESCOLA",
-        "turma": "1 \nCURSO  CURSO TECNICO EM SEGURANCA DO TRABALHO \nEMTPSEG-TRAB-1ª SERIE - INTEGRAL-I-A",
+        "curso": "TECNICO EM SEGURANCA DO TRABALHO",
+        "turma": "EMTPSEG-TRAB-1ª SERIE-INTEGRAL-I-A",
         "alunos": [
             {
                 "posicao_ordem": 1,
@@ -1059,7 +1059,7 @@
             },
             {
                 "posicao_ordem": 13,
-                "nome_completo": "JOÃO VICTOR FRANCO SILVA CABRAL"
+                "nome_completo": "JOÁO VICTOR FRANCO SILVA CABRAL"
             },
             {
                 "posicao_ordem": 14,
@@ -1075,7 +1075,7 @@
             },
             {
                 "posicao_ordem": 17,
-                "nome_completo": "KRISLLA MARA GOMES MAGALHÃES"
+                "nome_completo": "KRISLLA MARA GOMES MAGALHÁES"
             },
             {
                 "posicao_ordem": 18,
@@ -1140,8 +1140,8 @@
         "modo_de_ensino": "ENSINO MEDIO TECNICO PROFISSIONAL",
         "serie": "2ª SERIE - INTEGRAL",
         "periodo": "2026/1",
-        "curso": "GOVERNO DO ESTADO DO PIAUÍ \nSECRETARIA ESTADUAL DE EDUCAÇÃO - SEDUC \nSUPERINTENDÊNCIA DE ENSINO - SUPEN \nESCOLA",
-        "turma": "1 \nCURSO  CURSO TECNICO EM ADMINISTRACAO COM \nEMTPADM-ENF-EMP-2ª SERIE - INTEGRAL-I-A",
+        "curso": "TECNICO EM ADMINISTRACAO",
+        "turma": "EMTPADM-ENF-EMP-2ª SERIE-INTEGRAL-I-A",
         "alunos": [
             {
                 "posicao_ordem": 1,
@@ -1205,7 +1205,7 @@
             },
             {
                 "posicao_ordem": 16,
-                "nome_completo": "JOÃO GUILHERME SOUSA ALVES"
+                "nome_completo": "JOÁO GUILHERME SOUSA ALVES"
             },
             {
                 "posicao_ordem": 17,
@@ -1270,8 +1270,8 @@
         "modo_de_ensino": "ENSINO MEDIO TECNICO PROFISSIONAL",
         "serie": "2ª SERIE - INTEGRAL",
         "periodo": "2026/1",
-        "curso": "GOVERNO DO ESTADO DO PIAUÍ \nSECRETARIA ESTADUAL DE EDUCAÇÃO - SEDUC \nSUPERINTENDÊNCIA DE ENSINO - SUPEN \nESCOLA",
-        "turma": "1 \nCURSO  CURSO TECNICO EM ADMINISTRACAO COM \nEMTPADM-ENF-EMP-2ª SERIE - INTEGRAL-I-B",
+        "curso": "TECNICO EM ADMINISTRACAO",
+        "turma": "EMTPADM-ENF-EMP-2ª SERIE-INTEGRAL-I-B",
         "alunos": [
             {
                 "posicao_ordem": 1,
@@ -1315,15 +1315,15 @@
             },
             {
                 "posicao_ordem": 11,
-                "nome_completo": "JOÃO EDUARDO ALMEIDA MUNIZ"
+                "nome_completo": "JOÁO EDUARDO ALMEIDA MUNIZ"
             },
             {
                 "posicao_ordem": 12,
-                "nome_completo": "JOÃO VICTOR SANTOS PEREIRA"
+                "nome_completo": "JOÁO VICTOR SANTOS PEREIRA"
             },
             {
                 "posicao_ordem": 13,
-                "nome_completo": "JOÃO VITOR MEDEIROS REIS"
+                "nome_completo": "JOÁO VITOR MEDEIROS REIS"
             },
             {
                 "posicao_ordem": 14,
@@ -1392,8 +1392,8 @@
         "modo_de_ensino": "ENSINO MEDIO TECNICO PROFISSIONAL",
         "serie": "2ª SERIE - INTEGRAL",
         "periodo": "2026/1",
-        "curso": "GOVERNO DO ESTADO DO PIAUÍ \nSECRETARIA ESTADUAL DE EDUCAÇÃO - SEDUC \nSUPERINTENDÊNCIA DE ENSINO - SUPEN \nESCOLA",
-        "turma": "1 \nCURSO  CURSO TECNICO EM DESENVOLVIMENTO DE \nEMTPDES-SIS-2ª SERIE - INTEGRAL-I-A",
+        "curso": "  TECNICO EM DESENVOLVIMENTO DE SISTEMA",
+        "turma": "EMTPDES-SIS-2ª SERIE-INTEGRAL-I-A",
         "alunos": [
             {
                 "posicao_ordem": 1,
@@ -1550,8 +1550,8 @@
         "modo_de_ensino": "ENSINO MEDIO TECNICO PROFISSIONAL",
         "serie": "2ª SERIE - INTEGRAL",
         "periodo": "2026/1",
-        "curso": "GOVERNO DO ESTADO DO PIAUÍ \nSECRETARIA ESTADUAL DE EDUCAÇÃO - SEDUC \nSUPERINTENDÊNCIA DE ENSINO - SUPEN \nESCOLA",
-        "turma": "1 \nCURSO  CURSO TECNICO EM ENFERMAGEM \nEMTPENF-2ª SERIE - INTEGRAL-I-B",
+        "curso": "TECNICO EM ENFERMAGEM",
+        "turma": "EMTPENF-2ª SERIE-INTEGRAL-I-B",
         "alunos": [
             {
                 "posicao_ordem": 1,
@@ -1668,8 +1668,8 @@
         "modo_de_ensino": "ENSINO MEDIO TECNICO PROFISSIONAL",
         "serie": "2ª SERIE - INTEGRAL",
         "periodo": "2026/1",
-        "curso": "GOVERNO DO ESTADO DO PIAUÍ \nSECRETARIA ESTADUAL DE EDUCAÇÃO - SEDUC \nSUPERINTENDÊNCIA DE ENSINO - SUPEN \nESCOLA",
-        "turma": "1 \nCURSO CURSO TECNICO EM FARMACIA \nEMTPFARM-2ª SERIE - INTEGRAL-I-A",
+        "curso": "TECNICO EM FARMACIA",
+        "turma": "EMTPFARM-2ª SERIE-INTEGRAL-I-A",
         "alunos": [
             {
                 "posicao_ordem": 1,
@@ -1733,11 +1733,11 @@
             },
             {
                 "posicao_ordem": 16,
-                "nome_completo": "JOÃO PEDRO PEDROSA NUNES DOS SANTOS"
+                "nome_completo": "JOÁO PEDRO PEDROSA NUNES DOS SANTOS"
             },
             {
                 "posicao_ordem": 17,
-                "nome_completo": "JOÃO VITOR PESSOA CASTELO BRANCO"
+                "nome_completo": "JOÁO VITOR PESSOA CASTELO BRANCO"
             },
             {
                 "posicao_ordem": 18,
@@ -1814,8 +1814,8 @@
         "modo_de_ensino": "ENSINO MEDIO TECNICO PROFISSIONAL",
         "serie": "2ª SERIE - INTEGRAL",
         "periodo": "2026/1",
-        "curso": "GOVERNO DO ESTADO DO PIAUÍ \nSECRETARIA ESTADUAL DE EDUCAÇÃO - SEDUC \nSUPERINTENDÊNCIA DE ENSINO - SUPEN \nESCOLA",
-        "turma": "1 \nCURSO CURSO TECNICO EM FARMACIA \nEMTPFARM-2ª SERIE - INTEGRAL-I-B",
+        "curso": "TECNICO EM FARMACIA",
+        "turma": "EMTPFARM-2ª SERIE-INTEGRAL-I-B",
         "alunos": [
             {
                 "posicao_ordem": 1,
@@ -1855,7 +1855,7 @@
             },
             {
                 "posicao_ordem": 10,
-                "nome_completo": "JOÃO EMANUEL SALVADOR DE CARVALHO"
+                "nome_completo": "JOÁO EMANUEL SALVADOR DE CARVALHO"
             },
             {
                 "posicao_ordem": 11,
@@ -1952,12 +1952,12 @@
         "modo_de_ensino": "ENSINO MEDIO TECNICO PROFISSIONAL",
         "serie": "2ª SERIE - INTEGRAL",
         "periodo": "2026/1",
-        "curso": "GOVERNO DO ESTADO DO PIAUÍ \nSECRETARIA ESTADUAL DE EDUCAÇÃO - SEDUC \nSUPERINTENDÊNCIA DE ENSINO - SUPEN \nESCOLA",
-        "turma": "1 \nCURSO  CURSO TECNICO EM MARKETING DIGITAL \nEMTPMARK-DIG-2ª SERIE - INTEGRAL-I-A",
+        "curso": "TECNICO EM MARKETING DIGITAL",
+        "turma": "EMTPMARK-DIG-2ª SERIE-INTEGRAL-I-A",
         "alunos": [
             {
                 "posicao_ordem": 1,
-                "nome_completo": "ANNA RAFAELLA LEÃO ROCHA LIMA"
+                "nome_completo": "ANNA RAFAELLA LEÁO ROCHA LIMA"
             },
             {
                 "posicao_ordem": 2,
@@ -1969,7 +1969,7 @@
             },
             {
                 "posicao_ordem": 4,
-                "nome_completo": "CAUÊ ESTEVÃO DOS SANTOS PEREIRA"
+                "nome_completo": "CAUÊ ESTEVÁO DOS SANTOS PEREIRA"
             },
             {
                 "posicao_ordem": 5,
@@ -2005,7 +2005,7 @@
             },
             {
                 "posicao_ordem": 13,
-                "nome_completo": "JOÃO MARCOS PASSOS MARCULINO"
+                "nome_completo": "JOÁO MARCOS PASSOS MARCULINO"
             },
             {
                 "posicao_ordem": 14,
@@ -2066,8 +2066,8 @@
         "modo_de_ensino": "ENSINO MEDIO TECNICO PROFISSIONAL",
         "serie": "2ª SERIE - INTEGRAL",
         "periodo": "2026/1",
-        "curso": "GOVERNO DO ESTADO DO PIAUÍ \nSECRETARIA ESTADUAL DE EDUCAÇÃO - SEDUC \nSUPERINTENDÊNCIA DE ENSINO - SUPEN \nESCOLA",
-        "turma": "1 \nCURSO  CURSO TECNICO EM SEGURANCA DO TRABALHO \nEMTPSEG-TRAB-2ª SERIE - INTEGRAL-I-A",
+        "curso": "TECNICO EM SEGURANCA DO TRABALHO",
+        "turma": "EMTPSEG-TRAB-2ª SERIE-INTEGRAL-I-A",
         "alunos": [
             {
                 "posicao_ordem": 1,
@@ -2154,10 +2154,10 @@
     "Pagina_17": {
         "escola": "22057498 - CETI CALISTO LOBO",
         "modo_de_ensino": "ENSINO MEDIO TECNICO PROFISSIONAL",
-        "serie": "3ª SERIE - PARCIAL DIURNO",
+        "serie": "3ª SERIE - INTEGRAL",
         "periodo": "2026/1",
-        "curso": "GOVERNO DO ESTADO DO PIAUÍ \nSECRETARIA ESTADUAL DE EDUCAÇÃO - SEDUC \nSUPERINTENDÊNCIA DE ENSINO - SUPEN \nESCOLA",
-        "turma": "1 \nCURSO  CURSO TECNICO EM ADMINISTRACAO COM \nEMTPADM-ENF-EMP-3ª SERIE - PARCIAL DIURNO-M-C",
+        "curso": "TECNICO EM ADMINISTRACAO",
+        "turma": "EMTPADM-ENF-EMP-1ª SERIE - INTEGRAL-I-A",
         "alunos": [
             {
                 "posicao_ordem": 1,
@@ -2165,11 +2165,11 @@
             },
             {
                 "posicao_ordem": 2,
-                "nome_completo": "ANA LIVIA CONCEIÇÃO REIS"
+                "nome_completo": "ANA LIVIA CONCEIÇÁO REIS"
             },
             {
                 "posicao_ordem": 3,
-                "nome_completo": "ANDERSON DA CONCEIÇÃO SOUSA"
+                "nome_completo": "ANDERSON DA CONCEIÇÁO SOUSA"
             },
             {
                 "posicao_ordem": 4,
@@ -2233,7 +2233,7 @@
             },
             {
                 "posicao_ordem": 19,
-                "nome_completo": "KAUÃN ÍTALO SANTOS SILVA"
+                "nome_completo": "KAUÁN ÍTALO SANTOS SILVA"
             },
             {
                 "posicao_ordem": 20,
@@ -2276,10 +2276,10 @@
     "Pagina_18": {
         "escola": "22057498 - CETI CALISTO LOBO",
         "modo_de_ensino": "ENSINO MEDIO TECNICO PROFISSIONAL",
-        "serie": "3ª SERIE - PARCIAL DIURNO",
+        "serie": "3ª SERIE - INTEGRAL",
         "periodo": "2026/1",
-        "curso": "GOVERNO DO ESTADO DO PIAUÍ \nSECRETARIA ESTADUAL DE EDUCAÇÃO - SEDUC \nSUPERINTENDÊNCIA DE ENSINO - SUPEN \nESCOLA",
-        "turma": "1 \nCURSO  CURSO TECNICO EM ADMINISTRACAO COM \nEMTPADM-ENF-EMP-3ª SERIE - PARCIAL DIURNO-M-D",
+        "curso": "TECNICO EM ADMINISTRACAO",
+        "turma": "EMTPADM-ENF-EMP-1ª SERIE - INTEGRAL-I-A",
         "alunos": [
             {
                 "posicao_ordem": 1,
@@ -2335,11 +2335,11 @@
             },
             {
                 "posicao_ordem": 14,
-                "nome_completo": "JOÃO PEDRO DO NASCIMENTO NOGUEIRA"
+                "nome_completo": "JOÁO PEDRO DO NASCIMENTO NOGUEIRA"
             },
             {
                 "posicao_ordem": 15,
-                "nome_completo": "JOÃO PEDRO GONÇALVES RAMOS"
+                "nome_completo": "JOÁO PEDRO GONÇALVES RAMOS"
             },
             {
                 "posicao_ordem": 16,
@@ -2414,10 +2414,10 @@
     "Pagina_19": {
         "escola": "22057498 - CETI CALISTO LOBO",
         "modo_de_ensino": "ENSINO MEDIO TECNICO PROFISSIONAL",
-        "serie": "3ª SERIE - PARCIAL",
+        "serie": "3ª SERIE - INTEGRAL",
         "periodo": "2026/1",
-        "curso": "GOVERNO DO ESTADO DO PIAUÍ \nSECRETARIA ESTADUAL DE EDUCAÇÃO - SEDUC \nSUPERINTENDÊNCIA DE ENSINO - SUPEN \nESCOLA",
-        "turma": "1 \nCURSO  CURSO TECNICO EM ENFERMAGEM \nEMTPENF-3ª SERIE - PARCIAL-M-B",
+        "curso": "TECNICO EM ENFERMAGEM",
+        "turma": "EMTPADM-ENF-EMP-1ª SERIE - INTEGRAL-I-A",
         "alunos": [
             {
                 "posicao_ordem": 1,
@@ -2568,10 +2568,10 @@
     "Pagina_20": {
         "escola": "22057498 - CETI CALISTO LOBO",
         "modo_de_ensino": "ENSINO MEDIO TECNICO PROFISSIONAL",
-        "serie": "3ª SERIE - PARCIAL",
+        "serie": "3ª SERIE - INTEGRAL",
         "periodo": "2026/1",
-        "curso": "GOVERNO DO ESTADO DO PIAUÍ \nSECRETARIA ESTADUAL DE EDUCAÇÃO - SEDUC \nSUPERINTENDÊNCIA DE ENSINO - SUPEN \nESCOLA",
-        "turma": "1 \nCURSO CURSO TECNICO EM FARMACIA \nEMTPFARM-3ª SERIE - PARCIAL-M-A",
+        "curso": "TECNICO EM FARMACIA",
+        "turma": "EMTPADM-ENF-EMP-1ª SERIE - INTEGRAL-I-A",
         "alunos": [
             {
                 "posicao_ordem": 1,
@@ -2702,10 +2702,10 @@
     "Pagina_21": {
         "escola": "22057498 - CETI CALISTO LOBO",
         "modo_de_ensino": "ENSINO MEDIO TECNICO PROFISSIONAL",
-        "serie": "3ª SERIE - PARCIAL",
+        "serie": "3ª SERIE - INTEGRAL",
         "periodo": "2026/1",
-        "curso": "GOVERNO DO ESTADO DO PIAUÍ \nSECRETARIA ESTADUAL DE EDUCAÇÃO - SEDUC \nSUPERINTENDÊNCIA DE ENSINO - SUPEN \nESCOLA",
-        "turma": "1 \nCURSO CURSO TECNICO EM FARMACIA \nEMTPFARM-3ª SERIE - PARCIAL-M-B",
+        "curso": "TECNICO EM FARMACIA",
+        "turma": "EMTPADM-ENF-EMP-1ª SERIE - INTEGRAL-I-A",
         "alunos": [
             {
                 "posicao_ordem": 1,
@@ -2844,10 +2844,10 @@
     "Pagina_22": {
         "escola": "22057498 - CETI CALISTO LOBO",
         "modo_de_ensino": "ENSINO MEDIO TECNICO PROFISSIONAL",
-        "serie": "3ª SERIE - PARCIAL",
+        "serie": "3ª SERIE - INTEGRAL",
         "periodo": "2026/1",
-        "curso": "GOVERNO DO ESTADO DO PIAUÍ \nSECRETARIA ESTADUAL DE EDUCAÇÃO - SEDUC \nSUPERINTENDÊNCIA DE ENSINO - SUPEN \nESCOLA",
-        "turma": "1 \nCURSO  CURSO TECNICO EM PROGRAMACAO DE JOGOS \nEMTPPROG-JOG-DIG-3ª SERIE - PARCIAL-M-A",
+        "curso": "TECNICO EM PROGRAMACAO DE JOGOS",
+        "turma": "EMTPADM-ENF-EMP-1ª SERIE - INTEGRAL-I-A",
         "alunos": [
             {
                 "posicao_ordem": 1,
@@ -2867,7 +2867,7 @@
             },
             {
                 "posicao_ordem": 5,
-                "nome_completo": "FRANCIELLE DA CONCEIÇÃO SILVA"
+                "nome_completo": "FRANCIELLE DA CONCEIÇÁO SILVA"
             },
             {
                 "posicao_ordem": 6,
@@ -2922,10 +2922,10 @@
     "Pagina_23": {
         "escola": "22057498 - CETI CALISTO LOBO",
         "modo_de_ensino": "ENSINO MEDIO TECNICO PROFISSIONAL",
-        "serie": "3ª SERIE - PARCIAL",
+        "serie": "3ª SERIE - INTEGRAL",
         "periodo": "2026/1",
-        "curso": "GOVERNO DO ESTADO DO PIAUÍ \nSECRETARIA ESTADUAL DE EDUCAÇÃO - SEDUC \nSUPERINTENDÊNCIA DE ENSINO - SUPEN \nESCOLA",
-        "turma": "1 \nCURSO  CURSO TECNICO EM DESENVOLVIMENTO DE \nEMTPDES-SIS-3ª SERIE - PARCIAL-T-A",
+        "curso": "  TECNICO EM DESENVOLVIMENTO DE SISTEMA",
+        "turma": "EMTPADM-ENF-EMP-1ª SERIE - INTEGRAL-I-A",
         "alunos": [
             {
                 "posicao_ordem": 1,
@@ -2960,10 +2960,10 @@
     "Pagina_24": {
         "escola": "22057498 - CETI CALISTO LOBO",
         "modo_de_ensino": "ENSINO MEDIO TECNICO PROFISSIONAL",
-        "serie": "3ª SERIE - PARCIAL",
+        "serie": "3ª SERIE - INTEGRAL",
         "periodo": "2026/1",
-        "curso": "GOVERNO DO ESTADO DO PIAUÍ \nSECRETARIA ESTADUAL DE EDUCAÇÃO - SEDUC \nSUPERINTENDÊNCIA DE ENSINO - SUPEN \nESCOLA",
-        "turma": "1 \nCURSO  CURSO TECNICO EM DESENVOLVIMENTO DE \nEMTPDES-SIS-3ª SERIE - PARCIAL-T-B",
+        "curso": "  TECNICO EM DESENVOLVIMENTO DE SISTEMA",
+        "turma": "EMTPADM-ENF-EMP-1ª SERIE - INTEGRAL-I-A",
         "alunos": [
             {
                 "posicao_ordem": 1,
@@ -3050,10 +3050,10 @@
     "Pagina_25": {
         "escola": "22057498 - CETI CALISTO LOBO",
         "modo_de_ensino": "ENSINO MEDIO TECNICO PROFISSIONAL",
-        "serie": "3ª SERIE - PARCIAL",
+        "serie": "3ª SERIE - INTEGRAL",
         "periodo": "2026/1",
-        "curso": "GOVERNO DO ESTADO DO PIAUÍ \nSECRETARIA ESTADUAL DE EDUCAÇÃO - SEDUC \nSUPERINTENDÊNCIA DE ENSINO - SUPEN \nESCOLA",
-        "turma": "1 \nCURSO  CURSO TECNICO EM MARKETING DIGITAL \nEMTPMARK-DIG-3ª SERIE - INTEGRAL-T-A",
+        "curso": "TECNICO EM MARKETING DIGITAL",
+        "turma": "EMTPADM-ENF-EMP-1ª SERIE - INTEGRAL-I-A",
         "alunos": [
             {
                 "posicao_ordem": 1,
