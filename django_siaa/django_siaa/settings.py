@@ -128,8 +128,11 @@ CSRF_COOKIE_HTTPONLY = True
 
 # LOGIN_URL = "login/"
 
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000", # Porta padrão do Next.js
-    "https://animated-parakeet-97456gj46g96fp4gp-3000.app.github.dev",
-]
+# CORS_ALLOWED_ORIGINS = [
+#     "http://localhost:3000", # Porta padrão do Next.js
+#     "https://animated-parakeet-97456gj46g96fp4gp-3000.app.github.dev",
+# ]
+
+CORS_ALLOW_ALL_ORIGINS = True
+ALLOWED_HOSTS = ['*']
 CORS_ALLOW_CREDENTIALS = True
