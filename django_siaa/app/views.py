@@ -111,7 +111,11 @@ def search_student(request):
             
         #     if match_name and match_course:
         #         results.append(student)
-            
+
+        print({
+            "total_encontrado": len(results),
+            "estudante": results
+        })  
         return JsonResponse({
             "total_encontrado": len(results),
             "estudante": results
