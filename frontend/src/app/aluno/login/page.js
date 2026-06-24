@@ -5,11 +5,38 @@ import logo from "../../../assets/logo.png"
 import { useState } from "react"
 
 export default function AlunoLoginPage(){
-    const [cpf, setCpf] = useState("")
-    const removePoints = cpf.replace(/\D/g, '');
-    const verify = removePoints.length === 11
-    const filledField = removePoints.length > 0
-    console.log(cpf)
+    const [fullName, setFullName] = useState("")
+    const [passReadOnly, setPassReadOnly] = useState(true)
+    const [loading, setLoading] = useState(false)
+    const [message, setMessage] = useState("")
+
+    async function verify_full_name(){
+        if(!fullName.trim()){
+            setMessage("Por favor, digite seu nome completo.")
+            return
+        }
+
+        setLoading(true)
+        setMessage("")
+
+        try{
+            const response = await fetch(`${encodeURIComponent(nome)}`);
+            const data = await response.json();
+
+            if (response.ok && data.existe) {
+                setSenhaReadOnly(false);
+                setMensagem('Usuário encontrado! Agora insira sua senha.');
+            } else {
+                setSenhaReadOnly(true);
+                setMensagem('Estudante não encontrado no sistema.');
+            }
+        } catch (error) {
+            setMensagem('Erro ao conectar com o servidor.');
+            setSenhaReadOnly(true);
+        } finally {
+            setCarregando(false);
+        }
+    }
 
     return (
         <div className="d-flex justify-content-center align-items-center vh-100" style={{ backgroundColor: "#8cddaf" }}>
@@ -19,36 +46,26 @@ export default function AlunoLoginPage(){
                     <h2 className="card-title text-center">Login do Aluno</h2>
                     <form className="form" method="POST">
                         <label className="form-label">
-                            Cpf <strong className="text-danger">*</strong>
+                            Nome Completo <strong className="text-danger">*</strong>
                         </label>
-                        <input
-                            className="form-control"
-                            name="cpf"
-                            value={cpf}
-                            onChange={(e) => setCpf(e.target.value)}
-                            type="text"
-                            placeholder="Digite seu CPF"
-                            max="11"
-                        />
-                        <div className="mb-2">
-                            {filledField && (
-                                verify ? (
-                                    <small className="mb-2 text-small text-success">CPF correto.</small>
-                                ) : (
-                                    <small className="mb-2 text-small text-danger">CPF incorreto.</small>
-                                )
-                            )}
-                            
+                        <div className="mb-2 d-flex">
+                            <input
+                                type="text"
+                                className="form-control mx-1"
+                                name="full_name"
+                            />
+                            <button className="btn btn-primary btn-sm" type="button">Verificar</button>
                         </div>
-                        <label className="form-label">
-                            Senha <strong className="text-danger">*</strong>
-                        </label>
-                        <input
-                            className="form-control mb-2"
-                            name="password"
-                            type="password"
-                            placeholder="Digite sua senha"
-                        />
+                        <div className="mb-2">
+                            <label className="form-label">
+                                Senha <strong className="text-danger">*</strong>
+                            </label>
+                            <input
+                                type="password"
+                                className="form-control"
+                                readOnly
+                            />
+                        </div>
                         <div className="d-grid gap-2">
                             <button type="submit" className="btn btn-success"><strong>Entrar</strong></button>
                         </div>
