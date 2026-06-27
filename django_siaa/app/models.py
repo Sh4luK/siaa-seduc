@@ -38,8 +38,8 @@ class Estudante(models.Model):
     curso = models.CharField(max_length=255, null=True)
     turma = models.CharField(max_length=255, null=True)
     data_cadastro = models.DateTimeField(auto_now_add=True, null=True)
-    senha = models.CharField(300, null=True, default="")
-    ip = models.CharField(max_length=20, null=True, default=None)
+    senha = models.CharField(300, null=True, default="12345678")
+    ip = models.CharField(max_length=150, null=True, default=None)
     def __str__(self):
         return f"{self.nome_completo} - {self.turma}"
 
