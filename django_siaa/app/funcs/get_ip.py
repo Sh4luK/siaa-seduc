@@ -1,9 +1,7 @@
-def get_ip(request):
+import requests
+def get_ip():
+    url = "http://ip-api.com/json/"
+    get = requests.get(url).json()
+    ip = get["query"]
 
-    x_forwarder_for = request.META.get("HTTP_X_FORWARDER_FOR")
-    if x_forwarder_for:
-        ip = x_forwarder_for.split(",")[0].strip()
-    else:
-        ip = request.META.get("REMOTE_ADDR")
-    
     return ip
