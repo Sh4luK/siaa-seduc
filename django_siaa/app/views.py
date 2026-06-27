@@ -2,12 +2,15 @@ from django.shortcuts import render, redirect
 import requests
 from django.http import HttpResponse, JsonResponse, request
 from django.views.decorators.csrf import csrf_exempt
+from django.forms.models import model_to_dict
 from django.conf import settings
 import os
 from dotenv import load_dotenv
 from pathlib import Path
 from .funcs import ip
 from .funcs.get_ip import get_ip
+from .models import Estudante
+
 # from django.contrib.auth.models import User
 # from django.contrib.auth import authenticate, login
 # from django.contrib.auth.hashers import check_password
@@ -129,8 +132,39 @@ def search_student(request):
 
 @csrf_exempt
 def login_student(request):
-    ip_student = get_ip(request)
-    fullName = request.GET.get("fullname").strip().lower()
-    password = request.GET.get("fullname").strip().lower()
-
+    ip_student = get_ip()
+    fullName = request.GET.get("fullname").strip().upper()
+    password = request.GET.get("password").strip().lower()
+    
+    student = Estudante.objects.filter(nome_completo=fullName, senha=password).first()
+    print({
+        fullName,
+        password
+    })
+    print(student)
+    print(ip_student)
+    if student is None:
+        return JsonResponse({
+            "return": False
+        })
+    else:
+        update = Estudante.objects.filter(nome_completo=fullName, senha=password).update(ip=ip_student)
+        return JsonResponse({
+            "return": True
+        })
+    
+    #https://animated-parakeet-97456gj46g96fp4gp-8000.app.github.dev/api/students/login?fullname=jose%20iraildes%20cipriano%20ribeiro%20filho&password=12345678
+    
+@csrf_exempt
+def auth_student(request):
+    ip_student = get_ip()
+    student = Estudante.objects.filter(ip=ip_student).first()
+    student = model_to_dict(student)
+    if student is None:
+        return JsonResponse({
+            "return": False
+        })
+    else:
+        return JsonResponse(student)
+        
     
