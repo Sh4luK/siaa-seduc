@@ -3,3 +3,5 @@ requests
 djangorestframework
 django-cors-headers
 python-dotenv
+pathlib
+json
