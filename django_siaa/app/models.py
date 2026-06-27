@@ -16,21 +16,30 @@ class Professor(models.Model):
         return self.full_name
 
 class Estudante(models.Model):
-    id = models.AutoField(primary_key=True)
-    matricula = models.CharField(max_length=20, unique=True)
-    escola = models.CharField(max_length=170, null=True)
-    full_name = models.CharField(max_length=300)
-    email = models.EmailField(unique=True)
-    phone_number = models.CharField(max_length=30, null=True)
-    address = models.CharField(max_length=500, null=True)
-    cpf = models.CharField(max_length=14, unique=True, null=True)
-    is_active = models.BooleanField(default=True)
-    mom_name = models.CharField(max_length=300, null=True)
-    course = models.CharField(max_length=170, null=True)
-    ip = models.CharField(max_length=45, null=True)
+    # id = models.AutoField(primary_key=True)
+    # matricula = models.CharField(max_length=20, unique=True)
+    # escola = models.CharField(max_length=170, null=True)
+    # full_name = models.CharField(max_length=300)
+    # email = models.EmailField(unique=True)
+    # phone_number = models.CharField(max_length=30, null=True)
+    # address = models.CharField(max_length=500, null=True)
+    # cpf = models.CharField(max_length=14, unique=True, null=True)
+    # is_active = models.BooleanField(default=True)
+    # mom_name = models.CharField(max_length=300, null=True)
+    # course = models.CharField(max_length=170, null=True)
+    # ip = models.CharField(max_length=45, null=True)
 
+    posicao_ordem = models.IntegerField(null=True)
+    nome_completo = models.CharField(max_length=255, null=True)
+    escola = models.CharField(max_length=255, null=True)
+    modo_de_ensino = models.CharField(max_length=255, null=True)
+    serie = models.CharField(max_length=100, null=True)
+    periodo = models.CharField(max_length=50, null=True)
+    curso = models.CharField(max_length=255, null=True)
+    turma = models.CharField(max_length=255, null=True)
+    data_cadastro = models.DateTimeField(auto_now_add=True, null=True)
     def __str__(self):
-        return self.full_name
+        return f"{self.nome_completo} - {self.turma}"
 
 class Responsavel(models.Model):
     id = models.AutoField(primary_key=True)
