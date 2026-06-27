@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
-
+import logo from "../../assets/logo.png"
 export default function alunoPage(){
     // const authUrl = "https://animated-parakeet-97456gj46g96fp4gp-8000.app.github.dev/api/students/auth"
     // const auth_student = fetch(authUrl)
@@ -55,7 +55,10 @@ export default function alunoPage(){
     if(loading){
         return (
             <div className="d-flex justify-content-center align-items-center vh-100">
-                Verificando Credenciais...
+                <div className="text-center">
+                    <img src={logo.src} alt="Logo" className="" style={{ width: "200px", height: "auto" }} />
+                </div>
+                <p>Verificando Credenciais...</p>
             </div>
         )
     }

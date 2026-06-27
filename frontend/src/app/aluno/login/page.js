@@ -5,6 +5,7 @@ import logo from "../../../assets/logo.png"
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation";
 
+
 export default function AlunoLoginPage(){
     const [fullName, setFullName] = useState("")
     const [passReadOnly, setPassReadOnly] = useState(true)
@@ -60,11 +61,14 @@ export default function AlunoLoginPage(){
         }
     }
     async function auth_student_button(){
-        const url = `https://animated-parakeet-97456gj46g96fp4gp-8000.app.github.dev/api/students/login?fullname=${encodeURIComponent(fullName)}&password=${password}`
-        console.log(password, fullName)
-        const student_login = await fetch(url)
-        const data = await student_login.json()
-        console.log(data)
+        try{
+            const url = `https://animated-parakeet-97456gj46g96fp4gp-8000.app.github.dev/api/students/login?fullname=${encodeURIComponent(fullName)}&password=${password}`
+            const student_login = await fetch(url)
+            const data = await student_login.json()
+            console.log(data)
+        }catch(error){
+            console.log(error)
+        }
         
     }
     const authUrl = "https://animated-parakeet-97456gj46g96fp4gp-8000.app.github.dev/api/students/auth"
@@ -104,7 +108,10 @@ export default function AlunoLoginPage(){
     if(loadingAuth){
         return (
             <div className="d-flex justify-content-center align-items-center vh-100">
-                Verificando Credenciais...
+                <div className="text-center">
+                    <img src={logo.src} alt="Logo" className="" style={{ width: "200px", height: "auto" }} />
+                </div>
+                <p>Verificando Credenciais...</p>
             </div>
         )
     }
@@ -112,9 +119,10 @@ export default function AlunoLoginPage(){
     if(authenticated === true){
         router.push("/aluno")
     }
-    
+
+    //style={{ backgroundColor: "#8cddaf" }}
     return (
-        <div className="d-flex justify-content-center align-items-center vh-100" style={{ backgroundColor: "#8cddaf" }}>
+        <div className="d-flex justify-content-center align-items-center vh-100"> 
             <div className="card shadow" style={{ borderRadius: "10px", padding: "10px" }}>
                 <div className="card-body">
                     <div className="text-center">
