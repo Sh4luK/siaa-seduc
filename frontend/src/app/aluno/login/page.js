@@ -2,14 +2,18 @@
 
 import "bootstrap/dist/css/bootstrap.min.css"
 import logo from "../../../assets/logo.png"
-import { useState } from "react"
+import { useEffect, useState } from "react"
+import { useRouter } from "next/navigation";
 
 export default function AlunoLoginPage(){
     const [fullName, setFullName] = useState("")
     const [passReadOnly, setPassReadOnly] = useState(true)
     const [loading, setLoading] = useState(false)
     const [message, setMessage] = useState("")
-    var classOfMessage = ""
+    const [password, setPassword] = useState("")
+    const [authenticated, setAuthenticated] = useState(null)
+    const [loadingAuth, setLoadingAuth] = useState(true)
+    const router = useRouter()
     async function verify_full_name(){
         if(!fullName.trim()){
             setMessage("Por favor, digite seu nome completo.")
@@ -55,7 +59,60 @@ export default function AlunoLoginPage(){
             setLoading(false);
         }
     }
+    async function auth_student_button(){
+        const url = `https://animated-parakeet-97456gj46g96fp4gp-8000.app.github.dev/api/students/login?fullname=${encodeURIComponent(fullName)}&password=${password}`
+        console.log(password, fullName)
+        const student_login = await fetch(url)
+        const data = await student_login.json()
+        console.log(data)
+        
+    }
+    const authUrl = "https://animated-parakeet-97456gj46g96fp4gp-8000.app.github.dev/api/students/auth"
+    // const auth_student = fetch(authUrl)
+    // auth_student.then(async(res)=>{
+    //     const data = await res.json()
+    //     if(data.return === true){
+    //         window.location.href = "/aluno"
+    //     }
+    // }).catch((error)=> {
+    //     console.log(error)
+    // })
+    useEffect(()=>{
+        async function verifyAuthentication(){
+            try{
 
+                const url = "https://animated-parakeet-97456gj46g96fp4gp-8000.app.github.dev/api/students/auth"
+                const response = await fetch(url)
+                const data = response.json()
+    
+                if(data && data.return === true){
+                    setAuthenticated(true)
+                    router.push("/aluno")
+                }else{
+                    setAuthenticated(false)
+                }
+            }catch(error){
+                setAuthenticated(false)
+            } finally{
+                setLoadingAuth(false)
+            }
+        }
+
+        verifyAuthentication()
+    }, [router])
+
+    if(loadingAuth){
+        return (
+            <div className="d-flex justify-content-center align-items-center vh-100">
+                Verificando Credenciais...
+            </div>
+        )
+    }
+
+    if(authenticated === true){
+        router.push("/aluno")
+    }
+    
     return (
         <div className="d-flex justify-content-center align-items-center vh-100" style={{ backgroundColor: "#8cddaf" }}>
             <div className="card shadow" style={{ borderRadius: "10px", padding: "10px" }}>
@@ -93,15 +150,14 @@ export default function AlunoLoginPage(){
                                 placeholder={passReadOnly ? "Verifique o nome primeiro" : "Digite sua senha"}
                                 style={{ background: passReadOnly ? '#e9e9e9' : '#fff' }}
                                 className="form-control"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
                             />
                             
                         </div>
                         <div className="d-grid gap-2">
-                            <button type="submit" className="btn btn-success"><strong>Entrar</strong></button>
+                            <button onClick={auth_student_button} className="btn btn-success"><strong>Entrar</strong></button>
                         </div>
-                        <small>
-                            <a href="/aluno/cadastro">Não possui uma conta? Clique aqui.</a>
-                        </small>
                     </form>
                 </div>
                 <div className="card-footer text-muted text-center">
