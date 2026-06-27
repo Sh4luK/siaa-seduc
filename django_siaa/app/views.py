@@ -7,6 +7,7 @@ import os
 from dotenv import load_dotenv
 from pathlib import Path
 from .funcs import ip
+from .funcs.get_ip import get_ip
 # from django.contrib.auth.models import User
 # from django.contrib.auth import authenticate, login
 # from django.contrib.auth.hashers import check_password
@@ -124,3 +125,12 @@ def search_student(request):
         return JsonResponse({"erro": "Arquivo data.json não encontrado."})
     except json.JSONDecodeError:
         return JsonResponse({"erro": "Erro ao processar o arquivo JSON."})
+
+
+@csrf_exempt
+def login_student(request):
+    ip_student = get_ip(request)
+    fullName = request.GET.get("fullname").strip().lower()
+    password = request.GET.get("fullname").strip().lower()
+
+    
