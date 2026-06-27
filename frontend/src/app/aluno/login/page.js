@@ -9,7 +9,7 @@ export default function AlunoLoginPage(){
     const [passReadOnly, setPassReadOnly] = useState(true)
     const [loading, setLoading] = useState(false)
     const [message, setMessage] = useState("")
-
+    var classOfMessage = ""
     async function verify_full_name(){
         if(!fullName.trim()){
             setMessage("Por favor, digite seu nome completo.")
@@ -68,17 +68,20 @@ export default function AlunoLoginPage(){
                         <label className="form-label">
                             Nome Completo <strong className="text-danger">*</strong>
                         </label>
-                        <div className="mb-2 d-flex">
-                            <input
-                                type="text"
-                                className="form-control mx-1"
-                                name="full_name"
-                                value={fullName}
-                                onChange={(e) => setFullName(e.target.value)}
-                            />
-                            <button onClick={verify_full_name} className="btn btn-primary btn-sm" disabled={loading}>
-                                {loading ? 'Verificando...' : 'Verificar'}
-                            </button>
+                        <div className="mb-2">
+                            <div className="d-flex">
+                                <input
+                                    type="text"
+                                    className="form-control mx-1"
+                                    name="full_name"
+                                    value={fullName}
+                                    onChange={(e) => setFullName(e.target.value)}
+                                />
+                                <button onClick={verify_full_name} className="btn btn-primary btn-sm" disabled={loading}>
+                                    {loading ? 'Verificando...' : 'Verificar'}
+                                </button>
+                            </div>
+                            {message && <small className="text-muted">{message}</small>}
                         </div>
                         <div className="mb-2">
                             <label className="form-label">
@@ -91,7 +94,7 @@ export default function AlunoLoginPage(){
                                 style={{ background: passReadOnly ? '#e9e9e9' : '#fff' }}
                                 className="form-control"
                             />
-                            {message && <p>{message}</p>}
+                            
                         </div>
                         <div className="d-grid gap-2">
                             <button type="submit" className="btn btn-success"><strong>Entrar</strong></button>
