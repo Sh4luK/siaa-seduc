@@ -159,12 +159,21 @@ def login_student(request):
 def auth_student(request):
     ip_student = get_ip()
     student = Estudante.objects.filter(ip=ip_student).first()
-    student = model_to_dict(student)
-    if student is None:
+    try:
+        student = model_to_dict(student)
+        if student is None:
+            return JsonResponse({
+                "return": False
+            })
+        else:
+            return JsonResponse({
+                "student": student,
+                "return": True
+            })
+    except:
         return JsonResponse({
-            "return": False
+            "message": "Usuario nao encontrado.",
+            "return": None
         })
-    else:
-        return JsonResponse(student)
         
     
