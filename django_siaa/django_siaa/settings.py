@@ -120,7 +120,7 @@ USE_TZ = True
 
 STATIC_URL = "static/"
 
-APPEND_SLASH=False
+APPEND_SLASH = False
 
 CSRF_COOKIE_SECURE = True
 
@@ -130,7 +130,7 @@ CSRF_COOKIE_HTTPONLY = True
 
 # CORS_ALLOWED_ORIGINS = [
 #     "http://localhost:3000", # Porta padrão do Next.js
-#     "https://animated-parakeet-97456gj46g96fp4gp-3000.app.github.dev",
+#     "https://friendly-space-computing-machine-7v457jp474w72q46-3000.app.github.dev",
 # ]
 
 CORS_ALLOW_ALL_ORIGINS = True
