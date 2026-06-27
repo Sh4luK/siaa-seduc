@@ -15,6 +15,8 @@ export default function AlunoLoginPage(){
     const [authenticated, setAuthenticated] = useState(null)
     const [loadingAuth, setLoadingAuth] = useState(true)
     const router = useRouter()
+
+    
     async function verify_full_name(){
         if(!fullName.trim()){
             setMessage("Por favor, digite seu nome completo.")
@@ -25,7 +27,7 @@ export default function AlunoLoginPage(){
         setMessage("")
 
         try{
-            const response = await fetch(`https://animated-parakeet-97456gj46g96fp4gp-8000.app.github.dev/api/students/search?fullname=${encodeURIComponent(fullName)}`);
+            const response = await fetch(`https://friendly-space-computing-machine-7v457jp474w72q46-8000.app.github.dev/api/students/search?fullname=${encodeURIComponent(fullName)}`);
             const data = await response.json();
             const clearName = (text) => {
                 if (!text) return '';
@@ -41,11 +43,9 @@ export default function AlunoLoginPage(){
                 ? data.estudante[0].nome_completo.trim().toUpperCase().replace(/\s+/g, ' ')
                 : '';
             
-            console.log(studentNameOnDataBase)
 
 
             if (studentNameOnDataBase && studentNameOnDataBase === nameSearched) {
-                console.log("total encontrado => 1")
                 setPassReadOnly(false);
                 setMessage('Usuário encontrado! Agora insira sua senha.');
             } else {
@@ -62,16 +62,20 @@ export default function AlunoLoginPage(){
     }
     async function auth_student_button(){
         try{
-            const url = `https://animated-parakeet-97456gj46g96fp4gp-8000.app.github.dev/api/students/login?fullname=${encodeURIComponent(fullName)}&password=${password}`
+            const url = `https://friendly-space-computing-machine-7v457jp474w72q46-8000.app.github.dev/api/students/login?fullname=${encodeURIComponent(fullName)}&password=${password}`
             const student_login = await fetch(url)
             const data = await student_login.json()
-            console.log(data)
+            if(data.return === true){
+                router.push("/aluno")
+            }else{
+                window.alert("Senha incorreta.")
+            }
         }catch(error){
             console.log(error)
         }
         
     }
-    const authUrl = "https://animated-parakeet-97456gj46g96fp4gp-8000.app.github.dev/api/students/auth"
+    const authUrl = "https://friendly-space-computing-machine-7v457jp474w72q46-8000.app.github.dev/api/students/auth"
     // const auth_student = fetch(authUrl)
     // auth_student.then(async(res)=>{
     //     const data = await res.json()
@@ -85,11 +89,11 @@ export default function AlunoLoginPage(){
         async function verifyAuthentication(){
             try{
 
-                const url = "https://animated-parakeet-97456gj46g96fp4gp-8000.app.github.dev/api/students/auth"
+                const url = "https://friendly-space-computing-machine-7v457jp474w72q46-8000.app.github.dev/api/students/auth"
                 const response = await fetch(url)
-                const data = response.json()
+                const data = await response.json()
     
-                if(data && data.return === true){
+                if(data.return === true){
                     setAuthenticated(true)
                     router.push("/aluno")
                 }else{
@@ -129,7 +133,7 @@ export default function AlunoLoginPage(){
                         <img src={logo.src} alt="Logo" className="" style={{ width: "200px", height: "auto" }} />
                     </div>
                     <h2 className="card-title text-center">Login do Aluno</h2>
-                    <form className="form" method="POST">
+                    <div className="form">
                         <label className="form-label">
                             Nome Completo <strong className="text-danger">*</strong>
                         </label>
@@ -166,7 +170,7 @@ export default function AlunoLoginPage(){
                         <div className="d-grid gap-2">
                             <button onClick={auth_student_button} className="btn btn-success"><strong>Entrar</strong></button>
                         </div>
-                    </form>
+                    </div>
                 </div>
                 <div className="card-footer text-muted text-center">
                     <small>© 2026 SEDUC-PI. Todos os direitos reservados.</small>
