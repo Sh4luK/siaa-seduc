@@ -133,6 +133,7 @@ def search_student(request):
 @csrf_exempt
 def login_student(request):
     ip_student = get_ip()
+    print(ip_student)
     fullName = request.GET.get("fullname").strip().upper()
     password = request.GET.get("password").strip().lower()
     
@@ -158,6 +159,7 @@ def login_student(request):
 @csrf_exempt
 def auth_student(request):
     ip_student = get_ip()
+    print(ip_student)
     student = Estudante.objects.filter(ip=ip_student).first()
     try:
         student = model_to_dict(student)
