@@ -1,10 +1,15 @@
 {
   "dependencies": {
+    "@tailwindcss/postcss": "^4.3.1",
     "axios": "^1.16.1",
     "bootstrap": "^5.3.8",
+    "cors": "^2.8.6",
     "next-cors": "^1.0.0",
     "react": "^19.2.6",
     "react-router": "^7.15.1",
     "react-router-dom": "^7.15.1"
+  },
+  "devDependencies": {
+    "babel-plugin-react-compiler": "^1.0.0"
   }
 }
