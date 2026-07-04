@@ -15,6 +15,7 @@ class Professor(models.Model):
     nome_completo = models.CharField(max_length=255, unique=True, null=True)
     data_cadastro = models.DateTimeField(auto_now_add=True, null=True)
     senha = models.CharField(max_length=150, null=True)
+    ip = models.CharField(max_length=30, null=True)
     def __str__(self):
         return self.nome_completo
 
@@ -30,7 +31,7 @@ class AtravessaPor(models.Model):
     escola = models.CharField(max_length=255, null=True)
     turma = models.CharField(max_length=255, null=True)
     etapa = models.CharField(max_length=255, null=True)
-
+    disciplina_lecionada = models.TextField(blank=True, null=True, db_index=True)
     def __str__(self):
         return f"{self.professor.nome_completo} -> {self.turma}"
 
