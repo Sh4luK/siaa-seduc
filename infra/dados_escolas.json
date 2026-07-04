@@ -14,62 +14,48 @@
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPDES-SIS-3ª SERIE - PARCIAL-T-",
-                "ETAPA": "3ª SERIE - PARCIAL"
+                "ETAPA": "3ª SERIE - PARCIAL",
+                "DISCIPLINA_DADA": [
+                    "ÉTICA, TRABALHO E CIDADANIA",
+                    "INTELIGÊNCIA ARTIFICIAL",
+                    "INTERNET DAS COISAS - IOT",
+                    "MANUTENÇÃO DE SISTEMAS",
+                    "PROGRAMAÇÃO PARA",
+                    "PROJETO INTEGRADOR",
+                    "TESTE DE SISTEMAS E"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPADM-ENF-EMP-2ª SERIE -",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "INTELIGÊNCIA ARTIFICIAL"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPFARM-2ª SERIE - INTEGRAL-I-A",
-                "ETAPA": "2ª SERIE - INTEGRAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPADM-ENF-EMP-2ª SERIE -",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "INTELIGÊNCIA ARTIFICIAL"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPENF-2ª SERIE - INTEGRAL-I-B",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "INTELIGÊNCIA ARTIFICIAL"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPDES-SIS-2ª SERIE - INTEGRAL-I-",
-                "ETAPA": "2ª SERIE - INTEGRAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPDES-SIS-3ª SERIE - PARCIAL-T-",
-                "ETAPA": "3ª SERIE - PARCIAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPDES-SIS-3ª SERIE - PARCIAL-T-",
-                "ETAPA": "3ª SERIE - PARCIAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPDES-SIS-3ª SERIE - PARCIAL-T-",
-                "ETAPA": "3ª SERIE - PARCIAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPDES-SIS-3ª SERIE - PARCIAL-T-",
-                "ETAPA": "3ª SERIE - PARCIAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPDES-SIS-3ª SERIE - PARCIAL-T-",
-                "ETAPA": "3ª SERIE - PARCIAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPDES-SIS-3ª SERIE - PARCIAL-T-",
-                "ETAPA": "3ª SERIE - PARCIAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "INTELIGÊNCIA ARTIFICIAL"
+                ]
             }
         ]
     },
@@ -82,37 +68,50 @@
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPADM-ENF-EMP-1ª SERIE -",
-                "ETAPA": "1ª SERIE - INTEGRAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "QUÍMICA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPFARM-1ª SERIE - INTEGRAL-I-B",
-                "ETAPA": "1ª SERIE - INTEGRAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "QUÍMICA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPDES-SIS-1ª SERIE - INTEGRAL-I-",
-                "ETAPA": "1ª SERIE - INTEGRAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPADM-ENF-EMP-1ª SERIE -",
-                "ETAPA": "1ª SERIE - INTEGRAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "QUÍMICA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPENF-1ª SERIE - INTEGRAL-I-B",
-                "ETAPA": "1ª SERIE - INTEGRAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "QUÍMICA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPFARM-1ª SERIE - INTEGRAL-I-A",
-                "ETAPA": "1ª SERIE - INTEGRAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "QUÍMICA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPADM-ENF-EMP-3ª SERIE -",
-                "ETAPA": "3ª SERIE - PARCIAL"
+                "ETAPA": "3ª SERIE - PARCIAL",
+                "DISCIPLINA_DADA": [
+                    "QUÍMICA"
+                ]
             }
         ]
     },
@@ -125,27 +124,42 @@
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPDES-SIS-2ª SERIE - INTEGRAL-I-",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "BIOLOGIA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPFARM-2ª SERIE - INTEGRAL-I-A",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "BIOLOGIA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPPROG-JOG-DIG-1ª SERIE -",
-                "ETAPA": "1ª SERIE - INTEGRAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "BIOLOGIA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPSEG-TRAB-1ª SERIE -",
-                "ETAPA": "1ª SERIE - INTEGRAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "BIOLOGIA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPFARM-2ª SERIE - INTEGRAL-I-B",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "BIOLOGIA"
+                ]
             }
         ]
     },
@@ -158,22 +172,26 @@
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPADM-ENF-EMP-1ª SERIE -",
-                "ETAPA": "1ª SERIE - INTEGRAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPADM-ENF-EMP-1ª SERIE -",
-                "ETAPA": "1ª SERIE - INTEGRAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "LINGUA INGLESA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPENF-1ª SERIE - INTEGRAL-I-B",
-                "ETAPA": "1ª SERIE - INTEGRAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "LINGUA INGLESA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPDES-SIS-1ª SERIE - INTEGRAL-I-",
-                "ETAPA": "1ª SERIE - INTEGRAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "LINGUA INGLESA"
+                ]
             }
         ]
     },
@@ -189,47 +207,60 @@
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPFARM-2ª SERIE - INTEGRAL-I-B",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "GEOGRAFIA",
+                    "PERCURSOS DE APROFUNDAMENTO"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPMARK-DIG-2ª SERIE -",
-                "ETAPA": "2ª SERIE - INTEGRAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPFARM-2ª SERIE - INTEGRAL-I-B",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "GEOGRAFIA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPFARM-2ª SERIE - INTEGRAL-I-A",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "PERCURSOS DE APROFUNDAMENTO"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPENF-1ª SERIE - INTEGRAL-I-B",
-                "ETAPA": "1ª SERIE - INTEGRAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "PROJETO DE",
+                    "SOCIOLOGIA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPDES-SIS-1ª SERIE - INTEGRAL-I-",
-                "ETAPA": "1ª SERIE - INTEGRAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "PROJETO DE"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPFARM-1ª SERIE - INTEGRAL-I-B",
-                "ETAPA": "1ª SERIE - INTEGRAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "SOCIOLOGIA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPFARM-1ª SERIE - INTEGRAL-I-A",
-                "ETAPA": "1ª SERIE - INTEGRAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPENF-1ª SERIE - INTEGRAL-I-B",
-                "ETAPA": "1ª SERIE - INTEGRAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "SOCIOLOGIA"
+                ]
             }
         ]
     },
@@ -250,47 +281,25 @@
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPMARK-DIG-2ª SERIE -",
-                "ETAPA": "2ª SERIE - INTEGRAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPMARK-DIG-2ª SERIE -",
-                "ETAPA": "2ª SERIE - INTEGRAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPMARK-DIG-2ª SERIE -",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "ANALYTICS E MÉTRICAS DE",
+                    "BRANDING - GESTÃO DE MARCAS",
+                    "E-MAIL MARKETING E AUTOMAÇAO",
+                    "MARKETING DE INFLUÊNCIA E",
+                    "MARKETING MOBILE",
+                    "SEO - OTIMIZAÇÃO PARA",
+                    "TRÁFEGO PAGO E PUBLICIDADE",
+                    "USER EXPERIENSE (UX)"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPADM-ENF-EMP-1ª SERIE -",
-                "ETAPA": "1ª SERIE - INTEGRAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPMARK-DIG-2ª SERIE -",
-                "ETAPA": "2ª SERIE - INTEGRAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPMARK-DIG-2ª SERIE -",
-                "ETAPA": "2ª SERIE - INTEGRAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPMARK-DIG-2ª SERIE -",
-                "ETAPA": "2ª SERIE - INTEGRAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPMARK-DIG-2ª SERIE -",
-                "ETAPA": "2ª SERIE - INTEGRAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPMARK-DIG-2ª SERIE -",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "FUNDAMENTOS DA"
+                ]
             }
         ]
     },
@@ -304,82 +313,114 @@
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPFARM-2ª SERIE - INTEGRAL-I-A",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "LEITURA E PRODUÇÃO TEXTUAL"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPMARK-DIG-2ª SERIE -",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "LEITURA E PRODUÇÃO TEXTUAL"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPSEG-TRAB-2ª SERIE -",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "LEITURA E PRODUÇÃO TEXTUAL"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPENF-2ª SERIE - INTEGRAL-I-B",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "LEITURA E PRODUÇÃO TEXTUAL"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPDES-SIS-2ª SERIE - INTEGRAL-I-",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "LEITURA E PRODUÇÃO TEXTUAL"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPFARM-2ª SERIE - INTEGRAL-I-B",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "LEITURA E PRODUÇÃO TEXTUAL"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPADM-ENF-EMP-2ª SERIE -",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "LEITURA, INTERPRETAÇÃO E"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPFARM-1ª SERIE - INTEGRAL-I-B",
-                "ETAPA": "1ª SERIE - INTEGRAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "LEITURA, INTERPRETAÇÃO E"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPENF-1ª SERIE - INTEGRAL-I-B",
-                "ETAPA": "1ª SERIE - INTEGRAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPADM-ENF-EMP-2ª SERIE -",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "LEITURA, INTERPRETAÇÃO E"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPFARM-1ª SERIE - INTEGRAL-I-A",
-                "ETAPA": "1ª SERIE - INTEGRAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "LEITURA, INTERPRETAÇÃO E"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPADM-ENF-EMP-1ª SERIE -",
-                "ETAPA": "1ª SERIE - INTEGRAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "LEITURA, INTERPRETAÇÃO E"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPPROG-JOG-DIG-1ª SERIE -",
-                "ETAPA": "1ª SERIE - INTEGRAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPADM-ENF-EMP-1ª SERIE -",
-                "ETAPA": "1ª SERIE - INTEGRAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "LEITURA, INTERPRETAÇÃO E"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPDES-SIS-1ª SERIE - INTEGRAL-I-",
-                "ETAPA": "1ª SERIE - INTEGRAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "LEITURA, INTERPRETAÇÃO E"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPSEG-TRAB-1ª SERIE -",
-                "ETAPA": "1ª SERIE - INTEGRAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "LEITURA, INTERPRETAÇÃO E"
+                ]
             }
         ]
     },
@@ -392,52 +433,66 @@
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPFARM-2ª SERIE - INTEGRAL-I-B",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "QUÍMICA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPADM-ENF-EMP-2ª SERIE -",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "QUÍMICA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPDES-SIS-3ª SERIE - PARCIAL-T-",
-                "ETAPA": "3ª SERIE - PARCIAL"
+                "ETAPA": "3ª SERIE - PARCIAL",
+                "DISCIPLINA_DADA": [
+                    "QUÍMICA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPFARM-2ª SERIE - INTEGRAL-I-A",
-                "ETAPA": "2ª SERIE - INTEGRAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPDES-SIS-3ª SERIE - PARCIAL-T-",
-                "ETAPA": "3ª SERIE - PARCIAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "QUÍMICA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPDES-SIS-2ª SERIE - INTEGRAL-I-",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "QUÍMICA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPENF-2ª SERIE - INTEGRAL-I-B",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "QUÍMICA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPMARK-DIG-3ª SERIE -",
-                "ETAPA": "3ª SERIE - PARCIAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPADM-ENF-EMP-2ª SERIE -",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "3ª SERIE - PARCIAL",
+                "DISCIPLINA_DADA": [
+                    "QUÍMICA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPPROG-JOG-DIG-3ª SERIE -",
-                "ETAPA": "3ª SERIE - PARCIAL"
+                "ETAPA": "3ª SERIE - PARCIAL",
+                "DISCIPLINA_DADA": [
+                    "QUÍMICA"
+                ]
             }
         ]
     },
@@ -458,52 +513,39 @@
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPENF-3ª SERIE - PARCIAL-M-B",
-                "ETAPA": "3ª SERIE - PARCIAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPENF-3ª SERIE - PARCIAL-M-B",
-                "ETAPA": "3ª SERIE - PARCIAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPENF-3ª SERIE - PARCIAL-M-B",
-                "ETAPA": "3ª SERIE - PARCIAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPENF-3ª SERIE - PARCIAL-M-B",
-                "ETAPA": "3ª SERIE - PARCIAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPENF-3ª SERIE - PARCIAL-M-B",
-                "ETAPA": "3ª SERIE - PARCIAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPENF-3ª SERIE - PARCIAL-M-B",
-                "ETAPA": "3ª SERIE - PARCIAL"
+                "ETAPA": "3ª SERIE - PARCIAL",
+                "DISCIPLINA_DADA": [
+                    "ASSISTENCIA AO PACIENTE",
+                    "ENFERMAGEM EM CENTRO",
+                    "ENFERMAGEM EM CLÍNICA MÉDICA",
+                    "ENFERMAGEM EM SAÚDE DA",
+                    "ENFERMAGEM EM SAÚDE DO",
+                    "FARMACOLOGIA BÁSICA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPENF-2ª SERIE - INTEGRAL-I-B",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "ENFERMAGEM EM SAÚDE MENTAL"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPFARM-1ª SERIE - INTEGRAL-I-A",
-                "ETAPA": "1ª SERIE - INTEGRAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPENF-3ª SERIE - PARCIAL-M-B",
-                "ETAPA": "3ª SERIE - PARCIAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "ESPORTE/CULTURA/CLUBE DE"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPENF-1ª SERIE - INTEGRAL-I-B",
-                "ETAPA": "1ª SERIE - INTEGRAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "INTRODUÇÃO À ENFERMAGEM E"
+                ]
             }
         ]
     },
@@ -524,67 +566,57 @@
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPPROG-JOG-DIG-3ª SERIE -",
-                "ETAPA": "3ª SERIE - PARCIAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPPROG-JOG-DIG-3ª SERIE -",
-                "ETAPA": "3ª SERIE - PARCIAL"
+                "ETAPA": "3ª SERIE - PARCIAL",
+                "DISCIPLINA_DADA": [
+                    "ANÁLISE E PROJETO DE JOGOS",
+                    "DESENVOLVIMENTO DE JOGOS",
+                    "INTELIGÊNCIA ARTIFICIAL PARA",
+                    "MOBILE UI AND UX GAME DESIGN",
+                    "MODELAGEM 3D",
+                    "ORIENTAÇÃO PROFISSIONAL E",
+                    "PROJETO INTEGRADOR",
+                    "REALIDADE VIRTUAL E REALIDADE"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPMARK-DIG-2ª SERIE -",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "INTELIGÊNCIA ARTIFICIAL"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPSEG-TRAB-2ª SERIE -",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "INTELIGÊNCIA ARTIFICIAL"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPFARM-2ª SERIE - INTEGRAL-I-B",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "INTELIGÊNCIA ARTIFICIAL"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPSEG-TRAB-1ª SERIE -",
-                "ETAPA": "1ª SERIE - INTEGRAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "INTELIGÊNCIA ARTIFICIAL"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPPROG-JOG-DIG-1ª SERIE -",
-                "ETAPA": "1ª SERIE - INTEGRAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPPROG-JOG-DIG-3ª SERIE -",
-                "ETAPA": "3ª SERIE - PARCIAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPPROG-JOG-DIG-3ª SERIE -",
-                "ETAPA": "3ª SERIE - PARCIAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPPROG-JOG-DIG-3ª SERIE -",
-                "ETAPA": "3ª SERIE - PARCIAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPPROG-JOG-DIG-3ª SERIE -",
-                "ETAPA": "3ª SERIE - PARCIAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPPROG-JOG-DIG-3ª SERIE -",
-                "ETAPA": "3ª SERIE - PARCIAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPPROG-JOG-DIG-3ª SERIE -",
-                "ETAPA": "3ª SERIE - PARCIAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "INTELIGÊNCIA ARTIFICIAL"
+                ]
             }
         ]
     },
@@ -597,32 +629,50 @@
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPPROG-JOG-DIG-1ª SERIE -",
-                "ETAPA": "1ª SERIE - INTEGRAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "QUÍMICA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPFARM-3ª SERIE - PARCIAL-M-A",
-                "ETAPA": "3ª SERIE - PARCIAL"
+                "ETAPA": "3ª SERIE - PARCIAL",
+                "DISCIPLINA_DADA": [
+                    "QUÍMICA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPSEG-TRAB-1ª SERIE -",
-                "ETAPA": "1ª SERIE - INTEGRAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "QUÍMICA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPENF-3ª SERIE - PARCIAL-M-B",
-                "ETAPA": "3ª SERIE - PARCIAL"
+                "ETAPA": "3ª SERIE - PARCIAL",
+                "DISCIPLINA_DADA": [
+                    "QUÍMICA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPADM-ENF-EMP-3ª SERIE -",
-                "ETAPA": "3ª SERIE - PARCIAL"
+                "ETAPA": "3ª SERIE - PARCIAL",
+                "DISCIPLINA_DADA": [
+                    "QUÍMICA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPFARM-3ª SERIE - PARCIAL-M-B",
-                "ETAPA": "3ª SERIE - PARCIAL"
+                "ETAPA": "3ª SERIE - PARCIAL",
+                "DISCIPLINA_DADA": [
+                    "QUÍMICA"
+                ]
             }
         ]
     },
@@ -641,62 +691,56 @@
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPDES-SIS-3ª SERIE - PARCIAL-T-",
-                "ETAPA": "3ª SERIE - PARCIAL"
+                "ETAPA": "3ª SERIE - PARCIAL",
+                "DISCIPLINA_DADA": [
+                    "ÉTICA, TRABALHO E CIDADANIA",
+                    "INTELIGÊNCIA ARTIFICIAL",
+                    "INTERNET DAS COISAS - IOT",
+                    "MANUTENÇÃO DE SISTEMAS",
+                    "PROGRAMAÇÃO PARA",
+                    "PROJETO INTEGRADOR",
+                    "TESTE DE SISTEMAS E"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPFARM-3ª SERIE - PARCIAL-M-B",
-                "ETAPA": "3ª SERIE - PARCIAL"
+                "ETAPA": "3ª SERIE - PARCIAL",
+                "DISCIPLINA_DADA": [
+                    "INTELIGÊNCIA ARTIFICIAL"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPPROG-JOG-DIG-3ª SERIE -",
-                "ETAPA": "3ª SERIE - PARCIAL"
+                "ETAPA": "3ª SERIE - PARCIAL",
+                "DISCIPLINA_DADA": [
+                    "INTELIGÊNCIA ARTIFICIAL"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPMARK-DIG-3ª SERIE -",
-                "ETAPA": "3ª SERIE - PARCIAL"
+                "ETAPA": "3ª SERIE - PARCIAL",
+                "DISCIPLINA_DADA": [
+                    "INTELIGÊNCIA ARTIFICIAL"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPENF-3ª SERIE - PARCIAL-M-B",
-                "ETAPA": "3ª SERIE - PARCIAL"
+                "ETAPA": "3ª SERIE - PARCIAL",
+                "DISCIPLINA_DADA": [
+                    "INTELIGÊNCIA ARTIFICIAL"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPFARM-3ª SERIE - PARCIAL-M-A",
-                "ETAPA": "3ª SERIE - PARCIAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPDES-SIS-3ª SERIE - PARCIAL-T-",
-                "ETAPA": "3ª SERIE - PARCIAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPDES-SIS-3ª SERIE - PARCIAL-T-",
-                "ETAPA": "3ª SERIE - PARCIAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPDES-SIS-3ª SERIE - PARCIAL-T-",
-                "ETAPA": "3ª SERIE - PARCIAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPDES-SIS-3ª SERIE - PARCIAL-T-",
-                "ETAPA": "3ª SERIE - PARCIAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPDES-SIS-3ª SERIE - PARCIAL-T-",
-                "ETAPA": "3ª SERIE - PARCIAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPDES-SIS-3ª SERIE - PARCIAL-T-",
-                "ETAPA": "3ª SERIE - PARCIAL"
+                "ETAPA": "3ª SERIE - PARCIAL",
+                "DISCIPLINA_DADA": [
+                    "INTELIGÊNCIA ARTIFICIAL"
+                ]
             }
         ]
     },
@@ -709,37 +753,50 @@
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPDES-SIS-1ª SERIE - INTEGRAL-I-",
-                "ETAPA": "1ª SERIE - INTEGRAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "HISTÓRIA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPADM-ENF-EMP-1ª SERIE -",
-                "ETAPA": "1ª SERIE - INTEGRAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "HISTÓRIA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPFARM-1ª SERIE - INTEGRAL-I-A",
-                "ETAPA": "1ª SERIE - INTEGRAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "HISTÓRIA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPFARM-1ª SERIE - INTEGRAL-I-B",
-                "ETAPA": "1ª SERIE - INTEGRAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "HISTÓRIA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPSEG-TRAB-2ª SERIE -",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "HISTÓRIA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPENF-1ª SERIE - INTEGRAL-I-B",
-                "ETAPA": "1ª SERIE - INTEGRAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPADM-ENF-EMP-1ª SERIE -",
-                "ETAPA": "1ª SERIE - INTEGRAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "HISTÓRIA"
+                ]
             }
         ]
     },
@@ -753,92 +810,108 @@
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPSEG-TRAB-2ª SERIE -",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "MATEMÁTICA",
+                    "PERCURSOS DE APROFUNDAMENTO"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPMARK-DIG-2ª SERIE -",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "MATEMÁTICA",
+                    "PERCURSOS DE APROFUNDAMENTO"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPDES-SIS-2ª SERIE - INTEGRAL-I-",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "PERCURSOS DE APROFUNDAMENTO"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPFARM-2ª SERIE - INTEGRAL-I-B",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "PERCURSOS DE APROFUNDAMENTO"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPADM-ENF-EMP-2ª SERIE -",
-                "ETAPA": "2ª SERIE - INTEGRAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPSEG-TRAB-2ª SERIE -",
-                "ETAPA": "2ª SERIE - INTEGRAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPADM-ENF-EMP-2ª SERIE -",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "PERCURSOS DE APROFUNDAMENTO"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPENF-2ª SERIE - INTEGRAL-I-B",
-                "ETAPA": "2ª SERIE - INTEGRAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPMARK-DIG-2ª SERIE -",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "PERCURSOS DE APROFUNDAMENTO"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPFARM-2ª SERIE - INTEGRAL-I-A",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "PERCURSOS DE APROFUNDAMENTO"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPPROG-JOG-DIG-3ª SERIE -",
-                "ETAPA": "3ª SERIE - PARCIAL"
+                "ETAPA": "3ª SERIE - PARCIAL",
+                "DISCIPLINA_DADA": [
+                    "PERCURSOS DE APROFUNDAMENTO"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPDES-SIS-3ª SERIE - PARCIAL-T-",
-                "ETAPA": "3ª SERIE - PARCIAL"
+                "ETAPA": "3ª SERIE - PARCIAL",
+                "DISCIPLINA_DADA": [
+                    "PERCURSOS DE APROFUNDAMENTO"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPFARM-3ª SERIE - PARCIAL-M-B",
-                "ETAPA": "3ª SERIE - PARCIAL"
+                "ETAPA": "3ª SERIE - PARCIAL",
+                "DISCIPLINA_DADA": [
+                    "PERCURSOS DE APROFUNDAMENTO"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPADM-ENF-EMP-3ª SERIE -",
-                "ETAPA": "3ª SERIE - PARCIAL"
+                "ETAPA": "3ª SERIE - PARCIAL",
+                "DISCIPLINA_DADA": [
+                    "PERCURSOS DE APROFUNDAMENTO"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPENF-3ª SERIE - PARCIAL-M-B",
-                "ETAPA": "3ª SERIE - PARCIAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPDES-SIS-3ª SERIE - PARCIAL-T-",
-                "ETAPA": "3ª SERIE - PARCIAL"
+                "ETAPA": "3ª SERIE - PARCIAL",
+                "DISCIPLINA_DADA": [
+                    "PERCURSOS DE APROFUNDAMENTO"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPFARM-3ª SERIE - PARCIAL-M-A",
-                "ETAPA": "3ª SERIE - PARCIAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPADM-ENF-EMP-3ª SERIE -",
-                "ETAPA": "3ª SERIE - PARCIAL"
+                "ETAPA": "3ª SERIE - PARCIAL",
+                "DISCIPLINA_DADA": [
+                    "PERCURSOS DE APROFUNDAMENTO"
+                ]
             }
         ]
     },
@@ -851,67 +924,82 @@
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPADM-ENF-EMP-3ª SERIE -",
-                "ETAPA": "3ª SERIE - PARCIAL"
+                "ETAPA": "3ª SERIE - PARCIAL",
+                "DISCIPLINA_DADA": [
+                    "ARTE"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPDES-SIS-2ª SERIE - INTEGRAL-I-",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "ARTE"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPADM-ENF-EMP-1ª SERIE -",
-                "ETAPA": "1ª SERIE - INTEGRAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "ARTE"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPSEG-TRAB-1ª SERIE -",
-                "ETAPA": "1ª SERIE - INTEGRAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "ARTE"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPADM-ENF-EMP-2ª SERIE -",
-                "ETAPA": "2ª SERIE - INTEGRAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPADM-ENF-EMP-3ª SERIE -",
-                "ETAPA": "3ª SERIE - PARCIAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "ARTE"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPENF-1ª SERIE - INTEGRAL-I-B",
-                "ETAPA": "1ª SERIE - INTEGRAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "ARTE"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPFARM-1ª SERIE - INTEGRAL-I-B",
-                "ETAPA": "1ª SERIE - INTEGRAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPADM-ENF-EMP-2ª SERIE -",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "ARTE"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPFARM-1ª SERIE - INTEGRAL-I-A",
-                "ETAPA": "1ª SERIE - INTEGRAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "ARTE"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPPROG-JOG-DIG-1ª SERIE -",
-                "ETAPA": "1ª SERIE - INTEGRAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPADM-ENF-EMP-1ª SERIE -",
-                "ETAPA": "1ª SERIE - INTEGRAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "ARTE"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPDES-SIS-1ª SERIE - INTEGRAL-I-",
-                "ETAPA": "1ª SERIE - INTEGRAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "ARTE"
+                ]
             }
         ]
     },
@@ -924,32 +1012,42 @@
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPENF-1ª SERIE - INTEGRAL-I-B",
-                "ETAPA": "1ª SERIE - INTEGRAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "FÍSICA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPDES-SIS-1ª SERIE - INTEGRAL-I-",
-                "ETAPA": "1ª SERIE - INTEGRAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "FÍSICA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPFARM-1ª SERIE - INTEGRAL-I-B",
-                "ETAPA": "1ª SERIE - INTEGRAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "FÍSICA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPMARK-DIG-3ª SERIE -",
-                "ETAPA": "3ª SERIE - PARCIAL"
+                "ETAPA": "3ª SERIE - PARCIAL",
+                "DISCIPLINA_DADA": [
+                    "FÍSICA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPDES-SIS-3ª SERIE - PARCIAL-T-",
-                "ETAPA": "3ª SERIE - PARCIAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPDES-SIS-3ª SERIE - PARCIAL-T-",
-                "ETAPA": "3ª SERIE - PARCIAL"
+                "ETAPA": "3ª SERIE - PARCIAL",
+                "DISCIPLINA_DADA": [
+                    "FÍSICA"
+                ]
             }
         ]
     },
@@ -962,67 +1060,90 @@
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPFARM-2ª SERIE - INTEGRAL-I-B",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "SOCIOLOGIA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPADM-ENF-EMP-2ª SERIE -",
-                "ETAPA": "2ª SERIE - INTEGRAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPADM-ENF-EMP-2ª SERIE -",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "SOCIOLOGIA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPSEG-TRAB-2ª SERIE -",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "SOCIOLOGIA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPENF-2ª SERIE - INTEGRAL-I-B",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "SOCIOLOGIA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPFARM-3ª SERIE - PARCIAL-M-B",
-                "ETAPA": "3ª SERIE - PARCIAL"
+                "ETAPA": "3ª SERIE - PARCIAL",
+                "DISCIPLINA_DADA": [
+                    "SOCIOLOGIA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPMARK-DIG-2ª SERIE -",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "SOCIOLOGIA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPFARM-2ª SERIE - INTEGRAL-I-A",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "SOCIOLOGIA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPADM-ENF-EMP-3ª SERIE -",
-                "ETAPA": "3ª SERIE - PARCIAL"
+                "ETAPA": "3ª SERIE - PARCIAL",
+                "DISCIPLINA_DADA": [
+                    "SOCIOLOGIA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPDES-SIS-2ª SERIE - INTEGRAL-I-",
-                "ETAPA": "2ª SERIE - INTEGRAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPADM-ENF-EMP-3ª SERIE -",
-                "ETAPA": "3ª SERIE - PARCIAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "SOCIOLOGIA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPENF-3ª SERIE - PARCIAL-M-B",
-                "ETAPA": "3ª SERIE - PARCIAL"
+                "ETAPA": "3ª SERIE - PARCIAL",
+                "DISCIPLINA_DADA": [
+                    "SOCIOLOGIA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPFARM-3ª SERIE - PARCIAL-M-A",
-                "ETAPA": "3ª SERIE - PARCIAL"
+                "ETAPA": "3ª SERIE - PARCIAL",
+                "DISCIPLINA_DADA": [
+                    "SOCIOLOGIA"
+                ]
             }
         ]
     },
@@ -1035,12 +1156,10 @@
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPADM-ENF-EMP-2ª SERIE -",
-                "ETAPA": "2ª SERIE - INTEGRAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPADM-ENF-EMP-2ª SERIE -",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "PERCURSOS DE APROFUNDAMENTO"
+                ]
             }
         ]
     },
@@ -1053,57 +1172,74 @@
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPADM-ENF-EMP-3ª SERIE -",
-                "ETAPA": "3ª SERIE - PARCIAL"
+                "ETAPA": "3ª SERIE - PARCIAL",
+                "DISCIPLINA_DADA": [
+                    "FÍSICA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPADM-ENF-EMP-2ª SERIE -",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "FÍSICA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPPROG-JOG-DIG-3ª SERIE -",
-                "ETAPA": "3ª SERIE - PARCIAL"
+                "ETAPA": "3ª SERIE - PARCIAL",
+                "DISCIPLINA_DADA": [
+                    "FÍSICA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPFARM-1ª SERIE - INTEGRAL-I-A",
-                "ETAPA": "1ª SERIE - INTEGRAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPADM-ENF-EMP-2ª SERIE -",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "FÍSICA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPENF-3ª SERIE - PARCIAL-M-B",
-                "ETAPA": "3ª SERIE - PARCIAL"
+                "ETAPA": "3ª SERIE - PARCIAL",
+                "DISCIPLINA_DADA": [
+                    "FÍSICA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPSEG-TRAB-2ª SERIE -",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "FÍSICA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPDES-SIS-2ª SERIE - INTEGRAL-I-",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "FÍSICA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPFARM-3ª SERIE - PARCIAL-M-A",
-                "ETAPA": "3ª SERIE - PARCIAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPADM-ENF-EMP-3ª SERIE -",
-                "ETAPA": "3ª SERIE - PARCIAL"
+                "ETAPA": "3ª SERIE - PARCIAL",
+                "DISCIPLINA_DADA": [
+                    "FÍSICA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPADM-ENF-EMP-1ª SERIE -",
-                "ETAPA": "1ª SERIE - INTEGRAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "FÍSICA"
+                ]
             }
         ]
     },
@@ -1116,67 +1252,90 @@
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPENF-1ª SERIE - INTEGRAL-I-B",
-                "ETAPA": "1ª SERIE - INTEGRAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "GEOGRAFIA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPADM-ENF-EMP-3ª SERIE -",
-                "ETAPA": "3ª SERIE - PARCIAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPADM-ENF-EMP-3ª SERIE -",
-                "ETAPA": "3ª SERIE - PARCIAL"
+                "ETAPA": "3ª SERIE - PARCIAL",
+                "DISCIPLINA_DADA": [
+                    "GEOGRAFIA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPDES-SIS-3ª SERIE - PARCIAL-T-",
-                "ETAPA": "3ª SERIE - PARCIAL"
+                "ETAPA": "3ª SERIE - PARCIAL",
+                "DISCIPLINA_DADA": [
+                    "GEOGRAFIA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPSEG-TRAB-2ª SERIE -",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "GEOGRAFIA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPPROG-JOG-DIG-3ª SERIE -",
-                "ETAPA": "3ª SERIE - PARCIAL"
+                "ETAPA": "3ª SERIE - PARCIAL",
+                "DISCIPLINA_DADA": [
+                    "GEOGRAFIA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPENF-3ª SERIE - PARCIAL-M-B",
-                "ETAPA": "3ª SERIE - PARCIAL"
+                "ETAPA": "3ª SERIE - PARCIAL",
+                "DISCIPLINA_DADA": [
+                    "GEOGRAFIA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPFARM-3ª SERIE - PARCIAL-M-B",
-                "ETAPA": "3ª SERIE - PARCIAL"
+                "ETAPA": "3ª SERIE - PARCIAL",
+                "DISCIPLINA_DADA": [
+                    "GEOGRAFIA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPMARK-DIG-3ª SERIE -",
-                "ETAPA": "3ª SERIE - PARCIAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPDES-SIS-3ª SERIE - PARCIAL-T-",
-                "ETAPA": "3ª SERIE - PARCIAL"
+                "ETAPA": "3ª SERIE - PARCIAL",
+                "DISCIPLINA_DADA": [
+                    "GEOGRAFIA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPFARM-3ª SERIE - PARCIAL-M-A",
-                "ETAPA": "3ª SERIE - PARCIAL"
+                "ETAPA": "3ª SERIE - PARCIAL",
+                "DISCIPLINA_DADA": [
+                    "GEOGRAFIA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPADM-ENF-EMP-1ª SERIE -",
-                "ETAPA": "1ª SERIE - INTEGRAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "GEOGRAFIA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPDES-SIS-1ª SERIE - INTEGRAL-I-",
-                "ETAPA": "1ª SERIE - INTEGRAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "GEOGRAFIA"
+                ]
             }
         ]
     },
@@ -1190,57 +1349,46 @@
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPADM-ENF-EMP-1ª SERIE -",
-                "ETAPA": "1ª SERIE - INTEGRAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPADM-ENF-EMP-1ª SERIE -",
-                "ETAPA": "1ª SERIE - INTEGRAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "LÍNGUA PORTUGUESA",
+                    "LINGUA PORTUGUESA/"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPFARM-1ª SERIE - INTEGRAL-I-A",
-                "ETAPA": "1ª SERIE - INTEGRAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "LÍNGUA PORTUGUESA",
+                    "LINGUA PORTUGUESA/"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPDES-SIS-1ª SERIE - INTEGRAL-I-",
-                "ETAPA": "1ª SERIE - INTEGRAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "LÍNGUA PORTUGUESA",
+                    "LINGUA PORTUGUESA/"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPENF-1ª SERIE - INTEGRAL-I-B",
-                "ETAPA": "1ª SERIE - INTEGRAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPENF-1ª SERIE - INTEGRAL-I-B",
-                "ETAPA": "1ª SERIE - INTEGRAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "LÍNGUA PORTUGUESA",
+                    "LINGUA PORTUGUESA/"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPFARM-1ª SERIE - INTEGRAL-I-B",
-                "ETAPA": "1ª SERIE - INTEGRAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPADM-ENF-EMP-1ª SERIE -",
-                "ETAPA": "1ª SERIE - INTEGRAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPDES-SIS-1ª SERIE - INTEGRAL-I-",
-                "ETAPA": "1ª SERIE - INTEGRAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPADM-ENF-EMP-1ª SERIE -",
-                "ETAPA": "1ª SERIE - INTEGRAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPFARM-1ª SERIE - INTEGRAL-I-A",
-                "ETAPA": "1ª SERIE - INTEGRAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "LINGUA PORTUGUESA/"
+                ]
             }
         ]
     },
@@ -1263,57 +1411,27 @@
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPDES-SIS-2ª SERIE - INTEGRAL-I-",
-                "ETAPA": "2ª SERIE - INTEGRAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPDES-SIS-2ª SERIE - INTEGRAL-I-",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "MENTORIAS TEC II",
+                    "ARQUITETURA DE",
+                    "FUNDAMENTOS DE UI / UX OU IHC",
+                    "INTRODUÇÃO AO ECOSSISTEMA",
+                    "MANUTENÇÃO DE SISTEMAS",
+                    "PENSAMENTO COMPUTACIONAL II",
+                    "PROGRAMACAO ESTRUTURADA",
+                    "PROGRAMAÇÃO ORIENTADA À",
+                    "PROGRAMAÇÃO PARA",
+                    "PROGRAMAÇÃO WEB FRONT-END"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPDES-SIS-1ª SERIE - INTEGRAL-I-",
-                "ETAPA": "1ª SERIE - INTEGRAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPDES-SIS-2ª SERIE - INTEGRAL-I-",
-                "ETAPA": "2ª SERIE - INTEGRAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPDES-SIS-2ª SERIE - INTEGRAL-I-",
-                "ETAPA": "2ª SERIE - INTEGRAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPDES-SIS-2ª SERIE - INTEGRAL-I-",
-                "ETAPA": "2ª SERIE - INTEGRAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPDES-SIS-2ª SERIE - INTEGRAL-I-",
-                "ETAPA": "2ª SERIE - INTEGRAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPDES-SIS-2ª SERIE - INTEGRAL-I-",
-                "ETAPA": "2ª SERIE - INTEGRAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPDES-SIS-2ª SERIE - INTEGRAL-I-",
-                "ETAPA": "2ª SERIE - INTEGRAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPDES-SIS-2ª SERIE - INTEGRAL-I-",
-                "ETAPA": "2ª SERIE - INTEGRAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPDES-SIS-2ª SERIE - INTEGRAL-I-",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "ESPORTE/CULTURA/CLUBE DE"
+                ]
             }
         ]
     },
@@ -1333,52 +1451,61 @@
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPFARM-1ª SERIE - INTEGRAL-I-B",
-                "ETAPA": "1ª SERIE - INTEGRAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "ANATOMIA E FISIOLOGIA HUMANA",
+                    "NOÇÕES DE FARMACOLOGIA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPENF-1ª SERIE - INTEGRAL-I-B",
-                "ETAPA": "1ª SERIE - INTEGRAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "ANATOMIA HUMANA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPENF-2ª SERIE - INTEGRAL-I-B",
-                "ETAPA": "2ª SERIE - INTEGRAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPENF-2ª SERIE - INTEGRAL-I-B",
-                "ETAPA": "2ª SERIE - INTEGRAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPENF-2ª SERIE - INTEGRAL-I-B",
-                "ETAPA": "2ª SERIE - INTEGRAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPFARM-1ª SERIE - INTEGRAL-I-B",
-                "ETAPA": "1ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "ENFERMAGEM EM SAÚDE DA",
+                    "FARMACOLOGIA E",
+                    "MICROBIOLOGIA E PARASITOLOGIA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPFARM-3ª SERIE - PARCIAL-M-A",
-                "ETAPA": "3ª SERIE - PARCIAL"
+                "ETAPA": "3ª SERIE - PARCIAL",
+                "DISCIPLINA_DADA": [
+                    "PRIMEIROS SOCORROS II"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPFARM-3ª SERIE - PARCIAL-M-B",
-                "ETAPA": "3ª SERIE - PARCIAL"
+                "ETAPA": "3ª SERIE - PARCIAL",
+                "DISCIPLINA_DADA": [
+                    "PRIMEIROS SOCORROS II"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPFARM-2ª SERIE - INTEGRAL-I-B",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "SAÚDE COLETIVA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPFARM-2ª SERIE - INTEGRAL-I-A",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "SAÚDE COLETIVA"
+                ]
             }
         ]
     },
@@ -1391,32 +1518,50 @@
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPMARK-DIG-2ª SERIE -",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "FÍSICA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPFARM-2ª SERIE - INTEGRAL-I-B",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "FÍSICA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPPROG-JOG-DIG-1ª SERIE -",
-                "ETAPA": "1ª SERIE - INTEGRAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "FÍSICA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPADM-ENF-EMP-1ª SERIE -",
-                "ETAPA": "1ª SERIE - INTEGRAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "FÍSICA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPFARM-2ª SERIE - INTEGRAL-I-A",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "FÍSICA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPENF-2ª SERIE - INTEGRAL-I-B",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "FÍSICA"
+                ]
             }
         ]
     },
@@ -1429,67 +1574,82 @@
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPADM-ENF-EMP-2ª SERIE -",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "EDUCAÇÃO FÍSICA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPSEG-TRAB-1ª SERIE -",
-                "ETAPA": "1ª SERIE - INTEGRAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "EDUCAÇÃO FÍSICA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPFARM-1ª SERIE - INTEGRAL-I-A",
-                "ETAPA": "1ª SERIE - INTEGRAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "EDUCAÇÃO FÍSICA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPADM-ENF-EMP-3ª SERIE -",
-                "ETAPA": "3ª SERIE - PARCIAL"
+                "ETAPA": "3ª SERIE - PARCIAL",
+                "DISCIPLINA_DADA": [
+                    "EDUCAÇÃO FÍSICA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPDES-SIS-1ª SERIE - INTEGRAL-I-",
-                "ETAPA": "1ª SERIE - INTEGRAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPADM-ENF-EMP-3ª SERIE -",
-                "ETAPA": "3ª SERIE - PARCIAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "EDUCAÇÃO FÍSICA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPPROG-JOG-DIG-3ª SERIE -",
-                "ETAPA": "3ª SERIE - PARCIAL"
+                "ETAPA": "3ª SERIE - PARCIAL",
+                "DISCIPLINA_DADA": [
+                    "EDUCAÇÃO FÍSICA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPADM-ENF-EMP-1ª SERIE -",
-                "ETAPA": "1ª SERIE - INTEGRAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "EDUCAÇÃO FÍSICA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPPROG-JOG-DIG-1ª SERIE -",
-                "ETAPA": "1ª SERIE - INTEGRAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "EDUCAÇÃO FÍSICA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPFARM-1ª SERIE - INTEGRAL-I-B",
-                "ETAPA": "1ª SERIE - INTEGRAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPADM-ENF-EMP-2ª SERIE -",
-                "ETAPA": "2ª SERIE - INTEGRAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPADM-ENF-EMP-1ª SERIE -",
-                "ETAPA": "1ª SERIE - INTEGRAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "EDUCAÇÃO FÍSICA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPFARM-3ª SERIE - PARCIAL-M-B",
-                "ETAPA": "3ª SERIE - PARCIAL"
+                "ETAPA": "3ª SERIE - PARCIAL",
+                "DISCIPLINA_DADA": [
+                    "EDUCAÇÃO FÍSICA"
+                ]
             }
         ]
     },
@@ -1504,42 +1664,44 @@
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPPROG-JOG-DIG-1ª SERIE -",
-                "ETAPA": "1ª SERIE - INTEGRAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "LÍNGUA PORTUGUESA",
+                    "LINGUA PORTUGUESA/"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPSEG-TRAB-1ª SERIE -",
-                "ETAPA": "1ª SERIE - INTEGRAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "LÍNGUA PORTUGUESA",
+                    "LINGUA PORTUGUESA/"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPFARM-1ª SERIE - INTEGRAL-I-B",
-                "ETAPA": "1ª SERIE - INTEGRAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "LÍNGUA PORTUGUESA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPADM-ENF-EMP-2ª SERIE -",
-                "ETAPA": "2ª SERIE - INTEGRAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPADM-ENF-EMP-2ª SERIE -",
-                "ETAPA": "2ª SERIE - INTEGRAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPSEG-TRAB-1ª SERIE -",
-                "ETAPA": "1ª SERIE - INTEGRAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPPROG-JOG-DIG-1ª SERIE -",
-                "ETAPA": "1ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "LÍNGUA PORTUGUESA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPMARK-DIG-3ª SERIE -",
-                "ETAPA": "3ª SERIE - PARCIAL"
+                "ETAPA": "3ª SERIE - PARCIAL",
+                "DISCIPLINA_DADA": [
+                    "PERCURSOS DE APROFUNDAMENTO"
+                ]
             }
         ]
     },
@@ -1552,27 +1714,42 @@
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPSEG-TRAB-1ª SERIE -",
-                "ETAPA": "1ª SERIE - INTEGRAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "MATEMÁTICA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPFARM-1ª SERIE - INTEGRAL-I-B",
-                "ETAPA": "1ª SERIE - INTEGRAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "MATEMÁTICA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPFARM-3ª SERIE - PARCIAL-M-A",
-                "ETAPA": "3ª SERIE - PARCIAL"
+                "ETAPA": "3ª SERIE - PARCIAL",
+                "DISCIPLINA_DADA": [
+                    "MATEMÁTICA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPPROG-JOG-DIG-1ª SERIE -",
-                "ETAPA": "1ª SERIE - INTEGRAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "MATEMÁTICA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPFARM-3ª SERIE - PARCIAL-M-B",
-                "ETAPA": "3ª SERIE - PARCIAL"
+                "ETAPA": "3ª SERIE - PARCIAL",
+                "DISCIPLINA_DADA": [
+                    "MATEMÁTICA"
+                ]
             }
         ]
     },
@@ -1586,57 +1763,74 @@
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPPROG-JOG-DIG-3ª SERIE -",
-                "ETAPA": "3ª SERIE - PARCIAL"
+                "ETAPA": "3ª SERIE - PARCIAL",
+                "DISCIPLINA_DADA": [
+                    "MATEMÁTICA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPDES-SIS-3ª SERIE - PARCIAL-T-",
-                "ETAPA": "3ª SERIE - PARCIAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPDES-SIS-3ª SERIE - PARCIAL-T-",
-                "ETAPA": "3ª SERIE - PARCIAL"
+                "ETAPA": "3ª SERIE - PARCIAL",
+                "DISCIPLINA_DADA": [
+                    "MATEMÁTICA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPADM-ENF-EMP-1ª SERIE -",
-                "ETAPA": "1ª SERIE - INTEGRAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "MATEMÁTICA/ RECOMPOSIÇÃO DA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPSEG-TRAB-1ª SERIE -",
-                "ETAPA": "1ª SERIE - INTEGRAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPADM-ENF-EMP-1ª SERIE -",
-                "ETAPA": "1ª SERIE - INTEGRAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "MATEMÁTICA/ RECOMPOSIÇÃO DA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPENF-1ª SERIE - INTEGRAL-I-B",
-                "ETAPA": "1ª SERIE - INTEGRAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "MATEMÁTICA/ RECOMPOSIÇÃO DA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPFARM-1ª SERIE - INTEGRAL-I-B",
-                "ETAPA": "1ª SERIE - INTEGRAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "MATEMÁTICA/ RECOMPOSIÇÃO DA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPPROG-JOG-DIG-1ª SERIE -",
-                "ETAPA": "1ª SERIE - INTEGRAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "MATEMÁTICA/ RECOMPOSIÇÃO DA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPFARM-1ª SERIE - INTEGRAL-I-A",
-                "ETAPA": "1ª SERIE - INTEGRAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "MATEMÁTICA/ RECOMPOSIÇÃO DA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPDES-SIS-1ª SERIE - INTEGRAL-I-",
-                "ETAPA": "1ª SERIE - INTEGRAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "MATEMÁTICA/ RECOMPOSIÇÃO DA"
+                ]
             }
         ]
     },
@@ -1659,92 +1853,66 @@
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPSEG-TRAB-1ª SERIE -",
-                "ETAPA": "1ª SERIE - INTEGRAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "COMBATE A INCÊNDIOS E",
+                    "DESENHO ASSISTIDO POR",
+                    "FUNDAMENTOS DA SEGURANÇA",
+                    "MEDIDAS DE CONTROLE:"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPADM-ENF-EMP-1ª SERIE -",
-                "ETAPA": "1ª SERIE - INTEGRAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPADM-ENF-EMP-1ª SERIE -",
-                "ETAPA": "1ª SERIE - INTEGRAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPSEG-TRAB-1ª SERIE -",
-                "ETAPA": "1ª SERIE - INTEGRAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "COMUNICAÇÃO EMPRESARIAL",
+                    "ÉTICA PROFISSIONAL",
+                    "FUNDAMENTOS DE GESTÃO DE",
+                    "INTELIGÊNCIA ARTIFICIAL",
+                    "TECNOLOGIA DA INFORMAÇÃO"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPSEG-TRAB-2ª SERIE -",
-                "ETAPA": "2ª SERIE - INTEGRAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPADM-ENF-EMP-1ª SERIE -",
-                "ETAPA": "1ª SERIE - INTEGRAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPADM-ENF-EMP-1ª SERIE -",
-                "ETAPA": "1ª SERIE - INTEGRAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPSEG-TRAB-1ª SERIE -",
-                "ETAPA": "1ª SERIE - INTEGRAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPADM-ENF-EMP-1ª SERIE -",
-                "ETAPA": "1ª SERIE - INTEGRAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPADM-ENF-EMP-1ª SERIE -",
-                "ETAPA": "1ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "ERGONOMIA",
+                    "TÉCNICAS DE TREINAMENTOS"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPFARM-1ª SERIE - INTEGRAL-I-B",
-                "ETAPA": "1ª SERIE - INTEGRAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "INTELIGÊNCIA ARTIFICIAL"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPDES-SIS-1ª SERIE - INTEGRAL-I-",
-                "ETAPA": "1ª SERIE - INTEGRAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "INTELIGÊNCIA ARTIFICIAL"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPENF-1ª SERIE - INTEGRAL-I-B",
-                "ETAPA": "1ª SERIE - INTEGRAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPADM-ENF-EMP-1ª SERIE -",
-                "ETAPA": "1ª SERIE - INTEGRAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "INTELIGÊNCIA ARTIFICIAL"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPFARM-1ª SERIE - INTEGRAL-I-A",
-                "ETAPA": "1ª SERIE - INTEGRAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPSEG-TRAB-1ª SERIE -",
-                "ETAPA": "1ª SERIE - INTEGRAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPSEG-TRAB-2ª SERIE -",
-                "ETAPA": "2ª SERIE - INTEGRAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPADM-ENF-EMP-1ª SERIE -",
-                "ETAPA": "1ª SERIE - INTEGRAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "INTELIGÊNCIA ARTIFICIAL"
+                ]
             }
         ]
     },
@@ -1758,67 +1926,98 @@
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPADM-ENF-EMP-2ª SERIE -",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "EDUCAÇÃO FINANCEIRA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPENF-1ª SERIE - INTEGRAL-I-B",
-                "ETAPA": "1ª SERIE - INTEGRAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPADM-ENF-EMP-2ª SERIE -",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "EDUCAÇÃO FINANCEIRA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPSEG-TRAB-1ª SERIE -",
-                "ETAPA": "1ª SERIE - INTEGRAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "EDUCAÇÃO FINANCEIRA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPPROG-JOG-DIG-1ª SERIE -",
-                "ETAPA": "1ª SERIE - INTEGRAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "EDUCAÇÃO FINANCEIRA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPFARM-1ª SERIE - INTEGRAL-I-B",
-                "ETAPA": "1ª SERIE - INTEGRAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "EDUCAÇÃO FINANCEIRA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPFARM-1ª SERIE - INTEGRAL-I-A",
-                "ETAPA": "1ª SERIE - INTEGRAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "EDUCAÇÃO FINANCEIRA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPENF-2ª SERIE - INTEGRAL-I-B",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "PERCURSOS DE APROFUNDAMENTO"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPSEG-TRAB-2ª SERIE -",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "PERCURSOS DE APROFUNDAMENTO"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPDES-SIS-2ª SERIE - INTEGRAL-I-",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "PERCURSOS DE APROFUNDAMENTO"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPMARK-DIG-2ª SERIE -",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "PERCURSOS DE APROFUNDAMENTO"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPFARM-2ª SERIE - INTEGRAL-I-B",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "PERCURSOS DE APROFUNDAMENTO"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPFARM-2ª SERIE - INTEGRAL-I-A",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "PERCURSOS DE APROFUNDAMENTO"
+                ]
             }
         ]
     },
@@ -1833,102 +2032,131 @@
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPFARM-3ª SERIE - PARCIAL-M-A",
-                "ETAPA": "3ª SERIE - PARCIAL"
+                "ETAPA": "3ª SERIE - PARCIAL",
+                "DISCIPLINA_DADA": [
+                    "LÍNGUA ESTRANGEIRA INGLÊS"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPADM-ENF-EMP-2ª SERIE -",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "LÍNGUA ESTRANGEIRA INGLÊS",
+                    "PERCURSOS DE APROFUNDAMENTO"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPPROG-JOG-DIG-3ª SERIE -",
-                "ETAPA": "3ª SERIE - PARCIAL"
+                "ETAPA": "3ª SERIE - PARCIAL",
+                "DISCIPLINA_DADA": [
+                    "LÍNGUA ESTRANGEIRA INGLÊS"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPENF-3ª SERIE - PARCIAL-M-B",
-                "ETAPA": "3ª SERIE - PARCIAL"
+                "ETAPA": "3ª SERIE - PARCIAL",
+                "DISCIPLINA_DADA": [
+                    "LÍNGUA ESTRANGEIRA INGLÊS"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPFARM-3ª SERIE - PARCIAL-M-B",
-                "ETAPA": "3ª SERIE - PARCIAL"
+                "ETAPA": "3ª SERIE - PARCIAL",
+                "DISCIPLINA_DADA": [
+                    "LÍNGUA ESTRANGEIRA INGLÊS"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPPROG-JOG-DIG-1ª SERIE -",
-                "ETAPA": "1ª SERIE - INTEGRAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "LINGUA INGLESA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPADM-ENF-EMP-3ª SERIE -",
-                "ETAPA": "3ª SERIE - PARCIAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPADM-ENF-EMP-3ª SERIE -",
-                "ETAPA": "3ª SERIE - PARCIAL"
+                "ETAPA": "3ª SERIE - PARCIAL",
+                "DISCIPLINA_DADA": [
+                    "LINGUA INGLESA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPFARM-1ª SERIE - INTEGRAL-I-B",
-                "ETAPA": "1ª SERIE - INTEGRAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "LINGUA INGLESA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPSEG-TRAB-1ª SERIE -",
-                "ETAPA": "1ª SERIE - INTEGRAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "LINGUA INGLESA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPFARM-1ª SERIE - INTEGRAL-I-A",
-                "ETAPA": "1ª SERIE - INTEGRAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "LINGUA INGLESA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPFARM-2ª SERIE - INTEGRAL-I-B",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "PERCURSOS DE APROFUNDAMENTO"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPMARK-DIG-2ª SERIE -",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "PERCURSOS DE APROFUNDAMENTO"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPSEG-TRAB-2ª SERIE -",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "PERCURSOS DE APROFUNDAMENTO"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPDES-SIS-2ª SERIE - INTEGRAL-I-",
-                "ETAPA": "2ª SERIE - INTEGRAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPFARM-2ª SERIE - INTEGRAL-I-B",
-                "ETAPA": "2ª SERIE - INTEGRAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPADM-ENF-EMP-2ª SERIE -",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "PERCURSOS DE APROFUNDAMENTO"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPENF-2ª SERIE - INTEGRAL-I-B",
-                "ETAPA": "2ª SERIE - INTEGRAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPMARK-DIG-2ª SERIE -",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "PERCURSOS DE APROFUNDAMENTO"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPFARM-2ª SERIE - INTEGRAL-I-A",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "PERCURSOS DE APROFUNDAMENTO"
+                ]
             }
         ]
     },
@@ -1941,32 +2169,42 @@
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPDES-SIS-2ª SERIE - INTEGRAL-I-",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "HISTÓRIA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPADM-ENF-EMP-2ª SERIE -",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "HISTÓRIA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPSEG-TRAB-1ª SERIE -",
-                "ETAPA": "1ª SERIE - INTEGRAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "HISTÓRIA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPPROG-JOG-DIG-1ª SERIE -",
-                "ETAPA": "1ª SERIE - INTEGRAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "HISTÓRIA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPENF-2ª SERIE - INTEGRAL-I-B",
-                "ETAPA": "2ª SERIE - INTEGRAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPADM-ENF-EMP-2ª SERIE -",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "HISTÓRIA"
+                ]
             }
         ]
     },
@@ -1979,12 +2217,18 @@
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPMARK-DIG-2ª SERIE -",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "QUÍMICA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPSEG-TRAB-2ª SERIE -",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "QUÍMICA"
+                ]
             }
         ]
     },
@@ -1997,42 +2241,58 @@
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPSEG-TRAB-2ª SERIE -",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "BIOLOGIA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPADM-ENF-EMP-3ª SERIE -",
-                "ETAPA": "3ª SERIE - PARCIAL"
+                "ETAPA": "3ª SERIE - PARCIAL",
+                "DISCIPLINA_DADA": [
+                    "BIOLOGIA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPFARM-3ª SERIE - PARCIAL-M-A",
-                "ETAPA": "3ª SERIE - PARCIAL"
+                "ETAPA": "3ª SERIE - PARCIAL",
+                "DISCIPLINA_DADA": [
+                    "BIOLOGIA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPPROG-JOG-DIG-3ª SERIE -",
-                "ETAPA": "3ª SERIE - PARCIAL"
+                "ETAPA": "3ª SERIE - PARCIAL",
+                "DISCIPLINA_DADA": [
+                    "BIOLOGIA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPENF-3ª SERIE - PARCIAL-M-B",
-                "ETAPA": "3ª SERIE - PARCIAL"
+                "ETAPA": "3ª SERIE - PARCIAL",
+                "DISCIPLINA_DADA": [
+                    "BIOLOGIA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPFARM-3ª SERIE - PARCIAL-M-B",
-                "ETAPA": "3ª SERIE - PARCIAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPADM-ENF-EMP-3ª SERIE -",
-                "ETAPA": "3ª SERIE - PARCIAL"
+                "ETAPA": "3ª SERIE - PARCIAL",
+                "DISCIPLINA_DADA": [
+                    "BIOLOGIA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPMARK-DIG-2ª SERIE -",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "BIOLOGIA"
+                ]
             }
         ]
     },
@@ -2046,42 +2306,66 @@
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPFARM-3ª SERIE - PARCIAL-M-B",
-                "ETAPA": "3ª SERIE - PARCIAL"
+                "ETAPA": "3ª SERIE - PARCIAL",
+                "DISCIPLINA_DADA": [
+                    "LÍNGUA PORTUGUESA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPPROG-JOG-DIG-3ª SERIE -",
-                "ETAPA": "3ª SERIE - PARCIAL"
+                "ETAPA": "3ª SERIE - PARCIAL",
+                "DISCIPLINA_DADA": [
+                    "LÍNGUA PORTUGUESA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPDES-SIS-2ª SERIE - INTEGRAL-I-",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "PERCURSOS DE APROFUNDAMENTO"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPFARM-2ª SERIE - INTEGRAL-I-B",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "PERCURSOS DE APROFUNDAMENTO"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPSEG-TRAB-2ª SERIE -",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "PERCURSOS DE APROFUNDAMENTO"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPENF-2ª SERIE - INTEGRAL-I-B",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "PERCURSOS DE APROFUNDAMENTO"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPMARK-DIG-2ª SERIE -",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "PERCURSOS DE APROFUNDAMENTO"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPFARM-2ª SERIE - INTEGRAL-I-A",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "PERCURSOS DE APROFUNDAMENTO"
+                ]
             }
         ]
     },
@@ -2101,52 +2385,40 @@
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPSEG-TRAB-2ª SERIE -",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "HIGIENE DO TRABALHO I",
+                    "NR7/NR9:PCMSO E AVALIAÇÃO /",
+                    "PERCURSOS DE APROFUNDAMENTO",
+                    "SEGURANÇA NA INDÚSTRIA DA",
+                    "SEGURANÇA NO TRABALHO RURAL",
+                    "SEGURANÇA NOS PROCESSOS"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPSEG-TRAB-1ª SERIE -",
-                "ETAPA": "1ª SERIE - INTEGRAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPSEG-TRAB-1ª SERIE -",
-                "ETAPA": "1ª SERIE - INTEGRAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPSEG-TRAB-2ª SERIE -",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "INFORMÁTICA APLICADA À",
+                    "LEGISLAÇÃO E NORMAS TÉCNICAS"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPFARM-2ª SERIE - INTEGRAL-I-B",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "PERCURSOS DE APROFUNDAMENTO"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPFARM-2ª SERIE - INTEGRAL-I-A",
-                "ETAPA": "2ª SERIE - INTEGRAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPSEG-TRAB-2ª SERIE -",
-                "ETAPA": "2ª SERIE - INTEGRAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPSEG-TRAB-2ª SERIE -",
-                "ETAPA": "2ª SERIE - INTEGRAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPSEG-TRAB-2ª SERIE -",
-                "ETAPA": "2ª SERIE - INTEGRAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPSEG-TRAB-2ª SERIE -",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "PERCURSOS DE APROFUNDAMENTO"
+                ]
             }
         ]
     },
@@ -2159,37 +2431,50 @@
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPADM-ENF-EMP-1ª SERIE -",
-                "ETAPA": "1ª SERIE - INTEGRAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "BIOLOGIA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPMARK-DIG-3ª SERIE -",
-                "ETAPA": "3ª SERIE - PARCIAL"
+                "ETAPA": "3ª SERIE - PARCIAL",
+                "DISCIPLINA_DADA": [
+                    "BIOLOGIA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPFARM-1ª SERIE - INTEGRAL-I-B",
-                "ETAPA": "1ª SERIE - INTEGRAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "BIOLOGIA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPDES-SIS-3ª SERIE - PARCIAL-T-",
-                "ETAPA": "3ª SERIE - PARCIAL"
+                "ETAPA": "3ª SERIE - PARCIAL",
+                "DISCIPLINA_DADA": [
+                    "BIOLOGIA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPFARM-1ª SERIE - INTEGRAL-I-A",
-                "ETAPA": "1ª SERIE - INTEGRAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "BIOLOGIA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPENF-1ª SERIE - INTEGRAL-I-B",
-                "ETAPA": "1ª SERIE - INTEGRAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPDES-SIS-3ª SERIE - PARCIAL-T-",
-                "ETAPA": "3ª SERIE - PARCIAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "BIOLOGIA"
+                ]
             }
         ]
     },
@@ -2202,62 +2487,90 @@
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPENF-3ª SERIE - PARCIAL-M-B",
-                "ETAPA": "3ª SERIE - PARCIAL"
+                "ETAPA": "3ª SERIE - PARCIAL",
+                "DISCIPLINA_DADA": [
+                    "EDUCAÇÃO FÍSICA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPENF-1ª SERIE - INTEGRAL-I-B",
-                "ETAPA": "1ª SERIE - INTEGRAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "EDUCAÇÃO FÍSICA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPFARM-2ª SERIE - INTEGRAL-I-A",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "EDUCAÇÃO FÍSICA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPDES-SIS-2ª SERIE - INTEGRAL-I-",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "EDUCAÇÃO FÍSICA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPENF-2ª SERIE - INTEGRAL-I-B",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "EDUCAÇÃO FÍSICA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPDES-SIS-3ª SERIE - PARCIAL-T-",
-                "ETAPA": "3ª SERIE - PARCIAL"
+                "ETAPA": "3ª SERIE - PARCIAL",
+                "DISCIPLINA_DADA": [
+                    "EDUCAÇÃO FÍSICA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPSEG-TRAB-2ª SERIE -",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "EDUCAÇÃO FÍSICA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPFARM-2ª SERIE - INTEGRAL-I-B",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "EDUCAÇÃO FÍSICA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPFARM-3ª SERIE - PARCIAL-M-A",
-                "ETAPA": "3ª SERIE - PARCIAL"
+                "ETAPA": "3ª SERIE - PARCIAL",
+                "DISCIPLINA_DADA": [
+                    "EDUCAÇÃO FÍSICA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPMARK-DIG-3ª SERIE -",
-                "ETAPA": "3ª SERIE - PARCIAL"
+                "ETAPA": "3ª SERIE - PARCIAL",
+                "DISCIPLINA_DADA": [
+                    "EDUCAÇÃO FÍSICA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPMARK-DIG-2ª SERIE -",
-                "ETAPA": "2ª SERIE - INTEGRAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPDES-SIS-3ª SERIE - PARCIAL-T-",
-                "ETAPA": "3ª SERIE - PARCIAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "EDUCAÇÃO FÍSICA"
+                ]
             }
         ]
     },
@@ -2279,62 +2592,41 @@
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPADM-ENF-EMP-3ª SERIE -",
-                "ETAPA": "3ª SERIE - PARCIAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPADM-ENF-EMP-3ª SERIE -",
-                "ETAPA": "3ª SERIE - PARCIAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPADM-ENF-EMP-3ª SERIE -",
-                "ETAPA": "3ª SERIE - PARCIAL"
+                "ETAPA": "3ª SERIE - PARCIAL",
+                "DISCIPLINA_DADA": [
+                    "AQUISIÇÃO DE CLIENTES",
+                    "CUSTOS E RECEITAS",
+                    "DIREITO EMPRESARIAL",
+                    "GESTÃO DA PRODUÇÃO",
+                    "GESTÃO FINANCEIRA E",
+                    "PROJETO INTEGRADOR - CLIENTE",
+                    "PROJETO INTEGRADOR FINAL -",
+                    "VENDAS"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPADM-ENF-EMP-1ª SERIE -",
-                "ETAPA": "1ª SERIE - INTEGRAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPADM-ENF-EMP-3ª SERIE -",
-                "ETAPA": "3ª SERIE - PARCIAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPADM-ENF-EMP-3ª SERIE -",
-                "ETAPA": "3ª SERIE - PARCIAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "ESPORTE/CULTURA/CLUBE DE"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPADM-ENF-EMP-2ª SERIE -",
-                "ETAPA": "2ª SERIE - INTEGRAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPADM-ENF-EMP-2ª SERIE -",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "PERCURSOS DE APROFUNDAMENTO"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPSEG-TRAB-2ª SERIE -",
-                "ETAPA": "2ª SERIE - INTEGRAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPADM-ENF-EMP-3ª SERIE -",
-                "ETAPA": "3ª SERIE - PARCIAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPADM-ENF-EMP-3ª SERIE -",
-                "ETAPA": "3ª SERIE - PARCIAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPADM-ENF-EMP-3ª SERIE -",
-                "ETAPA": "3ª SERIE - PARCIAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "PERCURSOS DE APROFUNDAMENTO"
+                ]
             }
         ]
     },
@@ -2348,62 +2640,53 @@
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPADM-ENF-EMP-3ª SERIE -",
-                "ETAPA": "3ª SERIE - PARCIAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPADM-ENF-EMP-3ª SERIE -",
-                "ETAPA": "3ª SERIE - PARCIAL"
+                "ETAPA": "3ª SERIE - PARCIAL",
+                "DISCIPLINA_DADA": [
+                    "LÍNGUA PORTUGUESA",
+                    "PERCURSOS DE APROFUNDAMENTO"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPFARM-3ª SERIE - PARCIAL-M-A",
-                "ETAPA": "3ª SERIE - PARCIAL"
+                "ETAPA": "3ª SERIE - PARCIAL",
+                "DISCIPLINA_DADA": [
+                    "LÍNGUA PORTUGUESA",
+                    "PERCURSOS DE APROFUNDAMENTO"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPENF-3ª SERIE - PARCIAL-M-B",
-                "ETAPA": "3ª SERIE - PARCIAL"
+                "ETAPA": "3ª SERIE - PARCIAL",
+                "DISCIPLINA_DADA": [
+                    "LÍNGUA PORTUGUESA",
+                    "PERCURSOS DE APROFUNDAMENTO"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPDES-SIS-3ª SERIE - PARCIAL-T-",
-                "ETAPA": "3ª SERIE - PARCIAL"
+                "ETAPA": "3ª SERIE - PARCIAL",
+                "DISCIPLINA_DADA": [
+                    "PERCURSOS DE APROFUNDAMENTO"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPPROG-JOG-DIG-3ª SERIE -",
-                "ETAPA": "3ª SERIE - PARCIAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPADM-ENF-EMP-3ª SERIE -",
-                "ETAPA": "3ª SERIE - PARCIAL"
+                "ETAPA": "3ª SERIE - PARCIAL",
+                "DISCIPLINA_DADA": [
+                    "PERCURSOS DE APROFUNDAMENTO"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPFARM-3ª SERIE - PARCIAL-M-B",
-                "ETAPA": "3ª SERIE - PARCIAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPENF-3ª SERIE - PARCIAL-M-B",
-                "ETAPA": "3ª SERIE - PARCIAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPDES-SIS-3ª SERIE - PARCIAL-T-",
-                "ETAPA": "3ª SERIE - PARCIAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPFARM-3ª SERIE - PARCIAL-M-A",
-                "ETAPA": "3ª SERIE - PARCIAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPADM-ENF-EMP-3ª SERIE -",
-                "ETAPA": "3ª SERIE - PARCIAL"
+                "ETAPA": "3ª SERIE - PARCIAL",
+                "DISCIPLINA_DADA": [
+                    "PERCURSOS DE APROFUNDAMENTO"
+                ]
             }
         ]
     },
@@ -2416,72 +2699,98 @@
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPENF-2ª SERIE - INTEGRAL-I-B",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "FILOSOFIA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPMARK-DIG-3ª SERIE -",
-                "ETAPA": "3ª SERIE - PARCIAL"
+                "ETAPA": "3ª SERIE - PARCIAL",
+                "DISCIPLINA_DADA": [
+                    "FILOSOFIA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPFARM-3ª SERIE - PARCIAL-M-B",
-                "ETAPA": "3ª SERIE - PARCIAL"
+                "ETAPA": "3ª SERIE - PARCIAL",
+                "DISCIPLINA_DADA": [
+                    "FILOSOFIA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPDES-SIS-3ª SERIE - PARCIAL-T-",
-                "ETAPA": "3ª SERIE - PARCIAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPDES-SIS-3ª SERIE - PARCIAL-T-",
-                "ETAPA": "3ª SERIE - PARCIAL"
+                "ETAPA": "3ª SERIE - PARCIAL",
+                "DISCIPLINA_DADA": [
+                    "FILOSOFIA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPMARK-DIG-2ª SERIE -",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "FILOSOFIA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPFARM-2ª SERIE - INTEGRAL-I-B",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "FILOSOFIA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPSEG-TRAB-2ª SERIE -",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "FILOSOFIA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPADM-ENF-EMP-3ª SERIE -",
-                "ETAPA": "3ª SERIE - PARCIAL"
+                "ETAPA": "3ª SERIE - PARCIAL",
+                "DISCIPLINA_DADA": [
+                    "FILOSOFIA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPFARM-2ª SERIE - INTEGRAL-I-A",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "FILOSOFIA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPPROG-JOG-DIG-3ª SERIE -",
-                "ETAPA": "3ª SERIE - PARCIAL"
+                "ETAPA": "3ª SERIE - PARCIAL",
+                "DISCIPLINA_DADA": [
+                    "FILOSOFIA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPENF-3ª SERIE - PARCIAL-M-B",
-                "ETAPA": "3ª SERIE - PARCIAL"
+                "ETAPA": "3ª SERIE - PARCIAL",
+                "DISCIPLINA_DADA": [
+                    "FILOSOFIA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPFARM-3ª SERIE - PARCIAL-M-A",
-                "ETAPA": "3ª SERIE - PARCIAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPADM-ENF-EMP-3ª SERIE -",
-                "ETAPA": "3ª SERIE - PARCIAL"
+                "ETAPA": "3ª SERIE - PARCIAL",
+                "DISCIPLINA_DADA": [
+                    "FILOSOFIA"
+                ]
             }
         ]
     },
@@ -2494,7 +2803,10 @@
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPADM-ENF-EMP-1ª SERIE -",
-                "ETAPA": "1ª SERIE - INTEGRAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "ESPORTE EDUCACIONAL"
+                ]
             }
         ]
     },
@@ -2513,47 +2825,32 @@
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPPROG-JOG-DIG-1ª SERIE -",
-                "ETAPA": "1ª SERIE - INTEGRAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPPROG-JOG-DIG-1ª SERIE -",
-                "ETAPA": "1ª SERIE - INTEGRAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPPROG-JOG-DIG-1ª SERIE -",
-                "ETAPA": "1ª SERIE - INTEGRAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPPROG-JOG-DIG-1ª SERIE -",
-                "ETAPA": "1ª SERIE - INTEGRAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "ARQUITETURA DE SISTEMAS E",
+                    "ARTE DIGITAL E TÉCNICAS VISUAIS",
+                    "GAME DESIGN E NARRATIVA",
+                    "LÓGICA DE PROGRAMAÇÃO E",
+                    "MENTORIAS TEC I",
+                    "PENSAMENTO COMPUTACIONAL I"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPDES-SIS-1ª SERIE - INTEGRAL-I-",
-                "ETAPA": "1ª SERIE - INTEGRAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPPROG-JOG-DIG-1ª SERIE -",
-                "ETAPA": "1ª SERIE - INTEGRAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPDES-SIS-1ª SERIE - INTEGRAL-I-",
-                "ETAPA": "1ª SERIE - INTEGRAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPPROG-JOG-DIG-1ª SERIE -",
-                "ETAPA": "1ª SERIE - INTEGRAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "MENTORIAS TEC I",
+                    "PENSAMENTO COMPUTACIONAL I"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPENF-2ª SERIE - INTEGRAL-I-B",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "PERCURSOS DE APROFUNDAMENTO"
+                ]
             }
         ]
     },
@@ -2568,37 +2865,42 @@
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPADM-ENF-EMP-1ª SERIE -",
-                "ETAPA": "1ª SERIE - INTEGRAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPADM-ENF-EMP-1ª SERIE -",
-                "ETAPA": "1ª SERIE - INTEGRAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "ECONOMIA E MERCADO"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPSEG-TRAB-1ª SERIE -",
-                "ETAPA": "1ª SERIE - INTEGRAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "FÍSICA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPFARM-3ª SERIE - PARCIAL-M-B",
-                "ETAPA": "3ª SERIE - PARCIAL"
+                "ETAPA": "3ª SERIE - PARCIAL",
+                "DISCIPLINA_DADA": [
+                    "FÍSICA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPADM-ENF-EMP-2ª SERIE -",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "PERCURSOS DE APROFUNDAMENTO"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPDES-SIS-2ª SERIE - INTEGRAL-I-",
-                "ETAPA": "2ª SERIE - INTEGRAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPADM-ENF-EMP-2ª SERIE -",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "PERCURSOS DE APROFUNDAMENTO"
+                ]
             }
         ]
     },
@@ -2612,27 +2914,42 @@
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPENF-3ª SERIE - PARCIAL-M-B",
-                "ETAPA": "3ª SERIE - PARCIAL"
+                "ETAPA": "3ª SERIE - PARCIAL",
+                "DISCIPLINA_DADA": [
+                    "ARTE"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPFARM-3ª SERIE - PARCIAL-M-B",
-                "ETAPA": "3ª SERIE - PARCIAL"
+                "ETAPA": "3ª SERIE - PARCIAL",
+                "DISCIPLINA_DADA": [
+                    "ARTE"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPFARM-3ª SERIE - PARCIAL-M-A",
-                "ETAPA": "3ª SERIE - PARCIAL"
+                "ETAPA": "3ª SERIE - PARCIAL",
+                "DISCIPLINA_DADA": [
+                    "ARTE"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPPROG-JOG-DIG-3ª SERIE -",
-                "ETAPA": "3ª SERIE - PARCIAL"
+                "ETAPA": "3ª SERIE - PARCIAL",
+                "DISCIPLINA_DADA": [
+                    "ARTE"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPMARK-DIG-3ª SERIE -",
-                "ETAPA": "3ª SERIE - PARCIAL"
+                "ETAPA": "3ª SERIE - PARCIAL",
+                "DISCIPLINA_DADA": [
+                    "LÍNGUA PORTUGUESA"
+                ]
             }
         ]
     },
@@ -2654,67 +2971,57 @@
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPFARM-1ª SERIE - INTEGRAL-I-A",
-                "ETAPA": "1ª SERIE - INTEGRAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "ANATOMIA E FISIOLOGIA HUMANA",
+                    "BIOSSEGURANÇA NO SETOR",
+                    "LEGISLAÇÃO FARMACÊUTICA E",
+                    "NOÇÕES DE FARMACOLOGIA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPFARM-3ª SERIE - PARCIAL-M-B",
-                "ETAPA": "3ª SERIE - PARCIAL"
+                "ETAPA": "3ª SERIE - PARCIAL",
+                "DISCIPLINA_DADA": [
+                    "BIOQUÍMICA",
+                    "FARMÁCIA HOSPITALAR"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPFARM-1ª SERIE - INTEGRAL-I-B",
-                "ETAPA": "1ª SERIE - INTEGRAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPFARM-1ª SERIE - INTEGRAL-I-A",
-                "ETAPA": "1ª SERIE - INTEGRAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "BIOSSEGURANÇA NO SETOR"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPFARM-2ª SERIE - INTEGRAL-I-A",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "BOAS PRÁTICAS DE MANIPULAÇÃO",
+                    "CÁLCULOS FARMACÊUTICOS",
+                    "GESTÃO NA ORGANIZAÇÃO DE"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPFARM-2ª SERIE - INTEGRAL-I-B",
-                "ETAPA": "2ª SERIE - INTEGRAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPFARM-2ª SERIE - INTEGRAL-I-A",
-                "ETAPA": "2ª SERIE - INTEGRAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPFARM-3ª SERIE - PARCIAL-M-B",
-                "ETAPA": "3ª SERIE - PARCIAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "CÁLCULOS FARMACÊUTICOS",
+                    "MICROBIOLOGIA E IMUNOLOGIA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPFARM-3ª SERIE - PARCIAL-M-A",
-                "ETAPA": "3ª SERIE - PARCIAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPFARM-2ª SERIE - INTEGRAL-I-A",
-                "ETAPA": "2ª SERIE - INTEGRAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPFARM-1ª SERIE - INTEGRAL-I-A",
-                "ETAPA": "1ª SERIE - INTEGRAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPFARM-2ª SERIE - INTEGRAL-I-B",
-                "ETAPA": "2ª SERIE - INTEGRAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPFARM-1ª SERIE - INTEGRAL-I-A",
-                "ETAPA": "1ª SERIE - INTEGRAL"
+                "ETAPA": "3ª SERIE - PARCIAL",
+                "DISCIPLINA_DADA": [
+                    "FARMÁCIA HOSPITALAR"
+                ]
             }
         ]
     },
@@ -2727,42 +3034,58 @@
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPENF-2ª SERIE - INTEGRAL-I-B",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "LÍNGUA PORTUGUESA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPFARM-2ª SERIE - INTEGRAL-I-B",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "LÍNGUA PORTUGUESA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPDES-SIS-3ª SERIE - PARCIAL-T-",
-                "ETAPA": "3ª SERIE - PARCIAL"
+                "ETAPA": "3ª SERIE - PARCIAL",
+                "DISCIPLINA_DADA": [
+                    "LÍNGUA PORTUGUESA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPMARK-DIG-2ª SERIE -",
-                "ETAPA": "2ª SERIE - INTEGRAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPDES-SIS-3ª SERIE - PARCIAL-T-",
-                "ETAPA": "3ª SERIE - PARCIAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "LÍNGUA PORTUGUESA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPSEG-TRAB-2ª SERIE -",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "LÍNGUA PORTUGUESA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPDES-SIS-2ª SERIE - INTEGRAL-I-",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "LÍNGUA PORTUGUESA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPFARM-2ª SERIE - INTEGRAL-I-A",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "LÍNGUA PORTUGUESA"
+                ]
             }
         ]
     },
@@ -2775,27 +3098,34 @@
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPADM-ENF-EMP-1ª SERIE -",
-                "ETAPA": "1ª SERIE - INTEGRAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "MATEMÁTICA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPDES-SIS-1ª SERIE - INTEGRAL-I-",
-                "ETAPA": "1ª SERIE - INTEGRAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPADM-ENF-EMP-1ª SERIE -",
-                "ETAPA": "1ª SERIE - INTEGRAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "MATEMÁTICA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPENF-1ª SERIE - INTEGRAL-I-B",
-                "ETAPA": "1ª SERIE - INTEGRAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "MATEMÁTICA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPFARM-1ª SERIE - INTEGRAL-I-A",
-                "ETAPA": "1ª SERIE - INTEGRAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "MATEMÁTICA"
+                ]
             }
         ]
     },
@@ -2808,52 +3138,74 @@
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPADM-ENF-EMP-2ª SERIE -",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "GEOGRAFIA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPPROG-JOG-DIG-1ª SERIE -",
-                "ETAPA": "1ª SERIE - INTEGRAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "GEOGRAFIA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPSEG-TRAB-1ª SERIE -",
-                "ETAPA": "1ª SERIE - INTEGRAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPADM-ENF-EMP-2ª SERIE -",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "GEOGRAFIA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPDES-SIS-2ª SERIE - INTEGRAL-I-",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "GEOGRAFIA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPFARM-1ª SERIE - INTEGRAL-I-A",
-                "ETAPA": "1ª SERIE - INTEGRAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "GEOGRAFIA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPFARM-1ª SERIE - INTEGRAL-I-B",
-                "ETAPA": "1ª SERIE - INTEGRAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "GEOGRAFIA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPFARM-2ª SERIE - INTEGRAL-I-A",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "GEOGRAFIA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPENF-2ª SERIE - INTEGRAL-I-B",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "GEOGRAFIA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPADM-ENF-EMP-1ª SERIE -",
-                "ETAPA": "1ª SERIE - INTEGRAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "GEOGRAFIA"
+                ]
             }
         ]
     },
@@ -2867,62 +3219,82 @@
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPFARM-1ª SERIE - INTEGRAL-I-A",
-                "ETAPA": "1ª SERIE - INTEGRAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "FILOSOFIA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPADM-ENF-EMP-2ª SERIE -",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "FILOSOFIA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPENF-1ª SERIE - INTEGRAL-I-B",
-                "ETAPA": "1ª SERIE - INTEGRAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "FILOSOFIA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPSEG-TRAB-1ª SERIE -",
-                "ETAPA": "1ª SERIE - INTEGRAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "FILOSOFIA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPDES-SIS-1ª SERIE - INTEGRAL-I-",
-                "ETAPA": "1ª SERIE - INTEGRAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPADM-ENF-EMP-2ª SERIE -",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "FILOSOFIA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPFARM-1ª SERIE - INTEGRAL-I-B",
-                "ETAPA": "1ª SERIE - INTEGRAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "FILOSOFIA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPADM-ENF-EMP-1ª SERIE -",
-                "ETAPA": "1ª SERIE - INTEGRAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "FILOSOFIA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPDES-SIS-2ª SERIE - INTEGRAL-I-",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "FILOSOFIA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPPROG-JOG-DIG-1ª SERIE -",
-                "ETAPA": "1ª SERIE - INTEGRAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPADM-ENF-EMP-1ª SERIE -",
-                "ETAPA": "1ª SERIE - INTEGRAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "FILOSOFIA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPPROG-JOG-DIG-3ª SERIE -",
-                "ETAPA": "3ª SERIE - PARCIAL"
+                "ETAPA": "3ª SERIE - PARCIAL",
+                "DISCIPLINA_DADA": [
+                    "SOCIOLOGIA"
+                ]
             }
         ]
     },
@@ -2946,117 +3318,35 @@
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPADM-ENF-EMP-2ª SERIE -",
-                "ETAPA": "2ª SERIE - INTEGRAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPADM-ENF-EMP-2ª SERIE -",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "AQUISIÇÃO DE CLIENTES",
+                    "ESTRATÉGIAS DE CRESCIMENTO",
+                    "GESTÃO FINANCEIRA",
+                    "INOVAÇÃO E GERAÇÃO DE VALOR",
+                    "MODELOS DE NEGÓCIO",
+                    "PESQUISA DE MERCADO",
+                    "PROJETO INTEGRADOR - CLIENTE",
+                    "PROJETO INTEGRADOR - CLIENTES",
+                    "TIME EMPREENDEDOR",
+                    "VANTAGEM COMPETITIVA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPADM-ENF-EMP-1ª SERIE -",
-                "ETAPA": "1ª SERIE - INTEGRAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPADM-ENF-EMP-2ª SERIE -",
-                "ETAPA": "2ª SERIE - INTEGRAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPADM-ENF-EMP-2ª SERIE -",
-                "ETAPA": "2ª SERIE - INTEGRAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPADM-ENF-EMP-2ª SERIE -",
-                "ETAPA": "2ª SERIE - INTEGRAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPADM-ENF-EMP-2ª SERIE -",
-                "ETAPA": "2ª SERIE - INTEGRAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPADM-ENF-EMP-2ª SERIE -",
-                "ETAPA": "2ª SERIE - INTEGRAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPADM-ENF-EMP-2ª SERIE -",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "ESPORTE/CULTURA/CLUBE DE"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPADM-ENF-EMP-3ª SERIE -",
-                "ETAPA": "3ª SERIE - PARCIAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPADM-ENF-EMP-3ª SERIE -",
-                "ETAPA": "3ª SERIE - PARCIAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPADM-ENF-EMP-2ª SERIE -",
-                "ETAPA": "2ª SERIE - INTEGRAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPADM-ENF-EMP-2ª SERIE -",
-                "ETAPA": "2ª SERIE - INTEGRAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPADM-ENF-EMP-2ª SERIE -",
-                "ETAPA": "2ª SERIE - INTEGRAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPADM-ENF-EMP-2ª SERIE -",
-                "ETAPA": "2ª SERIE - INTEGRAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPADM-ENF-EMP-2ª SERIE -",
-                "ETAPA": "2ª SERIE - INTEGRAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPADM-ENF-EMP-2ª SERIE -",
-                "ETAPA": "2ª SERIE - INTEGRAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPADM-ENF-EMP-2ª SERIE -",
-                "ETAPA": "2ª SERIE - INTEGRAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPADM-ENF-EMP-2ª SERIE -",
-                "ETAPA": "2ª SERIE - INTEGRAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPADM-ENF-EMP-2ª SERIE -",
-                "ETAPA": "2ª SERIE - INTEGRAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPADM-ENF-EMP-2ª SERIE -",
-                "ETAPA": "2ª SERIE - INTEGRAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPADM-ENF-EMP-2ª SERIE -",
-                "ETAPA": "2ª SERIE - INTEGRAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPADM-ENF-EMP-2ª SERIE -",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "3ª SERIE - PARCIAL",
+                "DISCIPLINA_DADA": [
+                    "INTELIGÊNCIA ARTIFICIAL"
+                ]
             }
         ]
     },
@@ -3071,22 +3361,26 @@
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPDES-SIS-3ª SERIE - PARCIAL-T-",
-                "ETAPA": "3ª SERIE - PARCIAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPDES-SIS-3ª SERIE - PARCIAL-T-",
-                "ETAPA": "3ª SERIE - PARCIAL"
+                "ETAPA": "3ª SERIE - PARCIAL",
+                "DISCIPLINA_DADA": [
+                    "LÍNGUA ESTRANGEIRA INGLÊS"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPMARK-DIG-3ª SERIE -",
-                "ETAPA": "3ª SERIE - PARCIAL"
+                "ETAPA": "3ª SERIE - PARCIAL",
+                "DISCIPLINA_DADA": [
+                    "LINGUA INGLESA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPSEG-TRAB-2ª SERIE -",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "PERCURSOS DE APROFUNDAMENTO"
+                ]
             }
         ]
     },
@@ -3101,67 +3395,90 @@
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPFARM-1ª SERIE - INTEGRAL-I-B",
-                "ETAPA": "1ª SERIE - INTEGRAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "LINGUA ESPANHOLA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPSEG-TRAB-1ª SERIE -",
-                "ETAPA": "1ª SERIE - INTEGRAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "LINGUA ESPANHOLA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPDES-SIS-1ª SERIE - INTEGRAL-I-",
-                "ETAPA": "1ª SERIE - INTEGRAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "LINGUA ESPANHOLA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPADM-ENF-EMP-1ª SERIE -",
-                "ETAPA": "1ª SERIE - INTEGRAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "LINGUA ESPANHOLA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPFARM-1ª SERIE - INTEGRAL-I-A",
-                "ETAPA": "1ª SERIE - INTEGRAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPADM-ENF-EMP-1ª SERIE -",
-                "ETAPA": "1ª SERIE - INTEGRAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "LINGUA ESPANHOLA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPPROG-JOG-DIG-1ª SERIE -",
-                "ETAPA": "1ª SERIE - INTEGRAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "LINGUA ESPANHOLA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPENF-1ª SERIE - INTEGRAL-I-B",
-                "ETAPA": "1ª SERIE - INTEGRAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "LINGUAGENS E SUAS"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPADM-ENF-EMP-2ª SERIE -",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "PERCURSOS DE APROFUNDAMENTO"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPDES-SIS-2ª SERIE - INTEGRAL-I-",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "PERCURSOS DE APROFUNDAMENTO"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPENF-2ª SERIE - INTEGRAL-I-B",
-                "ETAPA": "2ª SERIE - INTEGRAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPADM-ENF-EMP-2ª SERIE -",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "PERCURSOS DE APROFUNDAMENTO"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPFARM-2ª SERIE - INTEGRAL-I-A",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "PERCURSOS DE APROFUNDAMENTO"
+                ]
             }
         ]
     },
@@ -3178,37 +3495,44 @@
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPFARM-2ª SERIE - INTEGRAL-I-A",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "ANATOMIA E FISIOLOGIA HUMANA",
+                    "MICROBIOLOGIA E IMUNOLOGIA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPFARM-2ª SERIE - INTEGRAL-I-B",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "ANATOMIA E FISIOLOGIA HUMANA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPFARM-3ª SERIE - PARCIAL-M-A",
-                "ETAPA": "3ª SERIE - PARCIAL"
+                "ETAPA": "3ª SERIE - PARCIAL",
+                "DISCIPLINA_DADA": [
+                    "BIOQUÍMICA",
+                    "PROJETO INTEGRADOR /"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPFARM-1ª SERIE - INTEGRAL-I-B",
-                "ETAPA": "1ª SERIE - INTEGRAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPFARM-2ª SERIE - INTEGRAL-I-A",
-                "ETAPA": "2ª SERIE - INTEGRAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPFARM-3ª SERIE - PARCIAL-M-A",
-                "ETAPA": "3ª SERIE - PARCIAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "LEGISLAÇÃO FARMACÊUTICA E"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPFARM-3ª SERIE - PARCIAL-M-B",
-                "ETAPA": "3ª SERIE - PARCIAL"
+                "ETAPA": "3ª SERIE - PARCIAL",
+                "DISCIPLINA_DADA": [
+                    "PROJETO INTEGRADOR /"
+                ]
             }
         ]
     },
@@ -3221,132 +3545,10 @@
             {
                 "ESCOLA": "ESCOLA",
                 "TURMA": "TURMA",
-                "ETAPA": "ETAPA"
-            },
-            {
-                "ESCOLA": "ESCOLA",
-                "TURMA": "TURMA",
-                "ETAPA": "ETAPA"
-            },
-            {
-                "ESCOLA": "ESCOLA",
-                "TURMA": "TURMA",
-                "ETAPA": "ETAPA"
-            },
-            {
-                "ESCOLA": "ESCOLA",
-                "TURMA": "TURMA",
-                "ETAPA": "ETAPA"
-            },
-            {
-                "ESCOLA": "ESCOLA",
-                "TURMA": "TURMA",
-                "ETAPA": "ETAPA"
-            },
-            {
-                "ESCOLA": "ESCOLA",
-                "TURMA": "TURMA",
-                "ETAPA": "ETAPA"
-            },
-            {
-                "ESCOLA": "ESCOLA",
-                "TURMA": "TURMA",
-                "ETAPA": "ETAPA"
-            },
-            {
-                "ESCOLA": "ESCOLA",
-                "TURMA": "TURMA",
-                "ETAPA": "ETAPA"
-            },
-            {
-                "ESCOLA": "ESCOLA",
-                "TURMA": "TURMA",
-                "ETAPA": "ETAPA"
-            },
-            {
-                "ESCOLA": "ESCOLA",
-                "TURMA": "TURMA",
-                "ETAPA": "ETAPA"
-            },
-            {
-                "ESCOLA": "ESCOLA",
-                "TURMA": "TURMA",
-                "ETAPA": "ETAPA"
-            },
-            {
-                "ESCOLA": "ESCOLA",
-                "TURMA": "TURMA",
-                "ETAPA": "ETAPA"
-            },
-            {
-                "ESCOLA": "ESCOLA",
-                "TURMA": "TURMA",
-                "ETAPA": "ETAPA"
-            },
-            {
-                "ESCOLA": "ESCOLA",
-                "TURMA": "TURMA",
-                "ETAPA": "ETAPA"
-            },
-            {
-                "ESCOLA": "ESCOLA",
-                "TURMA": "TURMA",
-                "ETAPA": "ETAPA"
-            },
-            {
-                "ESCOLA": "ESCOLA",
-                "TURMA": "TURMA",
-                "ETAPA": "ETAPA"
-            },
-            {
-                "ESCOLA": "ESCOLA",
-                "TURMA": "TURMA",
-                "ETAPA": "ETAPA"
-            },
-            {
-                "ESCOLA": "ESCOLA",
-                "TURMA": "TURMA",
-                "ETAPA": "ETAPA"
-            },
-            {
-                "ESCOLA": "ESCOLA",
-                "TURMA": "TURMA",
-                "ETAPA": "ETAPA"
-            },
-            {
-                "ESCOLA": "ESCOLA",
-                "TURMA": "TURMA",
-                "ETAPA": "ETAPA"
-            },
-            {
-                "ESCOLA": "ESCOLA",
-                "TURMA": "TURMA",
-                "ETAPA": "ETAPA"
-            },
-            {
-                "ESCOLA": "ESCOLA",
-                "TURMA": "TURMA",
-                "ETAPA": "ETAPA"
-            },
-            {
-                "ESCOLA": "ESCOLA",
-                "TURMA": "TURMA",
-                "ETAPA": "ETAPA"
-            },
-            {
-                "ESCOLA": "ESCOLA",
-                "TURMA": "TURMA",
-                "ETAPA": "ETAPA"
-            },
-            {
-                "ESCOLA": "ESCOLA",
-                "TURMA": "TURMA",
-                "ETAPA": "ETAPA"
-            },
-            {
-                "ESCOLA": "ESCOLA",
-                "TURMA": "TURMA",
-                "ETAPA": "ETAPA"
+                "ETAPA": "ETAPA",
+                "DISCIPLINA_DADA": [
+                    "DISCIPLINA"
+                ]
             }
         ]
     },
@@ -3367,62 +3569,40 @@
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPMARK-DIG-3ª SERIE -",
-                "ETAPA": "3ª SERIE - PARCIAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPMARK-DIG-3ª SERIE -",
-                "ETAPA": "3ª SERIE - PARCIAL"
+                "ETAPA": "3ª SERIE - PARCIAL",
+                "DISCIPLINA_DADA": [
+                    "ANÁLISE DE DADOS PARA",
+                    "E-COMMERCE",
+                    "LEGISLAÇÃO E ÉTICA NO",
+                    "MARKETING EMPREENDEDOR",
+                    "MARKETING MOBILE",
+                    "PLANEJAMENTO ESTRATÉGICO DO",
+                    "PROJETO INTEGRADOR"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPADM-ENF-EMP-1ª SERIE -",
-                "ETAPA": "1ª SERIE - INTEGRAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPADM-ENF-EMP-1ª SERIE -",
-                "ETAPA": "1ª SERIE - INTEGRAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "EDUCAÇÃO FINANCEIRA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPDES-SIS-1ª SERIE - INTEGRAL-I-",
-                "ETAPA": "1ª SERIE - INTEGRAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPMARK-DIG-3ª SERIE -",
-                "ETAPA": "3ª SERIE - PARCIAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPMARK-DIG-3ª SERIE -",
-                "ETAPA": "3ª SERIE - PARCIAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPMARK-DIG-3ª SERIE -",
-                "ETAPA": "3ª SERIE - PARCIAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "EDUCAÇÃO FINANCEIRA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPADM-ENF-EMP-2ª SERIE -",
-                "ETAPA": "2ª SERIE - INTEGRAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPADM-ENF-EMP-2ª SERIE -",
-                "ETAPA": "2ª SERIE - INTEGRAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPMARK-DIG-3ª SERIE -",
-                "ETAPA": "3ª SERIE - PARCIAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPMARK-DIG-3ª SERIE -",
-                "ETAPA": "3ª SERIE - PARCIAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "PERCURSOS DE APROFUNDAMENTO"
+                ]
             }
         ]
     },
@@ -3435,27 +3615,34 @@
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPADM-ENF-EMP-2ª SERIE -",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "MATEMÁTICA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPFARM-2ª SERIE - INTEGRAL-I-A",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "MATEMÁTICA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPENF-2ª SERIE - INTEGRAL-I-B",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "MATEMÁTICA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPDES-SIS-2ª SERIE - INTEGRAL-I-",
-                "ETAPA": "2ª SERIE - INTEGRAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPADM-ENF-EMP-2ª SERIE -",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "MATEMÁTICA"
+                ]
             }
         ]
     },
@@ -3471,82 +3658,93 @@
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPMARK-DIG-3ª SERIE -",
-                "ETAPA": "3ª SERIE - PARCIAL"
+                "ETAPA": "3ª SERIE - PARCIAL",
+                "DISCIPLINA_DADA": [
+                    "EDUCAÇÃO DO TRÂNSITO",
+                    "HISTÓRIA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPDES-SIS-3ª SERIE - PARCIAL-T-",
-                "ETAPA": "3ª SERIE - PARCIAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPDES-SIS-3ª SERIE - PARCIAL-T-",
-                "ETAPA": "3ª SERIE - PARCIAL"
+                "ETAPA": "3ª SERIE - PARCIAL",
+                "DISCIPLINA_DADA": [
+                    "EDUCAÇÃO DO TRÂNSITO",
+                    "HISTÓRIA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPPROG-JOG-DIG-3ª SERIE -",
-                "ETAPA": "3ª SERIE - PARCIAL"
+                "ETAPA": "3ª SERIE - PARCIAL",
+                "DISCIPLINA_DADA": [
+                    "EDUCAÇÃO DO TRÂNSITO",
+                    "HISTÓRIA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPSEG-TRAB-1ª SERIE -",
-                "ETAPA": "1ª SERIE - INTEGRAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "ESPORTE/CULTURA/CLUBE DE"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPPROG-JOG-DIG-1ª SERIE -",
-                "ETAPA": "1ª SERIE - INTEGRAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "ESPORTE/CULTURA/CLUBE DE"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPFARM-3ª SERIE - PARCIAL-M-A",
-                "ETAPA": "3ª SERIE - PARCIAL"
+                "ETAPA": "3ª SERIE - PARCIAL",
+                "DISCIPLINA_DADA": [
+                    "HISTÓRIA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPFARM-3ª SERIE - PARCIAL-M-B",
-                "ETAPA": "3ª SERIE - PARCIAL"
+                "ETAPA": "3ª SERIE - PARCIAL",
+                "DISCIPLINA_DADA": [
+                    "HISTÓRIA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPENF-3ª SERIE - PARCIAL-M-B",
-                "ETAPA": "3ª SERIE - PARCIAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPDES-SIS-3ª SERIE - PARCIAL-T-",
-                "ETAPA": "3ª SERIE - PARCIAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPDES-SIS-3ª SERIE - PARCIAL-T-",
-                "ETAPA": "3ª SERIE - PARCIAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPMARK-DIG-3ª SERIE -",
-                "ETAPA": "3ª SERIE - PARCIAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPPROG-JOG-DIG-3ª SERIE -",
-                "ETAPA": "3ª SERIE - PARCIAL"
+                "ETAPA": "3ª SERIE - PARCIAL",
+                "DISCIPLINA_DADA": [
+                    "HISTÓRIA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPMARK-DIG-2ª SERIE -",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "PERCURSOS DE APROFUNDAMENTO"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPSEG-TRAB-2ª SERIE -",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "PERCURSOS DE APROFUNDAMENTO"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPENF-2ª SERIE - INTEGRAL-I-B",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "PERCURSOS DE APROFUNDAMENTO"
+                ]
             }
         ]
     },
@@ -3561,32 +3759,43 @@
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPFARM-3ª SERIE - PARCIAL-M-B",
-                "ETAPA": "3ª SERIE - PARCIAL"
+                "ETAPA": "3ª SERIE - PARCIAL",
+                "DISCIPLINA_DADA": [
+                    "BIOSSEGURANÇA NO SETOR"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPFARM-3ª SERIE - PARCIAL-M-A",
-                "ETAPA": "3ª SERIE - PARCIAL"
+                "ETAPA": "3ª SERIE - PARCIAL",
+                "DISCIPLINA_DADA": [
+                    "BIOSSEGURANÇA NO SETOR"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPFARM-1ª SERIE - INTEGRAL-I-A",
-                "ETAPA": "1ª SERIE - INTEGRAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "BOAS PRÁTICAS DE MANIPULAÇÃO"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPFARM-1ª SERIE - INTEGRAL-I-B",
-                "ETAPA": "1ª SERIE - INTEGRAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "BOAS PRÁTICAS DE MANIPULAÇÃO"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPFARM-2ª SERIE - INTEGRAL-I-B",
-                "ETAPA": "2ª SERIE - INTEGRAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPFARM-2ª SERIE - INTEGRAL-I-B",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "BOAS PRÁTICAS DE MANIPULAÇÃO",
+                    "GESTÃO NA ORGANIZAÇÃO DE"
+                ]
             }
         ]
     },
@@ -3600,67 +3809,82 @@
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPENF-3ª SERIE - PARCIAL-M-B",
-                "ETAPA": "3ª SERIE - PARCIAL"
+                "ETAPA": "3ª SERIE - PARCIAL",
+                "DISCIPLINA_DADA": [
+                    "EDUCAÇÃO DO TRÂNSITO"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPADM-ENF-EMP-3ª SERIE -",
-                "ETAPA": "3ª SERIE - PARCIAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPADM-ENF-EMP-3ª SERIE -",
-                "ETAPA": "3ª SERIE - PARCIAL"
+                "ETAPA": "3ª SERIE - PARCIAL",
+                "DISCIPLINA_DADA": [
+                    "EDUCAÇÃO DO TRÂNSITO"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPFARM-3ª SERIE - PARCIAL-M-A",
-                "ETAPA": "3ª SERIE - PARCIAL"
+                "ETAPA": "3ª SERIE - PARCIAL",
+                "DISCIPLINA_DADA": [
+                    "EDUCAÇÃO DO TRÂNSITO"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPFARM-3ª SERIE - PARCIAL-M-B",
-                "ETAPA": "3ª SERIE - PARCIAL"
+                "ETAPA": "3ª SERIE - PARCIAL",
+                "DISCIPLINA_DADA": [
+                    "EDUCAÇÃO DO TRÂNSITO"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPDES-SIS-3ª SERIE - PARCIAL-T-",
-                "ETAPA": "3ª SERIE - PARCIAL"
+                "ETAPA": "3ª SERIE - PARCIAL",
+                "DISCIPLINA_DADA": [
+                    "SOCIOLOGIA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPMARK-DIG-3ª SERIE -",
-                "ETAPA": "3ª SERIE - PARCIAL"
+                "ETAPA": "3ª SERIE - PARCIAL",
+                "DISCIPLINA_DADA": [
+                    "SOCIOLOGIA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPSEG-TRAB-1ª SERIE -",
-                "ETAPA": "1ª SERIE - INTEGRAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "SOCIOLOGIA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPDES-SIS-1ª SERIE - INTEGRAL-I-",
-                "ETAPA": "1ª SERIE - INTEGRAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "SOCIOLOGIA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPADM-ENF-EMP-1ª SERIE -",
-                "ETAPA": "1ª SERIE - INTEGRAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPADM-ENF-EMP-1ª SERIE -",
-                "ETAPA": "1ª SERIE - INTEGRAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPDES-SIS-3ª SERIE - PARCIAL-T-",
-                "ETAPA": "3ª SERIE - PARCIAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "SOCIOLOGIA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPPROG-JOG-DIG-1ª SERIE -",
-                "ETAPA": "1ª SERIE - INTEGRAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "SOCIOLOGIA"
+                ]
             }
         ]
     },
@@ -3673,42 +3897,58 @@
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPMARK-DIG-2ª SERIE -",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "ARTE"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPFARM-2ª SERIE - INTEGRAL-I-A",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "ARTE"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPDES-SIS-3ª SERIE - PARCIAL-T-",
-                "ETAPA": "3ª SERIE - PARCIAL"
+                "ETAPA": "3ª SERIE - PARCIAL",
+                "DISCIPLINA_DADA": [
+                    "ARTE"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPENF-2ª SERIE - INTEGRAL-I-B",
-                "ETAPA": "2ª SERIE - INTEGRAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPDES-SIS-3ª SERIE - PARCIAL-T-",
-                "ETAPA": "3ª SERIE - PARCIAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "ARTE"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPSEG-TRAB-2ª SERIE -",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "ARTE"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPFARM-2ª SERIE - INTEGRAL-I-B",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "ARTE"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPMARK-DIG-3ª SERIE -",
-                "ETAPA": "3ª SERIE - PARCIAL"
+                "ETAPA": "3ª SERIE - PARCIAL",
+                "DISCIPLINA_DADA": [
+                    "ARTE"
+                ]
             }
         ]
     },
@@ -3721,27 +3961,34 @@
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPADM-ENF-EMP-2ª SERIE -",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "BIOLOGIA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPDES-SIS-1ª SERIE - INTEGRAL-I-",
-                "ETAPA": "1ª SERIE - INTEGRAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "BIOLOGIA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPENF-2ª SERIE - INTEGRAL-I-B",
-                "ETAPA": "2ª SERIE - INTEGRAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPADM-ENF-EMP-2ª SERIE -",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "BIOLOGIA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPADM-ENF-EMP-1ª SERIE -",
-                "ETAPA": "1ª SERIE - INTEGRAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "BIOLOGIA"
+                ]
             }
         ]
     },
@@ -3757,57 +4004,68 @@
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPFARM-1ª SERIE - INTEGRAL-I-B",
-                "ETAPA": "1ª SERIE - INTEGRAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "ESPORTE/CULTURA/CLUBE DE",
+                    "PROJETO DE"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPADM-ENF-EMP-1ª SERIE -",
-                "ETAPA": "1ª SERIE - INTEGRAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "FUNDAMENTOS DA",
+                    "PROJETO DE"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPFARM-2ª SERIE - INTEGRAL-I-A",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "PERCURSOS DE APROFUNDAMENTO"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPDES-SIS-2ª SERIE - INTEGRAL-I-",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "PERCURSOS DE APROFUNDAMENTO"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPFARM-2ª SERIE - INTEGRAL-I-B",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "PERCURSOS DE APROFUNDAMENTO"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPMARK-DIG-2ª SERIE -",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "PERCURSOS DE APROFUNDAMENTO"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPENF-2ª SERIE - INTEGRAL-I-B",
-                "ETAPA": "2ª SERIE - INTEGRAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPFARM-1ª SERIE - INTEGRAL-I-B",
-                "ETAPA": "1ª SERIE - INTEGRAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPADM-ENF-EMP-1ª SERIE -",
-                "ETAPA": "1ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "PERCURSOS DE APROFUNDAMENTO"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPFARM-1ª SERIE - INTEGRAL-I-A",
-                "ETAPA": "1ª SERIE - INTEGRAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPADM-ENF-EMP-1ª SERIE -",
-                "ETAPA": "1ª SERIE - INTEGRAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "PROJETO DE"
+                ]
             }
         ]
     },
@@ -3830,62 +4088,42 @@
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPADM-ENF-EMP-3ª SERIE -",
-                "ETAPA": "3ª SERIE - PARCIAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPADM-ENF-EMP-3ª SERIE -",
-                "ETAPA": "3ª SERIE - PARCIAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPADM-ENF-EMP-3ª SERIE -",
-                "ETAPA": "3ª SERIE - PARCIAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPADM-ENF-EMP-3ª SERIE -",
-                "ETAPA": "3ª SERIE - PARCIAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPADM-ENF-EMP-3ª SERIE -",
-                "ETAPA": "3ª SERIE - PARCIAL"
+                "ETAPA": "3ª SERIE - PARCIAL",
+                "DISCIPLINA_DADA": [
+                    "AQUISIÇÃO DE CLIENTES",
+                    "CUSTOS E RECEITAS",
+                    "DIREITO EMPRESARIAL",
+                    "GESTÃO DA PRODUÇÃO",
+                    "GESTÃO FINANCEIRA E",
+                    "PROJETO INTEGRADOR - CLIENTE",
+                    "PROJETO INTEGRADOR FINAL -",
+                    "VENDAS"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPADM-ENF-EMP-1ª SERIE -",
-                "ETAPA": "1ª SERIE - INTEGRAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "INTELIGÊNCIA ARTIFICIAL",
+                    "TECNOLOGIA DA INFORMAÇÃO"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPPROG-JOG-DIG-1ª SERIE -",
-                "ETAPA": "1ª SERIE - INTEGRAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "PROJETO DE"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPSEG-TRAB-1ª SERIE -",
-                "ETAPA": "1ª SERIE - INTEGRAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPADM-ENF-EMP-3ª SERIE -",
-                "ETAPA": "3ª SERIE - PARCIAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPADM-ENF-EMP-3ª SERIE -",
-                "ETAPA": "3ª SERIE - PARCIAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPADM-ENF-EMP-1ª SERIE -",
-                "ETAPA": "1ª SERIE - INTEGRAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPADM-ENF-EMP-3ª SERIE -",
-                "ETAPA": "3ª SERIE - PARCIAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "PROJETO DE"
+                ]
             }
         ]
     },
@@ -3898,27 +4136,34 @@
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPFARM-2ª SERIE - INTEGRAL-I-A",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "HISTÓRIA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPMARK-DIG-2ª SERIE -",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "HISTÓRIA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPFARM-2ª SERIE - INTEGRAL-I-B",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "HISTÓRIA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPADM-ENF-EMP-3ª SERIE -",
-                "ETAPA": "3ª SERIE - PARCIAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPADM-ENF-EMP-3ª SERIE -",
-                "ETAPA": "3ª SERIE - PARCIAL"
+                "ETAPA": "3ª SERIE - PARCIAL",
+                "DISCIPLINA_DADA": [
+                    "HISTÓRIA"
+                ]
             }
         ]
     },
@@ -3932,32 +4177,35 @@
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPFARM-2ª SERIE - INTEGRAL-I-B",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "MATEMÁTICA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPADM-ENF-EMP-3ª SERIE -",
-                "ETAPA": "3ª SERIE - PARCIAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPADM-ENF-EMP-3ª SERIE -",
-                "ETAPA": "3ª SERIE - PARCIAL"
+                "ETAPA": "3ª SERIE - PARCIAL",
+                "DISCIPLINA_DADA": [
+                    "MATEMÁTICA"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPMARK-DIG-3ª SERIE -",
-                "ETAPA": "3ª SERIE - PARCIAL"
+                "ETAPA": "3ª SERIE - PARCIAL",
+                "DISCIPLINA_DADA": [
+                    "MATEMÁTICA",
+                    "PERCURSOS DE APROFUNDAMENTO"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPENF-3ª SERIE - PARCIAL-M-B",
-                "ETAPA": "3ª SERIE - PARCIAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPMARK-DIG-3ª SERIE -",
-                "ETAPA": "3ª SERIE - PARCIAL"
+                "ETAPA": "3ª SERIE - PARCIAL",
+                "DISCIPLINA_DADA": [
+                    "MATEMÁTICA"
+                ]
             }
         ]
     },
@@ -3975,42 +4223,37 @@
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPDES-SIS-1ª SERIE - INTEGRAL-I-",
-                "ETAPA": "1ª SERIE - INTEGRAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "ARQUITETURA DE",
+                    "LÓGICA E PROGRAMAÇÃO",
+                    "MÉTODOS ÁGEIS DE",
+                    "MODELAGEM DE BANCO DE"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPDES-SIS-3ª SERIE - PARCIAL-T-",
-                "ETAPA": "3ª SERIE - PARCIAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPDES-SIS-3ª SERIE - PARCIAL-T-",
-                "ETAPA": "3ª SERIE - PARCIAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPDES-SIS-1ª SERIE - INTEGRAL-I-",
-                "ETAPA": "1ª SERIE - INTEGRAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPDES-SIS-1ª SERIE - INTEGRAL-I-",
-                "ETAPA": "1ª SERIE - INTEGRAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPDES-SIS-1ª SERIE - INTEGRAL-I-",
-                "ETAPA": "1ª SERIE - INTEGRAL"
+                "ETAPA": "3ª SERIE - PARCIAL",
+                "DISCIPLINA_DADA": [
+                    "INTELIGÊNCIA ARTIFICIAL"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPMARK-DIG-2ª SERIE -",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "PERCURSOS DE APROFUNDAMENTO"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPDES-SIS-2ª SERIE - INTEGRAL-I-",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "PERCURSOS DE APROFUNDAMENTO"
+                ]
             }
         ]
     },
@@ -4024,42 +4267,59 @@
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPFARM-2ª SERIE - INTEGRAL-I-A",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "LÍNGUA ESTRANGEIRA INGLÊS"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPSEG-TRAB-2ª SERIE -",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "LÍNGUA ESTRANGEIRA INGLÊS"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPMARK-DIG-2ª SERIE -",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "LÍNGUA ESTRANGEIRA INGLÊS"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPADM-ENF-EMP-2ª SERIE -",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "LÍNGUA ESTRANGEIRA INGLÊS",
+                    "PERCURSOS DE APROFUNDAMENTO"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPDES-SIS-2ª SERIE - INTEGRAL-I-",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "LÍNGUA ESTRANGEIRA INGLÊS"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPENF-2ª SERIE - INTEGRAL-I-B",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "LÍNGUA ESTRANGEIRA INGLÊS"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPFARM-2ª SERIE - INTEGRAL-I-B",
-                "ETAPA": "2ª SERIE - INTEGRAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPADM-ENF-EMP-2ª SERIE -",
-                "ETAPA": "2ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "LÍNGUA ESTRANGEIRA INGLÊS"
+                ]
             }
         ]
     },
@@ -4077,32 +4337,22 @@
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPENF-2ª SERIE - INTEGRAL-I-B",
-                "ETAPA": "2ª SERIE - INTEGRAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPENF-2ª SERIE - INTEGRAL-I-B",
-                "ETAPA": "2ª SERIE - INTEGRAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPENF-1ª SERIE - INTEGRAL-I-B",
-                "ETAPA": "1ª SERIE - INTEGRAL"
+                "ETAPA": "2ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "ENFERMAGEM EM SAÚDE DA",
+                    "ENFERMAGEM EM SAÚDE DO"
+                ]
             },
             {
                 "ESCOLA": "CETI CALISTO LOBO",
                 "TURMA": "EMTPENF-1ª SERIE - INTEGRAL-I-B",
-                "ETAPA": "1ª SERIE - INTEGRAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPENF-1ª SERIE - INTEGRAL-I-B",
-                "ETAPA": "1ª SERIE - INTEGRAL"
-            },
-            {
-                "ESCOLA": "CETI CALISTO LOBO",
-                "TURMA": "EMTPENF-1ª SERIE - INTEGRAL-I-B",
-                "ETAPA": "1ª SERIE - INTEGRAL"
+                "ETAPA": "1ª SERIE - INTEGRAL",
+                "DISCIPLINA_DADA": [
+                    "ESPORTE/CULTURA/CLUBE DE",
+                    "ÉTICA, BIOÉTICA E LEGISLAÇÃO",
+                    "MICROBIOLOGIA, PARASITOLOGIA",
+                    "SEMIOLOGIA E SEMIOTÉCNICA"
+                ]
             }
         ]
     }
