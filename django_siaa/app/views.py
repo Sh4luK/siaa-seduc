@@ -10,6 +10,7 @@ from pathlib import Path
 from .funcs import ip
 from .funcs.get_ip import get_ip
 from .models import Estudante
+from .models import Professor
 
 # from django.contrib.auth.models import User
 # from django.contrib.auth import authenticate, login
@@ -179,3 +180,25 @@ def auth_student(request):
         })
         
     
+
+@csrf_exempt
+def login_teacher(request):
+    ip = get_ip()
+    print(ip)
+    nome_completo = request.GET.get("nome_completo").strip().upper()
+    senha = request.GET.get("senha").strip().upper()
+
+
+    getProfessor = Professor.objects.filter(nome_completo=nome_completo, senha=senha).first()
+
+    print(getProfessor)
+
+    if getProfessor is None:
+        return JsonResponse({
+            "return": False
+        })
+    else:
+        updateProfessor = Professor.objects.filter(nome_completo=nome_completo, senha=senha).update(ip=ip)
+        return JsonResponse({
+            "return": True
+        })
