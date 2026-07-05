@@ -202,3 +202,49 @@ def login_teacher(request):
         return JsonResponse({
             "return": True
         })
+
+@csrf_exempt
+def auth_teacher(request):
+    ip = get_ip()
+    teacher = Professor.objects.filter(ip=ip).first()
+    print(teacher)
+    try:
+        teacher = model_to_dict(teacher)
+        print(teacher)
+        if teacher is None:
+            return JsonResponse({
+                "return": False
+            })
+        else:
+            return JsonResponse({
+                "return": True,
+                "teacher": teacher
+            })
+    except:
+        return JsonResponse({
+            "return": None,
+            "message": "error"
+        })
+        
+def search_teacher(request):
+    nome_completo = request.GET.get("nome_completo").strip().upper()
+
+    try:
+        professor = Professor.objects.filter(nome_completo=nome_completo).first()
+        professor_dict = model_to_dict(professor)
+        if professor is None:
+            return JsonResponse({
+                "return": False
+            })
+        else:
+            return JsonResponse({
+                "return": True,
+                "teacher": professor_dict
+            })
+    except:
+        return JsonResponse({
+            "return": False,
+            "message": "Erro na procura do Professor."
+        })
+
+        
