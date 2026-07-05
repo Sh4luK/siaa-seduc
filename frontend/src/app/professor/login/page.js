@@ -4,8 +4,8 @@ import "bootstrap/dist/css/bootstrap.min.css"
 import logo from "../../../assets/logo.png"
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
-
-
+import styles from "../page.module.css"
+import Image from "next/image"
 export default function ProfessorLoginPage(){
     const [nomeCompleto, setNomeCompleto] = useState("")
     const [senhaReadOnly, setSenhaReadOnly] = useState(true)
@@ -14,6 +14,7 @@ export default function ProfessorLoginPage(){
     const [password, setPassword] = useState("")
     const [authenticated, setAuthenticated] = useState(null)
     const [loadingAuth, setloadingAuth] = useState(true)
+    const [error, setError] = useState("")
     const router = useRouter()
 
     async function verify_full_name(){
@@ -65,10 +66,11 @@ export default function ProfessorLoginPage(){
             if(data.return === true){
                 router.push("/professor")
             }else{
-                window.alert("Senha incorreta.")
+                setError("Nome completo ou senha incorretos. Verifique suas credenciais.")
             }
         }catch(error){
             console.log(error)
+            setError("Usuário não encontrado! Verifique suas credenciais.")
         }
     }
     useEffect(()=>{
@@ -107,6 +109,7 @@ export default function ProfessorLoginPage(){
         router.push("/professor")
     }
 
+    /*
     return (
         <div className="d-flex justify-content-center align-items-center vh-100">
             <div className="card shadow" style={{ padding: "10px", borderRadius: "10px" }}>
@@ -156,4 +159,66 @@ export default function ProfessorLoginPage(){
             </div>
         </div>
     )
+    */
+   return (
+        <div className={styles.page}>
+            <div className={styles.card}>
+                <div className={styles.cardBody}>
+                <div className={styles.masthead}>
+                    <Image src={logo} alt="Logo do SIAA" className={styles.logo} priority />
+                    <p className={styles.eyebrow}>SIAA · Acesso do professor</p>
+                    <h2 className={styles.title}>Login do professor</h2>
+                </div>
+
+                <div className={styles.form}>
+                    <div className={styles.field}>
+                    <label className={styles.label}>
+                        Nome Completo <span className={styles.required}>*</span>
+                    </label>
+                    <input
+                        type="text"
+                        className={styles.input}
+                        name="matricula"
+                        value={nomeCompleto}
+                        onChange={(e) => setNomeCompleto(e.target.value)}
+                    />
+                    </div>
+
+                    <div className={styles.field}>
+                    <label className={styles.label}>
+                        Senha <span className={styles.required}>*</span>
+                    </label>
+                    <input
+                        type="password"
+                        className={styles.input}
+                        placeholder="Digite sua senha"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                    />
+                    </div>
+
+                    {/* {message && <small className={styles.hint}>{message}</small>} */}
+                    {error && (
+                        <div className={styles.errorBox} role="alert">
+                            <span className={styles.errorIcon} aria-hidden="true">!</span>
+                            <small>{error}</small>
+                        </div>
+                    )}
+
+                    <button
+                    onClick={auth_teacher_button}
+                    className={styles.submitButton}
+                    disabled={loading}
+                    >
+                    {loading ? "Entrando…" : "Entrar"}
+                    </button>
+                </div>
+                </div>
+
+                <footer className={styles.footer}>
+                <small>&copy; 2026 SEDUC-PI. Todos os direitos reservados.</small>
+                </footer>
+            </div>
+        </div>
+    );
 }
