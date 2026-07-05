@@ -8,5 +8,7 @@ urlpatterns = [
     path('api/students/search', app.views.search_student, name='general_student_search'),
     path("api/students/login", app.views.login_student, name="login_student"),
     path("api/students/auth", app.views.auth_student, name="auth_student"),
-    path("api/teacher/login", app.views.login_teacher, name="login_teacher")
+    path("api/teacher/login", app.views.login_teacher, name="login_teacher"),
+    path("api/teacher/auth", app.views.auth_teacher, name="authentication_teacher"),
+    path("api/teacher/search", app.views.search_teacher, name="search_teacher")
 ]
