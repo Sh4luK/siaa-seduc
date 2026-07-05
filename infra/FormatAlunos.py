@@ -18,7 +18,6 @@ def extrair_e_formatar_pdf(caminho_pdf, caminho_json):
                 continue
                 
             try:
-                # 1. Escola, Período e Modo de Ensino
                 escola_match = re.search(r"\d+ - CETI\s+[^\n]+", texto)
                 escola = escola_match.group(0).strip() if escola_match else "CETI CALISTO LOBO"
                 
@@ -29,7 +28,6 @@ def extrair_e_formatar_pdf(caminho_pdf, caminho_json):
                 
                 modo_ensino = "ENSINO MEDIO TECNICO PROFISSIONAL"
 
-                # 2. CAPTURA DA TURMA EXATA (Ex: EMTPDES-SIS-2ª SERIE - INTEGRAL-I-A)
                 match_turma_codigo = re.search(r"([A-Z0-9\-]+\s*-\s*\d[ªa]??\s*SERIE\s*-\s*INTEGRAL\s*-\s*I\s*-\s*[A-Z])", texto, re.IGNORECASE)
                 
                 if match_turma_codigo:
@@ -40,27 +38,21 @@ def extrair_e_formatar_pdf(caminho_pdf, caminho_json):
                 else:
                     turma = "EMTPADM-ENF-EMP-1ª SERIE - INTEGRAL-I-A"
 
-                # 3. CAPTURA DO CURSO EXATO (Abordagem baseada em conteúdo unificado)
-                # Criamos uma cópia do texto sem quebras de linha para evitar cortes prematuros
                 texto_corrido = texto.replace('\n', ' ').replace('\r', ' ')
                 texto_corrido = re.sub(r'\s+', ' ', texto_corrido).upper()
                 
-                # Procura diretamente pela palavra TÉCNICO ou TECNICO até encontrar a especialidade
                 match_curso_texto = re.search(r"(T[ÉE]CNICO\s+EM\s+[A-ZÁÉÍÓÚÂÊÔÇÃÕÀÈÌÒÙ ]+)", texto_corrido, re.IGNORECASE)
                 
                 if match_curso_texto:
                     curso_limpo = match_curso_texto.group(1).strip()
                     
-                    # Corta o texto caso apareça o delimitador da turma ou "COM" grudado
                     curso_limpo = re.split(r'\s+COM\s+|\s+EMTP|\s+\d[ªA]', curso_limpo)[0].strip()
                     
-                    # Remove acentuação para manter idêntico ao seu exemplo
                     correcoes_acentos = {'É': 'E', 'Ó': 'O', 'Í': 'I', 'Ú': 'U', 'Á': 'A', 'Ç': 'C', 'Ã': 'A', 'Õ': 'O', 'Â': 'A', 'Ê': 'E', 'Ô': 'O'}
                     for caractere, substituto in correcoes_acentos.items():
                         curso_limpo = curso_limpo.replace(caractere, substituto)
                     curso = curso_limpo
                 else:
-                    # Fallback por palavra-chave se a extração falhar por completo
                     if "ADMINISTRA" in texto_corrido:
                         curso = "TECNICO EM ADMINISTRACAO"
                     elif "SISTEMA" in texto_corrido or "DESENVOLVIMENTO" in texto_corrido:
@@ -68,11 +60,9 @@ def extrair_e_formatar_pdf(caminho_pdf, caminho_json):
                     else:
                         curso = "TECNICO EM ADMINISTRACAO"
 
-                # 4. Série isolada
                 match_serie = re.search(r"(\d)[ªaÂÃ]??\s*SERIE", texto, re.IGNORECASE)
                 serie = f"{match_serie.group(1)}ª SERIE - INTEGRAL" if match_serie else "1ª SERIE - INTEGRAL"
 
-                # 5. Captura dos Alunos (Limpa encodings e converte em Caixa Alta)
                 alunos = []
                 texto_limpo_alunos = texto.replace('Ã‰', 'É').replace('Ã ', 'À').replace('Ã', 'Á').replace('Ã“', 'Ó').replace('Ãš', 'Ú').replace('Ã‚', 'Â').replace('ÃŠ', 'Ê').replace('Ã”', 'Ô').replace('Ã‡', 'Ç').replace('Ãƒ', 'Ã').replace('Ã•', 'Õ')
                 linhas_alunos = re.findall(r"^(\d+)\s+([A-ZÁÉÍÓÚÂÊÔÇÃÕÀÈÌÒÙ ]+?)\s*$", texto_limpo_alunos, re.MULTILINE)
@@ -102,7 +92,6 @@ def extrair_e_formatar_pdf(caminho_pdf, caminho_json):
         
     print(f"\nProcesso concluído! O arquivo foi salvo em: '{caminho_json}'")
 
-# Execução do script
 caminho_entrada = "turmasCalistoLobo.pdf"
 caminho_saida = "alunos_formatados.json"
 

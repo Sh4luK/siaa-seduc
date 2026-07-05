@@ -46,13 +46,11 @@ df_filtrado = df_filtrado[~termo_filtro.str.contains('TOTAL', na=False)]
 
 resultado_agrupado = []
 
-# Iteração corrigida por professor
 for professor, dados_professor in df_filtrado.groupby('PROFESSOR'):
     
     lista_disciplinas_global = dados_professor['DISCIPLINA'].dropna().unique().tolist()
     lista_disciplinas_global = [d for d in lista_disciplinas_global if d and str(d).upper() != 'NONE']
     
-    # Dicionário auxiliar para unificar as salas e coletar as disciplinas sem dar KeyError
     salas_dict = {}
     
     for linha in dados_professor.to_dict(orient='records'):
@@ -61,18 +59,15 @@ for professor, dados_professor in df_filtrado.groupby('PROFESSOR'):
         etapa_val = linha.get('ETAPA')
         disciplina_linha = linha.get('DISCIPLINA')
         
-        # Ignora linhas totalmente nulas de turma ou escola
         if not escola_val or not turma_val:
             continue
             
         escola_key = str(escola_val).strip().upper()
         turma_key = str(turma_val).strip().upper()
         
-        # Cria a chave composta para agrupar as disciplinas daquela sala específica
         chave_composta_sala = f"{escola_key}||{turma_key}"
         
         if chave_composta_sala not in salas_dict:
-            # FORMATO SOLICITADO: Apenas ESCOLA, TURMA, ETAPA e a lista DISCIPLINA_DADA
             salas_dict[chave_composta_sala] = {
                 "ESCOLA": escola_key,
                 "TURMA": turma_key,
@@ -80,13 +75,11 @@ for professor, dados_professor in df_filtrado.groupby('PROFESSOR'):
                 "DISCIPLINA_DADA": []
             }
             
-        # Adiciona a disciplina na lista se for válida e não estiver repetida na mesma sala
         if disciplina_linha and str(disciplina_linha).upper() != 'NONE':
             disciplina_formatada = str(disciplina_linha).strip().upper()
             if disciplina_formatada not in salas_dict[chave_composta_sala]["DISCIPLINA_DADA"]:
                 salas_dict[chave_composta_sala]["DISCIPLINA_DADA"].append(disciplina_formatada)
 
-    # Converte o agrupamento das salas em uma lista limpa
     historico_atividades = list(salas_dict.values())
     
     resultado_agrupado.append({
