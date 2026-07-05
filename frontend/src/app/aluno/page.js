@@ -19,7 +19,7 @@ export default function alunoPage(){
     useEffect(()=>{
         async function verifyAuthentication(){
             try {
-                const url = "https://friendly-space-computing-machine-7v457jp474w72q46-8000.app.github.dev/api/students/auth"
+                const url = "https://cautious-disco-4j9vqpw9qp7qh5r55-8000.app.github.dev/api/students/auth"
                 const response = await fetch(url)
                 const data = await response.json()
                 console.log(data)
@@ -37,7 +37,7 @@ export default function alunoPage(){
             }
         }
         async function getStudent(){
-            const url = "https://friendly-space-computing-machine-7v457jp474w72q46-8000.app.github.dev/api/students/auth"
+            const url = "https://cautious-disco-4j9vqpw9qp7qh5r55-8000.app.github.dev/api/students/auth"
 
             fetch(url)
             .then((res)=>{

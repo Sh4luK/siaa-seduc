@@ -43,10 +43,10 @@ export default function Home() {
           {/* <p className="card-text mb-4"></p> */}
           <p className="card-text mb-4">Como deseja acessar o sistema?</p>
           <div className="d-grid gap-2">
-            <a href="/aluno/login" className="btn btn-success">Aluno</a>
-            <a href="/responsavel/login" className="btn btn-success">Responsável</a>
-            <a href="/professor/login" className="btn btn-success">Professor</a>
-            <a href="/administrador/login" className="btn btn-success">Administrador</a>
+            <a href="/aluno" className="btn btn-success">Aluno</a>
+            <a href="/responsavel" className="btn btn-success">Responsável</a>
+            <a href="/professor" className="btn btn-success">Professor</a>
+            <a href="/administrador" className="btn btn-success">Administrador</a>
           </div>
         </div>
         <div className="card-footer text-muted text-center">
