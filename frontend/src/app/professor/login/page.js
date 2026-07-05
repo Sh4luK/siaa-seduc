@@ -11,7 +11,7 @@ export default function ProfessorLoginPage(){
     const [senhaReadOnly, setSenhaReadOnly] = useState(true)
     const [loading, setLoading] = useState(false)
     const [message, setMessage] = useState("")
-    const [password, setPassword] = useState(true)
+    const [password, setPassword] = useState("")
     const [authenticated, setAuthenticated] = useState(null)
     const [loadingAuth, setloadingAuth] = useState(true)
     const router = useRouter()
@@ -131,25 +131,25 @@ export default function ProfessorLoginPage(){
                                 <button onClick={verify_full_name} className="btn btn-sm btn-outline-success" disabled={loading}>
                                     {loading ? "Verificando..." : "Verificar"}
                                 </button>
-                                {message && <small className="text-muted">{message}</small>}
                             </div>
-                            <div className="mb-2">
-                                <label className="form-label">
-                                    Senha <strong className="text-danger">*</strong>
-                                </label>
-                                <input
-                                    type="password"
-                                    readOnly={senhaReadOnly}
-                                    placeholder={senhaReadOnly ? "Verifique o nome primeiro" : "Digite sua senha"}
-                                    style={{ background: senhaReadOnly ? "#e9e9e9" : "#ffffff" }}
-                                    className="form-control"
-                                    value={password}
-                                    onChange={(e) => setPassword(e.target.value)}
-                                />
-                            </div>
-                            <div className="d-grid gap-2">
-                                <button onClick={auth_teacher_button} className="btn btn-success"><strong>Entrar</strong></button>
-                            </div>
+                            {message && <small className="text-muted">{message}</small>}
+                        </div>
+                        <div className="mb-2">
+                            <label className="form-label">
+                                Senha <strong className="text-danger">*</strong>
+                            </label>
+                            <input
+                                type="password"
+                                readOnly={senhaReadOnly}
+                                placeholder={senhaReadOnly ? "Verifique o nome primeiro" : "Digite sua senha"}
+                                style={{ background: senhaReadOnly ? "#e9e9e9" : "#ffffff" }}
+                                className="form-control"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                            />
+                        </div>
+                        <div className="d-grid gap-2">
+                            <button onClick={auth_teacher_button} className="btn btn-success"><strong>Entrar</strong></button>
                         </div>
                     </div>
                 </div>
