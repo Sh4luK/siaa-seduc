@@ -3,6 +3,9 @@
 import logo from "../../assets/logo.png"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
+import Image from "next/image"
+import Link from "next/link"
+import styles from "./page.module.css"
 
 export default function Professor(){
     const [authenticated, setAuthenticated] = useState(null)
@@ -54,15 +57,18 @@ export default function Professor(){
         verifyAuthentication()
     }, [])
 
-    if(loading){
+    if (loading) {
         return (
-            <div className="d-flex justify-content-center align-items-center vh-100">
-                <div className="text-center">
-                    <img src={logo.src} alt="Logo" style={{ width: "200px", height: "auto" }} />
+            <div className={styles.page}>
+                <div className={styles.loadingWrap}>
+                    <Image src={logo} alt="Logo do SIAA" className={styles.loadingLogo} priority />
+                    <div className={styles.loadingBar}>
+                        <span className={styles.loadingBarFill} />
+                    </div>
+                    <p className={styles.loadingText}>Verificando credenciais…</p>
                 </div>
-                <p>Verificando Credenciais...</p>
             </div>
-        )
+        );
     }
     if(authenticated === true){
         return (
