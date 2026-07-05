@@ -146,7 +146,7 @@ export default function AlunoLoginPage(){
                                     value={fullName}
                                     onChange={(e) => setFullName(e.target.value)}
                                 />
-                                <button onClick={verify_full_name} className="btn btn-primary btn-sm" disabled={loading}>
+                                <button onClick={verify_full_name} className="btn btn-outline-success btn-sm" disabled={loading}>
                                     {loading ? 'Verificando...' : 'Verificar'}
                                 </button>
                             </div>
