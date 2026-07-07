@@ -54,8 +54,8 @@ export default function Professor(){
             setIp(data["teacher"]["ip"])
             //============================
 
-            //===Search Turmas===
 
+            //===Search Turmas===
             //===================
             
             /*
@@ -73,19 +73,6 @@ export default function Professor(){
                 setNomeCompleto("Erro ao carregar.")
             })
             */
-        }
-        async function getTurmas(){
-          const url = `https://cautious-disco-4j9vqpw9qp7qh5r55-8000.app.github.dev/api/teacher/search/turmas?nome_completo=${encodeURIComponent(nomeCompleto)}`
-          console.log(nomeCompleto)
-          fetch(url)
-          .then((res)=>{
-            if(!res.ok) throw new Error()
-            return res.json()
-          }).then((data)=>{
-            console.log(data)
-          }).catch((error)=>{
-            console.log(error)
-          })
         }
         getData()
         // getTurmas()
