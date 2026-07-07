@@ -6,7 +6,7 @@ import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import styles from "../page.module.css"
 import Image from "next/image"
-export default function ProfessorLoginPage(){
+export default function ProfessorLoginPage() {
     const [nomeCompleto, setNomeCompleto] = useState("")
     const [senhaReadOnly, setSenhaReadOnly] = useState(true)
     const [loading, setLoading] = useState(false)
@@ -17,8 +17,8 @@ export default function ProfessorLoginPage(){
     const [error, setError] = useState("")
     const router = useRouter()
 
-    async function verify_full_name(){
-        if(!nomeCompleto.trim()){
+    async function verify_full_name() {
+        if (!nomeCompleto.trim()) {
             setMessage("Por favor, digite seu nome completo.")
             return
         }
@@ -26,7 +26,7 @@ export default function ProfessorLoginPage(){
         setLoading(true)
         setMessage("")
 
-        try{
+        try {
             const response = await fetch(`https://cautious-disco-4j9vqpw9qp7qh5r55-8000.app.github.dev/api/teacher/search?nome_completo=${encodeURIComponent(nomeCompleto)}`)
             const data = await response.json()
             const clearName = (text) => {
@@ -37,58 +37,58 @@ export default function ProfessorLoginPage(){
                     .toUpperCase()
                     .trim()
                     .replace(/\s+/g, ' ');
-                };
+            };
             const nameSearched = clearName(nomeCompleto.trim().toUpperCase().replace(/\s+/g, ' '))
             const teacherNameOnDataBase = clearName(data?.teacher?.nome_completo)
                 ? data.teacher.nome_completo.trim().toUpperCase().replace(/\s+/g, ' ')
                 : '';
-            
-                if(teacherNameOnDataBase && teacherNameOnDataBase === nameSearched){
-                    setSenhaReadOnly(false)
-                    setMessage("Usuário encontrado! Agora insira sua senha.")
-                }else{
-                    setSenhaReadOnly(true)
-                    setMessage("Estudante não encontrado no sistema.")
-                }
-        }catch(error){
+
+            if (teacherNameOnDataBase && teacherNameOnDataBase === nameSearched) {
+                setSenhaReadOnly(false)
+                setMessage("Usuário encontrado! Agora insira sua senha.")
+            } else {
+                setSenhaReadOnly(true)
+                setMessage("Estudante não encontrado no sistema.")
+            }
+        } catch (error) {
             console.log(error)
             setMessage("Erro ao conectar com o servidor.")
             setSenhaReadOnly(true)
-        }finally{
+        } finally {
             setLoading(false)
-        }  
+        }
     }
-    async function auth_teacher_button(){
-        try{
+    async function auth_teacher_button() {
+        try {
             const url = `https://cautious-disco-4j9vqpw9qp7qh5r55-8000.app.github.dev/api/teacher/login?nome_completo=${encodeURIComponent(nomeCompleto)}&senha=${password}`
             const teacher_login = await fetch(url)
             const data = await teacher_login.json()
-            if(data.return === true){
+            if (data.return === true) {
                 router.push("/professor")
-            }else{
+            } else {
                 setError("Nome completo ou senha incorretos. Verifique suas credenciais.")
             }
-        }catch(error){
+        } catch (error) {
             console.log(error)
             setError("Usuário não encontrado! Verifique suas credenciais.")
         }
     }
-    useEffect(()=>{
-        async function verifyAuth(){
-            try{
+    useEffect(() => {
+        async function verifyAuth() {
+            try {
                 const url = "https://cautious-disco-4j9vqpw9qp7qh5r55-8000.app.github.dev/api/teacher/auth"
                 const response = await fetch(url)
                 const data = await response.json()
 
-                if(data.return === true){
+                if (data.return === true) {
                     setAuthenticated(true)
                     router.push("/professor")
-                }else{
+                } else {
                     setAuthenticated(false)
                 }
-            }catch(error){
+            } catch (error) {
                 setAuthenticated(false)
-            }finally{
+            } finally {
                 setloadingAuth(false)
             }
         }
@@ -96,7 +96,7 @@ export default function ProfessorLoginPage(){
         verifyAuth()
     }, [router])
 
-    if(loadingAuth){
+    if (loadingAuth) {
         <div className="d-flex justify-content-center align-items-center vh-100">
             <div className="text-center">
                 <img src={logo.src} alt="Logo" style={{ width: "200px", height: "auto" }} />
@@ -105,7 +105,7 @@ export default function ProfessorLoginPage(){
         </div>
     }
 
-    if(authenticated === true){
+    if (authenticated === true) {
         router.push("/professor")
     }
 
@@ -160,63 +160,63 @@ export default function ProfessorLoginPage(){
         </div>
     )
     */
-   return (
+    return (
         <div className={styles.page}>
             <div className={styles.card}>
                 <div className={styles.cardBody}>
-                <div className={styles.masthead}>
-                    <Image src={logo} alt="Logo do SIAA" className={styles.logo} priority />
-                    <p className={styles.eyebrow}>SIAA · Acesso do professor</p>
-                    <h2 className={styles.title}>Login do professor</h2>
-                </div>
-
-                <div className={styles.form}>
-                    <div className={styles.field}>
-                    <label className={styles.label}>
-                        Nome Completo <span className={styles.required}>*</span>
-                    </label>
-                    <input
-                        type="text"
-                        className={styles.input}
-                        name="matricula"
-                        value={nomeCompleto}
-                        onChange={(e) => setNomeCompleto(e.target.value)}
-                    />
+                    <div className={styles.masthead}>
+                        <Image src={logo} alt="Logo do SIAA" className={styles.logo} priority />
+                        <p className={styles.eyebrow}>SIAA · Acesso do professor</p>
+                        <h2 className={styles.title}>Login do professor</h2>
                     </div>
 
-                    <div className={styles.field}>
-                    <label className={styles.label}>
-                        Senha <span className={styles.required}>*</span>
-                    </label>
-                    <input
-                        type="password"
-                        className={styles.input}
-                        placeholder="Digite sua senha"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                    />
-                    </div>
-
-                    {/* {message && <small className={styles.hint}>{message}</small>} */}
-                    {error && (
-                        <div className={styles.errorBox} role="alert">
-                            <span className={styles.errorIcon} aria-hidden="true">!</span>
-                            <small>{error}</small>
+                    <div className={styles.form}>
+                        <div className={styles.field}>
+                            <label className={styles.label}>
+                                Nome Completo <span className={styles.required}>*</span>
+                            </label>
+                            <input
+                                type="text"
+                                className={styles.input}
+                                name="matricula"
+                                value={nomeCompleto}
+                                onChange={(e) => setNomeCompleto(e.target.value)}
+                            />
                         </div>
-                    )}
 
-                    <button
-                    onClick={auth_teacher_button}
-                    className={styles.submitButton}
-                    disabled={loading}
-                    >
-                    {loading ? "Entrando…" : "Entrar"}
-                    </button>
-                </div>
+                        <div className={styles.field}>
+                            <label className={styles.label}>
+                                Senha <span className={styles.required}>*</span>
+                            </label>
+                            <input
+                                type="password"
+                                className={styles.input}
+                                placeholder="Digite sua senha"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                            />
+                        </div>
+
+                        {/* {message && <small className={styles.hint}>{message}</small>} */}
+                        {error && (
+                            <div className={styles.errorBox} role="alert">
+                                <span className={styles.errorIcon} aria-hidden="true">!</span>
+                                <small>{error}</small>
+                            </div>
+                        )}
+
+                        <button
+                            onClick={auth_teacher_button}
+                            className={styles.submitButton}
+                            disabled={loading}
+                        >
+                            {loading ? "Entrando…" : "Entrar"}
+                        </button>
+                    </div>
                 </div>
 
                 <footer className={styles.footer}>
-                <small>&copy; 2026 SEDUC-PI. Todos os direitos reservados.</small>
+                    <small>&copy; 2026 SEDUC-PI. Todos os direitos reservados.</small>
                 </footer>
             </div>
         </div>

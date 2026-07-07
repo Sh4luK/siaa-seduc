@@ -7,7 +7,7 @@ import axios from "axios"
 import styles from "./page.module.css"
 import Image from "next/image"
 import Link from "next/link"
-export default function alunoPage(){
+export default function alunoPage() {
     const [authenticated, setAuthenticated] = useState(null)
     const [loading, setLoading] = useState(true)
     const [nomeCompleto, setNomeCompleto] = useState("")
@@ -19,42 +19,42 @@ export default function alunoPage(){
     const [menuOpen, setMenuOpen] = useState(false);
     const router = useRouter()
 
-    useEffect(()=>{
-        async function verifyAuthentication(){
+    useEffect(() => {
+        async function verifyAuthentication() {
             try {
                 const url = "https://cautious-disco-4j9vqpw9qp7qh5r55-8000.app.github.dev/api/students/auth"
                 const response = await fetch(url)
                 const data = await response.json()
                 console.log(data)
-                if(data.return === true){
+                if (data.return === true) {
                     setAuthenticated(true)
-                }else{
+                } else {
                     setAuthenticated(false)
                     router.push("/aluno/login")
                 }
-            } catch(error){
+            } catch (error) {
                 setAuthenticated(false)
                 router.push("/aluno/login")
-            } finally{
+            } finally {
                 setLoading(false)
             }
         }
-        async function getStudent(){
+        async function getStudent() {
             const url = "https://cautious-disco-4j9vqpw9qp7qh5r55-8000.app.github.dev/api/students/auth"
 
             fetch(url)
-            .then((res)=>{
-                if(!res.ok) throw new Error()
-                return res.json()
-            }).then((data)=>{
-                setNomeCompleto(data["student"]["nome_completo"] || "Não encontrado.")
-                setPeriodo(data["student"]["periodo"])
-                setEscola(data["student"]["escola"])
-                setSerie(data["student"]["serie"])
-                setTurma(data["student"]["turma"])
-            }).catch((error)=>{
-                setNomeCompleto("Erro ao carregar.")
-            })
+                .then((res) => {
+                    if (!res.ok) throw new Error()
+                    return res.json()
+                }).then((data) => {
+                    setNomeCompleto(data["student"]["nome_completo"] || "Não encontrado.")
+                    setPeriodo(data["student"]["periodo"])
+                    setEscola(data["student"]["escola"])
+                    setSerie(data["student"]["serie"])
+                    setTurma(data["student"]["turma"])
+                }).catch((error) => {
+                    setNomeCompleto("Erro ao carregar.")
+                })
         }
         getStudent()
         verifyAuthentication()
@@ -146,90 +146,90 @@ export default function alunoPage(){
     }
 
     */
-   if (authenticated === true) {
-    const firstName = nomeCompleto.split(" ")[0];
+    if (authenticated === true) {
+        const firstName = nomeCompleto.split(" ")[0];
 
-    return (
-        <div className={styles.page}>
-        <div className={styles.shell}>
-            <aside className={`${styles.sidebar} ${menuOpen ? styles.sidebarOpen : ""}`}>
-            <div className={styles.sidebarHeader}>
-                <Image src={logo} alt="Logo do SIAA" className={styles.sidebarLogo} priority />
-                <span className={styles.sidebarBrand}>SIAA</span>
+        return (
+            <div className={styles.page}>
+                <div className={styles.shell}>
+                    <aside className={`${styles.sidebar} ${menuOpen ? styles.sidebarOpen : ""}`}>
+                        <div className={styles.sidebarHeader}>
+                            <Image src={logo} alt="Logo do SIAA" className={styles.sidebarLogo} priority />
+                            <span className={styles.sidebarBrand}>SIAA</span>
+                        </div>
+
+                        <nav className={styles.nav}>
+                            <Link href="/aluno" className={styles.navLinkActive}>
+                                <i className="ti ti-home" aria-hidden="true" />
+                                Início
+                            </Link>
+                            <Link href="/aluno/conteudos" className={styles.navLink}>
+                                <i className="ti ti-book" aria-hidden="true" />
+                                Conteúdos
+                            </Link>
+                            <Link href="/aluno/atividades" className={styles.navLink}>
+                                <i className="ti ti-clipboard-list" aria-hidden="true" />
+                                Atividades
+                            </Link>
+                            <Link href="/aluno/boletim" className={styles.navLink}>
+                                <i className="ti ti-report" aria-hidden="true" />
+                                Boletim
+                            </Link>
+                            <Link href="/aluno/cronograma" className={styles.navLink}>
+                                <i className="ti ti-calendar" aria-hidden="true" />
+                                Cronograma
+                            </Link>
+                            <Link href="/aluno/horarios" className={styles.navLink}>
+                                <i className="ti ti-clock" aria-hidden="true" />
+                                Horários
+                            </Link>
+                        </nav>
+
+                        <div className={styles.sidebarFooter}>
+                            <span className={styles.studentName}>{nomeCompleto}</span>
+                            <span className={styles.studentClass}>{turma}</span>
+                        </div>
+                    </aside>
+
+                    {menuOpen && (
+                        <button
+                            className={styles.overlay}
+                            aria-label="Fechar menu"
+                            onClick={() => setMenuOpen(false)}
+                        />
+                    )}
+
+                    <div className={styles.content}>
+                        <header className={styles.topbar}>
+                            <button
+                                className={styles.menuButton}
+                                aria-label="Abrir menu"
+                                onClick={() => setMenuOpen(true)}
+                            >
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                                    <line x1="4" y1="6" x2="20" y2="6" />
+                                    <line x1="4" y1="12" x2="20" y2="12" />
+                                    <line x1="4" y1="18" x2="20" y2="18" />
+                                </svg>
+
+                            </button>
+                            <span className={styles.topbarTitle}>Painel do aluno</span>
+                        </header>
+
+                        <main className={styles.main}>
+                            <h1 className={styles.greeting}>Olá, {firstName}</h1>
+                            <p className={styles.subtitle}>
+                                Bem-vindo ao Sistema Integrado de Acompanhamento Acadêmico.
+                            </p>
+
+                            <section className={styles.grid}>
+                                {/* cards de conteúdo aqui */}
+                            </section>
+                        </main>
+                    </div>
+                </div>
             </div>
-
-            <nav className={styles.nav}>
-                <Link href="/aluno" className={styles.navLinkActive}>
-                <i className="ti ti-home" aria-hidden="true" />
-                Início
-                </Link>
-                <Link href="/aluno/conteudos" className={styles.navLink}>
-                <i className="ti ti-book" aria-hidden="true" />
-                Conteúdos
-                </Link>
-                <Link href="/aluno/atividades" className={styles.navLink}>
-                <i className="ti ti-clipboard-list" aria-hidden="true" />
-                Atividades
-                </Link>
-                <Link href="/aluno/boletim" className={styles.navLink}>
-                <i className="ti ti-report" aria-hidden="true" />
-                Boletim
-                </Link>
-                <Link href="/aluno/cronograma" className={styles.navLink}>
-                <i className="ti ti-calendar" aria-hidden="true" />
-                Cronograma
-                </Link>
-                <Link href="/aluno/horarios" className={styles.navLink}>
-                <i className="ti ti-clock" aria-hidden="true" />
-                Horários
-                </Link>
-            </nav>
-
-            <div className={styles.sidebarFooter}>
-                <span className={styles.studentName}>{nomeCompleto}</span>
-                <span className={styles.studentClass}>{turma}</span>
-            </div>
-            </aside>
-
-            {menuOpen && (
-            <button
-                className={styles.overlay}
-                aria-label="Fechar menu"
-                onClick={() => setMenuOpen(false)}
-            />
-            )}
-
-            <div className={styles.content}>
-            <header className={styles.topbar}>
-                <button
-                className={styles.menuButton}
-                aria-label="Abrir menu"
-                onClick={() => setMenuOpen(true)}
-                >
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                    <line x1="4" y1="6" x2="20" y2="6" />
-                    <line x1="4" y1="12" x2="20" y2="12" />
-                    <line x1="4" y1="18" x2="20" y2="18" />
-                </svg>
-
-                </button>
-                <span className={styles.topbarTitle}>Painel do aluno</span>
-            </header>
-
-            <main className={styles.main}>
-                <h1 className={styles.greeting}>Olá, {firstName}</h1>
-                <p className={styles.subtitle}>
-                Bem-vindo ao Sistema Integrado de Acompanhamento Acadêmico.
-                </p>
-
-                <section className={styles.grid}>
-                {/* cards de conteúdo aqui */}
-                </section>
-            </main>
-            </div>
-        </div>
-        </div>
-    );
+        );
     }
     return null
 }
