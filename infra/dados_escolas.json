@@ -116,7 +116,7 @@
         ]
     },
     {
-        "PROFESSOR": "ALVINA DARC DOS SANTOS DE",
+        "PROFESSOR": "ALVINA DARC DOS SANTOS DE OLIVEIRA",
         "DISCIPLINA": [
             "BIOLOGIA"
         ],
@@ -621,7 +621,7 @@
         ]
     },
     {
-        "PROFESSOR": "CRISTIJAMES DIAS DE",
+        "PROFESSOR": "CRISTIJAMES DIAS DE CARVALHO",
         "DISCIPLINA": [
             "QUÍMICA"
         ],
@@ -1654,7 +1654,7 @@
         ]
     },
     {
-        "PROFESSOR": "IZANGELA MORAES DE",
+        "PROFESSOR": "IZANGELA MORAES DE AZEVEDO",
         "DISCIPLINA": [
             "LÍNGUA PORTUGUESA",
             "LINGUA PORTUGUESA/",
@@ -1917,7 +1917,7 @@
         ]
     },
     {
-        "PROFESSOR": "JOÃO BATISTA DE ARAÚJO DA",
+        "PROFESSOR": "JOÃO BATISTA DE ARAÚJO DA DA CRUZ",
         "DISCIPLINA": [
             "EDUCAÇÃO FINANCEIRA",
             "PERCURSOS DE APROFUNDAMENTO"
@@ -2233,7 +2233,7 @@
         ]
     },
     {
-        "PROFESSOR": "LEONARDO JOSÉ LIMA DA",
+        "PROFESSOR": "LEONARDO JOSÉ LIMA DA FONSECA",
         "DISCIPLINA": [
             "BIOLOGIA"
         ],
@@ -2813,10 +2813,10 @@
     {
         "PROFESSOR": "MARA LUCIA COSTA DA SILVA",
         "DISCIPLINA": [
-            "ARQUITETURA DE SISTEMAS E",
+            "ARQUITETURA DE SISTEMAS E REDES",
             "ARTE DIGITAL E TÉCNICAS VISUAIS",
             "GAME DESIGN E NARRATIVA",
-            "LÓGICA DE PROGRAMAÇÃO E",
+            "LÓGICA E PROGRAMAÇÃO ESTRUTURADA",
             "MENTORIAS TEC I",
             "PENSAMENTO COMPUTACIONAL I",
             "PERCURSOS DE APROFUNDAMENTO"
@@ -2827,10 +2827,10 @@
                 "TURMA": "EMTPPROG-JOG-DIG-1ª SERIE -",
                 "ETAPA": "1ª SERIE - INTEGRAL",
                 "DISCIPLINA_DADA": [
-                    "ARQUITETURA DE SISTEMAS E",
+                    "ARQUITETURA DE SISTEMAS E REDES",
                     "ARTE DIGITAL E TÉCNICAS VISUAIS",
                     "GAME DESIGN E NARRATIVA",
-                    "LÓGICA DE PROGRAMAÇÃO E",
+                    "LÓGICA E PROGRAMAÇÃO ESTRUTURADA",
                     "MENTORIAS TEC I",
                     "PENSAMENTO COMPUTACIONAL I"
                 ]
@@ -2954,7 +2954,7 @@
         ]
     },
     {
-        "PROFESSOR": "MARCOS ANTONIO MENDES DE",
+        "PROFESSOR": "MARCOS ANTONIO MENDES DE CARVALHO",
         "DISCIPLINA": [
             "ANATOMIA E FISIOLOGIA HUMANA",
             "BIOQUÍMICA",
@@ -3130,7 +3130,7 @@
         ]
     },
     {
-        "PROFESSOR": "MAYARA RODRIGUES DE",
+        "PROFESSOR": "MAYARA RODRIGUES DE ARAUJO",
         "DISCIPLINA": [
             "GEOGRAFIA"
         ],
@@ -3351,7 +3351,7 @@
         ]
     },
     {
-        "PROFESSOR": "NILMARA FERNANDA LIMA DE",
+        "PROFESSOR": "NILMARA FERNANDA LIMA DE CARVALHO",
         "DISCIPLINA": [
             "LÍNGUA ESTRANGEIRA INGLÊS",
             "LINGUA INGLESA",
@@ -3553,7 +3553,7 @@
         ]
     },
     {
-        "PROFESSOR": "RAISSA GABRIELA LADEIRA DE",
+        "PROFESSOR": "RAISSA GABRIELA LADEIRA DE LIMA BEZERRA",
         "DISCIPLINA": [
             "ANÁLISE DE DADOS PARA",
             "E-COMMERCE",
@@ -3647,7 +3647,7 @@
         ]
     },
     {
-        "PROFESSOR": "RENATA SONALI DE",
+        "PROFESSOR": "RENATA SONALI DE ALBUQUERQUE ALVES CARVALHO",
         "DISCIPLINA": [
             "EDUCAÇÃO DO TRÂNSITO",
             "ESPORTE/CULTURA/CLUBE DE",
@@ -3749,7 +3749,7 @@
         ]
     },
     {
-        "PROFESSOR": "RENATO CARDOSO DE",
+        "PROFESSOR": "RENATO CARDOSO DE OLIVEIRA",
         "DISCIPLINA": [
             "BIOSSEGURANÇA NO SETOR",
             "BOAS PRÁTICAS DE MANIPULAÇÃO",
