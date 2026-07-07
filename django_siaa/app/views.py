@@ -11,6 +11,8 @@ from .funcs import ip
 from .funcs.get_ip import get_ip
 from .models import Estudante
 from .models import Professor
+from .models import AtravessaPor
+from .models import Disciplina
 
 # from django.contrib.auth.models import User
 # from django.contrib.auth import authenticate, login
@@ -248,3 +250,16 @@ def search_teacher(request):
         })
 
         
+
+@csrf_exempt
+def get_turmas(request):
+    nome_completo = request.GET.get("nome_completo").strip().upper()
+    teacher = model_to_dict(Professor.objects.filter(nome_completo=nome_completo).first())
+    
+    turmas = AtravessaPor.objects.filter(professor_id=teacher["id"])
+    turmas_dict = [model_to_dict(turma) for turma in turmas]
+
+    return JsonResponse({
+        "professor": teacher,
+        "turmas": turmas_dict
+    })
