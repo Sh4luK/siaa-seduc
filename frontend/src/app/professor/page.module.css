@@ -487,3 +487,79 @@
   color: var(--gold-soft, #e4c874);
   font-size: 0.9rem;
 }
+
+
+.infoCard {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1.25rem;
+  background-color: var(--surface, #1c2b4c);
+  border: 1px solid var(--surface-line, rgba(244, 241, 230, 0.1));
+  border-radius: 6px;
+  text-decoration: none;
+  color: var(--text-primary, #f5f2e9);
+  transition: transform 0.18s ease, border-color 0.18s ease;
+}
+
+.infoCard:hover,
+.infoCard:focus-visible {
+  transform: translateY(-2px);
+  border-color: var(--gold, #c9a227);
+}
+
+.infoCardHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.infoCardSeal {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 50%;
+  background-color: var(--parchment, #f4f1e6);
+  color: var(--ink, #10182b);
+  font-family: "Fraunces", "Georgia", serif;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.infoCardTitle {
+  margin: 0;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.infoCardSubtitle {
+  margin: 0;
+  font-size: 0.78rem;
+  color: var(--text-muted, #9aa5c0);
+}
+
+.infoCardBody {
+  font-size: 0.85rem;
+  color: var(--text-muted, #9aa5c0);
+  line-height: 1.4;
+}
+
+.infoCardFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--surface-line, rgba(244, 241, 230, 0.08));
+}
+
+.infoCardMeta {
+  font-size: 0.8rem;
+  color: var(--text-muted, #9aa5c0);
+}
+
+.infoCardArrow {
+  color: var(--gold-soft, #e4c874);
+  font-size: 0.9rem;
+}
