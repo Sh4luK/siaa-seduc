@@ -16,6 +16,7 @@ export default function Professor() {
   const [ip, setIp] = useState("")
   const [menuOpen, setMenuOpen] = useState(false)
   const [turmas, setTurmas] = useState([])
+  const [professor, setProfessor] = useState([])
   const router = useRouter()
 
   useEffect(() => {
@@ -75,8 +76,10 @@ export default function Professor() {
         }
         const data = await response.json();
         setTurmas(data["turmas"] || []);
+        setProfessor(data["professor"] || [])
       } catch (error) {
         setTurmas([]);
+        setProfessor([])
       }
     }
 
@@ -111,7 +114,7 @@ export default function Professor() {
     ];
     */
     console.log(turmas)
-
+    console.log(professor)
     const firstName = nomeCompleto.split(" ")[0];
 
     return (
@@ -187,8 +190,50 @@ export default function Professor() {
               </p>
 
               <section className={styles.grid}>
+                <div className={styles.infoCard}>
+                  <div className={styles.infoCardHeader}>
+                    <span className={styles.infoCardSeal}>
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-info" viewBox="0 0 16 16">
+                        <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0" />
+                      </svg>
+                    </span>
+                    <div>
+                      <p className={styles.infoCardTitle}>Informações do Professor</p>
+                    </div>
+                  </div>
+                  <div className={styles.infoCardBody}>
+                    <details className={styles.detail}>
+                      <summary>Disciplinas lecionadas</summary>
+                      <div className={styles.detailBody}>
+                        {turmas.map((turma)=>(
+                          <span>{turma["disciplina_lecionada"]}</span>
+                        ))}
+                      </div>
+                    </details>
+                  </div>
+                </div>
+              </section>
+              <br />
+              <section className={styles.grid}>
                 {/* cards de turmas, avisos, próximas atividades etc. */}
-
+                {turmas.map((turma) => (
+                  <Link key={turma["id"]} href={`/professor/turmas/${turma["id"]}`} className={styles.turmaCard}>
+                    <div className={styles.turmaHeader}>
+                      <span className={styles.turmaSeal} aria-hidden="true">
+                        {professor["nome_completo"].charAt(0)}
+                      </span>
+                      <div>
+                        <p className={styles.turmaNome}>{turma["turma"]}</p>
+                        <p className={styles.turmaTurno}>{turma["etapa"]}</p>
+                      </div>
+                    </div>
+                    <div className={styles.turmaFooter}>
+                      <span className={styles.turmaAlunos}>alunos</span>
+                      <span className={styles.turmaArrow} aria-hidden="true">→</span>
+                    </div>
+                  </Link>
+                  // <p>{turma["id"]}</p>
+                ))}
               </section>
             </main>
           </div>
