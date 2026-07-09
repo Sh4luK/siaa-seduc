@@ -293,3 +293,15 @@ def get_disciplinas_lecionadas(request):
     ]
 
     return JsonResponse({"disciplinas": disciplinas_lecionadas_dict})
+
+@csrf_exempt
+def get_turma(request):
+    turma = request.GET.get("turma")
+    professor_id = request.GET.get("professor")
+
+
+    turma = AtravessaPor.objects.filter(turma=turma, professor_id=professor_id)
+
+    turma_dict = [model_to_dict(turma) for turma in turma]
+
+    return JsonResponse({ "turma": turma_dict })
