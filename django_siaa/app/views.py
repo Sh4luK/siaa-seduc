@@ -300,7 +300,7 @@ def get_turma(request):
     professor_id = request.GET.get("professor")
 
 
-    turma = AtravessaPor.objects.filter(turma=turma, professor_id=professor_id)
+    turma = AtravessaPor.objects.filter(id=turma)
 
     turma_dict = [model_to_dict(turma) for turma in turma]
 
