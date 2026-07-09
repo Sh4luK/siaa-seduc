@@ -11,5 +11,6 @@ urlpatterns = [
     path("api/teacher/login", app.views.login_teacher, name="login_teacher"),
     path("api/teacher/auth", app.views.auth_teacher, name="authentication_teacher"),
     path("api/teacher/search", app.views.search_teacher, name="search_teacher"),
-    path("api/teacher/search/turmas", app.views.get_turmas, name="get_turmas")
+    path("api/teacher/search/turmas", app.views.get_turmas, name="get_turmas"),
+    path("api/teacher/search/disciplinas", app.views.get_disciplinas_lecionadas, name="get_disciplinas"),
 ]
