@@ -141,6 +141,26 @@ export default function Professor() {
                 <i className="ti ti-users" aria-hidden="true" />
                 Minhas turmas
               </Link>
+              <Link href="/professor/calendario" className={styles.navLink}>
+                <i className="ti ti-users" aria-hidden="true" />
+                Calendario Escolar
+              </Link>
+              <Link href="/professor/frequencia" className={styles.navLink}>
+                <i className="ti ti-users" aria-hidden="true" />
+                Frequencia
+              </Link>
+              <Link href="/professor/conteudos" className={styles.navLink}>
+                <i className="ti ti-users" aria-hidden="true" />
+                Conteudos
+              </Link>
+              <Link href="/professor/atividades" className={styles.navLink}>
+                <i className="ti ti-users" aria-hidden="true" />
+                Atividades
+              </Link>
+              <Link href="/professor/avaliacoes" className={styles.navLink}>
+                <i className="ti ti-users" aria-hidden="true" />
+                Avaliações
+              </Link>
               <Link href="/professor/notas" className={styles.navLink}>
                 <i className="ti ti-edit" aria-hidden="true" />
                 Lançar notas
@@ -149,10 +169,6 @@ export default function Professor() {
                 <i className="ti ti-clipboard-check" aria-hidden="true" />
                 Frequência
               </Link>
-              <Link href="/professor/cronograma" className={styles.navLink}>
-                <i className="ti ti-calendar" aria-hidden="true" />
-                Cronograma
-              </Link>
               <Link href="/professor/horarios" className={styles.navLink}>
                 <i className="ti ti-clock" aria-hidden="true" />
                 Horários
@@ -160,7 +176,12 @@ export default function Professor() {
             </nav>
 
             <div className={styles.sidebarFooter}>
-              <span className={styles.studentName}>{nomeCompleto}</span>
+              <div>
+                <span className={styles.infoCardHeader}>
+                  <span className={styles.infoCardSeal}>F</span>
+                  <span className={styles.studentName}>{nomeCompleto}</span>
+                </span>
+              </div>
               {/*<span className={styles.studentClass}>{disciplina}</span>*/}
             </div>
           </aside>
