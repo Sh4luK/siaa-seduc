@@ -231,7 +231,7 @@ export default function TurmaPage() {
             <main className={styles.main}>
               <h1 className={styles.greeting}>Olá, {firstName}</h1>
               <p className={styles.subtitle}>
-                Acesso de turmas.
+                Você está no acesso da turma de identificação(ID) {turmaId} de acordo com nossa base de dados.
               </p>
 
               <section className={styles.grid}>
