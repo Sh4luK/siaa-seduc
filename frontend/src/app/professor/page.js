@@ -17,6 +17,7 @@ export default function Professor() {
   const [menuOpen, setMenuOpen] = useState(false)
   const [turmas, setTurmas] = useState([])
   const [professor, setProfessor] = useState([])
+  const [disciplinas, setDisciplinas] = useState([])
   const router = useRouter()
 
   useEffect(() => {
@@ -70,13 +71,18 @@ export default function Professor() {
 
       try {
         const urlTurmas = `https://cautious-disco-4j9vqpw9qp7qh5r55-8000.app.github.dev/api/teacher/search/turmas?nome_completo=${encodeURIComponent(nomeCompleto)}`;
-        const response = await fetch(urlTurmas);
-        if (!response.ok) {
+        const urlDisciplinas = `https://cautious-disco-4j9vqpw9qp7qh5r55-8000.app.github.dev/api/teacher/search/disciplinas?nome_completo=${encodeURIComponent(nomeCompleto)}`;
+        const response1 = await fetch(urlTurmas);
+        const response2 = await fetch(urlDisciplinas);
+
+        if (!response1.ok && !response2.ok) {
           throw new Error();
         }
-        const data = await response.json();
-        setTurmas(data["turmas"] || []);
-        setProfessor(data["professor"] || [])
+        const data1 = await response1.json();
+        const data2 = await response2.json()
+        setProfessor(data1["professor"] || [])
+        setTurmas(data1["turmas"] || []);
+        setDisciplinas(data2["disciplinas"] || [])
       } catch (error) {
         setTurmas([]);
         setProfessor([])
@@ -198,13 +204,13 @@ export default function Professor() {
                       </svg>
                     </span>
                     <div>
-                      <p className={styles.infoCardTitle}>Informações do Professor</p>
+                      <p className={styles.infoCardTitle}>{nomeCompleto}</p> {/*Informações do Professor*/}
                     </div>
                   </div>
                   <div className={styles.infoCardBody}>
                     {/* <details className={styles.detail}> */}
-                    {turmas.map((turma) => (
-                      <span>{turma["disciplina_lecionada"]}</span>
+                    {disciplinas.map((disciplina_) => (
+                      <span key={disciplina_["id"]}>{disciplina_["nome_disciplina"]}, </span>
                     ))}
                   </div>
                 </div>
@@ -216,7 +222,7 @@ export default function Professor() {
                   <Link key={turma["id"]} href={`/professor/turmas/${turma["id"]}`} className={styles.turmaCard}>
                     <div className={styles.turmaHeader}>
                       <span className={styles.turmaSeal} aria-hidden="true">
-                        {professor["nome_completo"].charAt(0)}
+                        {turma["etapa"].charAt(0)}ª
                       </span>
                       <div>
                         <p className={styles.turmaNome}>{turma["turma"]}</p>
