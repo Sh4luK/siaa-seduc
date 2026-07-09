@@ -263,3 +263,33 @@ def get_turmas(request):
         "professor": teacher,
         "turmas": turmas_dict
     })
+
+@csrf_exempt
+# def get_disciplinas_lecionadas(request):
+#     nome_completo = request.GET.get("nome_completo").strip().upper()
+#     professor = model_to_dict(Professor.objects.filter(nome_completo=nome_completo).first())
+
+#     disciplinas_lecionadas = Disciplina.objects.filter(professores=professor["id"])
+#     disciplinas_lecionadas_dict = [model_to_dict(disciplina) for disciplina in disciplinas_lecionadas]
+
+#     return JsonResponse({"disciplinas": disciplinas_lecionadas_dict})
+def get_disciplinas_lecionadas(request):
+    nome_completo = request.GET.get("nome_completo", "").strip().upper()
+
+    if not nome_completo:
+        return JsonResponse({"detail": "O parâmetro 'nome_completo' é obrigatório."}, status=400)
+
+    professor_instance = Professor.objects.filter(nome_completo=nome_completo).first()
+
+    if not professor_instance:
+        return JsonResponse({"detail": "Professor não encontrado."}, status=404)
+
+    professor = model_to_dict(professor_instance)
+
+    disciplinas_lecionadas = Disciplina.objects.filter(professores=professor["id"])
+    disciplinas_lecionadas_dict = [
+        model_to_dict(disciplina, exclude=["professores"])
+        for disciplina in disciplinas_lecionadas
+    ]
+
+    return JsonResponse({"disciplinas": disciplinas_lecionadas_dict})
