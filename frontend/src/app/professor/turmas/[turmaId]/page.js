@@ -105,7 +105,7 @@ export default function TurmaPage() {
 
         const data = await response.json()
 
-        console.log(data['turma'][0]["turma"])
+        console.log({ getTurma: data["turma"] })
         setTurma(data["turma"])
       } catch (error) {
         setTurma([])
@@ -113,25 +113,95 @@ export default function TurmaPage() {
 
     }
 
+    // async function getTurmaLength() {
+    //   try {
+    //     const getTurma = await fetch(`https://cautious-disco-4j9vqpw9qp7qh5r55-8000.app.github.dev/api/teacher/search/turma?turma=${turmaId}`)
+    //     // if (!getTurma.ok) {
+    //     //   throw new Error()
+    //     // }
+    //     const getData = await getTurma.json()
+    //     // console.log({ tuma: getData["turma"]["turma"] })
+    //     // {
+    //     //     "turma": [
+    //     //       {
+    //     //         "id": 443,
+    //     //         "professor": 71,
+    //     //         "escola": "CETI CALISTO LOBO",
+    //     //         "turma": "EMTPDES-SIS-2ª SERIE - INTEGRAL-I-",
+    //     //         "etapa": "2ª SERIE - INTEGRAL",
+    //     //         "disciplina_lecionada": "INTELIGÊNCIA ARTIFICIAL"
+    //     //       }
+    //     //     ]
+    //     // }
+    //     // console.log({ data: encodeURIComponent(getData["turma"]["turma"])})
+    //     const turmaName = encodeURIComponent(getData["turma"]["turma"])
+    //     // console.log(turma)
+    //     // console.log(getData["turma"]["turma"])
+    //     const response = await fetch(`https://cautious-disco-4j9vqpw9qp7qh5r55-8000.app.github.dev/api/teacher/get/alunos?turma=${encodeURIComponent(getData["turma"]["turma"])}`)
+    //     console.log(response)
+    //     const data = await response.json()
+    //     console.log(data)
+
+    //     // const response = await fetch(url)
+    //     // if (!response.ok) {
+    //     //   throw new Error()
+    //     // }
+
+    //     // const data = await response.json()
+    //     // console.log(data["total"])
+    //     // setTurmaLength(data["total"])
+    //   } catch (error) {
+    //     setTurmaLength(0)
+    //   }
+    // }
+    // async function getTurmaLength() {
+    //   try {
+    //     const getTurma = await fetch(`https://cautious-disco-4j9vqpw9qp7qh5r55-8000.app.github.dev/api/teacher/search/turma?turma=${turmaId}`)
+    //     const getData = await getTurma.json()
+
+    //     const turmaObj = getData["turma"][0] // <- pegar o primeiro item do array
+    //     if (!turmaObj) {
+    //       setTurmaLength(0)
+    //       return
+    //     }
+
+    //     const turmaName = encodeURIComponent(turmaObj["turma"])
+    //     const response = await fetch(`https://cautious-disco-4j9vqpw9qp7qh5r55-8000.app.github.dev/api/teacher/get/alunos?turma=${turmaName}`)
+    //     const data = await response.json()
+    //     console.log(turmaObj)
+    //     setTurmaLength(data["total"] || 0)
+    //   } catch (error) {
+    //     setTurmaLength(0)
+    //   }
+    // }
     async function getTurmaLength() {
       try {
-        const getTurma = fetch(`https://cautious-disco-4j9vqpw9qp7qh5r55-8000.app.github.dev/api/teacher/search/turma?turma=${turmaId}`)
-        const res = await getTurma
-        if (!res.ok) {
-          throw new Error()
+        const getTurma = await fetch(`https://cautious-disco-4j9vqpw9qp7qh5r55-8000.app.github.dev/api/teacher/search/turma?turma=${turmaId}`)
+        const getData = await getTurma.json()
+        console.log("1) getData da turma:", getData)
+
+        const turmaObj = Array.isArray(getData["turma"]) ? getData["turma"][0] : getData["turma"]
+        console.log("2) turmaObj extraído:", turmaObj)
+
+        if (!turmaObj || !turmaObj["turma"]) {
+          console.log("3) turmaObj ou turmaObj.turma está vazio/undefined")
+          setTurmaLength(0)
+          return
         }
-        const getData = await res.json()
-        console.log({ tuma: getData["turma"][0]["turma"] })
-        const url = `https://cautious-disco-4j9vqpw9qp7qh5r55-8000.app.github.dev/api/teacher/get/alunos?turma=${encodeURIComponent(getData["turma"][0]["turma"])}`
-        const response = await fetch(url)
-        if (!response.ok) {
-          throw new Error()
-        }
+        //https://cautious-disco-4j9vqpw9qp7qh5r55-8000.app.github.dev/api/teacher/get/alunos?turma=EMTPDES-SIS-2%C2%AA%20SERIE-INTEGRAL-I-A
+        const turmaName = encodeURIComponent(turmaObj["turma"])
+        const urlAlunos = `https://cautious-disco-4j9vqpw9qp7qh5r55-8000.app.github.dev/api/teacher/get/alunos?turma=${turmaName}`
+        console.log("4) URL chamada:", urlAlunos)
+
+        const response = await fetch(urlAlunos)
+        console.log("5) status da resposta:", response.status)
 
         const data = await response.json()
-        console.log(data)
-        setTurmaLength(data["total"])
+        console.log("6) data retornada:", data)
+
+        setTurmaLength(data["total"] || 0)
       } catch (error) {
+        console.log("ERRO:", error)
         setTurmaLength(0)
       }
     }
@@ -170,7 +240,7 @@ export default function TurmaPage() {
     */
 
     const firstName = nomeCompleto.split(" ")[0];
-
+    // console.log(turma)
     return (
       <div className={styles.page}>
         <div className={styles.shell}>
@@ -262,7 +332,7 @@ export default function TurmaPage() {
               <h1 className={styles.greeting}>Olá, {firstName}</h1>
               <p className={styles.subtitle}>
                 {/* V/ocê está no acesso da turma de identificação(ID) {turmaId} de acordo com nossa base de dados. */}
-                {nomeCompleto} está administrando a turma {turma[0]["turma"]}
+                {nomeCompleto} está administrando a turma
               </p>
 
               <section className={styles.grid}>
