@@ -305,3 +305,16 @@ def get_turma(request):
     turma_dict = [model_to_dict(turma) for turma in turma]
 
     return JsonResponse({ "turma": turma_dict })
+
+@csrf_exempt
+def get_alunos_por_turma(request):
+    turma = request.GET.get("turma")
+
+    alunos = Estudante.objects.filter(turma=turma)
+
+    alunos_dict = [model_to_dict(aluno) for aluno in alunos]
+
+    return JsonResponse({
+        "alunos": alunos_dict,
+        "total": len(alunos_dict)
+    })
