@@ -12,6 +12,7 @@ export default function TurmaPage() {
   const [authenticated, setAuthenticated] = useState(null)
   const { turmaId } = useParams();
   const [turma, setTurma] = useState(null);
+  const [turmaLength, setTurmaLength] = useState(0)
   const [turmaName, setTurmaName] = useState("")
   const [professorId, setProfessorId] = useState("")
   const [loading, setLoading] = useState(true);
@@ -25,7 +26,7 @@ export default function TurmaPage() {
   const [disciplinas, setDisciplinas] = useState([])
   const router = useRouter()
 
-  useEffect(()=>{
+  useEffect(() => {
     async function verifyAuthentication() {
       try {
         const url = "https://cautious-disco-4j9vqpw9qp7qh5r55-8000.app.github.dev/api/teacher/auth";
@@ -93,24 +94,53 @@ export default function TurmaPage() {
         setProfessor([])
       }
     }
-    async function getTurma(){
-      const url = `https://cautious-disco-4j9vqpw9qp7qh5r55-8000.app.github.dev/api/teacher/search/turma?turma=${turmaId}`
-      const response = await fetch(url)
-      
-      if(!response.ok){
-        throw new Error()
+    async function getTurma() {
+      try {
+        const url = `https://cautious-disco-4j9vqpw9qp7qh5r55-8000.app.github.dev/api/teacher/search/turma?turma=${turmaId}`
+        const response = await fetch(url)
+
+        if (!response.ok) {
+          throw new Error()
+        }
+
+        const data = await response.json()
+
+        console.log(data['turma'][0]["turma"])
+        setTurma(data["turma"])
+      } catch (error) {
+        setTurma([])
       }
 
-      const data = await response.json()
-
-      console.log(data)
     }
 
+    async function getTurmaLength() {
+      try {
+        const getTurma = fetch(`https://cautious-disco-4j9vqpw9qp7qh5r55-8000.app.github.dev/api/teacher/search/turma?turma=${turmaId}`)
+        const res = await getTurma
+        if (!res.ok) {
+          throw new Error()
+        }
+        const getData = await res.json()
+        console.log({ tuma: getData["turma"][0]["turma"] })
+        const url = `https://cautious-disco-4j9vqpw9qp7qh5r55-8000.app.github.dev/api/teacher/get/alunos?turma=${encodeURIComponent(getData["turma"][0]["turma"])}`
+        const response = await fetch(url)
+        if (!response.ok) {
+          throw new Error()
+        }
+
+        const data = await response.json()
+        console.log(data)
+        setTurmaLength(data["total"])
+      } catch (error) {
+        setTurmaLength(0)
+      }
+    }
     async function init() {
       await verifyAuthentication();
       const nome = await getData();
       await getTurmas(nome);
       await getTurma()
+      await getTurmaLength()
     }
 
     init();
@@ -138,7 +168,7 @@ export default function TurmaPage() {
       { id: 3, nome: "1º Ano EM", turno: "Vespertino", alunos: 35 },
     ];
     */
-    console.log(turmas)
+
     const firstName = nomeCompleto.split(" ")[0];
 
     return (
@@ -231,10 +261,60 @@ export default function TurmaPage() {
             <main className={styles.main}>
               <h1 className={styles.greeting}>Olá, {firstName}</h1>
               <p className={styles.subtitle}>
-                Você está no acesso da turma de identificação(ID) {turmaId} de acordo com nossa base de dados.
+                {/* V/ocê está no acesso da turma de identificação(ID) {turmaId} de acordo com nossa base de dados. */}
+                {nomeCompleto} está administrando a turma {turma[0]["turma"]}
               </p>
 
               <section className={styles.grid}>
+                <Link href={`/professor/turmas/${turmaId}/alunos`} className={styles.infoCard}>
+                  <div className={styles.infoCardHeader}>
+                    <span className={styles.infoCardSeal}>
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-person-lines-fill" viewBox="0 0 16 16">
+                        <path d="M6 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6m-5 6s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1zM11 3.5a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 0 1h-4a.5.5 0 0 1-.5-.5m.5 2.5a.5.5 0 0 0 0 1h4a.5.5 0 0 0 0-1zm2 3a.5.5 0 0 0 0 1h2a.5.5 0 0 0 0-1zm0 3a.5.5 0 0 0 0 1h2a.5.5 0 0 0 0-1z" />
+                      </svg>
+                    </span>
+                    <div>
+                      <p className={styles.infoCardTitle}>Lista de Alunos</p>
+                    </div>
+                  </div>
+                  <div className={styles.infoCardFooter}>
+                    <span className={styles.turmaAlunos}>{turmaLength} alunos</span>
+                    <span className={styles.infoCardArrow} aria-hidden="true">→</span>
+                  </div>
+                </Link>
+                <Link href={`/professor/turmas/${turmaId}/frequencia`} className={styles.infoCard}>
+                  <div className={styles.infoCardHeader}>
+                    <span className={styles.infoCardSeal}>
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-card-checklist" viewBox="0 0 16 16">
+                        <path d="M14.5 3a.5.5 0 0 1 .5.5v9a.5.5 0 0 1-.5.5h-13a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5zm-13-1A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h13a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 14.5 2z" />
+                        <path d="M7 5.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5m-1.496-.854a.5.5 0 0 1 0 .708l-1.5 1.5a.5.5 0 0 1-.708 0l-.5-.5a.5.5 0 1 1 .708-.708l.146.147 1.146-1.147a.5.5 0 0 1 .708 0M7 9.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5m-1.496-.854a.5.5 0 0 1 0 .708l-1.5 1.5a.5.5 0 0 1-.708 0l-.5-.5a.5.5 0 0 1 .708-.708l.146.147 1.146-1.147a.5.5 0 0 1 .708 0" />
+                      </svg>
+                    </span>
+                    <div>
+                      <p className={styles.infoCardTitle}>Realizar Frequencia</p>
+                    </div>
+                  </div>
+                  <div className={styles.infoCardFooter}>
+                    {/* <span className={styles.turmaAlunos}></span> */}
+                    <span className={styles.infoCardArrow} aria-hidden="true">→</span>
+                  </div>
+                </Link>
+                <Link href={`/professor/turmas/${turmaId}/notificacoes`} className={styles.infoCard}>
+                  <div className={styles.infoCardHeader}>
+                    <span className={styles.infoCardSeal}>
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-bell" viewBox="0 0 16 16">
+                        <path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2M8 1.918l-.797.161A4 4 0 0 0 4 6c0 .628-.134 2.197-.459 3.742-.16.767-.376 1.566-.663 2.258h10.244c-.287-.692-.502-1.49-.663-2.258C12.134 8.197 12 6.628 12 6a4 4 0 0 0-3.203-3.92zM14.22 12c.223.447.481.801.78 1H1c.299-.199.557-.553.78-1C2.68 10.2 3 6.88 3 6c0-2.42 1.72-4.44 4.005-4.901a1 1 0 1 1 1.99 0A5 5 0 0 1 13 6c0 .88.32 4.2 1.22 6" />
+                      </svg>
+                    </span>
+                    <div>
+                      <p className={styles.infoCardTitle}>Notificações</p>
+                    </div>
+                  </div>
+                  <div className={styles.infoCardFooter}>
+                    {/* <span className={styles.turmaAlunos}></span> */}
+                    <span className={styles.infoCardArrow} aria-hidden="true">→</span>
+                  </div>
+                </Link>
               </section>
             </main>
           </div>
