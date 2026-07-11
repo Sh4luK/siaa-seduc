@@ -1,3 +1,6 @@
+from django.db.models.functions import Replace
+from django.db.models import Value
+from django.db.models.functions import Trim
 from django.shortcuts import render, redirect
 import requests
 from django.http import HttpResponse, JsonResponse, request
@@ -13,7 +16,6 @@ from .models import Estudante
 from .models import Professor
 from .models import AtravessaPor
 from .models import Disciplina
-
 # from django.contrib.auth.models import User
 # from django.contrib.auth import authenticate, login
 # from django.contrib.auth.hashers import check_password
@@ -265,14 +267,6 @@ def get_turmas(request):
     })
 
 @csrf_exempt
-# def get_disciplinas_lecionadas(request):
-#     nome_completo = request.GET.get("nome_completo").strip().upper()
-#     professor = model_to_dict(Professor.objects.filter(nome_completo=nome_completo).first())
-
-#     disciplinas_lecionadas = Disciplina.objects.filter(professores=professor["id"])
-#     disciplinas_lecionadas_dict = [model_to_dict(disciplina) for disciplina in disciplinas_lecionadas]
-
-#     return JsonResponse({"disciplinas": disciplinas_lecionadas_dict})
 def get_disciplinas_lecionadas(request):
     nome_completo = request.GET.get("nome_completo", "").strip().upper()
 
@@ -304,13 +298,22 @@ def get_turma(request):
 
     turma_dict = [model_to_dict(turma) for turma in turma]
 
-    return JsonResponse({ "turma": turma_dict })
+    return JsonResponse({ "turma": turma_dict[0] })
+
 
 @csrf_exempt
 def get_alunos_por_turma(request):
-    turma = request.GET.get("turma")
+    turma = request.GET.get("turma", "")
 
-    alunos = Estudante.objects.filter(turma=turma)
+    # Normaliza o parâmetro recebido: remove todos os espaços
+    turma_normalizada = turma.replace(" ", "").strip().lower()
+
+    print("Turma recebida (normalizada):", repr(turma_normalizada))
+
+    # Normaliza o campo 'turma' salvo no banco removendo espaços, depois compara
+    alunos = Estudante.objects.annotate(
+        turma_normalizada=Replace("turma", Value(" "), Value(""))
+    ).filter(turma_normalizada__iexact=turma_normalizada)
 
     alunos_dict = [model_to_dict(aluno) for aluno in alunos]
 
