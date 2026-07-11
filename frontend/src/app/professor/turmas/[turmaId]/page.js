@@ -240,7 +240,7 @@ export default function TurmaPage() {
     */
 
     const firstName = nomeCompleto.split(" ")[0];
-    // console.log(turma)
+    console.log(turma)
     return (
       <div className={styles.page}>
         <div className={styles.shell}>

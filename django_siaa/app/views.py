@@ -305,12 +305,10 @@ def get_turma(request):
 def get_alunos_por_turma(request):
     turma = request.GET.get("turma", "")
 
-    # Normaliza o parâmetro recebido: remove todos os espaços
     turma_normalizada = turma.replace(" ", "").strip().lower()
 
     print("Turma recebida (normalizada):", repr(turma_normalizada))
 
-    # Normaliza o campo 'turma' salvo no banco removendo espaços, depois compara
     alunos = Estudante.objects.annotate(
         turma_normalizada=Replace("turma", Value(" "), Value(""))
     ).filter(turma_normalizada__iexact=turma_normalizada)
