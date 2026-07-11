@@ -13,5 +13,6 @@ urlpatterns = [
     path("api/teacher/search", app.views.search_teacher, name="search_teacher"),
     path("api/teacher/search/turmas", app.views.get_turmas, name="get_turmas"),
     path("api/teacher/search/turma", app.views.get_turma, name="get_turma"),
+    path("api/teacher/get/alunos", app.views.get_alunos_por_turma, name="get_alunos_por_turma"),
     path("api/teacher/search/disciplinas", app.views.get_disciplinas_lecionadas, name="get_disciplinas"),
 ]
