@@ -23,7 +23,7 @@ export default function Professor() {
   useEffect(() => {
     async function verifyAuthentication() {
       try {
-        const url = "https://cautious-disco-4j9vqpw9qp7qh5r55-8000.app.github.dev/api/teacher/auth";
+        const url = "https://upgraded-space-spork-4j9vqpw9q5g5fprr-8000.app.github.dev/api/teacher/auth";
         const response = await fetch(url);
         const data = await response.json();
 
@@ -43,7 +43,7 @@ export default function Professor() {
 
     async function getData() {
       try {
-        const urlAuth = "https://cautious-disco-4j9vqpw9qp7qh5r55-8000.app.github.dev/api/teacher/auth";
+        const urlAuth = "https://upgraded-space-spork-4j9vqpw9q5g5fprr-8000.app.github.dev/api/teacher/auth";
         const authResponse = await fetch(urlAuth);
         if (!authResponse.ok) {
           throw new Error();
@@ -70,8 +70,8 @@ export default function Professor() {
       }
 
       try {
-        const urlTurmas = `https://cautious-disco-4j9vqpw9qp7qh5r55-8000.app.github.dev/api/teacher/search/turmas?nome_completo=${encodeURIComponent(nomeCompleto)}`;
-        const urlDisciplinas = `https://cautious-disco-4j9vqpw9qp7qh5r55-8000.app.github.dev/api/teacher/search/disciplinas?nome_completo=${encodeURIComponent(nomeCompleto)}`;
+        const urlTurmas = `https://upgraded-space-spork-4j9vqpw9q5g5fprr-8000.app.github.dev/api/teacher/search/turmas?nome_completo=${encodeURIComponent(nomeCompleto)}`;
+        const urlDisciplinas = `https://upgraded-space-spork-4j9vqpw9q5g5fprr-8000.app.github.dev/api/teacher/search/disciplinas?nome_completo=${encodeURIComponent(nomeCompleto)}`;
         const response1 = await fetch(urlTurmas);
         const response2 = await fetch(urlDisciplinas);
 

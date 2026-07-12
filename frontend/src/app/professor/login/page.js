@@ -27,7 +27,7 @@ export default function ProfessorLoginPage() {
         setMessage("")
 
         try {
-            const response = await fetch(`https://cautious-disco-4j9vqpw9qp7qh5r55-8000.app.github.dev/api/teacher/search?nome_completo=${encodeURIComponent(nomeCompleto)}`)
+            const response = await fetch(`https://upgraded-space-spork-4j9vqpw9q5g5fprr-8000.app.github.dev/api/teacher/search?nome_completo=${encodeURIComponent(nomeCompleto)}`)
             const data = await response.json()
             const clearName = (text) => {
                 if (!text) return '';
@@ -60,7 +60,7 @@ export default function ProfessorLoginPage() {
     }
     async function auth_teacher_button() {
         try {
-            const url = `https://cautious-disco-4j9vqpw9qp7qh5r55-8000.app.github.dev/api/teacher/login?nome_completo=${encodeURIComponent(nomeCompleto)}&senha=${password}`
+            const url = `https://upgraded-space-spork-4j9vqpw9q5g5fprr-8000.app.github.dev/api/teacher/login?nome_completo=${encodeURIComponent(nomeCompleto)}&senha=${password}`
             const teacher_login = await fetch(url)
             const data = await teacher_login.json()
             if (data.return === true) {
@@ -76,7 +76,7 @@ export default function ProfessorLoginPage() {
     useEffect(() => {
         async function verifyAuth() {
             try {
-                const url = "https://cautious-disco-4j9vqpw9qp7qh5r55-8000.app.github.dev/api/teacher/auth"
+                const url = "https://upgraded-space-spork-4j9vqpw9q5g5fprr-8000.app.github.dev/api/teacher/auth"
                 const response = await fetch(url)
                 const data = await response.json()
 

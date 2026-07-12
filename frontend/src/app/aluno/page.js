@@ -22,7 +22,7 @@ export default function alunoPage() {
     useEffect(() => {
         async function verifyAuthentication() {
             try {
-                const url = "https://cautious-disco-4j9vqpw9qp7qh5r55-8000.app.github.dev/api/students/auth"
+                const url = "https://upgraded-space-spork-4j9vqpw9q5g5fprr-8000.app.github.dev/api/students/auth"
                 const response = await fetch(url)
                 const data = await response.json()
                 console.log(data)
@@ -40,7 +40,7 @@ export default function alunoPage() {
             }
         }
         async function getStudent() {
-            const url = "https://cautious-disco-4j9vqpw9qp7qh5r55-8000.app.github.dev/api/students/auth"
+            const url = "https://upgraded-space-spork-4j9vqpw9q5g5fprr-8000.app.github.dev/api/students/auth"
 
             fetch(url)
                 .then((res) => {

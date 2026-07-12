@@ -29,7 +29,7 @@ export default function TurmaPage() {
   useEffect(() => {
     async function verifyAuthentication() {
       try {
-        const url = "https://cautious-disco-4j9vqpw9qp7qh5r55-8000.app.github.dev/api/teacher/auth";
+        const url = "https://upgraded-space-spork-4j9vqpw9q5g5fprr-8000.app.github.dev/api/teacher/auth";
         const response = await fetch(url);
         const data = await response.json();
 
@@ -49,7 +49,7 @@ export default function TurmaPage() {
 
     async function getData() {
       try {
-        const urlAuth = "https://cautious-disco-4j9vqpw9qp7qh5r55-8000.app.github.dev/api/teacher/auth";
+        const urlAuth = "https://upgraded-space-spork-4j9vqpw9q5g5fprr-8000.app.github.dev/api/teacher/auth";
         const authResponse = await fetch(urlAuth);
         if (!authResponse.ok) {
           throw new Error();
@@ -76,8 +76,8 @@ export default function TurmaPage() {
       }
 
       try {
-        const urlTurmas = `https://cautious-disco-4j9vqpw9qp7qh5r55-8000.app.github.dev/api/teacher/search/turmas?nome_completo=${encodeURIComponent(nomeCompleto)}`;
-        const urlDisciplinas = `https://cautious-disco-4j9vqpw9qp7qh5r55-8000.app.github.dev/api/teacher/search/disciplinas?nome_completo=${encodeURIComponent(nomeCompleto)}`;
+        const urlTurmas = `https://upgraded-space-spork-4j9vqpw9q5g5fprr-8000.app.github.dev/api/teacher/search/turmas?nome_completo=${encodeURIComponent(nomeCompleto)}`;
+        const urlDisciplinas = `https://upgraded-space-spork-4j9vqpw9q5g5fprr-8000.app.github.dev/api/teacher/search/disciplinas?nome_completo=${encodeURIComponent(nomeCompleto)}`;
         const response1 = await fetch(urlTurmas);
         const response2 = await fetch(urlDisciplinas);
 
@@ -96,7 +96,7 @@ export default function TurmaPage() {
     }
     async function getTurma() {
       try {
-        const url = `https://cautious-disco-4j9vqpw9qp7qh5r55-8000.app.github.dev/api/teacher/search/turma?turma=${turmaId}`
+        const url = `https://upgraded-space-spork-4j9vqpw9q5g5fprr-8000.app.github.dev/api/teacher/search/turma?turma=${turmaId}`
         const response = await fetch(url)
 
         if (!response.ok) {
@@ -115,7 +115,7 @@ export default function TurmaPage() {
 
     // async function getTurmaLength() {
     //   try {
-    //     const getTurma = await fetch(`https://cautious-disco-4j9vqpw9qp7qh5r55-8000.app.github.dev/api/teacher/search/turma?turma=${turmaId}`)
+    //     const getTurma = await fetch(`https://upgraded-space-spork-4j9vqpw9q5g5fprr-8000.app.github.dev/api/teacher/search/turma?turma=${turmaId}`)
     //     // if (!getTurma.ok) {
     //     //   throw new Error()
     //     // }
@@ -137,7 +137,7 @@ export default function TurmaPage() {
     //     const turmaName = encodeURIComponent(getData["turma"]["turma"])
     //     // console.log(turma)
     //     // console.log(getData["turma"]["turma"])
-    //     const response = await fetch(`https://cautious-disco-4j9vqpw9qp7qh5r55-8000.app.github.dev/api/teacher/get/alunos?turma=${encodeURIComponent(getData["turma"]["turma"])}`)
+    //     const response = await fetch(`https://upgraded-space-spork-4j9vqpw9q5g5fprr-8000.app.github.dev/api/teacher/get/alunos?turma=${encodeURIComponent(getData["turma"]["turma"])}`)
     //     console.log(response)
     //     const data = await response.json()
     //     console.log(data)
@@ -156,7 +156,7 @@ export default function TurmaPage() {
     // }
     // async function getTurmaLength() {
     //   try {
-    //     const getTurma = await fetch(`https://cautious-disco-4j9vqpw9qp7qh5r55-8000.app.github.dev/api/teacher/search/turma?turma=${turmaId}`)
+    //     const getTurma = await fetch(`https://upgraded-space-spork-4j9vqpw9q5g5fprr-8000.app.github.dev/api/teacher/search/turma?turma=${turmaId}`)
     //     const getData = await getTurma.json()
 
     //     const turmaObj = getData["turma"][0] // <- pegar o primeiro item do array
@@ -166,7 +166,7 @@ export default function TurmaPage() {
     //     }
 
     //     const turmaName = encodeURIComponent(turmaObj["turma"])
-    //     const response = await fetch(`https://cautious-disco-4j9vqpw9qp7qh5r55-8000.app.github.dev/api/teacher/get/alunos?turma=${turmaName}`)
+    //     const response = await fetch(`https://upgraded-space-spork-4j9vqpw9q5g5fprr-8000.app.github.dev/api/teacher/get/alunos?turma=${turmaName}`)
     //     const data = await response.json()
     //     console.log(turmaObj)
     //     setTurmaLength(data["total"] || 0)
@@ -176,7 +176,7 @@ export default function TurmaPage() {
     // }
     async function getTurmaLength() {
       try {
-        const getTurma = await fetch(`https://cautious-disco-4j9vqpw9qp7qh5r55-8000.app.github.dev/api/teacher/search/turma?turma=${turmaId}`)
+        const getTurma = await fetch(`https://upgraded-space-spork-4j9vqpw9q5g5fprr-8000.app.github.dev/api/teacher/search/turma?turma=${turmaId}`)
         const getData = await getTurma.json()
         console.log("1) getData da turma:", getData)
 
@@ -188,9 +188,9 @@ export default function TurmaPage() {
           setTurmaLength(0)
           return
         }
-        //https://cautious-disco-4j9vqpw9qp7qh5r55-8000.app.github.dev/api/teacher/get/alunos?turma=EMTPDES-SIS-2%C2%AA%20SERIE-INTEGRAL-I-A
+        //https://upgraded-space-spork-4j9vqpw9q5g5fprr-8000.app.github.dev/api/teacher/get/alunos?turma=EMTPDES-SIS-2%C2%AA%20SERIE-INTEGRAL-I-A
         const turmaName = encodeURIComponent(turmaObj["turma"])
-        const urlAlunos = `https://cautious-disco-4j9vqpw9qp7qh5r55-8000.app.github.dev/api/teacher/get/alunos?turma=${turmaName}`
+        const urlAlunos = `https://upgraded-space-spork-4j9vqpw9q5g5fprr-8000.app.github.dev/api/teacher/get/alunos?turma=${turmaName}`
         console.log("4) URL chamada:", urlAlunos)
 
         const response = await fetch(urlAlunos)
