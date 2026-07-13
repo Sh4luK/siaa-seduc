@@ -1,0 +1,4 @@
+-- database: db.sqlite3
+
+SELECT * FROM app_atravessapor;
+UPDATE app_estudante set turma="EMTPENF-3ª SERIE - PARCIAL-I-A" WHERE turma="EMTPADM-ENF-EMP-1ª SERIE - INTEGRAL-I-A" AND serie="3ª SERIE - PARCIAL"
