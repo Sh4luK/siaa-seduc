@@ -154,9 +154,7 @@ npm test
 4. Faça push para a branch (`git push origin feature/minha-feature`)
 5. Abra um Pull Request
 
-## 📄 Licença
 
-Não foi identificado um arquivo de licença (`LICENSE`) no repositório no momento da escrita desta documentação. Verifique diretamente no GitHub antes de reutilizar o código.
 
 ## 👤 Autor / Mantenedor
 
