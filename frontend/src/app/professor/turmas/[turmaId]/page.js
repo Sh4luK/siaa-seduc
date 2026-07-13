@@ -113,67 +113,6 @@ export default function TurmaPage() {
 
     }
 
-    // async function getTurmaLength() {
-    //   try {
-    //     const getTurma = await fetch(`https://upgraded-space-spork-4j9vqpw9q5g5fprr-8000.app.github.dev/api/teacher/search/turma?turma=${turmaId}`)
-    //     // if (!getTurma.ok) {
-    //     //   throw new Error()
-    //     // }
-    //     const getData = await getTurma.json()
-    //     // console.log({ tuma: getData["turma"]["turma"] })
-    //     // {
-    //     //     "turma": [
-    //     //       {
-    //     //         "id": 443,
-    //     //         "professor": 71,
-    //     //         "escola": "CETI CALISTO LOBO",
-    //     //         "turma": "EMTPDES-SIS-2ª SERIE - INTEGRAL-I-",
-    //     //         "etapa": "2ª SERIE - INTEGRAL",
-    //     //         "disciplina_lecionada": "INTELIGÊNCIA ARTIFICIAL"
-    //     //       }
-    //     //     ]
-    //     // }
-    //     // console.log({ data: encodeURIComponent(getData["turma"]["turma"])})
-    //     const turmaName = encodeURIComponent(getData["turma"]["turma"])
-    //     // console.log(turma)
-    //     // console.log(getData["turma"]["turma"])
-    //     const response = await fetch(`https://upgraded-space-spork-4j9vqpw9q5g5fprr-8000.app.github.dev/api/teacher/get/alunos?turma=${encodeURIComponent(getData["turma"]["turma"])}`)
-    //     console.log(response)
-    //     const data = await response.json()
-    //     console.log(data)
-
-    //     // const response = await fetch(url)
-    //     // if (!response.ok) {
-    //     //   throw new Error()
-    //     // }
-
-    //     // const data = await response.json()
-    //     // console.log(data["total"])
-    //     // setTurmaLength(data["total"])
-    //   } catch (error) {
-    //     setTurmaLength(0)
-    //   }
-    // }
-    // async function getTurmaLength() {
-    //   try {
-    //     const getTurma = await fetch(`https://upgraded-space-spork-4j9vqpw9q5g5fprr-8000.app.github.dev/api/teacher/search/turma?turma=${turmaId}`)
-    //     const getData = await getTurma.json()
-
-    //     const turmaObj = getData["turma"][0] // <- pegar o primeiro item do array
-    //     if (!turmaObj) {
-    //       setTurmaLength(0)
-    //       return
-    //     }
-
-    //     const turmaName = encodeURIComponent(turmaObj["turma"])
-    //     const response = await fetch(`https://upgraded-space-spork-4j9vqpw9q5g5fprr-8000.app.github.dev/api/teacher/get/alunos?turma=${turmaName}`)
-    //     const data = await response.json()
-    //     console.log(turmaObj)
-    //     setTurmaLength(data["total"] || 0)
-    //   } catch (error) {
-    //     setTurmaLength(0)
-    //   }
-    // }
     async function getTurmaLength() {
       try {
         const getTurma = await fetch(`https://upgraded-space-spork-4j9vqpw9q5g5fprr-8000.app.github.dev/api/teacher/search/turma?turma=${turmaId}`)
