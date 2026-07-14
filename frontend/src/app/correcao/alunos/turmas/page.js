@@ -8,6 +8,7 @@ export default function CorrigirAlunos() {
   const [ok, setOk] = useState(false)
   const [alunos, setAlunos] = useState([]);
   const [total, setTotal] = useState(0)
+  const [informations, setInformations] = useState("")
   useEffect(() => {
     async function allStudents() {
       const response = await fetch(
@@ -31,26 +32,32 @@ export default function CorrigirAlunos() {
     init()
   }, []);
 
+  function confirmInformations(){
+    console.log("Dados enviados.")
+    console.log({
+      informations
+    })
+  }
   if(ok === true){
     return (
       <div className="row">
-        {alunos.map((aluno) => (
-          <div className="col-md-6 mt-3 mb-3">
-            <div className="">
-              <div className="card">
+        <div className="col-md-6 mt-3 mb-3">
+          <div className="card">
+            {alunos.map((aluno) => (
+              <div className="mt-3 mb-3">
                 <div className="card-header">
                   <span className="card-title">
-                    Aluno
+                    Está correto ou não?
                   </span>
                 </div>
                 <div className="card-body" key={aluno["id"]}>
                   <h5 className="">{aluno["nome_completo"]}</h5>
+                  <span className="">{aluno["turma"]}</span>
                 </div>
               </div>
-
+            ))}
             </div>
           </div>
-        ))}
       </div>
     );
 
