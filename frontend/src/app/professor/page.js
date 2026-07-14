@@ -178,7 +178,7 @@ export default function Professor() {
             <div className={styles.sidebarFooter}>
               <div>
                 <span className={styles.infoCardHeader}>
-                  <span className={styles.infoCardSeal}>F</span>
+                  <span className={styles.infoCardSeal}>{firstName.charAt(0)}</span>
                   <span className={styles.studentName}>{nomeCompleto}</span>
                 </span>
               </div>
