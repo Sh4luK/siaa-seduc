@@ -1,0 +1,1033 @@
+[
+  {
+    "id": 1,
+    "nome_disciplina": "ÉTICA, TRABALHO E CIDADANIA",
+    "professores": [
+      1,
+      12
+    ]
+  },
+  {
+    "id": 2,
+    "nome_disciplina": "INTELIGÊNCIA ARTIFICIAL",
+    "professores": [
+      1,
+      10,
+      12,
+      29,
+      51,
+      64,
+      67
+    ]
+  },
+  {
+    "id": 3,
+    "nome_disciplina": "INTERNET DAS COISAS - IOT",
+    "professores": [
+      1,
+      12
+    ]
+  },
+  {
+    "id": 4,
+    "nome_disciplina": "MANUTENÇÃO DE SISTEMAS",
+    "professores": [
+      1,
+      12,
+      22
+    ]
+  },
+  {
+    "id": 5,
+    "nome_disciplina": "PROGRAMAÇÃO PARA",
+    "professores": [
+      1,
+      12,
+      22
+    ]
+  },
+  {
+    "id": 6,
+    "nome_disciplina": "PROJETO INTEGRADOR",
+    "professores": [
+      1,
+      10,
+      12,
+      56
+    ]
+  },
+  {
+    "id": 7,
+    "nome_disciplina": "TESTE DE SISTEMAS E",
+    "professores": [
+      1,
+      12
+    ]
+  },
+  {
+    "id": 8,
+    "nome_disciplina": "QUÍMICA",
+    "professores": [
+      2,
+      8,
+      11,
+      33
+    ]
+  },
+  {
+    "id": 9,
+    "nome_disciplina": "BIOLOGIA",
+    "professores": [
+      3,
+      34,
+      37,
+      62
+    ]
+  },
+  {
+    "id": 10,
+    "nome_disciplina": "LINGUA INGLESA",
+    "professores": [
+      4,
+      31,
+      52
+    ]
+  },
+  {
+    "id": 11,
+    "nome_disciplina": "GEOGRAFIA",
+    "professores": [
+      5,
+      20,
+      49
+    ]
+  },
+  {
+    "id": 12,
+    "nome_disciplina": "PERCURSOS DE APROFUNDAMENTO",
+    "professores": [
+      5,
+      14,
+      18,
+      26,
+      30,
+      31,
+      35,
+      36,
+      39,
+      40,
+      43,
+      44,
+      52,
+      53,
+      56,
+      58,
+      63,
+      66,
+      67,
+      68
+    ]
+  },
+  {
+    "id": 13,
+    "nome_disciplina": "PROJETO DE",
+    "professores": [
+      5,
+      63,
+      64
+    ]
+  },
+  {
+    "id": 14,
+    "nome_disciplina": "SOCIOLOGIA",
+    "professores": [
+      5,
+      17,
+      50,
+      60
+    ]
+  },
+  {
+    "id": 15,
+    "nome_disciplina": "ANALYTICS E MÉTRICAS DE",
+    "professores": [
+      6
+    ]
+  },
+  {
+    "id": 16,
+    "nome_disciplina": "BRANDING - GESTÃO DE MARCAS",
+    "professores": [
+      6
+    ]
+  },
+  {
+    "id": 17,
+    "nome_disciplina": "E-MAIL MARKETING E AUTOMAÇAO",
+    "professores": [
+      6
+    ]
+  },
+  {
+    "id": 18,
+    "nome_disciplina": "FUNDAMENTOS DA",
+    "professores": [
+      6,
+      63
+    ]
+  },
+  {
+    "id": 19,
+    "nome_disciplina": "MARKETING DE INFLUÊNCIA E",
+    "professores": [
+      6
+    ]
+  },
+  {
+    "id": 20,
+    "nome_disciplina": "MARKETING MOBILE",
+    "professores": [
+      6,
+      56
+    ]
+  },
+  {
+    "id": 21,
+    "nome_disciplina": "SEO - OTIMIZAÇÃO PARA",
+    "professores": [
+      6
+    ]
+  },
+  {
+    "id": 22,
+    "nome_disciplina": "TRÁFEGO PAGO E PUBLICIDADE",
+    "professores": [
+      6
+    ]
+  },
+  {
+    "id": 23,
+    "nome_disciplina": "USER EXPERIENSE (UX)",
+    "professores": [
+      6
+    ]
+  },
+  {
+    "id": 24,
+    "nome_disciplina": "LEITURA E PRODUÇÃO TEXTUAL",
+    "professores": [
+      7
+    ]
+  },
+  {
+    "id": 25,
+    "nome_disciplina": "LEITURA, INTERPRETAÇÃO E",
+    "professores": [
+      7
+    ]
+  },
+  {
+    "id": 26,
+    "nome_disciplina": "ASSISTENCIA AO PACIENTE",
+    "professores": [
+      9
+    ]
+  },
+  {
+    "id": 27,
+    "nome_disciplina": "ENFERMAGEM EM CENTRO",
+    "professores": [
+      9
+    ]
+  },
+  {
+    "id": 28,
+    "nome_disciplina": "ENFERMAGEM EM CLÍNICA MÉDICA",
+    "professores": [
+      9
+    ]
+  },
+  {
+    "id": 29,
+    "nome_disciplina": "ENFERMAGEM EM SAÚDE DA",
+    "professores": [
+      9,
+      23,
+      69
+    ]
+  },
+  {
+    "id": 30,
+    "nome_disciplina": "ENFERMAGEM EM SAÚDE DO",
+    "professores": [
+      9,
+      69
+    ]
+  },
+  {
+    "id": 31,
+    "nome_disciplina": "ENFERMAGEM EM SAÚDE MENTAL",
+    "professores": [
+      9
+    ]
+  },
+  {
+    "id": 32,
+    "nome_disciplina": "ESPORTE/CULTURA/CLUBE DE",
+    "professores": [
+      9,
+      22,
+      39,
+      51,
+      58,
+      63,
+      69
+    ]
+  },
+  {
+    "id": 33,
+    "nome_disciplina": "FARMACOLOGIA BÁSICA",
+    "professores": [
+      9
+    ]
+  },
+  {
+    "id": 34,
+    "nome_disciplina": "INTRODUÇÃO À ENFERMAGEM E",
+    "professores": [
+      9
+    ]
+  },
+  {
+    "id": 35,
+    "nome_disciplina": "ANÁLISE E PROJETO DE JOGOS",
+    "professores": [
+      10
+    ]
+  },
+  {
+    "id": 36,
+    "nome_disciplina": "DESENVOLVIMENTO DE JOGOS",
+    "professores": [
+      10
+    ]
+  },
+  {
+    "id": 37,
+    "nome_disciplina": "INTELIGÊNCIA ARTIFICIAL PARA",
+    "professores": [
+      10
+    ]
+  },
+  {
+    "id": 38,
+    "nome_disciplina": "MOBILE UI AND UX GAME DESIGN",
+    "professores": [
+      10
+    ]
+  },
+  {
+    "id": 39,
+    "nome_disciplina": "MODELAGEM 3D",
+    "professores": [
+      10
+    ]
+  },
+  {
+    "id": 40,
+    "nome_disciplina": "ORIENTAÇÃO PROFISSIONAL E",
+    "professores": [
+      10
+    ]
+  },
+  {
+    "id": 41,
+    "nome_disciplina": "REALIDADE VIRTUAL E REALIDADE",
+    "professores": [
+      10
+    ]
+  },
+  {
+    "id": 42,
+    "nome_disciplina": "HISTÓRIA",
+    "professores": [
+      13,
+      32,
+      58,
+      65
+    ]
+  },
+  {
+    "id": 43,
+    "nome_disciplina": "MATEMÁTICA",
+    "professores": [
+      14,
+      27,
+      28,
+      48,
+      57,
+      66
+    ]
+  },
+  {
+    "id": 44,
+    "nome_disciplina": "ARTE",
+    "professores": [
+      15,
+      45,
+      61
+    ]
+  },
+  {
+    "id": 45,
+    "nome_disciplina": "FÍSICA",
+    "professores": [
+      16,
+      19,
+      24,
+      44
+    ]
+  },
+  {
+    "id": 46,
+    "nome_disciplina": "LÍNGUA PORTUGUESA",
+    "professores": [
+      21,
+      26,
+      35,
+      40,
+      45,
+      47
+    ]
+  },
+  {
+    "id": 47,
+    "nome_disciplina": "LINGUA PORTUGUESA/",
+    "professores": [
+      21,
+      26
+    ]
+  },
+  {
+    "id": 48,
+    "nome_disciplina": "MENTORIAS TEC II",
+    "professores": [
+      22
+    ]
+  },
+  {
+    "id": 49,
+    "nome_disciplina": "ARQUITETURA DE",
+    "professores": [
+      22,
+      67
+    ]
+  },
+  {
+    "id": 50,
+    "nome_disciplina": "FUNDAMENTOS DE UI / UX OU IHC",
+    "professores": [
+      22
+    ]
+  },
+  {
+    "id": 51,
+    "nome_disciplina": "INTRODUÇÃO AO ECOSSISTEMA",
+    "professores": [
+      22
+    ]
+  },
+  {
+    "id": 52,
+    "nome_disciplina": "PENSAMENTO COMPUTACIONAL II",
+    "professores": [
+      22
+    ]
+  },
+  {
+    "id": 53,
+    "nome_disciplina": "PROGRAMACAO ESTRUTURADA",
+    "professores": [
+      22
+    ]
+  },
+  {
+    "id": 54,
+    "nome_disciplina": "PROGRAMAÇÃO ORIENTADA À",
+    "professores": [
+      22
+    ]
+  },
+  {
+    "id": 55,
+    "nome_disciplina": "PROGRAMAÇÃO WEB FRONT-END",
+    "professores": [
+      22
+    ]
+  },
+  {
+    "id": 56,
+    "nome_disciplina": "ANATOMIA E FISIOLOGIA HUMANA",
+    "professores": [
+      23,
+      46,
+      54
+    ]
+  },
+  {
+    "id": 57,
+    "nome_disciplina": "ANATOMIA HUMANA",
+    "professores": [
+      23
+    ]
+  },
+  {
+    "id": 58,
+    "nome_disciplina": "FARMACOLOGIA E",
+    "professores": [
+      23
+    ]
+  },
+  {
+    "id": 59,
+    "nome_disciplina": "MICROBIOLOGIA E PARASITOLOGIA",
+    "professores": [
+      23
+    ]
+  },
+  {
+    "id": 60,
+    "nome_disciplina": "NOÇÕES DE FARMACOLOGIA",
+    "professores": [
+      23,
+      46
+    ]
+  },
+  {
+    "id": 61,
+    "nome_disciplina": "PRIMEIROS SOCORROS II",
+    "professores": [
+      23
+    ]
+  },
+  {
+    "id": 62,
+    "nome_disciplina": "SAÚDE COLETIVA",
+    "professores": [
+      23
+    ]
+  },
+  {
+    "id": 63,
+    "nome_disciplina": "EDUCAÇÃO FÍSICA",
+    "professores": [
+      25,
+      38
+    ]
+  },
+  {
+    "id": 64,
+    "nome_disciplina": "MATEMÁTICA/ RECOMPOSIÇÃO DA",
+    "professores": [
+      28
+    ]
+  },
+  {
+    "id": 65,
+    "nome_disciplina": "COMBATE A INCÊNDIOS E",
+    "professores": [
+      29
+    ]
+  },
+  {
+    "id": 66,
+    "nome_disciplina": "COMUNICAÇÃO EMPRESARIAL",
+    "professores": [
+      29
+    ]
+  },
+  {
+    "id": 67,
+    "nome_disciplina": "DESENHO ASSISTIDO POR",
+    "professores": [
+      29
+    ]
+  },
+  {
+    "id": 68,
+    "nome_disciplina": "ERGONOMIA",
+    "professores": [
+      29
+    ]
+  },
+  {
+    "id": 69,
+    "nome_disciplina": "ÉTICA PROFISSIONAL",
+    "professores": [
+      29
+    ]
+  },
+  {
+    "id": 70,
+    "nome_disciplina": "FUNDAMENTOS DA SEGURANÇA",
+    "professores": [
+      29
+    ]
+  },
+  {
+    "id": 71,
+    "nome_disciplina": "FUNDAMENTOS DE GESTÃO DE",
+    "professores": [
+      29
+    ]
+  },
+  {
+    "id": 72,
+    "nome_disciplina": "MEDIDAS DE CONTROLE:",
+    "professores": [
+      29
+    ]
+  },
+  {
+    "id": 73,
+    "nome_disciplina": "TÉCNICAS DE TREINAMENTOS",
+    "professores": [
+      29
+    ]
+  },
+  {
+    "id": 74,
+    "nome_disciplina": "TECNOLOGIA DA INFORMAÇÃO",
+    "professores": [
+      29,
+      64
+    ]
+  },
+  {
+    "id": 75,
+    "nome_disciplina": "EDUCAÇÃO FINANCEIRA",
+    "professores": [
+      30,
+      56
+    ]
+  },
+  {
+    "id": 76,
+    "nome_disciplina": "LÍNGUA ESTRANGEIRA INGLÊS",
+    "professores": [
+      31,
+      52,
+      68
+    ]
+  },
+  {
+    "id": 77,
+    "nome_disciplina": "HIGIENE DO TRABALHO I",
+    "professores": [
+      36
+    ]
+  },
+  {
+    "id": 78,
+    "nome_disciplina": "INFORMÁTICA APLICADA À",
+    "professores": [
+      36
+    ]
+  },
+  {
+    "id": 79,
+    "nome_disciplina": "LEGISLAÇÃO E NORMAS TÉCNICAS",
+    "professores": [
+      36
+    ]
+  },
+  {
+    "id": 80,
+    "nome_disciplina": "NR7/NR9:PCMSO E AVALIAÇÃO /",
+    "professores": [
+      36
+    ]
+  },
+  {
+    "id": 81,
+    "nome_disciplina": "SEGURANÇA NA INDÚSTRIA DA",
+    "professores": [
+      36
+    ]
+  },
+  {
+    "id": 82,
+    "nome_disciplina": "SEGURANÇA NO TRABALHO RURAL",
+    "professores": [
+      36
+    ]
+  },
+  {
+    "id": 83,
+    "nome_disciplina": "SEGURANÇA NOS PROCESSOS",
+    "professores": [
+      36
+    ]
+  },
+  {
+    "id": 84,
+    "nome_disciplina": "AQUISIÇÃO DE CLIENTES",
+    "professores": [
+      39,
+      51,
+      64
+    ]
+  },
+  {
+    "id": 85,
+    "nome_disciplina": "CUSTOS E RECEITAS",
+    "professores": [
+      39,
+      64
+    ]
+  },
+  {
+    "id": 86,
+    "nome_disciplina": "DIREITO EMPRESARIAL",
+    "professores": [
+      39,
+      64
+    ]
+  },
+  {
+    "id": 87,
+    "nome_disciplina": "GESTÃO DA PRODUÇÃO",
+    "professores": [
+      39,
+      64
+    ]
+  },
+  {
+    "id": 88,
+    "nome_disciplina": "GESTÃO FINANCEIRA E",
+    "professores": [
+      39,
+      64
+    ]
+  },
+  {
+    "id": 89,
+    "nome_disciplina": "PROJETO INTEGRADOR - CLIENTE",
+    "professores": [
+      39,
+      51,
+      64
+    ]
+  },
+  {
+    "id": 90,
+    "nome_disciplina": "PROJETO INTEGRADOR FINAL -",
+    "professores": [
+      39,
+      64
+    ]
+  },
+  {
+    "id": 91,
+    "nome_disciplina": "VENDAS",
+    "professores": [
+      39,
+      64
+    ]
+  },
+  {
+    "id": 92,
+    "nome_disciplina": "FILOSOFIA",
+    "professores": [
+      41,
+      50
+    ]
+  },
+  {
+    "id": 93,
+    "nome_disciplina": "ESPORTE EDUCACIONAL",
+    "professores": [
+      42
+    ]
+  },
+  {
+    "id": 94,
+    "nome_disciplina": "ARQUITETURA DE SISTEMAS E REDES",
+    "professores": [
+      43
+    ]
+  },
+  {
+    "id": 95,
+    "nome_disciplina": "ARTE DIGITAL E TÉCNICAS VISUAIS",
+    "professores": [
+      43
+    ]
+  },
+  {
+    "id": 96,
+    "nome_disciplina": "GAME DESIGN E NARRATIVA",
+    "professores": [
+      43
+    ]
+  },
+  {
+    "id": 97,
+    "nome_disciplina": "LÓGICA E PROGRAMAÇÃO ESTRUTURADA",
+    "professores": [
+      43
+    ]
+  },
+  {
+    "id": 98,
+    "nome_disciplina": "MENTORIAS TEC I",
+    "professores": [
+      43
+    ]
+  },
+  {
+    "id": 99,
+    "nome_disciplina": "PENSAMENTO COMPUTACIONAL I",
+    "professores": [
+      43
+    ]
+  },
+  {
+    "id": 100,
+    "nome_disciplina": "ECONOMIA E MERCADO",
+    "professores": [
+      44
+    ]
+  },
+  {
+    "id": 101,
+    "nome_disciplina": "BIOQUÍMICA",
+    "professores": [
+      46,
+      54
+    ]
+  },
+  {
+    "id": 102,
+    "nome_disciplina": "BIOSSEGURANÇA NO SETOR",
+    "professores": [
+      46,
+      59
+    ]
+  },
+  {
+    "id": 103,
+    "nome_disciplina": "BOAS PRÁTICAS DE MANIPULAÇÃO",
+    "professores": [
+      46,
+      59
+    ]
+  },
+  {
+    "id": 104,
+    "nome_disciplina": "CÁLCULOS FARMACÊUTICOS",
+    "professores": [
+      46
+    ]
+  },
+  {
+    "id": 105,
+    "nome_disciplina": "FARMÁCIA HOSPITALAR",
+    "professores": [
+      46
+    ]
+  },
+  {
+    "id": 106,
+    "nome_disciplina": "GESTÃO NA ORGANIZAÇÃO DE",
+    "professores": [
+      46,
+      59
+    ]
+  },
+  {
+    "id": 107,
+    "nome_disciplina": "LEGISLAÇÃO FARMACÊUTICA E",
+    "professores": [
+      46,
+      54
+    ]
+  },
+  {
+    "id": 108,
+    "nome_disciplina": "MICROBIOLOGIA E IMUNOLOGIA",
+    "professores": [
+      46,
+      54
+    ]
+  },
+  {
+    "id": 109,
+    "nome_disciplina": "ESTRATÉGIAS DE CRESCIMENTO",
+    "professores": [
+      51
+    ]
+  },
+  {
+    "id": 110,
+    "nome_disciplina": "GESTÃO FINANCEIRA",
+    "professores": [
+      51
+    ]
+  },
+  {
+    "id": 111,
+    "nome_disciplina": "INOVAÇÃO E GERAÇÃO DE VALOR",
+    "professores": [
+      51
+    ]
+  },
+  {
+    "id": 112,
+    "nome_disciplina": "MODELOS DE NEGÓCIO",
+    "professores": [
+      51
+    ]
+  },
+  {
+    "id": 113,
+    "nome_disciplina": "PESQUISA DE MERCADO",
+    "professores": [
+      51
+    ]
+  },
+  {
+    "id": 114,
+    "nome_disciplina": "PROJETO INTEGRADOR - CLIENTES",
+    "professores": [
+      51
+    ]
+  },
+  {
+    "id": 115,
+    "nome_disciplina": "TIME EMPREENDEDOR",
+    "professores": [
+      51
+    ]
+  },
+  {
+    "id": 116,
+    "nome_disciplina": "VANTAGEM COMPETITIVA",
+    "professores": [
+      51
+    ]
+  },
+  {
+    "id": 117,
+    "nome_disciplina": "LINGUA ESPANHOLA",
+    "professores": [
+      53
+    ]
+  },
+  {
+    "id": 118,
+    "nome_disciplina": "LINGUAGENS E SUAS",
+    "professores": [
+      53
+    ]
+  },
+  {
+    "id": 119,
+    "nome_disciplina": "PROJETO INTEGRADOR /",
+    "professores": [
+      54
+    ]
+  },
+  {
+    "id": 120,
+    "nome_disciplina": "DISCIPLINA",
+    "professores": [
+      55
+    ]
+  },
+  {
+    "id": 121,
+    "nome_disciplina": "ANÁLISE DE DADOS PARA",
+    "professores": [
+      56
+    ]
+  },
+  {
+    "id": 122,
+    "nome_disciplina": "E-COMMERCE",
+    "professores": [
+      56
+    ]
+  },
+  {
+    "id": 123,
+    "nome_disciplina": "LEGISLAÇÃO E ÉTICA NO",
+    "professores": [
+      56
+    ]
+  },
+  {
+    "id": 124,
+    "nome_disciplina": "MARKETING EMPREENDEDOR",
+    "professores": [
+      56
+    ]
+  },
+  {
+    "id": 125,
+    "nome_disciplina": "PLANEJAMENTO ESTRATÉGICO DO",
+    "professores": [
+      56
+    ]
+  },
+  {
+    "id": 126,
+    "nome_disciplina": "EDUCAÇÃO DO TRÂNSITO",
+    "professores": [
+      58,
+      60
+    ]
+  },
+  {
+    "id": 127,
+    "nome_disciplina": "LÓGICA E PROGRAMAÇÃO",
+    "professores": [
+      67
+    ]
+  },
+  {
+    "id": 128,
+    "nome_disciplina": "MÉTODOS ÁGEIS DE",
+    "professores": [
+      67
+    ]
+  },
+  {
+    "id": 129,
+    "nome_disciplina": "MODELAGEM DE BANCO DE",
+    "professores": [
+      67
+    ]
+  },
+  {
+    "id": 130,
+    "nome_disciplina": "ÉTICA, BIOÉTICA E LEGISLAÇÃO",
+    "professores": [
+      69
+    ]
+  },
+  {
+    "id": 131,
+    "nome_disciplina": "MICROBIOLOGIA, PARASITOLOGIA",
+    "professores": [
+      69
+    ]
+  },
+  {
+    "id": 132,
+    "nome_disciplina": "SEMIOLOGIA E SEMIOTÉCNICA",
+    "professores": [
+      69
+    ]
+  }
+]
