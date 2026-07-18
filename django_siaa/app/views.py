@@ -12,6 +12,8 @@ from dotenv import load_dotenv
 from pathlib import Path
 from .funcs import ip
 from .funcs.get_ip import get_ip
+from decimal import Decimal, InvalidOperation
+from .models import Nota    
 from .models import Estudante
 from .models import Professor
 from .models import AtravessaPor
@@ -288,18 +290,43 @@ def get_disciplinas_lecionadas(request):
 
     return JsonResponse({"disciplinas": disciplinas_lecionadas_dict})
 
+# @csrf_exempt
+# def get_turma(request):
+#     turma = request.GET.get("turma")
+#     professor_id = request.GET.get("professor")
+
+
+#     turma = AtravessaPor.objects.filter(id=turma)
+
+#     turma_dict = [model_to_dict(turma) for turma in turma]
+
+#     return JsonResponse({ "turma": turma_dict[0] })
 @csrf_exempt
 def get_turma(request):
-    turma = request.GET.get("turma")
-    professor_id = request.GET.get("professor")
+    turma_id = request.GET.get("turma")
 
+    turma_obj = AtravessaPor.objects.filter(id=turma_id).first()
 
-    turma = AtravessaPor.objects.filter(id=turma)
+    if not turma_obj:
+        return JsonResponse({"message": "Turma não encontrada."}, status=404)
 
-    turma_dict = [model_to_dict(turma) for turma in turma]
+    turma_dict = model_to_dict(turma_obj)
 
-    return JsonResponse({ "turma": turma_dict[0] })
+    # Resolve o ID da disciplina a partir do texto 'disciplina_lecionada'
+    disciplina_id = None
+    nome_disciplina = turma_dict.get("disciplina_lecionada", "").strip()
 
+    if nome_disciplina:
+        disciplina_obj = Disciplina.objects.filter(
+            nome_disciplina__iexact=nome_disciplina
+        ).first()
+
+        if disciplina_obj:
+            disciplina_id = disciplina_obj.id
+
+    turma_dict["disciplina_id"] = disciplina_id
+
+    return JsonResponse({"turma": turma_dict})
 
 @csrf_exempt
 def get_alunos_por_turma(request):
@@ -318,4 +345,155 @@ def get_alunos_por_turma(request):
     return JsonResponse({
         "alunos": alunos_dict,
         "total": len(alunos_dict)
+    })
+
+
+def _to_decimal(valor):
+    """Converte valor recebido em Decimal, retornando None se vazio/invalido."""
+    if valor is None or valor == "":
+        return None
+    try:
+        return Decimal(str(valor))
+    except InvalidOperation:
+        return None
+
+
+@csrf_exempt
+def get_notas_aluno(request):
+    aluno_id = request.GET.get("aluno")
+    turma_id = request.GET.get("turma")
+    disciplina_id = request.GET.get("disciplina")
+    ano_letivo = request.GET.get("ano_letivo", "2026")
+
+    if not all([aluno_id, turma_id, disciplina_id]):
+        return JsonResponse(
+            {"message": "Parâmetros 'aluno', 'turma' e 'disciplina' são obrigatórios."},
+            status=400
+        )
+
+    try:
+        aluno = Estudante.objects.get(id=aluno_id)
+    except Estudante.DoesNotExist:
+        return JsonResponse({"message": "Aluno não encontrado."}, status=404)
+
+    nota = Nota.objects.filter(
+        aluno_id=aluno_id,
+        turma_id=turma_id,
+        disciplina_id=disciplina_id,
+        ano_letivo=ano_letivo,
+    ).first()
+
+    def campo(obj, nome):
+        if obj is None:
+            return None
+        valor = getattr(obj, nome)
+        return float(valor) if valor is not None else None
+
+    dados = {
+        "nm1_t1": campo(nota, "nm1_t1"), "nm2_t1": campo(nota, "nm2_t1"), "nm3_t1": campo(nota, "nm3_t1"),
+        "rpt_t1": campo(nota, "rpt_t1"), "mt_t1": campo(nota, "mt_t1"), "mtf_t1": campo(nota, "mtf_t1"),
+
+        "nm1_t2": campo(nota, "nm1_t2"), "nm2_t2": campo(nota, "nm2_t2"), "nm3_t2": campo(nota, "nm3_t2"),
+        "rpt_t2": campo(nota, "rpt_t2"), "mt_t2": campo(nota, "mt_t2"), "mtf_t2": campo(nota, "mtf_t2"),
+
+        "nm1_t3": campo(nota, "nm1_t3"), "nm2_t3": campo(nota, "nm2_t3"), "nm3_t3": campo(nota, "nm3_t3"),
+        "rpt_t3": campo(nota, "rpt_t3"), "mt_t3": campo(nota, "mt_t3"), "mtf_t3": campo(nota, "mtf_t3"),
+
+        "ma": campo(nota, "ma"), "pf": campo(nota, "pf"), "maf": campo(nota, "maf"),
+        "rcf": campo(nota, "rcf"),
+        "tgf": nota.tgf if nota else 0,
+        "rf": nota.rf if nota else "CUR",
+    }
+
+    return JsonResponse({
+        "aluno": {"id": aluno.id, "nome_completo": aluno.nome_completo},
+        "notas": dados,
+    })
+
+
+@csrf_exempt
+def salvar_notas(request):
+    if request.method != "POST":
+        return JsonResponse({"message": "Método não permitido."}, status=405)
+
+    try:
+        body = json.loads(request.body)
+    except json.JSONDecodeError:
+        return JsonResponse({"message": "JSON inválido."}, status=400)
+
+    aluno_id = body.get("aluno")
+    turma_id = body.get("turma")
+    disciplina_id = body.get("disciplina")
+    professor_id = body.get("professor")
+    ano_letivo = body.get("ano_letivo", 2026)
+    campos = body.get("notas", {})
+
+    if not all([aluno_id, turma_id, disciplina_id, professor_id]):
+        return JsonResponse(
+            {"message": "Campos 'aluno', 'turma', 'disciplina' e 'professor' são obrigatórios."},
+            status=400
+        )
+
+    try:
+        aluno = Estudante.objects.get(id=aluno_id)
+        turma = AtravessaPor.objects.get(id=turma_id)
+        disciplina = Disciplina.objects.get(id=disciplina_id)
+        professor = Professor.objects.get(id=professor_id)
+    except (Estudante.DoesNotExist, AtravessaPor.DoesNotExist,
+            Disciplina.DoesNotExist, Professor.DoesNotExist):
+        return JsonResponse({"message": "Aluno, turma, disciplina ou professor não encontrado."}, status=404)
+
+    nota, _ = Nota.objects.get_or_create(
+        aluno=aluno, turma=turma, disciplina=disciplina, ano_letivo=ano_letivo,
+        defaults={"professor": professor}
+    )
+
+    campos_decimais = [
+        "nm1_t1", "nm2_t1", "nm3_t1", "rpt_t1",
+        "nm1_t2", "nm2_t2", "nm3_t2", "rpt_t2",
+        "nm1_t3", "nm2_t3", "nm3_t3", "rpt_t3",
+        "pf", "rcf",
+    ]
+
+    erros = []
+    for campo in campos_decimais:
+        if campo in campos:
+            valor = _to_decimal(campos[campo])
+            if campos[campo] not in (None, "") and valor is None:
+                erros.append(f"Valor inválido para {campo}: {campos[campo]}")
+                continue
+            if valor is not None and (valor < 0 or valor > 10):
+                erros.append(f"{campo} fora do intervalo (0-10): {valor}")
+                continue
+            setattr(nota, campo, valor)
+
+    if "tgf" in campos:
+        try:
+            nota.tgf = int(campos["tgf"] or 0)
+        except (ValueError, TypeError):
+            erros.append(f"Valor inválido para tgf: {campos['tgf']}")
+
+    if "rf" in campos:
+        rf_valido = dict(Nota.RF_CHOICES)
+        if campos["rf"] in rf_valido:
+            nota.rf = campos["rf"]
+        else:
+            erros.append(f"RF inválido: {campos['rf']}")
+
+    nota.professor = professor
+    nota.save()  # dispara o cálculo automático de MT, MTF, MA, MAF
+
+    return JsonResponse({
+        "message": "Notas salvas com sucesso.",
+        "erros": erros,
+        "notas": {
+            "mt_t1": float(nota.mt_t1) if nota.mt_t1 is not None else None,
+            "mtf_t1": float(nota.mtf_t1) if nota.mtf_t1 is not None else None,
+            "mt_t2": float(nota.mt_t2) if nota.mt_t2 is not None else None,
+            "mtf_t2": float(nota.mtf_t2) if nota.mtf_t2 is not None else None,
+            "mt_t3": float(nota.mt_t3) if nota.mt_t3 is not None else None,
+            "mtf_t3": float(nota.mtf_t3) if nota.mtf_t3 is not None else None,
+            "ma": float(nota.ma) if nota.ma is not None else None,
+            "maf": float(nota.maf) if nota.maf is not None else None,
+        }
     })
