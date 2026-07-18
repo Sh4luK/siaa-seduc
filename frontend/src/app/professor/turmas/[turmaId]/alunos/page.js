@@ -254,7 +254,7 @@ export default function ViewAlunosPage() {
             <div className={styles.sidebarFooter}>
               <div>
                 <span className={styles.infoCardHeader}>
-                  <span className={styles.infoCardSeal}>firstName.charAt(0)</span>
+                  <span className={styles.infoCardSeal}>{firstName.charAt(0)}</span>
                   <span className={styles.studentName}>{nomeCompleto}</span>
                 </span>
               </div>
@@ -303,12 +303,20 @@ export default function ViewAlunosPage() {
 
               <section className={styles.grid}>
                 {alunos.map((aluno)=> (
-                  <div className={styles.infoCard} key={aluno["id"]}>
+                  <Link href={`/professor/turmas/${turmaId}/alunos/${aluno["id"]}`} className={styles.infoCard} key={aluno["id"]}>
                     <div className={styles.infoCardHeader}>
                       <span className={styles.infoCardSeal}>{aluno["nome_completo"].charAt(0)}</span>
                       <p className={styles.studentname}>{aluno["nome_completo"]}</p>
                     </div>
-                  </div>
+                    <div className={styles.infoCardBody}>
+                      <p className={styles.studentClass}>{aluno["turma"]}</p>
+                      <p className={styles.studentId}>Nº {aluno["posicao_ordem"]}</p>
+                    </div>
+                    <div className={styles.infoCardFooter}>
+                      <span className={styles.turmaAlunos}>Acessar Aluno</span>
+                      <span className={styles.infoCardArrow} aria-hidden="true">→</span>
+                    </div>
+                  </Link>
                 ))}
               </section>
             </main>
@@ -317,4 +325,6 @@ export default function ViewAlunosPage() {
       </div>
     );
   }
+
+  return null;
 }
