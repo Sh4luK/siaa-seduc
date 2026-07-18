@@ -32,32 +32,32 @@ export default function CorrigirAlunos() {
     init()
   }, []);
 
-  function confirmInformations(){
+  function confirmInformations() {
     console.log("Dados enviados.")
     console.log({
       informations
     })
   }
-  if(ok === true){
+  if (ok === true) {
     return (
       <div className="row">
-        <div className="col-md-6 mt-3 mb-3">
-          <div className="card">
-            {alunos.map((aluno) => (
-              <div className="mt-3 mb-3">
+        {alunos.map((aluno) => (
+          <div className="col-md-6 mt-3 mb-3" key={aluno["id"]}>
+            <div className="card">
+              <div className="">
                 <div className="card-header">
                   <span className="card-title">
                     Está correto ou não?
                   </span>
                 </div>
-                <div className="card-body" key={aluno["id"]}>
+                <div className="card-body">
                   <h5 className="">{aluno["nome_completo"]}</h5>
                   <span className="">{aluno["turma"]}</span>
                 </div>
               </div>
-            ))}
             </div>
           </div>
+        ))}
       </div>
     );
 
