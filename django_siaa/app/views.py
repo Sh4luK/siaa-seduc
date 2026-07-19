@@ -1,3 +1,4 @@
+import unicodedata
 from django.db.models.functions import Replace
 from django.db.models import Value
 from django.db.models.functions import Trim
@@ -788,24 +789,48 @@ def buscar_alunos_por_turma(nome_turma):
 
 
 # resolver disciplina por turma, caso o campo disciplina_lecionada esteja vazio ou não bata com nenhuma disciplina cadastrada, retorna None
+def _normalizar_texto(texto):
+    texto = texto or ""
+    texto = unicodedata.normalize("NFC", texto)
+    return texto.replace(" ", "").strip().lower()
+
+
+def resolver_disciplina_da_turma(turma_obj):
+    nome_busca = _normalizar_texto(turma_obj.disciplina_lecionada)
+    print("DEBUG - buscando (normalizado):", repr(nome_busca))
+    print("DEBUG - bytes do texto buscado:", nome_busca.encode("utf-8"))
+
+    if not nome_busca:
+        return None
+
+    for disciplina in Disciplina.objects.all():
+        nome_disc_normalizado = _normalizar_texto(disciplina.nome_disciplina)
+        if "quim" in nome_disc_normalizado or "quí" in nome_disc_normalizado:
+            print("DEBUG - candidato:", repr(nome_disc_normalizado))
+            print("DEBUG - bytes do candidato:", nome_disc_normalizado.encode("utf-8"))
+            print("DEBUG - são iguais?", nome_disc_normalizado == nome_busca)
+
+    for disciplina in Disciplina.objects.all():
+        if _normalizar_texto(disciplina.nome_disciplina) == nome_busca:
+            return disciplina
+
+    return None
+# correto
 # def resolver_disciplina_da_turma(turma_obj):
-#     nome_disciplina = (turma_obj.disciplina_lecionada or "").strip()
+#     nome_disciplina = (turma_obj.disciplina_lecionada or "").replace(" ", "").strip().lower()
 
 #     if not nome_disciplina:
 #         return None
 
-#     return Disciplina.objects.filter(nome_disciplina__iexact=nome_disciplina).first()
+#     print("Disciplina da turma:", turma_obj.disciplina_lecionada)
 
-def resolver_disciplina_da_turma(turma_obj):
-    nome_disciplina = (turma_obj.disciplina_lecionada or "").replace(" ", "").strip().lower()
-
-    if not nome_disciplina:
-        return None
-
-    return Disciplina.objects.annotate(
-        nome_normalizado=Replace("nome_disciplina", Value(" "), Value(""))
-    ).filter(nome_normalizado__iexact=nome_disciplina).first()
-
+#     print("Disciplinas cadastradas:")
+#     for d in Disciplina.objects.all():
+#         print(f"[{d.id}] '{d.nome_disciplina}'")
+    
+#     return Disciplina.objects.annotate(
+#         nome_normalizado=Replace("nome_disciplina", Value(" "), Value(""))
+#     ).filter(nome_normalizado__iexact=nome_disciplina).first()
 
 @csrf_exempt
 def get_notas_aluno(request):
