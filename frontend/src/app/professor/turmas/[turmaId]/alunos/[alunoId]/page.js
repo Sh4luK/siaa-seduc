@@ -46,8 +46,6 @@ export default function LancarNotasPage() {
         const profId = authData.teacher.id;
         setProfessorId(profId);
 
-        // O backend resolve a disciplina automaticamente a partir da turma,
-        // então não precisamos mais buscar/mandar disciplina_id aqui.
         const notasUrl = `${API_BASE}/api/teacher/notas/get?aluno=${alunoId}&turma=${turmaId}&professor=${profId}`;
         const notasRes = await fetch(notasUrl);
 
