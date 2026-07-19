@@ -1,0 +1,135 @@
+.wrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+.title {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #101828;
+  margin: 0 0 0.3rem;
+}
+
+.subtitle {
+  font-size: 0.92rem;
+  color: #6b7280;
+  margin: 0 0 1.5rem;
+}
+
+.tabelaWrapper {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  background: #ffffff;
+  box-shadow: 0 1px 3px rgba(16, 24, 40, 0.04);
+}
+
+.tabela {
+  border-collapse: separate;
+  border-spacing: 0;
+  width: 100%;
+  font-size: 0.76rem;
+}
+
+.tabela th,
+.tabela td {
+  border-bottom: 1px solid #eef0f3;
+  border-right: 1px solid #eef0f3;
+  padding: 0.5rem 0.4rem;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.tabela th:last-child,
+.tabela td:last-child {
+  border-right: none;
+}
+
+.tabela thead th {
+  background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+  color: #374151;
+  font-weight: 700;
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.tabela thead tr:first-child th {
+  color: #1e40af;
+  background: #eef2ff;
+}
+
+.stickyCol {
+  position: sticky;
+  left: 0;
+  background: #ffffff;
+  text-align: left !important;
+  min-width: 170px;
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-weight: 600;
+  color: #101828;
+  z-index: 1;
+}
+
+thead .stickyCol {
+  background: #eef2ff;
+  z-index: 2;
+}
+
+.destaque {
+  background: #f8fafc;
+  color: #1e40af;
+  font-weight: 700;
+}
+
+.situacao {
+  display: inline-block;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.situacao_CUR { background: #eef2ff; color: #1e40af; }
+.situacao_AP { background: #f0fdf4; color: #15803d; }
+.situacao_RE { background: #fef2f2; color: #b91c1c; }
+.situacao_DE,
+.situacao_AB,
+.situacao_FA { background: #f9fafb; color: #6b7280; }
+.situacao_TR,
+.situacao_TT,
+.situacao_TO { background: #fffbeb; color: #92400e; }
+.situacao_CA { background: #fef2f2; color: #b91c1c; }
+.situacao_PP { background: #eef2ff; color: #1e40af; }
+.situacao_ND { background: #f9fafb; color: #6b7280; }
+
+.vazio {
+  font-size: 0.9rem;
+  color: #6b7280;
+  padding: 1.25rem;
+  background: #f9fafb;
+  border-radius: 12px;
+  text-align: center;
+}
+
+.listaErros {
+  list-style: none;
+  color: #b91c1c;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  padding: 0.85rem 1.1rem;
+  border-radius: 10px;
+  margin-bottom: 1.25rem;
+  font-size: 0.85rem;
+}
+
+/* ===== Responsivo ===== */
+@media (max-width: 700px) {
+  .title { font-size: 1.3rem; }
+  .tabela { font-size: 0.68rem; }
+  .stickyCol { min-width: 130px; max-width: 150px; }
+}
