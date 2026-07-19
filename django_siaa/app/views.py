@@ -860,9 +860,94 @@ def get_notas_aluno(request):
         "notas": dados,
     })
 
+# @csrf_exempt
+# def salvar_notas(request):
+#     """Cria ou atualiza as notas de um aluno para uma turma/disciplina/professor."""
+#     if request.method != "POST":
+#         return JsonResponse({"message": "Método não permitido."}, status=405)
+
+#     try:
+#         body = json.loads(request.body)
+#     except json.JSONDecodeError:
+#         return JsonResponse({"message": "JSON inválido."}, status=400)
+
+#     aluno_id = body.get("aluno")
+#     turma_id = body.get("turma")
+#     disciplina_id = body.get("disciplina")
+#     professor_id = body.get("professor")
+#     ano_letivo = body.get("ano_letivo", 2026)
+#     campos = body.get("notas", {})
+
+#     if not all([aluno_id, turma_id, disciplina_id, professor_id]):
+#         return JsonResponse(
+#             {"message": "Campos 'aluno', 'turma', 'disciplina' e 'professor' são obrigatórios."},
+#             status=400
+#         )
+
+#     try:
+#         aluno = Estudante.objects.get(id=aluno_id)
+#         turma = AtravessaPor.objects.get(id=turma_id)
+#         disciplina = Disciplina.objects.get(id=disciplina_id)
+#         professor = Professor.objects.get(id=professor_id)
+#     except (Estudante.DoesNotExist, AtravessaPor.DoesNotExist,
+#             Disciplina.DoesNotExist, Professor.DoesNotExist):
+#         return JsonResponse({"message": "Aluno, turma, disciplina ou professor não encontrado."}, status=404)
+
+#     nota, _ = Nota.objects.get_or_create(
+#         aluno=aluno, turma=turma, disciplina=disciplina, professor=professor, ano_letivo=ano_letivo,
+#     )
+
+#     campos_decimais = [
+#         "nm1_t1", "nm2_t1", "nm3_t1", "rpt_t1",
+#         "nm1_t2", "nm2_t2", "nm3_t2", "rpt_t2",
+#         "nm1_t3", "nm2_t3", "nm3_t3", "rpt_t3",
+#         "pf", "rcf",
+#     ]
+
+#     erros = []
+#     for campo in campos_decimais:
+#         if campo in campos:
+#             valor = _to_decimal(campos[campo])
+#             if campos[campo] not in (None, "") and valor is None:
+#                 erros.append(f"Valor inválido para {campo}: {campos[campo]}")
+#                 continue
+#             if valor is not None and (valor < 0 or valor > 10):
+#                 erros.append(f"{campo} fora do intervalo (0-10): {valor}")
+#                 continue
+#             setattr(nota, campo, valor)
+
+#     if "tgf" in campos:
+#         try:
+#             nota.tgf = int(campos["tgf"] or 0)
+#         except (ValueError, TypeError):
+#             erros.append(f"Valor inválido para tgf: {campos['tgf']}")
+
+#     if "rf" in campos:
+#         rf_valido = dict(Nota.RF_CHOICES)
+#         if campos["rf"] in rf_valido:
+#             nota.rf = campos["rf"]
+#         else:
+#             erros.append(f"RF inválido: {campos['rf']}")
+
+#     nota.save()
+
+#     return JsonResponse({
+#         "message": "Notas salvas com sucesso.",
+#         "erros": erros,
+#         "notas": {
+#             "mt_t1": float(nota.mt_t1) if nota.mt_t1 is not None else None,
+#             "mtf_t1": float(nota.mtf_t1) if nota.mtf_t1 is not None else None,
+#             "mt_t2": float(nota.mt_t2) if nota.mt_t2 is not None else None,
+#             "mtf_t2": float(nota.mtf_t2) if nota.mtf_t2 is not None else None,
+#             "mt_t3": float(nota.mt_t3) if nota.mt_t3 is not None else None,
+#             "mtf_t3": float(nota.mtf_t3) if nota.mtf_t3 is not None else None,
+#             "ma": float(nota.ma) if nota.ma is not None else None,
+#             "maf": float(nota.maf) if nota.maf is not None else None,
+#         }
+#     })
+
 @csrf_exempt
 def salvar_notas(request):
-    """Cria ou atualiza as notas de um aluno para uma turma/disciplina/professor."""
     if request.method != "POST":
         return JsonResponse({"message": "Método não permitido."}, status=405)
 
@@ -873,25 +958,29 @@ def salvar_notas(request):
 
     aluno_id = body.get("aluno")
     turma_id = body.get("turma")
-    disciplina_id = body.get("disciplina")
     professor_id = body.get("professor")
     ano_letivo = body.get("ano_letivo", 2026)
     campos = body.get("notas", {})
 
-    if not all([aluno_id, turma_id, disciplina_id, professor_id]):
+    if not all([aluno_id, turma_id, professor_id]):
         return JsonResponse(
-            {"message": "Campos 'aluno', 'turma', 'disciplina' e 'professor' são obrigatórios."},
+            {"message": "Campos 'aluno', 'turma' e 'professor' são obrigatórios."},
             status=400
         )
 
     try:
         aluno = Estudante.objects.get(id=aluno_id)
         turma = AtravessaPor.objects.get(id=turma_id)
-        disciplina = Disciplina.objects.get(id=disciplina_id)
         professor = Professor.objects.get(id=professor_id)
-    except (Estudante.DoesNotExist, AtravessaPor.DoesNotExist,
-            Disciplina.DoesNotExist, Professor.DoesNotExist):
-        return JsonResponse({"message": "Aluno, turma, disciplina ou professor não encontrado."}, status=404)
+    except (Estudante.DoesNotExist, AtravessaPor.DoesNotExist, Professor.DoesNotExist):
+        return JsonResponse({"message": "Aluno, turma ou professor não encontrado."}, status=404)
+
+    disciplina = resolver_disciplina_da_turma(turma)
+    if not disciplina:
+        return JsonResponse(
+            {"message": "Não foi possível resolver a disciplina associada a esta turma."},
+            status=404
+        )
 
     nota, _ = Nota.objects.get_or_create(
         aluno=aluno, turma=turma, disciplina=disciplina, professor=professor, ano_letivo=ano_letivo,
@@ -933,6 +1022,7 @@ def salvar_notas(request):
 
     return JsonResponse({
         "message": "Notas salvas com sucesso.",
+        "disciplina": disciplina.nome_disciplina,
         "erros": erros,
         "notas": {
             "mt_t1": float(nota.mt_t1) if nota.mt_t1 is not None else None,
@@ -945,7 +1035,6 @@ def salvar_notas(request):
             "maf": float(nota.maf) if nota.maf is not None else None,
         }
     })
-
 
 @csrf_exempt
 def get_notas_turma(request):
