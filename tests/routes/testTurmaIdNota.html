@@ -1,0 +1,266 @@
+<!-- // "use client";
+
+// import { useEffect, useState } from "react";
+// import { useParams, useRouter } from "next/navigation";
+// import layoutStyles from "../../../page.module.css";
+// import styles from "./notasTurma.module.css";
+
+// const API_BASE = "https://upgraded-space-spork-4j9vqpw9q5g5fprr-8000.app.github.dev";
+
+// const CAMPOS = [
+//   "nm1_t1", "nm2_t1", "nm3_t1", "rpt_t1",
+//   "nm1_t2", "nm2_t2", "nm3_t2", "rpt_t2",
+//   "nm1_t3", "nm2_t3", "nm3_t3", "rpt_t3",
+// ];
+
+// const RF_OPCOES = [
+//   ["CUR", "Cursando"], ["AP", "Aprovado"], ["RE", "Reprovado"],
+//   ["DE", "Desistente"], ["FA", "Falecido"], ["AB", "Abandono"],
+//   ["TR", "Transferido"], ["CA", "Cancelado"], ["TT", "Troca de Turma"],
+//   ["TO", "Transferido Outros"], ["PP", "Para Progressão"], ["ND", "Não Definido"],
+// ];
+
+// export default function NotasTurmaPage() {
+//   const { turmaId } = useParams();
+//   const router = useRouter();
+
+//   const [loading, setLoading] = useState(true);
+//   const [saving, setSaving] = useState(false);
+//   const [professorId, setProfessorId] = useState(null);
+//   const [disciplinaId, setDisciplinaId] = useState(null);
+//   const [nomeTurma, setNomeTurma] = useState("");
+//   const [alunos, setAlunos] = useState([]);
+//   const [mensagem, setMensagem] = useState(null);
+//   const [erros, setErros] = useState([]);
+
+//   useEffect(() => {
+//     async function init() {
+//       try {
+//         const authRes = await fetch(`${API_BASE}/api/teacher/auth`);
+//         const authData = await authRes.json();
+//         if (!authData.return) {
+//           router.push("/professor/login");
+//           return;
+//         }
+//         setProfessorId(authData.teacher.id);
+
+//         const turmaRes = await fetch(`${API_BASE}/api/teacher/search/turma?turma=${turmaId}`);
+//         if (!turmaRes.ok) throw new Error(`Falha ao buscar turma (status ${turmaRes.status})`);
+//         const turmaData = await turmaRes.json();
+
+//         const discId = turmaData.turma?.disciplina_id;
+//         if (!discId) {
+//           throw new Error("Não foi possível resolver o ID da disciplina a partir da turma.");
+//         }
+//         setDisciplinaId(discId);
+
+//         const listaRes = await fetch(
+//           `${API_BASE}/api/teacher/notas/turma/get?turma=${turmaId}&disciplina=${discId}`
+//         );
+//         if (!listaRes.ok) throw new Error(`Falha ao buscar notas da turma (status ${listaRes.status})`);
+//         const listaData = await listaRes.json();
+
+//         setNomeTurma(listaData.turma);
+//         setAlunos(listaData.alunos || []);
+//       } catch (error) {
+//         setErros([`Erro ao carregar dados da turma: ${error.message}`]);
+//       } finally {
+//         setLoading(false);
+//       }
+//     }
+//     init();
+//   }, [turmaId, router]);
+
+//   function handleChange(alunoId, campo, valor) {
+//     if (campo !== "tgf" && campo !== "rf") {
+//       if (!(valor === "" || (/^\d{0,2}(\.\d{0,2})?$/.test(valor) && Number(valor) <= 10))) {
+//         return;
+//       }
+//     }
+
+//     setAlunos((prev) =>
+//       prev.map((a) =>
+//         a.aluno_id === alunoId
+//           ? { ...a, notas: { ...a.notas, [campo]: valor } }
+//           : a
+//       )
+//     );
+//   }
+
+//   async function handleSalvarTudo() {
+//     setSaving(true);
+//     setMensagem(null);
+//     setErros([]);
+
+//     const lancamentos = alunos.map((a) => ({
+//       aluno_id: a.aluno_id,
+//       notas: a.notas,
+//     }));
+
+//     try {
+//       const res = await fetch(`${API_BASE}/api/teacher/notas/turma/salvar`, {
+//         method: "POST",
+//         headers: { "Content-Type": "application/json" },
+//         body: JSON.stringify({
+//           turma: turmaId,
+//           disciplina: disciplinaId,
+//           professor: professorId,
+//           lancamentos,
+//         }),
+//       });
+
+//       if (!res.ok) throw new Error(`Falha ao salvar (status ${res.status})`);
+
+//       const data = await res.json();
+
+//       const todosErros = [
+//         ...(data.erros_gerais || []),
+//         ...data.resultado.flatMap((r) =>
+//           r.erros.length ? r.erros.map((e) => `${r.nome_completo}: ${e}`) : []
+//         ),
+//       ];
+
+//       if (todosErros.length) {
+//         setErros(todosErros);
+//       } else {
+//         setMensagem("Notas de toda a turma salvas com sucesso.");
+//       }
+
+//       setAlunos((prev) =>
+//         prev.map((a) => {
+//           const atualizado = data.resultado.find((r) => r.aluno_id === a.aluno_id);
+//           return atualizado ? { ...a, notas: { ...a.notas, ...atualizado.notas } } : a;
+//         })
+//       );
+//     } catch (error) {
+//       setErros([`Erro ao salvar notas da turma: ${error.message}`]);
+//     } finally {
+//       setSaving(false);
+//     }
+//   }
+
+//   if (loading) {
+//     return (
+//       <div className={layoutStyles.page}>
+//         <p>Carregando...</p>
+//       </div>
+//     );
+//   }
+
+//   return (
+//     <div className={layoutStyles.page}>
+//       <div className={layoutStyles.content}>
+//         <main className={layoutStyles.main}>
+//           <div className={styles.wrapper}>
+//             <h1 className={styles.title}>Lançar notas — {nomeTurma}</h1>
+//             <p className={styles.subtitle}>{alunos.length} aluno(s)</p>
+
+//             {erros.length > 0 && (
+//               <ul className={styles.listaErros}>
+//                 {erros.map((e, i) => (
+//                   <li key={i}>{e}</li>
+//                 ))}
+//               </ul>
+//             )}
+//             {mensagem && <p className={styles.mensagemSucesso}>{mensagem}</p>}
+
+//             {alunos.length === 0 ? (
+//               <p className={styles.subtitle}>Nenhum aluno encontrado para esta turma.</p>
+//             ) : (
+//               <div className={styles.tabelaWrapper}>
+//                 <table className={styles.tabela}>
+//                   <thead>
+//                     <tr>
+//                       <th className={styles.stickyColNum} rowSpan={2}>Nº</th>
+//                       <th className={styles.stickyCol} rowSpan={2}>Aluno</th>
+//                       <th colSpan={4}>1º Trimestre</th>
+//                       <th colSpan={4}>2º Trimestre</th>
+//                       <th colSpan={4}>3º Trimestre</th>
+//                       <th rowSpan={2}>PF</th>
+//                       <th rowSpan={2}>RCF</th>
+//                       <th rowSpan={2}>TGF</th>
+//                       <th rowSpan={2}>RF</th>
+//                     </tr>
+//                     <tr>
+//                       <th>NM1</th><th>NM2</th><th>NM3</th><th>RPT</th>
+//                       <th>NM1</th><th>NM2</th><th>NM3</th><th>RPT</th>
+//                       <th>NM1</th><th>NM2</th><th>NM3</th><th>RPT</th>
+//                     </tr>
+//                   </thead>
+//                   <tbody>
+//                     {alunos.map((aluno) => (
+//                       <tr key={aluno.aluno_id}>
+//                         <td className={styles.stickyColNum}>{aluno.posicao_ordem ?? "—"}</td>
+//                         <td className={styles.stickyCol} title={aluno.nome_completo}>
+//                           {aluno.nome_completo}
+//                         </td>
+//                         {CAMPOS.map((campo) => (
+//                           <td key={campo}>
+//                             <input
+//                               type="text"
+//                               inputMode="decimal"
+//                               className={styles.input}
+//                               value={aluno.notas[campo] ?? ""}
+//                               onChange={(e) => handleChange(aluno.aluno_id, campo, e.target.value)}
+//                             />
+//                           </td>
+//                         ))}
+//                         <td>
+//                           <input
+//                             type="text"
+//                             inputMode="decimal"
+//                             className={styles.input}
+//                             value={aluno.notas.pf ?? ""}
+//                             onChange={(e) => handleChange(aluno.aluno_id, "pf", e.target.value)}
+//                           />
+//                         </td>
+//                         <td>
+//                           <input
+//                             type="text"
+//                             inputMode="decimal"
+//                             className={styles.input}
+//                             value={aluno.notas.rcf ?? ""}
+//                             onChange={(e) => handleChange(aluno.aluno_id, "rcf", e.target.value)}
+//                           />
+//                         </td>
+//                         <td>
+//                           <input
+//                             type="number"
+//                             min="0"
+//                             className={styles.input}
+//                             value={aluno.notas.tgf ?? 0}
+//                             onChange={(e) => handleChange(aluno.aluno_id, "tgf", e.target.value)}
+//                           />
+//                         </td>
+//                         <td>
+//                           <select
+//                             className={styles.select}
+//                             value={aluno.notas.rf ?? "CUR"}
+//                             onChange={(e) => handleChange(aluno.aluno_id, "rf", e.target.value)}
+//                           >
+//                             {RF_OPCOES.map(([valor]) => (
+//                               <option key={valor} value={valor}>{valor}</option>
+//                             ))}
+//                           </select>
+//                         </td>
+//                       </tr>
+//                     ))}
+//                   </tbody>
+//                 </table>
+//               </div>
+//             )}
+
+//             <button
+//               onClick={handleSalvarTudo}
+//               disabled={saving || alunos.length === 0}
+//               className={styles.botaoSalvar}
+//             >
+//               {saving ? "Salvando..." : "Salvar notas da turma"}
+//             </button>
+//           </div>
+//         </main>
+//       </div>
+//     </div>
+//   );
+// }
+ -->
