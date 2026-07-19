@@ -787,13 +787,25 @@ def buscar_alunos_por_turma(nome_turma):
 #     })
 
 
+# resolver disciplina por turma, caso o campo disciplina_lecionada esteja vazio ou não bata com nenhuma disciplina cadastrada, retorna None
+# def resolver_disciplina_da_turma(turma_obj):
+#     nome_disciplina = (turma_obj.disciplina_lecionada or "").strip()
+
+#     if not nome_disciplina:
+#         return None
+
+#     return Disciplina.objects.filter(nome_disciplina__iexact=nome_disciplina).first()
+
 def resolver_disciplina_da_turma(turma_obj):
-    nome_disciplina = (turma_obj.disciplina_lecionada or "").strip()
+    nome_disciplina = (turma_obj.disciplina_lecionada or "").replace(" ", "").strip().lower()
 
     if not nome_disciplina:
         return None
 
-    return Disciplina.objects.filter(nome_disciplina__iexact=nome_disciplina).first()
+    return Disciplina.objects.annotate(
+        nome_normalizado=Replace("nome_disciplina", Value(" "), Value(""))
+    ).filter(nome_normalizado__iexact=nome_disciplina).first()
+
 
 @csrf_exempt
 def get_notas_aluno(request):
@@ -1036,17 +1048,82 @@ def salvar_notas(request):
         }
     })
 
+# @csrf_exempt
+# def get_notas_turma(request):
+#     """Retorna todos os alunos de uma turma com suas notas (de uma disciplina/professor) já lançadas."""
+#     turma_id = request.GET.get("turma")
+#     disciplina_id = request.GET.get("disciplina")
+#     professor_id = request.GET.get("professor")
+#     ano_letivo = request.GET.get("ano_letivo", "2026")
+
+#     if not all([turma_id, disciplina_id, professor_id]):
+#         return JsonResponse(
+#             {"message": "Parâmetros 'turma', 'disciplina' e 'professor' são obrigatórios."},
+#             status=400
+#         )
+
+#     turma_obj = AtravessaPor.objects.filter(id=turma_id).first()
+#     if not turma_obj:
+#         return JsonResponse({"message": "Turma não encontrada."}, status=404)
+
+#     turma_dict = model_to_dict(turma_obj)
+#     nome_turma = turma_dict.get("turma") or ""
+
+#     alunos = buscar_alunos_por_turma(nome_turma)
+
+#     def campo(obj, nome):
+#         if obj is None:
+#             return None
+#         valor = getattr(obj, nome)
+#         return float(valor) if valor is not None else None
+
+#     resultado = []
+
+#     for aluno in alunos:
+#         nota = Nota.objects.filter(
+#             aluno=aluno,
+#             turma_id=turma_id,
+#             disciplina_id=disciplina_id,
+#             professor_id=professor_id,
+#             ano_letivo=ano_letivo,
+#         ).first()
+
+#         resultado.append({
+#             "aluno_id": aluno.id,
+#             "posicao_ordem": aluno.posicao_ordem,
+#             "nome_completo": aluno.nome_completo,
+#             "notas": {
+#                 "nm1_t1": campo(nota, "nm1_t1"), "nm2_t1": campo(nota, "nm2_t1"), "nm3_t1": campo(nota, "nm3_t1"),
+#                 "rpt_t1": campo(nota, "rpt_t1"), "mt_t1": campo(nota, "mt_t1"), "mtf_t1": campo(nota, "mtf_t1"),
+
+#                 "nm1_t2": campo(nota, "nm1_t2"), "nm2_t2": campo(nota, "nm2_t2"), "nm3_t2": campo(nota, "nm3_t2"),
+#                 "rpt_t2": campo(nota, "rpt_t2"), "mt_t2": campo(nota, "mt_t2"), "mtf_t2": campo(nota, "mtf_t2"),
+
+#                 "nm1_t3": campo(nota, "nm1_t3"), "nm2_t3": campo(nota, "nm2_t3"), "nm3_t3": campo(nota, "nm3_t3"),
+#                 "rpt_t3": campo(nota, "rpt_t3"), "mt_t3": campo(nota, "mt_t3"), "mtf_t3": campo(nota, "mtf_t3"),
+
+#                 "ma": campo(nota, "ma"), "pf": campo(nota, "pf"), "maf": campo(nota, "maf"),
+#                 "rcf": campo(nota, "rcf"),
+#                 "tgf": nota.tgf if nota else 0,
+#                 "rf": nota.rf if nota else "CUR",
+#             }
+#         })
+
+#     return JsonResponse({
+#         "turma": nome_turma,
+#         "total_alunos": len(resultado),
+#         "alunos": resultado
+#     })
+
 @csrf_exempt
 def get_notas_turma(request):
-    """Retorna todos os alunos de uma turma com suas notas (de uma disciplina/professor) já lançadas."""
     turma_id = request.GET.get("turma")
-    disciplina_id = request.GET.get("disciplina")
     professor_id = request.GET.get("professor")
     ano_letivo = request.GET.get("ano_letivo", "2026")
 
-    if not all([turma_id, disciplina_id, professor_id]):
+    if not all([turma_id, professor_id]):
         return JsonResponse(
-            {"message": "Parâmetros 'turma', 'disciplina' e 'professor' são obrigatórios."},
+            {"message": "Parâmetros 'turma' e 'professor' são obrigatórios."},
             status=400
         )
 
@@ -1054,9 +1131,14 @@ def get_notas_turma(request):
     if not turma_obj:
         return JsonResponse({"message": "Turma não encontrada."}, status=404)
 
-    turma_dict = model_to_dict(turma_obj)
-    nome_turma = turma_dict.get("turma") or ""
+    disciplina = resolver_disciplina_da_turma(turma_obj)
+    if not disciplina:
+        return JsonResponse(
+            {"message": "Não foi possível resolver a disciplina associada a esta turma."},
+            status=404
+        )
 
+    nome_turma = turma_obj.turma
     alunos = buscar_alunos_por_turma(nome_turma)
 
     def campo(obj, nome):
@@ -1071,7 +1153,7 @@ def get_notas_turma(request):
         nota = Nota.objects.filter(
             aluno=aluno,
             turma_id=turma_id,
-            disciplina_id=disciplina_id,
+            disciplina=disciplina,
             professor_id=professor_id,
             ano_letivo=ano_letivo,
         ).first()
@@ -1099,6 +1181,7 @@ def get_notas_turma(request):
 
     return JsonResponse({
         "turma": nome_turma,
+        "disciplina": disciplina.nome_disciplina,
         "total_alunos": len(resultado),
         "alunos": resultado
     })
@@ -1219,4 +1302,129 @@ def salvar_notas_turma(request):
         "message": "Lançamentos processados.",
         "erros_gerais": erros_gerais,
         "resultado": resultado_por_aluno
+    })
+
+
+@csrf_exempt
+def get_boletim_aluno(request):
+    """
+    Retorna o boletim completo do aluno autenticado: todas as disciplinas
+    que ele cursa, com notas trimestrais, resultado final, faltas e situação.
+    Autenticação feita pelo IP, igual ao restante do fluxo do aluno.
+    """
+    ip_aluno = get_ip()
+    aluno = Estudante.objects.filter(ip=ip_aluno).first()
+
+    if not aluno:
+        return JsonResponse({"message": "Aluno não autenticado."}, status=401)
+
+    ano_letivo = request.GET.get("ano_letivo", "2026")
+
+    notas = Nota.objects.filter(
+        aluno=aluno, ano_letivo=ano_letivo
+    ).select_related("disciplina").order_by("disciplina__nome_disciplina")
+
+    def campo(obj, nome):
+        valor = getattr(obj, nome)
+        return float(valor) if valor is not None else None
+
+    resultado = []
+    for nota in notas:
+        resultado.append({
+            "disciplina": nota.disciplina.nome_disciplina,
+            "t1": {
+                "nm1": campo(nota, "nm1_t1"), "nm2": campo(nota, "nm2_t1"), "nm3": campo(nota, "nm3_t1"),
+                "mt": campo(nota, "mt_t1"), "rpt": campo(nota, "rpt_t1"), "mtf": campo(nota, "mtf_t1"),
+            },
+            "t2": {
+                "nm1": campo(nota, "nm1_t2"), "nm2": campo(nota, "nm2_t2"), "nm3": campo(nota, "nm3_t2"),
+                "mt": campo(nota, "mt_t2"), "rpt": campo(nota, "rpt_t2"), "mtf": campo(nota, "mtf_t2"),
+            },
+            "t3": {
+                "nm1": campo(nota, "nm1_t3"), "nm2": campo(nota, "nm2_t3"), "nm3": campo(nota, "nm3_t3"),
+                "mt": campo(nota, "mt_t3"), "rpt": campo(nota, "rpt_t3"), "mtf": campo(nota, "mtf_t3"),
+            },
+            "ma": campo(nota, "ma"),
+            "pf": campo(nota, "pf"),
+            "maf": campo(nota, "maf"),
+            "rcf": campo(nota, "rcf"),
+            "tgf": nota.tgf,
+            "rf": nota.rf,
+        })
+
+    return JsonResponse({
+        "aluno": {"id": aluno.id, "nome_completo": aluno.nome_completo, "turma": aluno.turma},
+        "total_disciplinas": len(resultado),
+        "disciplinas": resultado
+    })
+
+
+# @csrf_exempt
+# def get_disciplinas_da_turma(request):
+#     """
+#     Retorna todas as disciplinas que o professor autenticado leciona
+#     para o mesmo grupo de alunos (mesmo nome de turma) do turma_id informado.
+#     Cada disciplina corresponde a um registro diferente de AtravessaPor.
+#     """
+#     turma_id = request.GET.get("turma")
+#     professor_id = request.GET.get("professor")
+
+#     if not all([turma_id, professor_id]):
+#         return JsonResponse(
+#             {"message": "Parâmetros 'turma' e 'professor' são obrigatórios."},
+#             status=400
+#         )
+
+#     turma_atual = AtravessaPor.objects.filter(id=turma_id).first()
+#     if not turma_atual:
+#         return JsonResponse({"message": "Turma não encontrada."}, status=404)
+
+#     nome_turma = turma_atual.turma
+
+#     # Busca todos os registros de AtravessaPor do mesmo professor, para o
+#     # mesmo grupo de alunos (nome de turma), cada um representando uma
+#     # disciplina diferente lecionada por ele para essa turma.
+#     registros = AtravessaPor.objects.filter(
+#         turma=nome_turma, professor_id=professor_id
+#     ).order_by("disciplina_lecionada")
+
+#     disciplinas = [
+#         {"turma_id": r.id, "disciplina": r.disciplina_lecionada}
+#         for r in registros
+#     ]
+
+#     return JsonResponse({
+#         "nome_turma": nome_turma,
+#         "disciplinas": disciplinas
+#     })
+
+@csrf_exempt
+def get_disciplinas_da_turma(request):
+    turma_id = request.GET.get("turma")
+    professor_id = request.GET.get("professor")
+
+    if not all([turma_id, professor_id]):
+        return JsonResponse(
+            {"message": "Parâmetros 'turma' e 'professor' são obrigatórios."},
+            status=400
+        )
+
+    turma_atual = AtravessaPor.objects.filter(id=turma_id).first()
+    if not turma_atual:
+        return JsonResponse({"message": "Turma não encontrada."}, status=404)
+
+    nome_turma = turma_atual.turma
+
+    registros = AtravessaPor.objects.filter(
+        turma=nome_turma, professor_id=professor_id
+    ).order_by("disciplina_lecionada")
+
+    disciplinas = [
+        {"turma_id": r.id, "disciplina": r.disciplina_lecionada}
+        for r in registros
+    ]
+
+    return JsonResponse({
+        "nome_turma": nome_turma,
+        "disciplinas": disciplinas
     })
