@@ -9,16 +9,16 @@
   color: #101828;
   margin: 0 0 1.5rem;
 } */
-.wrapper {
+/* .wrapper {
   display: flex;
   flex-direction: column;
-  /* background: #ffffff; // garante fundo claro atrás do texto escuro */
+  background: #ffffff; // garante fundo claro atrás do texto escuro 
 }
 
 .title {
   font-size: 1.5rem;
   font-weight: 700;
-  color: #ffffff !important; /* força a cor, sobrescrevendo qualquer herança */
+  color: #ffffff !important;
   margin: 0 0 1.5rem;
 }
 
@@ -144,4 +144,323 @@
 .loadingText {
   color: #6b7280;
   font-size: 0.95rem;
+} */
+
+.wrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+.title {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #ffffff !important;
+  margin: 0 0 0.3rem;
+  letter-spacing: -0.01em;
+}
+
+.subtitle {
+  font-size: 0.92rem;
+  color: #6b7280;
+  margin: 0 0 1.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.subtitle::before {
+  content: "";
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #2563eb;
+}
+
+/* ===== Lista de trimestres (inspirada na tabela de turma) ===== */
+.listaWrapper {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  overflow: hidden;
+  background: #ffffff;
+  box-shadow: 0 1px 3px rgba(16, 24, 40, 0.04), 0 1px 2px rgba(16, 24, 40, 0.03);
+  margin-bottom: 1.75rem;
+}
+
+.listaHeader {
+  display: grid;
+  grid-template-columns: 130px repeat(6, 1fr);
+  gap: 0.5rem;
+  padding: 0.75rem 1.25rem;
+  background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.colLabel {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: #374151;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  text-align: center;
+}
+
+.colLabel:first-child {
+  text-align: left;
+}
+
+.listaRow {
+  display: grid;
+  grid-template-columns: 130px repeat(6, 1fr);
+  gap: 0.5rem;
+  align-items: center;
+  padding: 0.85rem 1.25rem;
+  border-bottom: 1px solid #f1f5f9;
+  transition: background 0.15s ease;
+}
+
+.listaRow:last-child {
+  border-bottom: none;
+}
+
+.listaRow:hover {
+  background: #fafbff;
+}
+
+.rowLabel {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #101828;
+}
+
+.calculadoBadge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #1e40af;
+  background: #eef2ff;
+  border-radius: 6px;
+  padding: 0.4rem 0.3rem;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ===== Resultado Anual / Final ===== */
+.resultadoWrapper {
+  padding: 1.25rem 1.5rem;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  box-shadow: 0 1px 3px rgba(16, 24, 40, 0.04);
+  margin-bottom: 1.75rem;
+}
+
+.resultadoTitle {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #101828;
+  margin: 0 0 1.1rem;
+  padding-bottom: 0.6rem;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.resultadoGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+  gap: 1rem;
+}
+
+.resultadoItem {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  align-items: center;
+}
+
+.resultadoLabel {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+/* ===== Inputs & Select ===== */
+.input {
+  width: 100%;
+  max-width: 70px;
+  margin: 0 auto;
+  padding: 0.45rem 0.3rem;
+  text-align: center;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 6px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #101828;
+  background: #ffffff;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.input:hover {
+  border-color: #cbd5e1;
+}
+
+.input:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+
+.select {
+  width: 100%;
+  padding: 0.4rem 0.3rem;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #101828;
+  background: #ffffff;
+  cursor: pointer;
+  transition: border-color 0.15s ease;
+}
+
+.select:hover {
+  border-color: #cbd5e1;
+}
+
+.select:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+
+/* ===== Mensagens ===== */
+.mensagemSucesso {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #15803d;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  padding: 0.7rem 1rem;
+  border-radius: 10px;
+  margin-bottom: 1.25rem;
+  font-size: 0.88rem;
+  font-weight: 500;
+}
+
+.mensagemSucesso::before {
+  content: "✓";
+  font-weight: 700;
+}
+
+.listaErros {
+  list-style: none;
+  color: #b91c1c;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  padding: 0.85rem 1.1rem;
+  border-radius: 10px;
+  margin-bottom: 1.25rem;
+  font-size: 0.85rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.listaErros li::before {
+  content: "⚠ ";
+}
+
+/* ===== Botão ===== */
+.botaoSalvar {
+  align-self: flex-start;
+  padding: 0.75rem 1.6rem;
+  background: #2563eb;
+  color: #ffffff;
+  border: none;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(37, 99, 235, 0.25);
+  transition: background 0.15s ease, transform 0.1s ease, box-shadow 0.15s ease;
+}
+
+.botaoSalvar:hover {
+  background: #1d4ed8;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 14px rgba(37, 99, 235, 0.3);
+}
+
+.botaoSalvar:active {
+  transform: translateY(0);
+}
+
+.botaoSalvar:disabled {
+  background: #cbd5e1;
+  box-shadow: none;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.loadingText {
+  color: #6b7280;
+  font-size: 0.95rem;
+}
+
+/* ===== Responsivo ===== */
+@media (max-width: 700px) {
+  .title {
+    font-size: 1.3rem;
+  }
+
+  .listaHeader {
+    grid-template-columns: 90px repeat(6, 1fr);
+    padding: 0.6rem 0.85rem;
+  }
+
+  .listaRow {
+    grid-template-columns: 90px repeat(6, 1fr);
+    padding: 0.65rem 0.85rem;
+  }
+
+  .rowLabel {
+    font-size: 0.75rem;
+  }
+
+  .colLabel {
+    font-size: 0.6rem;
+  }
+
+  .input {
+    max-width: 100%;
+    font-size: 0.72rem;
+    padding: 0.35rem 0.2rem;
+  }
+
+  .calculadoBadge {
+    font-size: 0.7rem;
+    padding: 0.3rem;
+  }
+
+  .resultadoGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 420px) {
+  .listaHeader,
+  .listaRow {
+    grid-template-columns: 70px repeat(6, 1fr);
+    gap: 0.3rem;
+  }
+
+  .resultadoGrid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+  }
 }
