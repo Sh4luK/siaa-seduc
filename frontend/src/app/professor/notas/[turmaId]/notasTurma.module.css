@@ -296,3 +296,23 @@ thead .stickyCol {
 .trocarBotao:hover {
   background: #eef2ff;
 }
+
+.notaBaixa {
+  color: #b91c1c !important;
+  font-weight: 700;
+  border-color: #fca5a5 !important;
+}
+
+.notaBaixa:focus {
+  box-shadow: 0 0 0 3px rgba(185, 28, 28, 0.15) !important;
+}
+
+.notaAlta {
+  color: #1d4ed8 !important;
+  font-weight: 700;
+  border-color: #93c5fd !important;
+}
+
+.notaAlta:focus {
+  box-shadow: 0 0 0 3px rgba(29, 78, 216, 0.15) !important;
+}
