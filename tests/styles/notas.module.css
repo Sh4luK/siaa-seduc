@@ -1,0 +1,147 @@
+/* .wrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+.title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #101828;
+  margin: 0 0 1.5rem;
+} */
+/* .wrapper {
+  display: flex;
+  flex-direction: column;
+  background: #ffffff; // garante fundo claro atrás do texto escuro 
+}
+
+.title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #ffffff !important;
+  margin: 0 0 1.5rem;
+}
+
+.trimestre {
+  margin-top: 1.5rem;
+}
+
+.trimestreTitle {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #101828;
+  margin: 0 0 0.75rem;
+}
+
+.trimestreRow {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  font-size: 0.8rem;
+  color: #6b7280;
+  gap: 0.25rem;
+}
+
+.fieldSmall {
+  width: 70px;
+}
+
+.input {
+  width: 70px;
+  padding: 0.4rem;
+  text-align: center;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  color: #1f2937;
+  background: #ffffff;
+}
+
+.input:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+
+.calculado {
+  font-size: 0.8rem;
+  color: #6b7280;
+  line-height: 1.5;
+}
+
+.resultadoSection {
+  margin-top: 2rem;
+}
+
+.resultadoRow {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.resultadoValor {
+  font-size: 0.85rem;
+  color: #374151;
+  font-weight: 500;
+}
+
+.select {
+  padding: 0.4rem;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  color: #1f2937;
+  background: #ffffff;
+}
+
+.select:focus {
+  outline: none;
+  border-color: #2563eb;
+}
+
+.mensagemSucesso {
+  color: #16a34a;
+  margin-top: 1rem;
+  font-size: 0.9rem;
+}
+
+.listaErros {
+  color: #dc2626;
+  margin-top: 1rem;
+  font-size: 0.9rem;
+  padding-left: 1.25rem;
+}
+
+.botaoSalvar {
+  margin-top: 1.5rem;
+  padding: 0.65rem 1.4rem;
+  background: #2563eb;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.botaoSalvar:hover {
+  background: #1d4ed8;
+}
+
+.botaoSalvar:disabled {
+  background: #9ca3af;
+  cursor: not-allowed;
+}
+
+.loadingText {
+  color: #6b7280;
+  font-size: 0.95rem;
+} */
