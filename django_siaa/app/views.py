@@ -21,9 +21,6 @@ from .models import Estudante
 from .models import Professor
 from .models import AtravessaPor
 from .models import Disciplina
-# from django.contrib.auth.models import User
-# from django.contrib.auth import authenticate, login
-# from django.contrib.auth.hashers import check_password
 import json
 
 load_dotenv()
