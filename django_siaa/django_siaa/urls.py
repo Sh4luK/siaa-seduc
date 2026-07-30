@@ -21,4 +21,6 @@ urlpatterns = [
     path("api/teacher/notas/turma/salvar", app.views.salvar_notas_turma, name="salvar_notas_turma"),
     path("api/students/notas", app.views.get_boletim_aluno, name="get_boletim_aluno"),
     path("api/teacher/turma/disciplinas", app.views.get_disciplinas_da_turma, name="get_disciplinas_da_turma"),
+    path("api/teacher/frequencia/turma/get", app.views.get_frequencia_turma, name="get_frequencia_turma"),
+    path("api/teacher/frequencia/turma/salvar", app.views.salvar_frequencia_turma, name="salvar_frequencia_turma"),
 ]
