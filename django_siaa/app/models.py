@@ -136,3 +136,23 @@ class Nota(models.Model):
 
     def __str__(self):
         return f"{self.aluno} - {self.disciplina} - {self.professor} ({self.ano_letivo})"
+
+
+class Frequencia(models.Model):
+    aluno = models.ForeignKey("app.Estudante", on_delete=models.CASCADE, related_name="frequencias")
+    disciplina = models.ForeignKey("app.Disciplina", on_delete=models.CASCADE, related_name="frequencias")
+    professor = models.ForeignKey("app.Professor", on_delete=models.CASCADE, related_name="frequencias_registradas")
+    turma = models.ForeignKey("app.AtravessaPor", on_delete=models.CASCADE, related_name="frequencias")
+    ano_letivo = models.PositiveIntegerField(default=2026)
+
+    data = models.DateField()
+    presente = models.BooleanField(default=True)
+
+    atualizado_em = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        unique_together = ("aluno", "disciplina", "turma", "professor", "data")
+
+    def __str__(self):
+        status = "Presente" if self.presente else "Falta"
+        return f"{self.aluno} - {self.disciplina} - {self.data} - {status}"
