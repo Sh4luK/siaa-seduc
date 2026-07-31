@@ -1,0 +1,328 @@
+.wrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+.title {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0 0 0.3rem;
+}
+
+.subtitle {
+  font-size: 0.92rem;
+  color: #6b7280;
+  margin: 0 0 1.5rem;
+}
+
+.disciplinasEscolha {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-bottom: 1.5rem;
+}
+
+.disciplinaBotao {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #1e40af;
+  background: #eef2ff;
+  border: 1px solid #c7d2fe;
+  border-radius: 999px;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease, transform 0.1s ease;
+}
+
+.disciplinaBotao:hover {
+  background: #2563eb;
+  border-color: #2563eb;
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+
+.topoControles {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.disciplinaAtual {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.disciplinaAtualLabel {
+  font-size: 0.9rem;
+  color: #374151;
+}
+
+.trocarBotao {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #1e40af;
+  background: transparent;
+  border: 1px solid #c7d2fe;
+  border-radius: 8px;
+  padding: 0.4rem 0.8rem;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.trocarBotao:hover {
+  background: #eef2ff;
+}
+
+.dataField {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #374151;
+}
+
+.dataInput {
+  padding: 0.4rem 0.6rem;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  color: #101828;
+}
+
+.dataInput:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+
+.resumoBarra {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.resumoItem {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #374151;
+  background: #f4f6f9;
+  padding: 0.4rem 0.8rem;
+  border-radius: 999px;
+}
+
+.resumoPresente {
+  color: #15803d;
+  background: #f0fdf4;
+}
+
+.resumoFalta {
+  color: #b91c1c;
+  background: #fef2f2;
+}
+
+.acoesRapidas {
+  display: flex;
+  gap: 0.5rem;
+  margin-left: auto;
+}
+
+.acaoBotao {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #374151;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 0.4rem 0.8rem;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.acaoBotao:hover {
+  background: #f4f6f9;
+  border-color: #2563eb;
+}
+
+.alunosLista {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.alunoLinha {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.7rem 1rem;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+}
+
+.alunoPosicao {
+  font-size: 0.78rem;
+  color: #9ca3af;
+  min-width: 24px;
+}
+
+.alunoNome {
+  flex: 1;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #101828;
+}
+
+.statusBotao {
+  font-size: 0.8rem;
+  font-weight: 700;
+  border: none;
+  border-radius: 999px;
+  padding: 0.4rem 1rem;
+  cursor: pointer;
+  min-width: 90px;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.statusPresente {
+  background: #f0fdf4;
+  color: #15803d;
+}
+
+.statusPresente:hover {
+  background: #dcfce7;
+}
+
+.statusFalta {
+  background: #fef2f2;
+  color: #b91c1c;
+}
+
+.statusFalta:hover {
+  background: #fee2e2;
+}
+
+.mensagemSucesso {
+  color: #15803d;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  padding: 0.7rem 1rem;
+  border-radius: 10px;
+  margin-bottom: 1.25rem;
+  font-size: 0.88rem;
+  font-weight: 500;
+}
+
+.listaErros {
+  list-style: none;
+  color: #b91c1c;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  padding: 0.85rem 1.1rem;
+  border-radius: 10px;
+  margin-bottom: 1.25rem;
+  font-size: 0.85rem;
+}
+
+.botaoSalvar {
+  align-self: flex-start;
+  padding: 0.75rem 1.6rem;
+  background: #2563eb;
+  color: #ffffff;
+  border: none;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(37, 99, 235, 0.25);
+  transition: background 0.15s ease, transform 0.1s ease;
+}
+
+.botaoSalvar:hover {
+  background: #1d4ed8;
+  transform: translateY(-1px);
+}
+
+.botaoSalvar:disabled {
+  background: #cbd5e1;
+  box-shadow: none;
+  cursor: not-allowed;
+  transform: none;
+}
+
+@media (max-width: 600px) {
+  .topoControles {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .resumoBarra {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .acoesRapidas {
+    margin-left: 0;
+    width: 100%;
+  }
+
+  .acaoBotao {
+    flex: 1;
+  }
+}
+
+
+.dataExtenso {
+  font-size: 0.85rem;
+  color: #6b7280;
+  margin: 0 0 1.25rem;
+  text-transform: capitalize;
+}
+
+.assuntoBloco {
+  margin-bottom: 1.5rem;
+}
+
+.assuntoLabel {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 0.5rem;
+}
+
+.assuntoTextarea {
+  width: 100%;
+  padding: 0.75rem 0.9rem;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 10px;
+  font-size: 0.88rem;
+  font-family: inherit;
+  color: #101828;
+  resize: vertical;
+  min-height: 80px;
+  box-sizing: border-box;
+  background: #ffffff;
+}
+
+.assuntoTextarea:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+
+.assuntoTextarea::placeholder {
+  color: #9ca3af;
+}

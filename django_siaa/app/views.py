@@ -1,3 +1,4 @@
+from datetime import date
 import unicodedata
 from django.db.models.functions import Replace
 from django.db.models import Value
@@ -21,6 +22,8 @@ from .models import Estudante
 from .models import Professor
 from .models import AtravessaPor
 from .models import Disciplina
+from .models import Frequencia
+from .models import Aula
 import json
 
 load_dotenv()
@@ -822,4 +825,340 @@ def get_disciplinas_da_turma(request):
     return JsonResponse({
         "nome_turma": nome_turma,
         "disciplinas": disciplinas
+    })
+
+
+
+# @csrf_exempt
+# def get_frequencia_turma(request):
+#     """
+#     Retorna todos os alunos da turma com o status de presença/falta
+#     em uma data específica, para a disciplina resolvida automaticamente
+#     a partir do turma_id.
+#     """
+#     turma_id = request.GET.get("turma")
+#     professor_id = request.GET.get("professor")
+#     data_str = request.GET.get("data")
+
+#     if not all([turma_id, professor_id, data_str]):
+#         return JsonResponse(
+#             {"message": "Parâmetros 'turma', 'professor' e 'data' são obrigatórios."},
+#             status=400
+#         )
+
+#     try:
+#         data_selecionada = date.fromisoformat(data_str)
+#     except ValueError:
+#         return JsonResponse({"message": "Formato de data inválido. Use AAAA-MM-DD."}, status=400)
+
+#     turma_obj = AtravessaPor.objects.filter(id=turma_id).first()
+#     if not turma_obj:
+#         return JsonResponse({"message": "Turma não encontrada."}, status=404)
+
+#     disciplina = resolver_disciplina_da_turma(turma_obj)
+#     if not disciplina:
+#         return JsonResponse(
+#             {"message": "Não foi possível resolver a disciplina associada a esta turma."},
+#             status=404
+#         )
+
+#     nome_turma = turma_obj.turma
+#     alunos = buscar_alunos_por_turma(nome_turma)
+
+#     resultado = []
+#     for aluno in alunos:
+#         registro = Frequencia.objects.filter(
+#             aluno=aluno,
+#             turma_id=turma_id,
+#             disciplina=disciplina,
+#             professor_id=professor_id,
+#             data=data_selecionada,
+#         ).first()
+
+#         resultado.append({
+#             "aluno_id": aluno.id,
+#             "posicao_ordem": aluno.posicao_ordem,
+#             "nome_completo": aluno.nome_completo,
+#             "presente": registro.presente if registro else True,
+#         })
+
+#     return JsonResponse({
+#         "turma": nome_turma,
+#         "disciplina": disciplina.nome_disciplina,
+#         "data": data_str,
+#         "total_alunos": len(resultado),
+#         "alunos": resultado
+#     })
+
+
+# @csrf_exempt
+# def salvar_frequencia_turma(request):
+#     """Salva a frequência de todos os alunos de uma turma para uma data específica."""
+#     if request.method != "POST":
+#         return JsonResponse({"message": "Método não permitido."}, status=405)
+
+#     try:
+#         body = json.loads(request.body)
+#     except json.JSONDecodeError:
+#         return JsonResponse({"message": "JSON inválido."}, status=400)
+
+#     turma_id = body.get("turma")
+#     professor_id = body.get("professor")
+#     data_str = body.get("data")
+#     ano_letivo = body.get("ano_letivo", 2026)
+#     lancamentos = body.get("lancamentos", [])  # [{ aluno_id, presente }]
+
+#     if not all([turma_id, professor_id, data_str]):
+#         return JsonResponse(
+#             {"message": "Campos 'turma', 'professor' e 'data' são obrigatórios."},
+#             status=400
+#         )
+
+#     try:
+#         data_selecionada = date.fromisoformat(data_str)
+#     except ValueError:
+#         return JsonResponse({"message": "Formato de data inválido. Use AAAA-MM-DD."}, status=400)
+
+#     if not lancamentos:
+#         return JsonResponse({"message": "Nenhum lançamento enviado."}, status=400)
+
+#     try:
+#         turma = AtravessaPor.objects.get(id=turma_id)
+#         professor = Professor.objects.get(id=professor_id)
+#     except (AtravessaPor.DoesNotExist, Professor.DoesNotExist):
+#         return JsonResponse({"message": "Turma ou professor não encontrado."}, status=404)
+
+#     disciplina = resolver_disciplina_da_turma(turma)
+#     if not disciplina:
+#         return JsonResponse(
+#             {"message": "Não foi possível resolver a disciplina associada a esta turma."},
+#             status=404
+#         )
+
+#     erros_gerais = []
+#     total_salvos = 0
+
+#     for lancamento in lancamentos:
+#         aluno_id = lancamento.get("aluno_id")
+#         presente = lancamento.get("presente", True)
+
+#         if not aluno_id:
+#             erros_gerais.append("Lançamento sem 'aluno_id' foi ignorado.")
+#             continue
+
+#         try:
+#             aluno = Estudante.objects.get(id=aluno_id)
+#         except Estudante.DoesNotExist:
+#             erros_gerais.append(f"Aluno com id {aluno_id} não encontrado — ignorado.")
+#             continue
+
+#         Frequencia.objects.update_or_create(
+#             aluno=aluno,
+#             turma=turma,
+#             disciplina=disciplina,
+#             professor=professor,
+#             data=data_selecionada,
+#             defaults={"presente": bool(presente), "ano_letivo": ano_letivo},
+#         )
+#         total_salvos += 1
+
+#     return JsonResponse({
+#         "message": "Frequência salva com sucesso.",
+#         "disciplina": disciplina.nome_disciplina,
+#         "data": data_str,
+#         "total_salvos": total_salvos,
+#         "erros_gerais": erros_gerais,
+#     })
+
+
+from .models import Frequencia, Aula
+
+@csrf_exempt
+def get_frequencia_turma(request):
+    turma_id = request.GET.get("turma")
+    professor_id = request.GET.get("professor")
+    data_str = request.GET.get("data")
+
+    if not all([turma_id, professor_id, data_str]):
+        return JsonResponse(
+            {"message": "Parâmetros 'turma', 'professor' e 'data' são obrigatórios."},
+            status=400
+        )
+
+    try:
+        data_selecionada = date.fromisoformat(data_str)
+    except ValueError:
+        return JsonResponse({"message": "Formato de data inválido. Use AAAA-MM-DD."}, status=400)
+
+    turma_obj = AtravessaPor.objects.filter(id=turma_id).first()
+    if not turma_obj:
+        return JsonResponse({"message": "Turma não encontrada."}, status=404)
+
+    disciplina = resolver_disciplina_da_turma(turma_obj)
+    if not disciplina:
+        return JsonResponse(
+            {"message": "Não foi possível resolver a disciplina associada a esta turma."},
+            status=404
+        )
+
+    nome_turma = turma_obj.turma
+    alunos = buscar_alunos_por_turma(nome_turma)
+
+    resultado = []
+    for aluno in alunos:
+        registro = Frequencia.objects.filter(
+            aluno=aluno,
+            turma_id=turma_id,
+            disciplina=disciplina,
+            professor_id=professor_id,
+            data=data_selecionada,
+        ).first()
+
+        resultado.append({
+            "aluno_id": aluno.id,
+            "posicao_ordem": aluno.posicao_ordem,
+            "nome_completo": aluno.nome_completo,
+            "presente": registro.presente if registro else True,
+        })
+
+    aula = Aula.objects.filter(
+        turma_id=turma_id, disciplina=disciplina, professor_id=professor_id, data=data_selecionada
+    ).first()
+
+    return JsonResponse({
+        "turma": nome_turma,
+        "disciplina": disciplina.nome_disciplina,
+        "data": data_str,
+        "assunto": aula.assunto if aula else "",
+        "total_alunos": len(resultado),
+        "alunos": resultado
+    })
+
+
+@csrf_exempt
+def salvar_frequencia_turma(request):
+    if request.method != "POST":
+        return JsonResponse({"message": "Método não permitido."}, status=405)
+
+    try:
+        body = json.loads(request.body)
+    except json.JSONDecodeError:
+        return JsonResponse({"message": "JSON inválido."}, status=400)
+
+    turma_id = body.get("turma")
+    professor_id = body.get("professor")
+    data_str = body.get("data")
+    ano_letivo = body.get("ano_letivo", 2026)
+    assunto = body.get("assunto", "")
+    lancamentos = body.get("lancamentos", [])
+
+    if not all([turma_id, professor_id, data_str]):
+        return JsonResponse(
+            {"message": "Campos 'turma', 'professor' e 'data' são obrigatórios."},
+            status=400
+        )
+
+    try:
+        data_selecionada = date.fromisoformat(data_str)
+    except ValueError:
+        return JsonResponse({"message": "Formato de data inválido. Use AAAA-MM-DD."}, status=400)
+
+    if not lancamentos:
+        return JsonResponse({"message": "Nenhum lançamento enviado."}, status=400)
+
+    try:
+        turma = AtravessaPor.objects.get(id=turma_id)
+        professor = Professor.objects.get(id=professor_id)
+    except (AtravessaPor.DoesNotExist, Professor.DoesNotExist):
+        return JsonResponse({"message": "Turma ou professor não encontrado."}, status=404)
+
+    disciplina = resolver_disciplina_da_turma(turma)
+    if not disciplina:
+        return JsonResponse(
+            {"message": "Não foi possível resolver a disciplina associada a esta turma."},
+            status=404
+        )
+
+    # Salva/atualiza o assunto do dia
+    Aula.objects.update_or_create(
+        turma=turma, disciplina=disciplina, professor=professor, data=data_selecionada,
+        defaults={"assunto": assunto, "ano_letivo": ano_letivo},
+    )
+
+    erros_gerais = []
+    total_salvos = 0
+
+    for lancamento in lancamentos:
+        aluno_id = lancamento.get("aluno_id")
+        presente = lancamento.get("presente", True)
+
+        if not aluno_id:
+            erros_gerais.append("Lançamento sem 'aluno_id' foi ignorado.")
+            continue
+
+        try:
+            aluno = Estudante.objects.get(id=aluno_id)
+        except Estudante.DoesNotExist:
+            erros_gerais.append(f"Aluno com id {aluno_id} não encontrado — ignorado.")
+            continue
+
+        Frequencia.objects.update_or_create(
+            aluno=aluno,
+            turma=turma,
+            disciplina=disciplina,
+            professor=professor,
+            data=data_selecionada,
+            defaults={"presente": bool(presente), "ano_letivo": ano_letivo},
+        )
+        total_salvos += 1
+
+    return JsonResponse({
+        "message": "Frequência salva com sucesso.",
+        "disciplina": disciplina.nome_disciplina,
+        "data": data_str,
+        "total_salvos": total_salvos,
+        "erros_gerais": erros_gerais,
+    })
+
+
+
+@csrf_exempt
+def get_registros_frequencia(request):
+    """
+    Lista os registros de frequência já feitos pelo professor, agrupados
+    por turma + disciplina + data (uma linha por aula ministrada).
+    """
+    professor_id = request.GET.get("professor")
+    ano_letivo = request.GET.get("ano_letivo", "2026")
+
+    if not professor_id:
+        return JsonResponse({"message": "Parâmetro 'professor' é obrigatório."}, status=400)
+
+    aulas = Aula.objects.filter(
+        professor_id=professor_id, ano_letivo=ano_letivo
+    ).select_related("turma", "disciplina").order_by("-data")
+
+    resultado = []
+    for aula in aulas:
+        total_alunos = Frequencia.objects.filter(
+            turma=aula.turma, disciplina=aula.disciplina, professor_id=professor_id, data=aula.data
+        ).count()
+        total_presentes = Frequencia.objects.filter(
+            turma=aula.turma, disciplina=aula.disciplina, professor_id=professor_id, data=aula.data, presente=True
+        ).count()
+
+        resultado.append({
+            "turma_id": aula.turma.id,
+            "nome_turma": aula.turma.turma,
+            "disciplina": aula.disciplina.nome_disciplina,
+            "data": aula.data.isoformat(),
+            "assunto": aula.assunto,
+            "total_alunos": total_alunos,
+            "total_presentes": total_presentes,
+            "total_faltas": total_alunos - total_presentes,
+        })
+
+    return JsonResponse({
+        "total_registros": len(resultado),
+        "registros": resultado
     })
