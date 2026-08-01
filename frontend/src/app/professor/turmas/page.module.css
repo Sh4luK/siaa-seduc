@@ -85,7 +85,7 @@
 } */
 
 /* ===== Lista de Turmas (com seletor de disciplina) ===== */
-.turmasList {
+/* .turmasList {
   list-style: none;
   padding: 0;
   margin: 0;
@@ -183,4 +183,287 @@
 
 .turmaArrowLink:hover {
   transform: translateX(3px);
+} */
+
+
+
+/* ===== Cabeçalho com estatísticas ===== */
+.heroHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.statsRow {
+  display: flex;
+  gap: 0.85rem;
+}
+
+.statCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 90px;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  padding: 0.85rem 1.25rem;
+  box-shadow: 0 1px 3px rgba(16, 24, 40, 0.04);
+}
+
+.statValor {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #2563eb;
+  line-height: 1.1;
+}
+
+.statLabel {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  margin-top: 0.2rem;
+}
+
+/* ===== Busca ===== */
+.buscaWrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 0.65rem 1rem;
+  margin-bottom: 1.5rem;
+  color: #9ca3af;
+  font-size: 1.05rem;
+}
+
+.buscaInput {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-size: 0.9rem;
+  color: #101828;
+  background: transparent;
+}
+
+.buscaInput::placeholder {
+  color: #9ca3af;
+}
+
+.buscaLimpar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border: none;
+  background: #f4f6f9;
+  border-radius: 50%;
+  color: #6b7280;
+  cursor: pointer;
+  font-size: 0.85rem;
+  flex-shrink: 0;
+}
+
+.buscaLimpar:hover {
+  background: #e5e7eb;
+}
+
+/* ===== Grid de cards ===== */
+.turmasGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.1rem;
+}
+
+.turmaCard {
+  display: flex;
+  flex-direction: column;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  padding: 1.25rem;
+  box-shadow: 0 1px 3px rgba(16, 24, 40, 0.04);
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+}
+
+.turmaCard:hover {
+  transform: translateY(-2px);
+  border-color: #2563eb;
+  box-shadow: 0 10px 24px rgba(37, 99, 235, 0.1);
+}
+
+.turmaCardTopo {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  margin-bottom: 1rem;
+}
+
+.turmaSelo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 0.95rem;
+  flex-shrink: 0;
+}
+
+.turmaCardInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.turmaCardNome {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #101828;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.turmaCardEtapa {
+  font-size: 0.75rem;
+  color: #6b7280;
+  margin: 0.15rem 0 0;
+}
+
+/* .turmaCardDisciplinas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-bottom: 1.1rem;
+  flex: 1;
+} */
+
+.turmaCardDisciplinas {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;   /* impede o stretch vertical */
+  align-content: flex-start; /* idem para múltiplas linhas */
+  gap: 0.4rem;
+  margin-bottom: 1.1rem;
+  flex: 1;
+}
+
+.miniChip {
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: #1e40af;
+  background: #eef2ff;
+  border-radius: 999px;
+  padding: 0.28rem 0.65rem;
+  white-space: nowrap;
+}
+
+.turmaCardAcoes {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding-top: 0.9rem;
+  border-top: 1px solid #f1f5f9;
+}
+
+.acaoPrimaria {
+  flex: 1;
+  text-align: center;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #ffffff;
+  background: #2563eb;
+  border-radius: 8px;
+  padding: 0.5rem 0.75rem;
+  text-decoration: none;
+  transition: background 0.15s ease;
+}
+
+.acaoPrimaria:hover {
+  background: #1d4ed8;
+}
+
+.acaoSecundaria {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  color: #374151;
+  background: #ffffff;
+  text-decoration: none;
+  font-size: 1rem;
+  flex-shrink: 0;
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.acaoSecundaria:hover {
+  background: #eef2ff;
+  border-color: #2563eb;
+  color: #2563eb;
+}
+
+/* ===== Estado vazio ===== */
+.vazioWrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 3rem 1rem;
+  background: #f9fafb;
+  border-radius: 16px;
+  color: #6b7280;
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+.vazioWrapper i {
+  font-size: 2rem;
+  color: #cbd5e1;
+}
+
+.listaErros {
+  list-style: none;
+  color: #b91c1c;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  padding: 0.85rem 1.1rem;
+  border-radius: 10px;
+  margin-bottom: 1.25rem;
+  font-size: 0.85rem;
+}
+
+/* ===== Responsivo ===== */
+@media (max-width: 700px) {
+  .heroHeader {
+    flex-direction: column;
+  }
+
+  .statsRow {
+    width: 100%;
+  }
+
+  .statCard {
+    flex: 1;
+  }
+
+  .turmasGrid {
+    grid-template-columns: 1fr;
+  }
 }
