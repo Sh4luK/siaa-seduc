@@ -291,7 +291,7 @@ export default function TurmaPage() {
                     <span className={styles.infoCardArrow} aria-hidden="true">→</span>
                   </div>
                 </Link>
-                <Link href={`/professor/turmas/${turmaId}/frequencia`} className={styles.infoCard}>
+                <Link href={`/professor/frequencia/turma/${turmaId}`} className={styles.infoCard}>
                   <div className={styles.infoCardHeader}>
                     <span className={styles.infoCardSeal}>
                       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-card-checklist" viewBox="0 0 16 16">
