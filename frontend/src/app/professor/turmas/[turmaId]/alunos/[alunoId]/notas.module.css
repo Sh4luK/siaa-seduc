@@ -29,7 +29,7 @@
   background: #2563eb;
 }
 
-/* ===== Lista de trimestres (inspirada na tabela de turma) ===== */
+
 .listaWrapper {
   display: flex;
   flex-direction: column;
@@ -100,7 +100,7 @@
   font-variant-numeric: tabular-nums;
 }
 
-/* ===== Resultado Anual / Final ===== */
+
 .resultadoWrapper {
   padding: 1.25rem 1.5rem;
   background: #ffffff;
@@ -140,7 +140,6 @@
   letter-spacing: 0.04em;
 }
 
-/* ===== Inputs & Select ===== */
 .input {
   width: 100%;
   max-width: 70px;
@@ -189,7 +188,7 @@
   box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
 }
 
-/* ===== Mensagens ===== */
+
 .mensagemSucesso {
   display: flex;
   align-items: center;
@@ -227,7 +226,7 @@
   content: "⚠ ";
 }
 
-/* ===== Botão ===== */
+
 .botaoSalvar {
   align-self: flex-start;
   padding: 0.75rem 1.6rem;
@@ -264,7 +263,7 @@
   font-size: 0.95rem;
 }
 
-/* ===== Responsivo ===== */
+
 @media (max-width: 700px) {
   .title {
     font-size: 1.3rem;
