@@ -1,0 +1,214 @@
+/* ===== Card de perfil ===== */
+.perfilCard {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  padding: 1.25rem 1.5rem;
+  box-shadow: 0 1px 3px rgba(16, 24, 40, 0.04);
+  margin-bottom: 2rem;
+}
+
+.perfilAvatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 1.05rem;
+  flex-shrink: 0;
+}
+
+.perfilInfo {
+  min-width: 0;
+}
+
+.perfilNome {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #101828;
+  margin: 0;
+}
+
+.perfilSubinfo {
+  font-size: 0.82rem;
+  color: #6b7280;
+  margin: 0.2rem 0 0;
+}
+
+/* ===== Seções gerais ===== */
+.sectionTitulo {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #101828;
+  margin: 0;
+}
+
+.vazio {
+  font-size: 0.9rem;
+  color: #6b7280;
+  padding: 1.5rem;
+  background: #f9fafb;
+  border-radius: 12px;
+  text-align: center;
+}
+
+/* ===== Disciplinas (chips) ===== */
+.disciplinasSection {
+  margin-bottom: 2rem;
+}
+
+.disciplinasChips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.85rem;
+}
+
+.chip {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #1e40af;
+  background: #eef2ff;
+  border-radius: 999px;
+  padding: 0.35rem 0.85rem;
+  white-space: nowrap;
+}
+
+/* ===== Seção de turmas ===== */
+.turmasSection {
+  margin-bottom: 1.5rem;
+}
+
+.turmasSectionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.verTodasLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #2563eb;
+  text-decoration: none;
+}
+
+.verTodasLink:hover {
+  text-decoration: underline;
+}
+
+.turmasGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(260px, 100%), 1fr));
+  gap: 1rem;
+}
+
+.turmaCard {
+  display: flex;
+  flex-direction: column;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  padding: 1.1rem 1.25rem;
+  box-shadow: 0 1px 3px rgba(16, 24, 40, 0.04);
+  text-decoration: none;
+  color: inherit;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.turmaCard:hover {
+  transform: translateY(-2px);
+  border-color: #2563eb;
+  box-shadow: 0 10px 24px rgba(37, 99, 235, 0.1);
+}
+
+.turmaCardTopo {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  margin-bottom: 1rem;
+}
+
+.turmaSelo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 0.95rem;
+  flex-shrink: 0;
+}
+
+.turmaCardInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.turmaCardNome {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #101828;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.turmaCardEtapa {
+  font-size: 0.75rem;
+  color: #6b7280;
+  margin: 0.15rem 0 0;
+}
+
+.turmaCardRodape {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 0.85rem;
+  border-top: 1px solid #f1f5f9;
+}
+
+.turmaCardDisciplinasQtd {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #6b7280;
+}
+
+.turmaCardArrow {
+  font-size: 1rem;
+  color: #2563eb;
+  font-weight: 700;
+  transition: transform 0.15s ease;
+}
+
+.turmaCard:hover .turmaCardArrow {
+  transform: translateX(4px);
+}
+
+@media (max-width: 480px) {
+  .perfilCard {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .turmasSectionHeader {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+}
