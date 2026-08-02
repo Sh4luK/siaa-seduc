@@ -293,6 +293,8 @@
 // }
 
 
+
+//codigo certo ========================================
 "use client"
 
 import logo from "../../assets/logo.png"
@@ -600,3 +602,351 @@ export default function Professor() {
 
   return null;
 }
+
+
+// "use client"
+
+// import logo from "../../assets/logo.png"
+// import { useRouter } from "next/navigation"
+// import { useEffect, useState } from "react"
+// import Image from "next/image"
+// import Link from "next/link"
+// import layoutStyles from "./page.module.css"
+// import styles from "./home.module.css"
+
+// const API_BASE = "https://upgraded-space-spork-4j9vqpw9q5g5fprr-8000.app.github.dev";
+
+// function IconCalendario() {
+//   return (
+//     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+//       <path d="M4 7a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12z" />
+//       <path d="M16 3v4" />
+//       <path d="M8 3v4" />
+//       <path d="M4 11h16" />
+//     </svg>
+//   );
+// }
+// function IconRelogio() {
+//   return (
+//     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+//       <path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" />
+//       <path d="M12 7v5l3 3" />
+//     </svg>
+//   );
+// }
+// function IconCheck() {
+//   return (
+//     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+//       <path d="M9 11l3 3l8 -8" />
+//       <path d="M20 12v6a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h9" />
+//     </svg>
+//   );
+// }
+// function IconArquivo() {
+//   return (
+//     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+//       <path d="M14 3v4a1 1 0 0 0 1 1h4" />
+//       <path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z" />
+//       <path d="M9 9l1 0" />
+//       <path d="M9 13l6 0" />
+//       <path d="M9 17l6 0" />
+//     </svg>
+//   );
+// }
+// function IconClipboard() {
+//   return (
+//     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+//       <path d="M9 5h-2a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-12a2 2 0 0 0 -2 -2h-2" />
+//       <path d="M9 3m0 2a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v0a2 2 0 0 1 -2 2h-2a2 2 0 0 1 -2 -2z" />
+//     </svg>
+//   );
+// }
+// function IconAlerta() {
+//   return (
+//     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+//       <path d="M12 9v4" />
+//       <path d="M10.363 3.591l-8.106 13.534a1.914 1.914 0 0 0 1.636 2.871h16.214a1.914 1.914 0 0 0 1.636 -2.87l-8.106 -13.536a1.914 1.914 0 0 0 -3.274 0z" />
+//       <path d="M12 16h.01" />
+//     </svg>
+//   );
+// }
+
+// export default function Professor() {
+//   const [authenticated, setAuthenticated] = useState(null)
+//   const [loading, setLoading] = useState(true)
+//   const [nomeCompleto, setNomeCompleto] = useState("")
+//   const [menuOpen, setMenuOpen] = useState(false)
+//   const [turmasAgrupadas, setTurmasAgrupadas] = useState([])
+//   const [disciplinas, setDisciplinas] = useState([])
+//   const [totalEventos, setTotalEventos] = useState(0)
+//   const [escola, setEscola] = useState("")
+//   const router = useRouter()
+
+//   useEffect(() => {
+//     async function verifyAuthentication() {
+//       try {
+//         const response = await fetch(`${API_BASE}/api/teacher/auth`);
+//         const data = await response.json();
+
+//         if (data.return === true) {
+//           setAuthenticated(true);
+//         } else {
+//           setAuthenticated(false);
+//           router.push("/professor/login");
+//         }
+//       } catch (error) {
+//         setAuthenticated(false);
+//         router.push("/professor/login");
+//       } finally {
+//         setLoading(false);
+//       }
+//     }
+
+//     async function getData() {
+//       try {
+//         const authResponse = await fetch(`${API_BASE}/api/teacher/auth`);
+//         if (!authResponse.ok) throw new Error();
+//         const data = await authResponse.json();
+//         const nome = data["teacher"]["nome_completo"] || "Não encontrado.";
+//         setNomeCompleto(nome);
+//         return { nome, id: data["teacher"]["id"] };
+//       } catch (error) {
+//         setNomeCompleto("Erro ao carregar.");
+//         return { nome: null, id: null };
+//       }
+//     }
+
+//     async function getTurmas(nomeCompleto) {
+//       if (!nomeCompleto || nomeCompleto === "Não encontrado.") {
+//         setTurmasAgrupadas([]);
+//         return;
+//       }
+
+//       try {
+//         const response1 = await fetch(
+//           `${API_BASE}/api/teacher/search/turmas?nome_completo=${encodeURIComponent(nomeCompleto)}`
+//         );
+//         const response2 = await fetch(
+//           `${API_BASE}/api/teacher/search/disciplinas?nome_completo=${encodeURIComponent(nomeCompleto)}`
+//         );
+
+//         if (!response1.ok && !response2.ok) throw new Error();
+//         const data1 = await response1.json();
+//         const data2 = await response2.json();
+//         setDisciplinas(data2["disciplinas"] || []);
+
+//         const turmasBrutas = data1["turmas"] || [];
+//         const grupos = {};
+
+//         for (const turma of turmasBrutas) {
+//           const chave = turma.turma;
+//           if (!grupos[chave]) {
+//             grupos[chave] = { nomeTurma: chave, etapa: turma.etapa, escola: turma.escola, opcoes: [] };
+//           }
+//           grupos[chave].opcoes.push(turma);
+//         }
+
+//         const gruposArray = Object.values(grupos);
+//         setTurmasAgrupadas(gruposArray);
+//         if (gruposArray.length > 0) {
+//           setEscola(gruposArray[0].escola || "");
+//         }
+//       } catch (error) {
+//         setTurmasAgrupadas([]);
+//       }
+//     }
+
+//     async function getEventos(professorId) {
+//       if (!professorId) return;
+//       try {
+//         const hoje = new Date();
+//         const res = await fetch(
+//           `${API_BASE}/api/teacher/calendario/eventos?professor=${professorId}&ano=${hoje.getFullYear()}`
+//         );
+//         if (!res.ok) return;
+//         const data = await res.json();
+//         setTotalEventos(data.total_eventos || 0);
+//       } catch (error) {
+//         setTotalEventos(0);
+//       }
+//     }
+
+//     async function init() {
+//       await verifyAuthentication();
+//       const { nome, id } = await getData();
+//       await getTurmas(nome);
+//       await getEventos(id);
+//     }
+
+//     init();
+//   }, []);
+
+//   if (loading) {
+//     return (
+//       <div className={layoutStyles.page}>
+//         <div className={layoutStyles.loadingWrap}>
+//           <Image src={logo} alt="Logo do SIAA" className={layoutStyles.loadingLogo} priority />
+//           <div className={layoutStyles.loadingBar}>
+//             <span className={layoutStyles.loadingBarFill} />
+//           </div>
+//           <p className={layoutStyles.loadingText}>Verificando credenciais…</p>
+//         </div>
+//       </div>
+//     );
+//   }
+
+//   if (authenticated === true) {
+//     const firstName = nomeCompleto.split(" ")[0];
+//     const totalDisciplinas = turmasAgrupadas.reduce((soma, g) => soma + g.opcoes.length, 0);
+//     const primeiraDisciplina = disciplinas[0]?.nome_disciplina || "—";
+
+//     const cards = [
+//       { titulo: "Calendário", valor: totalEventos, legenda: "eventos cadastrados", icone: <IconCalendario />, cor: "verde", href: "/professor/calendario" },
+//       { titulo: "Horários", valor: 0, legenda: "aulas na semana", icone: <IconRelogio />, cor: "azul", href: "/professor/horarios" },
+//       { titulo: "Frequência", valor: 0, legenda: "registros", icone: <IconCheck />, cor: "verde", href: "/professor/frequencia" },
+//       { titulo: "Atividades", valor: 0, legenda: "criadas", icone: <IconArquivo />, cor: "laranja", href: "/professor/atividades" },
+//       { titulo: "Avaliações", valor: 0, legenda: "aplicadas", icone: <IconClipboard />, cor: "roxo", href: "/professor/avaliacoes" },
+//       { titulo: "Advertências", valor: 0, legenda: "enviadas", icone: <IconAlerta />, cor: "vermelho", href: "#" },
+//     ];
+
+//     return (
+//       <div className={layoutStyles.page}>
+//         <div className={layoutStyles.shell}>
+//           <aside className={`${layoutStyles.sidebar} ${menuOpen ? layoutStyles.sidebarOpen : ""}`}>
+//             <div className={layoutStyles.sidebarHeader}>
+//               <Image src={logo} alt="Logo do SIAA" className={layoutStyles.sidebarLogo} priority />
+//               <span className={layoutStyles.sidebarBrand}>SIAA</span>
+//             </div>
+
+//             <nav className={layoutStyles.nav}>
+//               <Link href="/professor" className={layoutStyles.navLinkActive}>
+//                 <i className="ti ti-home" aria-hidden="true" />
+//                 Início
+//               </Link>
+//               <Link href="/professor/turmas" className={layoutStyles.navLink}>
+//                 <i className="ti ti-users" aria-hidden="true" />
+//                 Minhas turmas
+//               </Link>
+//               <Link href="/professor/calendario" className={layoutStyles.navLink}>
+//                 <i className="ti ti-users" aria-hidden="true" />
+//                 Calendario Escolar
+//               </Link>
+//               <Link href="/professor/frequencia" className={layoutStyles.navLink}>
+//                 <i className="ti ti-users" aria-hidden="true" />
+//                 Frequencia
+//               </Link>
+//               <Link href="/professor/conteudos" className={layoutStyles.navLink}>
+//                 <i className="ti ti-users" aria-hidden="true" />
+//                 Conteudos
+//               </Link>
+//               <Link href="/professor/atividades" className={layoutStyles.navLink}>
+//                 <i className="ti ti-users" aria-hidden="true" />
+//                 Atividades
+//               </Link>
+//               <Link href="/professor/avaliacoes" className={layoutStyles.navLink}>
+//                 <i className="ti ti-users" aria-hidden="true" />
+//                 Avaliações
+//               </Link>
+//               <Link href="/professor/notas" className={layoutStyles.navLink}>
+//                 <i className="ti ti-edit" aria-hidden="true" />
+//                 Lançar notas
+//               </Link>
+//               <Link href="/professor/frequencia" className={layoutStyles.navLink}>
+//                 <i className="ti ti-clipboard-check" aria-hidden="true" />
+//                 Frequência
+//               </Link>
+//               <Link href="/professor/horarios" className={layoutStyles.navLink}>
+//                 <i className="ti ti-clock" aria-hidden="true" />
+//                 Horários
+//               </Link>
+//             </nav>
+
+//             <div className={layoutStyles.sidebarFooter}>
+//               <div>
+//                 <span className={layoutStyles.infoCardHeader}>
+//                   <span className={layoutStyles.infoCardSeal}>{firstName.charAt(0)}</span>
+//                   <span className={layoutStyles.studentName}>{nomeCompleto}</span>
+//                 </span>
+//               </div>
+//             </div>
+//           </aside>
+
+//           {menuOpen && (
+//             <button
+//               className={layoutStyles.overlay}
+//               aria-label="Fechar menu"
+//               onClick={() => setMenuOpen(false)}
+//             />
+//           )}
+
+//           <div className={layoutStyles.content}>
+//             <header className={layoutStyles.topbar}>
+//               <button
+//                 className={layoutStyles.menuButton}
+//                 aria-label="Abrir menu"
+//                 onClick={() => setMenuOpen(true)}
+//               >
+//                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+//                   <line x1="4" y1="6" x2="20" y2="6" />
+//                   <line x1="4" y1="12" x2="20" y2="12" />
+//                   <line x1="4" y1="18" x2="20" y2="18" />
+//                 </svg>
+//               </button>
+//               <span className={layoutStyles.topbarTitle}>Painel do professor</span>
+//             </header>
+
+//             <main className={layoutStyles.main}>
+//               <h1 className={layoutStyles.greeting}>Olá, {firstName}</h1>
+//               <p className={layoutStyles.subtitle}>
+//                 Bem-vindo ao Sistema Integrado de Acompanhamento Acadêmico.
+//               </p>
+
+//               <div className={styles.statsGrid}>
+//                 {cards.map((card) => (
+//                   <Link key={card.titulo} href={card.href} className={styles.statCard}>
+//                     <div className={styles.statCardHeader}>
+//                       <span className={`${styles.statIcone} ${styles[`cor_${card.cor}`]}`}>
+//                         {card.icone}
+//                       </span>
+//                       <span className={styles.statTitulo}>{card.titulo}</span>
+//                     </div>
+//                     <p className={`${styles.statValor} ${styles[`texto_${card.cor}`]}`}>
+//                       {card.valor}
+//                     </p>
+//                     <p className={styles.statLegenda}>{card.legenda}</p>
+//                   </Link>
+//                 ))}
+//               </div>
+
+//               <div className={styles.infoCard}>
+//                 <h2 className={styles.infoTitulo}>Informações</h2>
+//                 <div className={styles.infoRow}>
+//                   <span className={styles.infoItem}>
+//                     Escola: <strong>{escola || "—"}</strong>
+//                   </span>
+//                   <span className={styles.infoItem}>
+//                     Professor: <strong>{nomeCompleto || "—"}</strong>
+//                   </span>
+//                   <span className={styles.infoItem}>
+//                     Disciplina: <strong>{primeiraDisciplina}</strong>
+//                     {disciplinas.length > 1 && (
+//                       <span className={styles.infoMais}> +{disciplinas.length - 1}</span>
+//                     )}
+//                   </span>
+//                   <span className={styles.infoItem}>
+//                     Turmas: <strong>{turmasAgrupadas.length}</strong>
+//                   </span>
+//                   <span className={styles.infoItem}>
+//                     Disciplinas: <strong>{totalDisciplinas}</strong>
+//                   </span>
+//                 </div>
+//               </div>
+//             </main>
+//           </div>
+//         </div>
+//       </div>
+//     );
+//   }
+
+//   return null;
+// }
