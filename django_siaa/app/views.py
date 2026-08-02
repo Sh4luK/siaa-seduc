@@ -24,6 +24,7 @@ from .models import AtravessaPor
 from .models import Disciplina
 from .models import Frequencia
 from .models import Aula
+from .models import Evento
 import json
 
 load_dotenv()
@@ -1162,3 +1163,117 @@ def get_registros_frequencia(request):
         "total_registros": len(resultado),
         "registros": resultado
     })
+
+
+
+@csrf_exempt
+def get_eventos(request):
+    """Lista os eventos do professor, opcionalmente filtrados por mês/ano ou turma."""
+    professor_id = request.GET.get("professor")
+    mes = request.GET.get("mes")   # ex: "07"
+    ano = request.GET.get("ano")   # ex: "2026"
+    turma_id = request.GET.get("turma")
+
+    if not professor_id:
+        return JsonResponse({"message": "Parâmetro 'professor' é obrigatório."}, status=400)
+
+    eventos = Evento.objects.filter(professor_id=professor_id).select_related("turma")
+
+    if mes and ano:
+        eventos = eventos.filter(data__year=ano, data__month=mes)
+    elif ano:
+        eventos = eventos.filter(data__year=ano)
+
+    if turma_id:
+        eventos = eventos.filter(turma_id=turma_id)
+
+    resultado = [
+        {
+            "id": e.id,
+            "titulo": e.titulo,
+            "descricao": e.descricao,
+            "data": e.data.isoformat(),
+            "turma_id": e.turma_id,
+            "nome_turma": e.turma.turma if e.turma else None,
+        }
+        for e in eventos
+    ]
+
+    return JsonResponse({
+        "total_eventos": len(resultado),
+        "eventos": resultado
+    })
+
+
+@csrf_exempt
+def criar_evento(request):
+    """Cria um novo evento no calendário escolar."""
+    if request.method != "POST":
+        return JsonResponse({"message": "Método não permitido."}, status=405)
+
+    try:
+        body = json.loads(request.body)
+    except json.JSONDecodeError:
+        return JsonResponse({"message": "JSON inválido."}, status=400)
+
+    professor_id = body.get("professor")
+    titulo = (body.get("titulo") or "").strip()
+    descricao = (body.get("descricao") or "").strip()
+    data_str = body.get("data")
+    turma_id = body.get("turma")  # opcional
+
+    if not all([professor_id, titulo, data_str]):
+        return JsonResponse(
+            {"message": "Campos 'professor', 'titulo' e 'data' são obrigatórios."},
+            status=400
+        )
+
+    try:
+        data_evento = date.fromisoformat(data_str)
+    except ValueError:
+        return JsonResponse({"message": "Formato de data inválido. Use AAAA-MM-DD."}, status=400)
+
+    try:
+        professor = Professor.objects.get(id=professor_id)
+    except Professor.DoesNotExist:
+        return JsonResponse({"message": "Professor não encontrado."}, status=404)
+
+    turma = None
+    if turma_id:
+        turma = AtravessaPor.objects.filter(id=turma_id).first()
+        if not turma:
+            return JsonResponse({"message": "Turma não encontrada."}, status=404)
+
+    evento = Evento.objects.create(
+        professor=professor,
+        turma=turma,
+        titulo=titulo,
+        descricao=descricao,
+        data=data_evento,
+    )
+
+    return JsonResponse({
+        "message": "Evento criado com sucesso.",
+        "evento": {
+            "id": evento.id,
+            "titulo": evento.titulo,
+            "descricao": evento.descricao,
+            "data": evento.data.isoformat(),
+            "turma_id": evento.turma_id,
+            "nome_turma": evento.turma.turma if evento.turma else None,
+        }
+    })
+
+
+@csrf_exempt
+def deletar_evento(request, evento_id):
+    """Remove um evento do calendário."""
+    if request.method != "DELETE":
+        return JsonResponse({"message": "Método não permitido."}, status=405)
+
+    evento = Evento.objects.filter(id=evento_id).first()
+    if not evento:
+        return JsonResponse({"message": "Evento não encontrado."}, status=404)
+
+    evento.delete()
+    return JsonResponse({"message": "Evento removido com sucesso."})
