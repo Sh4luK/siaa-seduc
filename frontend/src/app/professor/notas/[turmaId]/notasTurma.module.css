@@ -1,4 +1,4 @@
-.wrapper {
+/* .wrapper {
   display: flex;
   flex-direction: column;
   width: 100%;
@@ -136,7 +136,6 @@ thead .stickyCol {
   cursor: not-allowed;
 }
 
-/* ===== Responsivo ===== */
 
 @media (max-width: 900px) {
   .title {
@@ -315,4 +314,367 @@ thead .stickyCol {
 
 .notaAlta:focus {
   box-shadow: 0 0 0 3px rgba(29, 78, 216, 0.15) !important;
+} */
+
+
+.wrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+.voltarLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #6b7280;
+  text-decoration: none;
+  margin-bottom: 1.25rem;
+  width: fit-content;
+}
+
+.voltarLink:hover {
+  color: #2563eb;
+}
+
+.title {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #101828;
+  margin: 0 0 0.3rem;
+  letter-spacing: -0.01em;
+}
+
+.subtitle {
+  font-size: 0.92rem;
+  color: #6b7280;
+  margin: 0 0 1.5rem;
+}
+
+/* ===== Hero (título + chip de disciplina + trocar) ===== */
+.hero {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.heroInfo {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  flex-wrap: wrap;
+}
+
+.heroChip {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #1e40af;
+  background: #eef2ff;
+  border-radius: 999px;
+  padding: 0.35rem 0.9rem;
+  white-space: nowrap;
+}
+
+.trocarBotao {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #1e40af;
+  background: transparent;
+  border: 1px solid #c7d2fe;
+  border-radius: 8px;
+  padding: 0.45rem 0.9rem;
+  cursor: pointer;
+  transition: background 0.15s ease;
+  white-space: nowrap;
+}
+
+.trocarBotao:hover {
+  background: #eef2ff;
+}
+
+/* ===== Escolha de disciplina ===== */
+.disciplinasEscolha {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-bottom: 1.5rem;
+}
+
+.disciplinaBotao {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #1e40af;
+  background: #eef2ff;
+  border: 1px solid #c7d2fe;
+  border-radius: 999px;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease, transform 0.1s ease;
+}
+
+.disciplinaBotao:hover {
+  background: #2563eb;
+  border-color: #2563eb;
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+
+/* ===== Estatísticas ===== */
+.statsRow {
+  display: flex;
+  gap: 0.85rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.statCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 110px;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  padding: 0.85rem 1.25rem;
+  box-shadow: 0 1px 3px rgba(16, 24, 40, 0.04);
+}
+
+.statValor {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #2563eb;
+  line-height: 1.1;
+}
+
+.statVerde .statValor {
+  color: #15803d;
+}
+
+.statVermelho .statValor {
+  color: #b91c1c;
+}
+
+.statLabel {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  margin-top: 0.2rem;
+  text-align: center;
+}
+
+/* ===== Tabela ===== */
+.tabelaWrapper {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  margin-bottom: 1.75rem;
+  box-shadow: 0 1px 3px rgba(16, 24, 40, 0.04), 0 1px 2px rgba(16, 24, 40, 0.03);
+  background: #ffffff;
+}
+
+.tabela {
+  border-collapse: separate;
+  border-spacing: 0;
+  width: 100%;
+  font-size: 0.76rem;
+}
+
+.tabela th,
+.tabela td {
+  border-bottom: 1px solid #eef0f3;
+  border-right: 1px solid #eef0f3;
+  padding: 0.5rem 0.4rem;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.tabela th:last-child,
+.tabela td:last-child {
+  border-right: none;
+}
+
+.tabela thead th {
+  background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+  color: #374151;
+  font-weight: 700;
+  font-size: 0.66rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  padding: 0.6rem 0.4rem;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.tabela thead tr:first-child th {
+  color: #1e40af;
+  background: #eef2ff;
+}
+
+.tabela tbody tr:hover td {
+  background: #fafbff;
+}
+
+.stickyColNum {
+  position: sticky;
+  left: 0;
+  background: #ffffff;
+  min-width: 32px;
+  max-width: 32px;
+  z-index: 1;
+  font-size: 0.7rem;
+  color: #9ca3af;
+  font-weight: 600;
+}
+
+.stickyCol {
+  position: sticky;
+  left: 32px;
+  background: #ffffff;
+  text-align: left !important;
+  min-width: 150px;
+  max-width: 170px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-weight: 600;
+  color: #101828;
+  z-index: 1;
+}
+
+thead .stickyColNum,
+thead .stickyCol {
+  background: #eef2ff;
+  z-index: 2;
+}
+
+.calculadoBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 34px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #1e40af;
+  background: #eef2ff;
+  border-radius: 6px;
+  padding: 0.3rem 0.4rem;
+}
+
+/* ===== Inputs & Select ===== */
+.input {
+  width: 40px;
+  padding: 0.35rem 0.2rem;
+  text-align: center;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 6px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #101828;
+  background: #ffffff;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.input:hover {
+  border-color: #cbd5e1;
+}
+
+.input:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+
+.select {
+  padding: 0.3rem 0.3rem;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 6px;
+  font-size: 0.66rem;
+  font-weight: 600;
+  color: #101828;
+  background: #ffffff;
+  cursor: pointer;
+}
+
+.select:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+
+/* ===== Cores condicionais ===== */
+.notaBaixa {
+  color: #b91c1c !important;
+  border-color: #fca5a5 !important;
+  background: #fef2f2 !important;
+}
+
+.notaAlta {
+  color: #1d4ed8 !important;
+  border-color: #93c5fd !important;
+  background: #eff6ff !important;
+}
+
+/* ===== Mensagens ===== */
+.mensagemSucesso {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #15803d;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  padding: 0.7rem 1rem;
+  border-radius: 10px;
+  margin-bottom: 1.25rem;
+  font-size: 0.88rem;
+  font-weight: 500;
+}
+
+.listaErros {
+  list-style: none;
+  color: #b91c1c;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  padding: 0.85rem 1.1rem;
+  border-radius: 10px;
+  margin-bottom: 1.25rem;
+  font-size: 0.85rem;
+}
+
+/* ===== Botão ===== */
+.botaoSalvar {
+  align-self: flex-start;
+  padding: 0.75rem 1.6rem;
+  background: #2563eb;
+  color: #ffffff;
+  border: none;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(37, 99, 235, 0.25);
+  transition: background 0.15s ease, transform 0.1s ease;
+}
+
+.botaoSalvar:hover {
+  background: #1d4ed8;
+  transform: translateY(-1px);
+}
+
+.botaoSalvar:disabled {
+  background: #cbd5e1;
+  box-shadow: none;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* ===== Responsivo ===== */
+@media (max-width: 700px) {
+  .title { font-size: 1.3rem; }
+  .statCard { flex: 1; min-width: 90px; }
 }
