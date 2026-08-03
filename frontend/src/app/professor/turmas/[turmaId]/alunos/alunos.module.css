@@ -1,0 +1,153 @@
+.voltarLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #6b7280;
+  text-decoration: none;
+  margin-bottom: 1.25rem;
+}
+
+.voltarLink:hover {
+  color: #2563eb;
+}
+
+.headerRow {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.contador {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #6b7280;
+  background: #f4f6f9;
+  padding: 0.3rem 0.75rem;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.buscaWrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 0.65rem 1rem;
+  margin-bottom: 1.5rem;
+  color: #9ca3af;
+}
+
+.buscaInput {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-size: 0.9rem;
+  color: #101828;
+  background: transparent;
+}
+
+.buscaInput::placeholder {
+  color: #9ca3af;
+}
+
+.alunosList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.alunoItem {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.75rem 1rem;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  text-decoration: none;
+  color: inherit;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+}
+
+.alunoItem:hover {
+  transform: translateX(4px);
+  border-color: #2563eb;
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.1);
+}
+
+.alunoAvatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #eef2ff;
+  color: #2563eb;
+  font-weight: 700;
+  font-size: 0.85rem;
+  flex-shrink: 0;
+}
+
+.alunoInfo {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.alunoNome {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #101828;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.alunoPosicao {
+  font-size: 0.75rem;
+  color: #9ca3af;
+}
+
+.alunoArrow {
+  font-size: 1rem;
+  color: #2563eb;
+  flex-shrink: 0;
+  transition: transform 0.15s ease;
+}
+
+.alunoItem:hover .alunoArrow {
+  transform: translateX(3px);
+}
+
+.alunosEmpty {
+  font-size: 0.9rem;
+  color: #6b7280;
+  padding: 1.5rem;
+  background: #f9fafb;
+  border-radius: 12px;
+  text-align: center;
+}
+
+.listaErros {
+  list-style: none;
+  color: #b91c1c;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  padding: 0.85rem 1.1rem;
+  border-radius: 10px;
+  margin-bottom: 1.25rem;
+  font-size: 0.85rem;
+}
