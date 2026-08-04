@@ -122,10 +122,6 @@ export default function NotasIndexPage() {
               <i className="ti ti-edit" aria-hidden="true" />
               Lançar notas
             </Link>
-            <Link href="/professor/frequencia" className={layoutStyles.navLink}>
-              <i className="ti ti-clipboard-check" aria-hidden="true" />
-              Frequência
-            </Link>
             <Link href="/professor/horarios" className={layoutStyles.navLink}>
               <i className="ti ti-clock" aria-hidden="true" />
               Horários
