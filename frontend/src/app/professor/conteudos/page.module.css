@@ -1,0 +1,272 @@
+.headerRow {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.novoBotao {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #ffffff;
+  background: #2563eb;
+  border-radius: 999px;
+  padding: 0.55rem 1.1rem;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background 0.15s ease;
+}
+
+.novoBotao:hover {
+  background: #1d4ed8;
+}
+
+.listaErros {
+  list-style: none;
+  color: #b91c1c;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  padding: 0.85rem 1.1rem;
+  border-radius: 10px;
+  margin-bottom: 1.25rem;
+  font-size: 0.85rem;
+}
+
+.subtitle {
+  font-size: 0.9rem;
+  color: #6b7280;
+}
+
+.navegacaoMes {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.navMesBotao {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  background: #ffffff;
+  color: #374151;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.navMesBotao:hover {
+  background: #eef2ff;
+  border-color: #2563eb;
+  color: #2563eb;
+}
+
+.mesLabel {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #101828;
+  min-width: 180px;
+  text-align: center;
+  text-transform: capitalize;
+}
+
+.calendarioGrid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0.4rem;
+  margin-bottom: 2rem;
+}
+
+.diaSemanaLabel {
+  text-align: center;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #6b7280;
+  text-transform: uppercase;
+  padding-bottom: 0.5rem;
+}
+
+.diaCelulaVazia {
+  min-height: 70px;
+}
+
+.diaCelula {
+  min-height: 70px;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 0.4rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  overflow: hidden;
+}
+
+.diaCelulaHoje {
+  border-color: #2563eb;
+  background: #eef2ff;
+}
+
+.diaNumero {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #374151;
+}
+
+.conteudoTag {
+  font-size: 0.62rem;
+  font-weight: 600;
+  color: #15803d;
+  background: #dcfce7;
+  border-radius: 4px;
+  padding: 0.15rem 0.35rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.listaConteudosSection {
+  margin-top: 1rem;
+}
+
+.listaConteudosTitulo {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #101828;
+  margin: 0 0 1rem;
+}
+
+.vazio {
+  font-size: 0.9rem;
+  color: #6b7280;
+  padding: 1.5rem;
+  background: #f9fafb;
+  border-radius: 12px;
+  text-align: center;
+}
+
+.conteudosList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.conteudoCard {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 0.9rem 1.1rem;
+}
+
+.conteudoCardData {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 48px;
+  background: #dcfce7;
+  color: #15803d;
+  border-radius: 10px;
+  padding: 0.4rem;
+  font-size: 1.05rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.conteudoCardData span {
+  font-size: 0.62rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.conteudoCardInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.conteudoCardTitulo {
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: #101828;
+  margin: 0 0 0.2rem;
+}
+
+.conteudoCardMeta {
+  font-size: 0.75rem;
+  color: #2563eb;
+  font-weight: 600;
+  margin: 0 0 0.2rem;
+}
+
+.conteudoCardDescricao {
+  font-size: 0.8rem;
+  color: #6b7280;
+  margin: 0 0 0.4rem;
+}
+
+.arquivoLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #1e40af;
+  background: #eef2ff;
+  border-radius: 8px;
+  padding: 0.3rem 0.6rem;
+  text-decoration: none;
+}
+
+.arquivoLink:hover {
+  background: #dbeafe;
+}
+
+.conteudoDeletar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  color: #9ca3af;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.conteudoDeletar:hover {
+  background: #fef2f2;
+  color: #b91c1c;
+}
+
+@media (max-width: 700px) {
+  .diaCelula {
+    min-height: 50px;
+    padding: 0.25rem;
+  }
+
+  .conteudoTag {
+    display: none;
+  }
+
+  .diaSemanaLabel {
+    font-size: 0.6rem;
+  }
+}
