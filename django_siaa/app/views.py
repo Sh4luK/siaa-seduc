@@ -25,6 +25,7 @@ from .models import Disciplina
 from .models import Frequencia
 from .models import Aula
 from .models import Evento
+from .models import Conteudo
 import json
 
 load_dotenv()
@@ -1277,3 +1278,125 @@ def deletar_evento(request, evento_id):
 
     evento.delete()
     return JsonResponse({"message": "Evento removido com sucesso."})
+
+
+
+@csrf_exempt
+def get_conteudos(request):
+    """Lista os conteúdos do professor, opcionalmente filtrados por mês/ano ou turma."""
+    professor_id = request.GET.get("professor")
+    mes = request.GET.get("mes")
+    ano = request.GET.get("ano")
+    turma_id = request.GET.get("turma")
+
+    if not professor_id:
+        return JsonResponse({"message": "Parâmetro 'professor' é obrigatório."}, status=400)
+
+    conteudos = Conteudo.objects.filter(professor_id=professor_id).select_related("turma", "disciplina")
+
+    if mes and ano:
+        conteudos = conteudos.filter(data__year=ano, data__month=mes)
+    elif ano:
+        conteudos = conteudos.filter(data__year=ano)
+
+    if turma_id:
+        conteudos = conteudos.filter(turma_id=turma_id)
+
+    resultado = [
+        {
+            "id": c.id,
+            "titulo": c.titulo,
+            "descricao": c.descricao,
+            "data": c.data.isoformat(),
+            "turma_id": c.turma_id,
+            "nome_turma": c.turma.turma,
+            "disciplina": c.disciplina.nome_disciplina,
+            "arquivo_url": request.build_absolute_uri(c.arquivo.url) if c.arquivo else None,
+            "arquivo_nome": c.arquivo.name.split("/")[-1] if c.arquivo else None,
+        }
+        for c in conteudos
+    ]
+
+    return JsonResponse({
+        "total_conteudos": len(resultado),
+        "conteudos": resultado
+    })
+
+
+@csrf_exempt
+def criar_conteudo(request):
+    """Cria um novo conteúdo. Aceita multipart/form-data por causa do arquivo opcional."""
+    if request.method != "POST":
+        return JsonResponse({"message": "Método não permitido."}, status=405)
+
+    professor_id = request.POST.get("professor")
+    turma_id = request.POST.get("turma")
+    titulo = (request.POST.get("titulo") or "").strip()
+    descricao = (request.POST.get("descricao") or "").strip()
+    data_str = request.POST.get("data")
+    arquivo = request.FILES.get("arquivo")
+
+    if not all([professor_id, turma_id, titulo, data_str]):
+        return JsonResponse(
+            {"message": "Campos 'professor', 'turma', 'titulo' e 'data' são obrigatórios."},
+            status=400
+        )
+
+    try:
+        data_conteudo = date.fromisoformat(data_str)
+    except ValueError:
+        return JsonResponse({"message": "Formato de data inválido. Use AAAA-MM-DD."}, status=400)
+
+    try:
+        professor = Professor.objects.get(id=professor_id)
+    except Professor.DoesNotExist:
+        return JsonResponse({"message": "Professor não encontrado."}, status=404)
+
+    turma = AtravessaPor.objects.filter(id=turma_id).first()
+    if not turma:
+        return JsonResponse({"message": "Turma não encontrada."}, status=404)
+
+    disciplina = resolver_disciplina_da_turma(turma)
+    if not disciplina:
+        return JsonResponse(
+            {"message": "Não foi possível resolver a disciplina associada a esta turma."},
+            status=404
+        )
+
+    conteudo = Conteudo.objects.create(
+        professor=professor,
+        turma=turma,
+        disciplina=disciplina,
+        titulo=titulo,
+        descricao=descricao,
+        data=data_conteudo,
+        arquivo=arquivo,
+    )
+
+    return JsonResponse({
+        "message": "Conteúdo criado com sucesso.",
+        "conteudo": {
+            "id": conteudo.id,
+            "titulo": conteudo.titulo,
+            "descricao": conteudo.descricao,
+            "data": conteudo.data.isoformat(),
+            "turma_id": conteudo.turma_id,
+            "nome_turma": conteudo.turma.turma,
+            "disciplina": conteudo.disciplina.nome_disciplina,
+            "arquivo_url": request.build_absolute_uri(conteudo.arquivo.url) if conteudo.arquivo else None,
+        }
+    })
+
+
+@csrf_exempt
+def deletar_conteudo(request, conteudo_id):
+    """Remove um conteúdo."""
+    if request.method != "DELETE":
+        return JsonResponse({"message": "Método não permitido."}, status=405)
+
+    conteudo = Conteudo.objects.filter(id=conteudo_id).first()
+    if not conteudo:
+        return JsonResponse({"message": "Conteúdo não encontrado."}, status=404)
+
+    conteudo.delete()
+    return JsonResponse({"message": "Conteúdo removido com sucesso."})
