@@ -1,5 +1,7 @@
 from django.contrib import admin
 from django.urls import path, include
+from django.conf import settings
+from django.conf.urls.static import static
 import app.views
 urlpatterns = [
     path("admin/", admin.site.urls),
@@ -27,4 +29,4 @@ urlpatterns = [
     path("api/teacher/calendario/eventos", app.views.get_eventos, name="get_eventos"),
     path("api/teacher/calendario/eventos/criar", app.views.criar_evento, name="criar_evento"),
     path("api/teacher/calendario/eventos/<int:evento_id>/deletar", app.views.deletar_evento, name="deletar_evento"),
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
