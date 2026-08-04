@@ -332,7 +332,7 @@ export default function ConteudosPage() {
                                 <p className={styles.conteudoCardDescricao}>{c.descricao}</p>
                               )}
                               {c.arquivo_url && (
-                                
+                                <a
                                   href={c.arquivo_url}
                                   target="_blank"
                                   rel="noopener noreferrer"
