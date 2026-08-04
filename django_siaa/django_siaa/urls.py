@@ -29,4 +29,7 @@ urlpatterns = [
     path("api/teacher/calendario/eventos", app.views.get_eventos, name="get_eventos"),
     path("api/teacher/calendario/eventos/criar", app.views.criar_evento, name="criar_evento"),
     path("api/teacher/calendario/eventos/<int:evento_id>/deletar", app.views.deletar_evento, name="deletar_evento"),
+    path("api/teacher/conteudos", app.views.get_conteudos, name="get_conteudos"),
+    path("api/teacher/conteudos/criar", app.views.criar_conteudo, name="criar_conteudo"),
+    path("api/teacher/conteudos/<int:conteudo_id>/deletar", app.views.deletar_conteudo, name="deletar_conteudo"),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
