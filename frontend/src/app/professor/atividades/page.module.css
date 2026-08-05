@@ -1,0 +1,239 @@
+.headerRow {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.novoBotao {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #ffffff;
+  background: #2563eb;
+  border-radius: 999px;
+  padding: 0.55rem 1.1rem;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background 0.15s ease;
+}
+
+.novoBotao:hover {
+  background: #1d4ed8;
+}
+
+.listaErros {
+  list-style: none;
+  color: #b91c1c;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  padding: 0.85rem 1.1rem;
+  border-radius: 10px;
+  margin-bottom: 1.25rem;
+  font-size: 0.85rem;
+}
+
+.subtitle {
+  font-size: 0.9rem;
+  color: #6b7280;
+}
+
+.filtrosRow {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.5rem;
+}
+
+.buscaWrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 0.6rem 1rem;
+  color: #9ca3af;
+  flex: 1;
+  min-width: 200px;
+}
+
+.buscaInput {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-size: 0.88rem;
+  color: #101828;
+  background: transparent;
+}
+
+.buscaInput::placeholder {
+  color: #9ca3af;
+}
+
+.filtroSelect {
+  padding: 0.6rem 0.85rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #374151;
+  background: #ffffff;
+  cursor: pointer;
+}
+
+.filtroSelect:focus {
+  outline: none;
+  border-color: #2563eb;
+}
+
+.vazio {
+  font-size: 0.9rem;
+  color: #6b7280;
+  padding: 1.5rem;
+  background: #f9fafb;
+  border-radius: 12px;
+  text-align: center;
+}
+
+.atividadesList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.atividadeCard {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 0.9rem 1.1rem;
+}
+
+.atividadeCardData {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 48px;
+  background: #ffedd5;
+  color: #c2410c;
+  border-radius: 10px;
+  padding: 0.4rem;
+  font-size: 1.05rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.atividadeCardData span {
+  font-size: 0.62rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.atividadeCardInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.atividadeCardTitulo {
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: #101828;
+  margin: 0 0 0.2rem;
+}
+
+.atividadeCardMeta {
+  font-size: 0.75rem;
+  color: #2563eb;
+  font-weight: 600;
+  margin: 0 0 0.4rem;
+}
+
+.entregaBadge {
+  display: inline-block;
+  font-size: 0.7rem;
+  font-weight: 700;
+  border-radius: 999px;
+  padding: 0.2rem 0.65rem;
+  margin-bottom: 0.5rem;
+}
+
+.entrega_aberta {
+  color: #1e40af;
+  background: #eef2ff;
+}
+
+.entrega_hoje {
+  color: #92400e;
+  background: #fffbeb;
+}
+
+.entrega_vencida {
+  color: #b91c1c;
+  background: #fef2f2;
+}
+
+.atividadeCardDescricao {
+  font-size: 0.8rem;
+  color: #6b7280;
+  margin: 0 0 0.6rem;
+}
+
+.arquivoLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #1e40af;
+  background: #eef2ff;
+  border: 1px solid #c7d2fe;
+  border-radius: 8px;
+  padding: 0.4rem 0.75rem;
+  text-decoration: none;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.arquivoLink:hover {
+  background: #2563eb;
+  border-color: #2563eb;
+  color: #ffffff;
+}
+
+.atividadeDeletar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  color: #9ca3af;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.atividadeDeletar:hover {
+  background: #fef2f2;
+  color: #b91c1c;
+}
+
+@media (max-width: 600px) {
+  .filtrosRow {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
