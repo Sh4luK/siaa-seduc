@@ -26,6 +26,7 @@ from .models import Frequencia
 from .models import Aula
 from .models import Evento
 from .models import Conteudo
+from .models import Atividade
 import json
 
 load_dotenv()
@@ -1540,3 +1541,136 @@ def deletar_conteudo(request, conteudo_id):
 
     conteudo.delete()
     return JsonResponse({"message": "Conteúdo removido com sucesso."})
+
+
+
+@csrf_exempt
+def get_atividades(request):
+    """Lista as atividades do professor, opcionalmente filtradas por mês/ano ou turma."""
+    professor_id = request.GET.get("professor")
+    mes = request.GET.get("mes")
+    ano = request.GET.get("ano")
+    turma_id = request.GET.get("turma")
+
+    if not professor_id:
+        return JsonResponse({"message": "Parâmetro 'professor' é obrigatório."}, status=400)
+
+    atividades = Atividade.objects.filter(professor_id=professor_id).select_related("turma", "disciplina")
+
+    if mes and ano:
+        atividades = atividades.filter(data__year=ano, data__month=mes)
+    elif ano:
+        atividades = atividades.filter(data__year=ano)
+
+    if turma_id:
+        atividades = atividades.filter(turma_id=turma_id)
+
+    resultado = [
+        {
+            "id": a.id,
+            "titulo": a.titulo,
+            "descricao": a.descricao,
+            "data": a.data.isoformat(),
+            "data_entrega": a.data_entrega.isoformat() if a.data_entrega else None,
+            "turma_id": a.turma_id,
+            "nome_turma": a.turma.turma,
+            "disciplina": a.disciplina.nome_disciplina,
+            "arquivo_url": caminho_relativo_arquivo(a.arquivo),
+            "arquivo_nome": a.arquivo.name.split("/")[-1] if a.arquivo else None,
+        }
+        for a in atividades
+    ]
+
+    return JsonResponse({
+        "total_atividades": len(resultado),
+        "atividades": resultado
+    })
+
+
+@csrf_exempt
+def criar_atividade(request):
+    """Cria uma nova atividade. Aceita multipart/form-data por causa do arquivo opcional."""
+    if request.method != "POST":
+        return JsonResponse({"message": "Método não permitido."}, status=405)
+
+    professor_id = request.POST.get("professor")
+    turma_id = request.POST.get("turma")
+    titulo = (request.POST.get("titulo") or "").strip()
+    descricao = (request.POST.get("descricao") or "").strip()
+    data_str = request.POST.get("data")
+    data_entrega_str = request.POST.get("data_entrega")
+    arquivo = request.FILES.get("arquivo")
+
+    if not all([professor_id, turma_id, titulo, data_str]):
+        return JsonResponse(
+            {"message": "Campos 'professor', 'turma', 'titulo' e 'data' são obrigatórios."},
+            status=400
+        )
+
+    try:
+        data_atividade = date.fromisoformat(data_str)
+    except ValueError:
+        return JsonResponse({"message": "Formato de data inválido. Use AAAA-MM-DD."}, status=400)
+
+    data_entrega = None
+    if data_entrega_str:
+        try:
+            data_entrega = date.fromisoformat(data_entrega_str)
+        except ValueError:
+            return JsonResponse({"message": "Formato de data de entrega inválido. Use AAAA-MM-DD."}, status=400)
+
+    try:
+        professor = Professor.objects.get(id=professor_id)
+    except Professor.DoesNotExist:
+        return JsonResponse({"message": "Professor não encontrado."}, status=404)
+
+    turma = AtravessaPor.objects.filter(id=turma_id).first()
+    if not turma:
+        return JsonResponse({"message": "Turma não encontrada."}, status=404)
+
+    disciplina = resolver_disciplina_da_turma(turma)
+    if not disciplina:
+        return JsonResponse(
+            {"message": "Não foi possível resolver a disciplina associada a esta turma."},
+            status=404
+        )
+
+    atividade = Atividade.objects.create(
+        professor=professor,
+        turma=turma,
+        disciplina=disciplina,
+        titulo=titulo,
+        descricao=descricao,
+        data=data_atividade,
+        data_entrega=data_entrega,
+        arquivo=arquivo,
+    )
+
+    return JsonResponse({
+        "message": "Atividade criada com sucesso.",
+        "atividade": {
+            "id": atividade.id,
+            "titulo": atividade.titulo,
+            "descricao": atividade.descricao,
+            "data": atividade.data.isoformat(),
+            "data_entrega": atividade.data_entrega.isoformat() if atividade.data_entrega else None,
+            "turma_id": atividade.turma_id,
+            "nome_turma": atividade.turma.turma,
+            "disciplina": atividade.disciplina.nome_disciplina,
+            "arquivo_url": caminho_relativo_arquivo(atividade.arquivo),
+        }
+    })
+
+
+@csrf_exempt
+def deletar_atividade(request, atividade_id):
+    """Remove uma atividade."""
+    if request.method != "DELETE":
+        return JsonResponse({"message": "Método não permitido."}, status=405)
+
+    atividade = Atividade.objects.filter(id=atividade_id).first()
+    if not atividade:
+        return JsonResponse({"message": "Atividade não encontrada."}, status=404)
+
+    atividade.delete()
+    return JsonResponse({"message": "Atividade removida com sucesso."})
