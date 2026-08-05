@@ -213,3 +213,24 @@ class Conteudo(models.Model):
 
     def __str__(self):
         return f"{self.titulo} - {self.turma} - {self.data}"
+
+class Atividade(models.Model):
+    professor = models.ForeignKey("app.Professor", on_delete=models.CASCADE, related_name="atividades")
+    turma = models.ForeignKey("app.AtravessaPor", on_delete=models.CASCADE, related_name="atividades")
+    disciplina = models.ForeignKey("app.Disciplina", on_delete=models.CASCADE, related_name="atividades")
+    ano_letivo = models.PositiveIntegerField(default=2026)
+
+    titulo = models.CharField(max_length=255)
+    descricao = models.TextField(blank=True, default="")
+    data = models.DateField()
+    data_entrega = models.DateField(null=True, blank=True)
+    arquivo = models.FileField(upload_to="atividades/%Y/%m/", null=True, blank=True)
+
+    criado_em = models.DateTimeField(auto_now_add=True)
+    atualizado_em = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["-data"]
+
+    def __str__(self):
+        return f"{self.titulo} - {self.turma} - {self.data}"
