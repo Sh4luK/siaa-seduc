@@ -667,9 +667,23 @@ export default function ConteudosPage() {
                       {c.descricao && (
                         <p className={styles.conteudoCardDescricao}>{c.descricao}</p>
                       )}
-                      {c.arquivo_url && (
+                      {/* {c.arquivo_url && (
                         <a
                           href={c.arquivo_url}
+                          download
+                          className={styles.arquivoLink}
+                        >
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-2" />
+                            <path d="M7 11l5 5l5 -5" />
+                            <path d="M12 4l0 12" />
+                          </svg>
+                          Baixar {c.arquivo_nome}
+                        </a>
+                      )} */}
+                      {c.arquivo_url && (
+                        <a
+                          href={`${API_BASE}${c.arquivo_url}`}
                           download
                           className={styles.arquivoLink}
                         >
@@ -700,6 +714,6 @@ export default function ConteudosPage() {
           </main>
         </div>
       </div>
-    </div>
+    </div >
   );
 }
