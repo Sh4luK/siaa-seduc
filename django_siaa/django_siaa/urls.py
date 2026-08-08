@@ -35,4 +35,7 @@ urlpatterns = [
     path("api/teacher/atividades", app.views.get_atividades, name="get_atividades"),
     path("api/teacher/atividades/criar", app.views.criar_atividade, name="criar_atividade"),
     path("api/teacher/atividades/<int:atividade_id>/deletar", app.views.deletar_atividade, name="deletar_atividade"),
+    path("api/teacher/comunicados", app.views.get_comunicados, name="get_comunicados"),
+    path("api/teacher/comunicados/criar", app.views.criar_comunicado, name="criar_comunicado"),
+    path("api/teacher/comunicados/<int:comunicado_id>/deletar", app.views.deletar_comunicado, name="deletar_comunicado"),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
