@@ -27,6 +27,7 @@ from .models import Aula
 from .models import Evento
 from .models import Conteudo
 from .models import Atividade
+from .models import Comunicado
 import json
 
 load_dotenv()
@@ -1674,3 +1675,98 @@ def deletar_atividade(request, atividade_id):
 
     atividade.delete()
     return JsonResponse({"message": "Atividade removida com sucesso."})
+
+
+@csrf_exempt
+def get_comunicados(request):
+    """Lista os comunicados do professor."""
+    professor_id = request.GET.get("professor")
+
+    if not professor_id:
+        return JsonResponse({"message": "Parâmetro 'professor' é obrigatório."}, status=400)
+
+    comunicados = Comunicado.objects.filter(professor_id=professor_id).select_related("turma")
+
+    resultado = [
+        {
+            "id": c.id,
+            "titulo": c.titulo,
+            "mensagem": c.mensagem,
+            "data": c.data.isoformat(),
+            "turma_id": c.turma_id,
+            "nome_turma": c.turma.turma if c.turma else None,
+        }
+        for c in comunicados
+    ]
+
+    return JsonResponse({
+        "total_comunicados": len(resultado),
+        "comunicados": resultado
+    })
+
+
+@csrf_exempt
+def criar_comunicado(request):
+    """Cria um novo comunicado."""
+    if request.method != "POST":
+        return JsonResponse({"message": "Método não permitido."}, status=405)
+
+    try:
+        body = json.loads(request.body)
+    except json.JSONDecodeError:
+        return JsonResponse({"message": "JSON inválido."}, status=400)
+
+    professor_id = body.get("professor")
+    titulo = (body.get("titulo") or "").strip()
+    mensagem = (body.get("mensagem") or "").strip()
+    turma_id = body.get("turma")
+
+    if not all([professor_id, titulo, mensagem]):
+        return JsonResponse(
+            {"message": "Campos 'professor', 'titulo' e 'mensagem' são obrigatórios."},
+            status=400
+        )
+
+    try:
+        professor = Professor.objects.get(id=professor_id)
+    except Professor.DoesNotExist:
+        return JsonResponse({"message": "Professor não encontrado."}, status=404)
+
+    turma = None
+    if turma_id:
+        turma = AtravessaPor.objects.filter(id=turma_id).first()
+        if not turma:
+            return JsonResponse({"message": "Turma não encontrada."}, status=404)
+
+    comunicado = Comunicado.objects.create(
+        professor=professor,
+        turma=turma,
+        titulo=titulo,
+        mensagem=mensagem,
+    )
+
+    return JsonResponse({
+        "message": "Comunicado criado com sucesso.",
+        "comunicado": {
+            "id": comunicado.id,
+            "titulo": comunicado.titulo,
+            "mensagem": comunicado.mensagem,
+            "data": comunicado.data.isoformat(),
+            "turma_id": comunicado.turma_id,
+            "nome_turma": comunicado.turma.turma if comunicado.turma else None,
+        }
+    })
+
+
+@csrf_exempt
+def deletar_comunicado(request, comunicado_id):
+    """Remove um comunicado."""
+    if request.method != "DELETE":
+        return JsonResponse({"message": "Método não permitido."}, status=405)
+
+    comunicado = Comunicado.objects.filter(id=comunicado_id).first()
+    if not comunicado:
+        return JsonResponse({"message": "Comunicado não encontrado."}, status=404)
+
+    comunicado.delete()
+    return JsonResponse({"message": "Comunicado removido com sucesso."})
