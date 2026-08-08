@@ -457,6 +457,10 @@ export default function Professor() {
                 <i className="ti ti-users" aria-hidden="true" />
                 Conteudos
               </Link>
+              <Link href="/professor/comunicados" className={layoutStyles.navLink}>
+                <i className="ti ti-message" aria-hidden="true" />
+                Comunicados
+              </Link>
               <Link href="/professor/atividades" className={layoutStyles.navLink}>
                 <i className="ti ti-users" aria-hidden="true" />
                 Atividades
