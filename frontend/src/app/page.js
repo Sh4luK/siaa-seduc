@@ -23,9 +23,9 @@ const ACCESS_POINTS = [
     description: "Lance notas, registre frequência e gerencie turmas.",
   },
   {
-    href: "/administrador",
-    monogram: "Ad",
-    label: "Administrador",
+    href: "/coordenacao",
+    monogram: "C",
+    label: "Coordenação",
     description: "Gerencie usuários, turmas e configurações do sistema.",
   },
 ];
