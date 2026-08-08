@@ -234,3 +234,20 @@ class Atividade(models.Model):
 
     def __str__(self):
         return f"{self.titulo} - {self.turma} - {self.data}"
+
+
+class Comunicado(models.Model):
+    professor = models.ForeignKey("app.Professor", on_delete=models.CASCADE, related_name="comunicados")
+    turma = models.ForeignKey("app.AtravessaPor", on_delete=models.CASCADE, related_name="comunicados", null=True, blank=True)
+
+    titulo = models.CharField(max_length=255)
+    mensagem = models.TextField()
+    data = models.DateField(auto_now_add=True)
+
+    criado_em = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-criado_em"]
+
+    def __str__(self):
+        return f"{self.titulo} - {self.data}"
