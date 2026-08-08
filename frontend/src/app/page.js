@@ -26,7 +26,7 @@ const ACCESS_POINTS = [
     href: "/coordenacao",
     monogram: "C",
     label: "Coordenação",
-    description: "Gerencie usuários, turmas e configurações do sistema.",
+    description: "Gerencie alunos, turmas ,professores e configurações do sistema.",
   },
 ];
 
