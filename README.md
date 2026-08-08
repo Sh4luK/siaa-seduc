@@ -10,6 +10,9 @@ Sistema Integrado de Acompanhamento Acadêmico (React + Django) - Projeto FAPEPI
 ![DRF](https://img.shields.io/badge/Django%20REST%20Framework-ff1709?logo=django&logoColor=white)
 ![License](https://img.shields.io/badge/status-em%20desenvolvimento-yellow)
 
+<a href="https://github.com">
+  <img src="https://contrib.rocks">
+</a>
 
 <!-- > Repositório original: [github.com/Sh4luK/siaa-seduc](https://github.com/Sh4luK/siaa-seduc)
 
