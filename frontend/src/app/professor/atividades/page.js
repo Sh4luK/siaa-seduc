@@ -168,6 +168,10 @@ export default function AtividadesPage() {
               <i className="ti ti-users" aria-hidden="true" />
               Conteudos
             </Link>
+            <Link href="/professor/comunicados" className={layoutStyles.navLink}>
+              <i className="ti ti-message" aria-hidden="true" />
+              Comunicados
+            </Link>
             <Link href="/professor/atividades" className={layoutStyles.navLinkActive}>
               <i className="ti ti-users" aria-hidden="true" />
               Atividades
