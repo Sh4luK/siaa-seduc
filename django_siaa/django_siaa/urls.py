@@ -42,4 +42,5 @@ urlpatterns = [
     path("api/coordenacao/auth", app.views.auth_coordenacao, name="auth_coordenacao"),
     path("api/coordenacao/professores", app.views.get_professores_coordenacao, name="get_professores_coordenacao"),
     path("api/coordenacao/professores/criar", app.views.criar_professor, name="criar_professor"),
+    path("api/coordenacao/escola", app.views.get_escola_coordenador, name="get_escola_coordenador"),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
