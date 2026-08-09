@@ -1,6 +1,8 @@
 "use client";
 
+import logo from "../../assets/logo.png"
 import Link from "next/link";
+import Image from "next/image";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import styles from "./page.module.css";
@@ -127,9 +129,12 @@ export default function CoordenacaoPage() {
 
   if (loading) {
     return (
-      <div className={styles.page}>
-        <div className={styles.wrapper}>
-          <p className={styles.subtitle}>Verificando credenciais…</p>
+      <div className={styles.pageLoading}>
+        <div className={styles.cardLoading}>
+          <div className={styles.headerLoading}>
+            <Image src={logo} alt="Logo do SIAA" className={styles.loadingLogo} priority />
+            <p className={styles.subtituloLoading}>Verificando sessão…</p>
+          </div>
         </div>
       </div>
     );
