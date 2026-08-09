@@ -1,0 +1,366 @@
+.page {
+  min-height: 100vh;
+  background: #0b1220;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  color: #e5e7eb;
+}
+
+.pageLoading {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #0b1220;
+  color: #94a3b8;
+}
+
+.subtituloLoading {
+  font-size: 0.9rem;
+}
+
+.cardLoading {
+  width: 100%;
+  max-width: 400px;
+  background: #131c2e;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  padding: 2.25rem 2rem;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.35);
+}
+
+.headerLoading {
+  text-align: center;
+  margin-bottom: 1.75rem;
+}
+
+.subtituloLoading {
+  font-size: 0.85rem;
+  color: #94a3b8;
+  margin: 0;
+}
+
+.logo {
+  width: 56px;
+  height: 56px;
+  object-fit: contain;
+  margin-bottom: 0.85rem;
+}
+
+.loadingLogo {
+  width: 96px;
+  height: auto;
+  opacity: 0.92
+}
+
+.wrapper {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 3rem 2rem;
+}
+
+.voltarLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #94a3b8;
+  text-decoration: none;
+  margin-bottom: 1.25rem;
+}
+
+.voltarLink:hover {
+  color: #60a5fa;
+}
+
+.headerRow {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.title {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #f8fafc;
+  margin: 0 0 0.3rem;
+}
+
+.subtitle {
+  font-size: 0.9rem;
+  color: #94a3b8;
+  margin: 0;
+}
+
+.novoBotao {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #ffffff;
+  background: #2563eb;
+  border: none;
+  border-radius: 999px;
+  padding: 0.55rem 1.1rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s ease;
+}
+
+.novoBotao:hover {
+  background: #1d4ed8;
+}
+
+.listaErros {
+  list-style: none;
+  color: #fca5a5;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  padding: 0.85rem 1.1rem;
+  border-radius: 10px;
+  margin-bottom: 1.25rem;
+  font-size: 0.85rem;
+}
+
+.mensagemSucesso {
+  color: #86efac;
+  background: rgba(34, 197, 94, 0.1);
+  border: 1px solid rgba(34, 197, 94, 0.3);
+  padding: 0.7rem 1rem;
+  border-radius: 10px;
+  margin-bottom: 1.25rem;
+  font-size: 0.88rem;
+  font-weight: 500;
+}
+
+/* ===== Formulário ===== */
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+  background: #131c2e;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 1.5rem;
+  margin-bottom: 1.75rem;
+}
+
+.linhaDupla {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.1rem;
+}
+
+.campo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.label {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #cbd5e1;
+}
+
+.obrigatorio {
+  color: #f87171;
+}
+
+.input {
+  width: 100%;
+  padding: 0.65rem 0.85rem;
+  border: 1.5px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  font-size: 0.9rem;
+  color: #f1f5f9;
+  background: #0f1829;
+  box-sizing: border-box;
+}
+
+.input::placeholder {
+  color: #64748b;
+}
+
+.input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+}
+
+.botaoSalvar {
+  align-self: flex-start;
+  padding: 0.65rem 1.4rem;
+  background: #2563eb;
+  color: #ffffff;
+  border: none;
+  border-radius: 10px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.botaoSalvar:hover {
+  background: #1d4ed8;
+}
+
+.botaoSalvar:disabled {
+  background: #334155;
+  color: #64748b;
+  cursor: not-allowed;
+}
+
+/* ===== Busca ===== */
+.buscaWrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: #131c2e;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 0.65rem 1rem;
+  margin-bottom: 1.5rem;
+  color: #64748b;
+}
+
+.buscaInput {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-size: 0.9rem;
+  color: #e5e7eb;
+  background: transparent;
+}
+
+.buscaInput::placeholder {
+  color: #64748b;
+}
+
+.vazio {
+  font-size: 0.9rem;
+  color: #94a3b8;
+  padding: 1.5rem;
+  background: #131c2e;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+  text-align: center;
+}
+
+/* ===== Lista de professores ===== */
+.professoresList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.professorCard {
+  background: #131c2e;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 1.25rem 1.4rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.professorHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  margin-bottom: 0.9rem;
+  padding-bottom: 0.85rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.professorAvatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 46px;
+  height: 46px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
+.professorInfo {
+  min-width: 0;
+}
+
+.professorNome {
+  font-size: 0.98rem;
+  font-weight: 700;
+  color: #f8fafc;
+  margin: 0;
+}
+
+.professorMeta {
+  font-size: 0.78rem;
+  color: #94a3b8;
+  margin: 0.2rem 0 0;
+}
+
+.semTurmas {
+  font-size: 0.82rem;
+  color: #64748b;
+  margin: 0;
+}
+
+.turmasList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.turmaBloco {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.turmaNome {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #cbd5e1;
+  margin: 0;
+}
+
+.turmaEtapa {
+  font-weight: 400;
+  color: #64748b;
+}
+
+.disciplinasChips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.chip {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: #93c5fd;
+  background: rgba(59, 130, 246, 0.12);
+  border: 1px solid rgba(59, 130, 246, 0.25);
+  border-radius: 999px;
+  padding: 0.25rem 0.7rem;
+}
+
+@media (max-width: 600px) {
+  .wrapper {
+    padding: 2rem 1.25rem;
+  }
+
+  .linhaDupla {
+    grid-template-columns: 1fr;
+  }
+}

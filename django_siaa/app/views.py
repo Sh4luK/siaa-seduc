@@ -1810,3 +1810,170 @@ def auth_coordenacao(request):
             "return": None,
             "message": "error"
         })
+
+
+@csrf_exempt
+def get_professores_coordenacao(request):
+    """
+    Lista todos os professores com suas turmas e disciplinas, agrupadas.
+    Cada professor pode ter múltiplos registros em AtravessaPor (um por
+    disciplina lecionada); aqui agrupamos por professor -> turma -> disciplinas.
+    """
+    professores = Professor.objects.all().order_by("nome_completo")
+
+    resultado = []
+    for professor in professores:
+        registros = AtravessaPor.objects.filter(professor_id=professor.id)
+
+        turmas_map = {}
+        for r in registros:
+            chave = r.turma
+            if chave not in turmas_map:
+                turmas_map[chave] = {
+                    "nome_turma": r.turma,
+                    "etapa": r.etapa,
+                    "disciplinas": [],
+                }
+            turmas_map[chave]["disciplinas"].append(r.disciplina_lecionada)
+
+        resultado.append({
+            "id": professor.id,
+            "nome_completo": professor.nome_completo,
+            "total_turmas": len(turmas_map),
+            "total_disciplinas": sum(len(t["disciplinas"]) for t in turmas_map.values()),
+            "turmas": list(turmas_map.values()),
+        })
+
+    return JsonResponse({
+        "total_professores": len(resultado),
+        "professores": resultado
+    })
+
+
+# @csrf_exempt
+# def criar_professor(request):
+#     """Cadastra um novo professor."""
+#     if request.method != "POST":
+#         return JsonResponse({"message": "Método não permitido."}, status=405)
+
+#     try:
+#         body = json.loads(request.body)
+#     except json.JSONDecodeError:
+#         return JsonResponse({"message": "JSON inválido."}, status=400)
+
+#     nome_completo = (body.get("nome_completo") or "").strip().upper()
+#     senha = (body.get("senha") or "").strip()
+
+#     if not nome_completo or not senha:
+#         return JsonResponse(
+#             {"message": "Campos 'nome_completo' e 'senha' são obrigatórios."},
+#             status=400
+#         )
+
+#     if Professor.objects.filter(nome_completo=nome_completo).exists():
+#         return JsonResponse(
+#             {"message": "Já existe um professor cadastrado com esse nome."},
+#             status=400
+#         )
+
+#     professor = Professor.objects.create(
+#         nome_completo=nome_completo,
+#         senha=senha,
+#     )
+
+#     return JsonResponse({
+#         "message": "Professor cadastrado com sucesso.",
+#         "professor": {
+#             "id": professor.id,
+#             "nome_completo": professor.nome_completo,
+#         }
+#     })
+
+@csrf_exempt
+def criar_professor(request):
+    """
+    Cadastra um novo professor e já cria seus vínculos de turma/disciplina
+    (registros em AtravessaPor), um por combinação turma+disciplina.
+    """
+    if request.method != "POST":
+        return JsonResponse({"message": "Método não permitido."}, status=405)
+
+    try:
+        body = json.loads(request.body)
+    except json.JSONDecodeError:
+        return JsonResponse({"message": "JSON inválido."}, status=400)
+
+    nome_completo = (body.get("nome_completo") or "").strip().upper()
+    senha = (body.get("senha") or "").strip()
+    escola = (body.get("escola") or "").strip()
+    vinculos = body.get("vinculos", [])  # [{ turma, etapa, disciplinas: [...] }, ...]
+
+    if not nome_completo or not senha:
+        return JsonResponse(
+            {"message": "Campos 'nome_completo' e 'senha' são obrigatórios."},
+            status=400
+        )
+
+    if Professor.objects.filter(nome_completo=nome_completo).exists():
+        return JsonResponse(
+            {"message": "Já existe um professor cadastrado com esse nome."},
+            status=400
+        )
+
+    erros_vinculos = []
+    for i, v in enumerate(vinculos):
+        turma = (v.get("turma") or "").strip()
+        etapa = (v.get("etapa") or "").strip()
+        disciplinas = [d.strip() for d in (v.get("disciplinas") or []) if d.strip()]
+
+        if not turma or not etapa or not disciplinas:
+            erros_vinculos.append(
+                f"Vínculo {i + 1}: turma, etapa e ao menos uma disciplina são obrigatórios."
+            )
+
+    if erros_vinculos:
+        return JsonResponse({"message": " | ".join(erros_vinculos)}, status=400)
+
+    professor = Professor.objects.create(
+        nome_completo=nome_completo,
+        senha=senha,
+    )
+
+    registros_criados = []
+    for v in vinculos:
+        turma = v.get("turma").strip()
+        etapa = v.get("etapa").strip()
+        disciplinas = [d.strip() for d in v.get("disciplinas", []) if d.strip()]
+
+        for disciplina in disciplinas:
+            registro = AtravessaPor.objects.create(
+                professor=professor,
+                escola=escola,
+                turma=turma,
+                etapa=etapa,
+                disciplina_lecionada=disciplina,
+            )
+            registros_criados.append(registro.id)
+
+    return JsonResponse({
+        "message": "Professor cadastrado com sucesso.",
+        "professor": {
+            "id": professor.id,
+            "nome_completo": professor.nome_completo,
+        },
+        "vinculos_criados": len(registros_criados),
+    })
+
+@csrf_exempt
+def get_escola_coordenador(request):
+    """Retorna a escola vinculada ao coordenador autenticado (via IP)."""
+    ip = get_ip()
+    coordenador = Coordenador.objects.filter(ip=ip).first()
+
+    if not coordenador:
+        return JsonResponse({"return": False}, status=401)
+
+    return JsonResponse({
+        "return": True,
+        "escola": coordenador.escola or ""
+    })
