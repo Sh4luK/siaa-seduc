@@ -1,3 +1,4 @@
+from urllib.parse import urlparse
 from datetime import date
 import unicodedata
 from django.db.models.functions import Replace
@@ -28,6 +29,7 @@ from .models import Evento
 from .models import Conteudo
 from .models import Atividade
 from .models import Comunicado
+from .models import Coordenador
 import json
 
 load_dotenv()
@@ -1404,10 +1406,6 @@ def deletar_evento(request, evento_id):
 #     return JsonResponse({"message": "Conteúdo removido com sucesso."})
 
 
-from urllib.parse import urlparse
-from datetime import date
-from .models import Conteudo
-
 
 def caminho_relativo_arquivo(arquivo_field):
     """
@@ -1770,3 +1768,45 @@ def deletar_comunicado(request, comunicado_id):
 
     comunicado.delete()
     return JsonResponse({"message": "Comunicado removido com sucesso."})
+
+
+@csrf_exempt
+def login_coordenacao(request):
+    ip = get_ip()
+    nome_completo = request.GET.get("nome_completo").strip().upper()
+    senha = request.GET.get("senha").strip()
+
+    coordenador = Coordenador.objects.filter(nome_completo=nome_completo, senha=senha).first()
+
+    if coordenador is None:
+        return JsonResponse({
+            "return": False
+        })
+    else:
+        Coordenador.objects.filter(nome_completo=nome_completo, senha=senha).update(ip=ip)
+        return JsonResponse({
+            "return": True
+        })
+
+
+@csrf_exempt
+def auth_coordenacao(request):
+    ip = get_ip()
+    coordenador = Coordenador.objects.filter(ip=ip).first()
+
+    try:
+        coordenador_dict = model_to_dict(coordenador)
+        if coordenador is None:
+            return JsonResponse({
+                "return": False
+            })
+        else:
+            return JsonResponse({
+                "return": True,
+                "coordenador": coordenador_dict
+            })
+    except:
+        return JsonResponse({
+            "return": None,
+            "message": "error"
+        })

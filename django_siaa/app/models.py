@@ -251,3 +251,15 @@ class Comunicado(models.Model):
 
     def __str__(self):
         return f"{self.titulo} - {self.data}"
+
+
+class Coordenador(models.Model):
+    nome_completo = models.CharField(max_length=255)
+    senha = models.CharField(max_length=255)
+    escola = models.CharField(max_length=255, blank=True, default="")
+    ip = models.GenericIPAddressField(null=True, blank=True)
+
+    def __str__(self):
+        return self.nome_completo
+
+

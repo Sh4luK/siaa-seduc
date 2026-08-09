@@ -38,4 +38,6 @@ urlpatterns = [
     path("api/teacher/comunicados", app.views.get_comunicados, name="get_comunicados"),
     path("api/teacher/comunicados/criar", app.views.criar_comunicado, name="criar_comunicado"),
     path("api/teacher/comunicados/<int:comunicado_id>/deletar", app.views.deletar_comunicado, name="deletar_comunicado"),
+    path("api/coordenacao/login", app.views.login_coordenacao, name="login_coordenacao"),
+    path("api/coordenacao/auth", app.views.auth_coordenacao, name="auth_coordenacao"),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
