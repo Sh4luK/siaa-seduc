@@ -1963,3 +1963,17 @@ def criar_professor(request):
         },
         "vinculos_criados": len(registros_criados),
     })
+
+@csrf_exempt
+def get_escola_coordenador(request):
+    """Retorna a escola vinculada ao coordenador autenticado (via IP)."""
+    ip = get_ip()
+    coordenador = Coordenador.objects.filter(ip=ip).first()
+
+    if not coordenador:
+        return JsonResponse({"return": False}, status=401)
+
+    return JsonResponse({
+        "return": True,
+        "escola": coordenador.escola or ""
+    })
