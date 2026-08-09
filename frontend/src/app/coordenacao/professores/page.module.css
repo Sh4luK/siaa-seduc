@@ -5,6 +5,53 @@
   color: #e5e7eb;
 }
 
+.pageLoading {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #0b1220;
+  color: #94a3b8;
+}
+
+.subtituloLoading {
+  font-size: 0.9rem;
+}
+
+.cardLoading {
+  width: 100%;
+  max-width: 400px;
+  background: #131c2e;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  padding: 2.25rem 2rem;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.35);
+}
+
+.headerLoading {
+  text-align: center;
+  margin-bottom: 1.75rem;
+}
+
+.subtituloLoading {
+  font-size: 0.85rem;
+  color: #94a3b8;
+  margin: 0;
+}
+
+.logo {
+  width: 56px;
+  height: 56px;
+  object-fit: contain;
+  margin-bottom: 0.85rem;
+}
+
+.loadingLogo {
+  width: 96px;
+  height: auto;
+  opacity: 0.92
+}
+
 .wrapper {
   max-width: 1000px;
   margin: 0 auto;
