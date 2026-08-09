@@ -1,0 +1,154 @@
+.page {
+  min-height: 100vh;
+  background: #f4f6f9;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  color: #1f2937;
+}
+
+.wrapper {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 3rem 2rem;
+}
+
+.headerRow {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #101828;
+  margin: 0 0 0.35rem;
+}
+
+.subtitle {
+  font-size: 0.95rem;
+  color: #6b7280;
+  margin: 0;
+  max-width: 520px;
+}
+
+.buscaWrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 0.65rem 1rem;
+  margin-bottom: 1.75rem;
+  color: #9ca3af;
+  max-width: 360px;
+}
+
+.buscaInput {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-size: 0.9rem;
+  color: #101828;
+  background: transparent;
+}
+
+.buscaInput::placeholder {
+  color: #9ca3af;
+}
+
+.vazio {
+  font-size: 0.9rem;
+  color: #6b7280;
+  padding: 1.5rem;
+  background: #f9fafb;
+  border-radius: 12px;
+  text-align: center;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr));
+  gap: 1rem;
+}
+
+.card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  padding: 1.25rem 1.4rem;
+  text-decoration: none;
+  color: inherit;
+  box-shadow: 0 1px 3px rgba(16, 24, 40, 0.04);
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  border-color: #2563eb;
+  box-shadow: 0 10px 24px rgba(37, 99, 235, 0.1);
+}
+
+.icone {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 46px;
+  height: 46px;
+  border-radius: 12px;
+  flex-shrink: 0;
+}
+
+.cor_azul { background: #dbeafe; color: #1d4ed8; }
+.cor_verde { background: #dcfce7; color: #15803d; }
+.cor_roxo { background: #f3e8ff; color: #7e22ce; }
+.cor_laranja { background: #ffedd5; color: #c2410c; }
+.cor_vermelho { background: #fee2e2; color: #b91c1c; }
+.cor_amarelo { background: #fef9c3; color: #a16207; }
+
+.cardInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.cardTitulo {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #101828;
+  margin: 0 0 0.2rem;
+}
+
+.cardDescricao {
+  font-size: 0.8rem;
+  color: #6b7280;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.cardArrow {
+  font-size: 1.1rem;
+  color: #2563eb;
+  font-weight: 700;
+  flex-shrink: 0;
+  transition: transform 0.15s ease;
+}
+
+.card:hover .cardArrow {
+  transform: translateX(4px);
+}
+
+@media (max-width: 600px) {
+  .wrapper {
+    padding: 2rem 1.25rem;
+  }
+
+  .title {
+    font-size: 1.4rem;
+  }
+}
