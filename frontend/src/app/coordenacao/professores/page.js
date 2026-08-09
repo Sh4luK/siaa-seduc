@@ -1,5 +1,8 @@
 "use client";
 
+
+import logo from "../../../assets/logo.png";
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -80,7 +83,7 @@ export default function ProfessoresCoordenacaoPage() {
         try {
           const json = JSON.parse(corpoErro);
           if (json.message) msg = json.message;
-        } catch {}
+        } catch { }
         throw new Error(msg);
       }
 
@@ -107,9 +110,12 @@ export default function ProfessoresCoordenacaoPage() {
 
   if (loading) {
     return (
-      <div className={styles.page}>
-        <div className={styles.wrapper}>
-          <p className={styles.subtitle}>Verificando credenciais…</p>
+      <div className={styles.pageLoading}>
+        <div className={styles.cardLoading}>
+          <div className={styles.headerLoading}>
+            <Image src={logo} alt="Logo do SIAA" className={styles.loadingLogo} priority />
+            <p className={styles.subtituloLoading}>Verificando sessão…</p>
+          </div>
         </div>
       </div>
     );
@@ -134,9 +140,9 @@ export default function ProfessoresCoordenacaoPage() {
               {professores.length} professor(es) cadastrado(s).
             </p>
           </div>
-          <button className={styles.novoBotao} onClick={() => setMostrarForm((v) => !v)}>
-            {mostrarForm ? "Cancelar" : "+ Novo professor"}
-          </button>
+          <Link href="/coordenacao/professores/novo" className={styles.novoBotao}>
+            + Novo professor
+          </Link>
         </div>
 
         {erros.length > 0 && (
@@ -145,47 +151,6 @@ export default function ProfessoresCoordenacaoPage() {
               <li key={i}>{e}</li>
             ))}
           </ul>
-        )}
-        {mensagemSucesso && <p className={styles.mensagemSucesso}>{mensagemSucesso}</p>}
-
-        {mostrarForm && (
-          <form className={styles.form} onSubmit={handleCadastrar}>
-            <div className={styles.linhaDupla}>
-              <div className={styles.campo}>
-                <label className={styles.label} htmlFor="nome_completo">
-                  Nome completo <span className={styles.obrigatorio}>*</span>
-                </label>
-                <input
-                  id="nome_completo"
-                  type="text"
-                  className={styles.input}
-                  placeholder="Ex: João da Silva"
-                  value={form.nome_completo}
-                  onChange={(e) => handleFormChange("nome_completo", e.target.value)}
-                  required
-                />
-              </div>
-
-              <div className={styles.campo}>
-                <label className={styles.label} htmlFor="senha">
-                  Senha <span className={styles.obrigatorio}>*</span>
-                </label>
-                <input
-                  id="senha"
-                  type="text"
-                  className={styles.input}
-                  placeholder="Senha de acesso"
-                  value={form.senha}
-                  onChange={(e) => handleFormChange("senha", e.target.value)}
-                  required
-                />
-              </div>
-            </div>
-
-            <button type="submit" className={styles.botaoSalvar} disabled={saving}>
-              {saving ? "Cadastrando..." : "Cadastrar professor"}
-            </button>
-          </form>
         )}
 
         <div className={styles.buscaWrapper}>
