@@ -25,7 +25,7 @@ const ACCESS_POINTS = [
   {
     href: "/coordenacao",
     monogram: "C",
-    label: "Coordenação",
+    label: "Coordenador",
     description: "Gerencie alunos, turmas ,professores e configurações do sistema.",
   },
 ];
@@ -56,7 +56,7 @@ export default function Home() {
 
         <footer className={styles.footer}>
           <span className={styles.rule} aria-hidden="true" />
-          <small>&copy; 2026 SIAA · Secretaria Acadêmica</small>
+          <small>&copy; 2026 SIAA · Secretaria de Estado da Educação - PI</small>
         </footer>
       </div>
     </main>
