@@ -2141,3 +2141,42 @@ def get_opcoes_cadastro_professor(request):
         "etapas": etapas,
         "disciplinas": disciplinas,
     })
+
+@csrf_exempt
+def deletar_professor(request, professor_id):
+    """
+    Remove um professor do sistema. Por segurança, recusa a exclusão se
+    houver notas ou frequências lançadas em qualquer turma vinculada a ele
+    — evita apagar dados acadêmicos de alunos por engano.
+    """
+    if request.method != "DELETE":
+        return JsonResponse({"message": "Método não permitido."}, status=405)
+
+    professor = Professor.objects.filter(id=professor_id).first()
+    if not professor:
+        return JsonResponse({"message": "Professor não encontrado."}, status=404)
+
+    registros = AtravessaPor.objects.filter(professor_id=professor_id)
+
+    tem_notas = Nota.objects.filter(turma_id__in=registros.values_list("id", flat=True)).exists()
+    tem_frequencia = Frequencia.objects.filter(turma_id__in=registros.values_list("id", flat=True)).exists()
+
+    if tem_notas or tem_frequencia:
+        return JsonResponse(
+            {
+                "message": (
+                    "Não é possível apagar este professor: existem notas ou "
+                    "frequências lançadas em turmas vinculadas a ele. Remova "
+                    "esses lançamentos antes de excluir o professor."
+                )
+            },
+            status=400
+        )
+
+    nome = professor.nome_completo
+    registros.delete()
+    professor.delete()
+
+    return JsonResponse({
+        "message": f"Professor {nome} removido com sucesso."
+    })
