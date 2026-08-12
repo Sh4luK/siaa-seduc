@@ -2108,3 +2108,36 @@ def editar_professor(request, professor_id):
             "nome_completo": professor.nome_completo,
         }
     })
+
+@csrf_exempt
+def get_opcoes_cadastro_professor(request):
+    """
+    Retorna as listas distintas de turmas, etapas e disciplinas já
+    existentes no sistema, para alimentar os selects do formulário de
+    cadastro/edição de professor — evita digitação livre e inconsistências.
+    """
+    turmas = list(
+        AtravessaPor.objects.exclude(turma="")
+        .values_list("turma", flat=True)
+        .distinct()
+        .order_by("turma")
+    )
+
+    etapas = list(
+        AtravessaPor.objects.exclude(etapa="")
+        .values_list("etapa", flat=True)
+        .distinct()
+        .order_by("etapa")
+    )
+
+    disciplinas = list(
+        Disciplina.objects.values_list("nome_disciplina", flat=True)
+        .distinct()
+        .order_by("nome_disciplina")
+    )
+
+    return JsonResponse({
+        "turmas": turmas,
+        "etapas": etapas,
+        "disciplinas": disciplinas,
+    })
