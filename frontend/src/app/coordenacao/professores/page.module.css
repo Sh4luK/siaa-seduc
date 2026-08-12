@@ -364,3 +364,24 @@
     grid-template-columns: 1fr;
   }
 }
+
+.editarBotao {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #93c5fd;
+  background: rgba(59, 130, 246, 0.1);
+  border: 1px solid rgba(59, 130, 246, 0.25);
+  border-radius: 8px;
+  padding: 0.4rem 0.75rem;
+  text-decoration: none;
+  white-space: nowrap;
+  margin-left: auto;
+  transition: background 0.15s ease;
+}
+
+.editarBotao:hover {
+  background: rgba(59, 130, 246, 0.2);
+}
