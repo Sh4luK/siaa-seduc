@@ -2180,3 +2180,27 @@ def deletar_professor(request, professor_id):
     return JsonResponse({
         "message": f"Professor {nome} removido com sucesso."
     })
+
+@csrf_exempt
+def get_alunos_coordenacao(request):
+    """Lista todos os alunos cadastrados, com os campos usados na tela da coordenação."""
+    alunos = Estudante.objects.all().order_by("nome_completo")
+
+    resultado = [
+        {
+            "id": a.id,
+            "nome_completo": a.nome_completo,
+            "turma": a.turma,
+            "serie": a.serie,
+            "escola": a.escola,
+            "periodo": a.periodo,
+            "curso": a.curso,
+        }
+        for a in alunos
+    ]
+
+    return JsonResponse({
+        "total_alunos": len(resultado),
+        "alunos": resultado
+    })
+
