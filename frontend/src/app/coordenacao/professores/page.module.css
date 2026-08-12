@@ -385,3 +385,109 @@
 .editarBotao:hover {
   background: rgba(59, 130, 246, 0.2);
 }
+
+.acoesHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+.editarBotao {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #93c5fd;
+  background: rgba(59, 130, 246, 0.1);
+  border: 1px solid rgba(59, 130, 246, 0.25);
+  border-radius: 8px;
+  padding: 0.4rem 0.75rem;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background 0.15s ease;
+}
+
+.editarBotao:hover {
+  background: rgba(59, 130, 246, 0.2);
+}
+
+.apagarBotao {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #fca5a5;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.25);
+  border-radius: 8px;
+  padding: 0.4rem 0.75rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s ease;
+}
+
+.apagarBotao:hover {
+  background: rgba(239, 68, 68, 0.2);
+}
+
+.confirmacaoWrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.25);
+  border-radius: 8px;
+  padding: 0.35rem 0.6rem;
+}
+
+.confirmacaoTexto {
+  font-size: 0.75rem;
+  color: #fca5a5;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.confirmarBotao {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #ffffff;
+  background: #dc2626;
+  border: none;
+  border-radius: 6px;
+  padding: 0.3rem 0.6rem;
+  cursor: pointer;
+}
+
+.confirmarBotao:hover {
+  background: #b91c1c;
+}
+
+.confirmarBotao:disabled {
+  background: #334155;
+  color: #64748b;
+  cursor: not-allowed;
+}
+
+.cancelarBotao {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #cbd5e1;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 6px;
+  padding: 0.3rem 0.6rem;
+  cursor: pointer;
+}
+
+.cancelarBotao:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.cancelarBotao:disabled {
+  color: #64748b;
+  cursor: not-allowed;
+}
