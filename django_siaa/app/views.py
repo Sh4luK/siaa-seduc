@@ -2227,3 +2227,48 @@ def get_aluno_detalhe(request, aluno_id):
         }
     })
 
+@csrf_exempt
+def editar_aluno(request, aluno_id):
+    """Atualiza os dados de um aluno."""
+    if request.method != "POST":
+        return JsonResponse({"message": "Método não permitido."}, status=405)
+
+    aluno = Estudante.objects.filter(id=aluno_id).first()
+    if not aluno:
+        return JsonResponse({"message": "Aluno não encontrado."}, status=404)
+
+    try:
+        body = json.loads(request.body)
+    except json.JSONDecodeError:
+        return JsonResponse({"message": "JSON inválido."}, status=400)
+
+    nome_completo = (body.get("nome_completo") or "").strip().upper()
+    turma = (body.get("turma") or "").strip()
+    serie = (body.get("serie") or "").strip()
+    escola = (body.get("escola") or "").strip()
+    periodo = (body.get("periodo") or "").strip()
+    curso = (body.get("curso") or "").strip()
+
+    if not nome_completo:
+        return JsonResponse({"message": "O campo 'nome_completo' é obrigatório."}, status=400)
+
+    aluno.nome_completo = nome_completo
+    aluno.turma = turma
+    aluno.serie = serie
+    aluno.escola = escola
+    aluno.periodo = periodo
+    aluno.curso = curso
+    aluno.save()
+
+    return JsonResponse({
+        "message": "Aluno atualizado com sucesso.",
+        "aluno": {
+            "id": aluno.id,
+            "nome_completo": aluno.nome_completo,
+            "turma": aluno.turma,
+            "serie": aluno.serie,
+            "escola": aluno.escola,
+            "periodo": aluno.periodo,
+            "curso": aluno.curso,
+        }
+    })
