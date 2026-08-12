@@ -2180,3 +2180,132 @@ def deletar_professor(request, professor_id):
     return JsonResponse({
         "message": f"Professor {nome} removido com sucesso."
     })
+
+@csrf_exempt
+def get_alunos_coordenacao(request):
+    """Lista todos os alunos cadastrados, com os campos usados na tela da coordenação."""
+    alunos = Estudante.objects.all().order_by("nome_completo")
+
+    resultado = [
+        {
+            "id": a.id,
+            "nome_completo": a.nome_completo,
+            "turma": a.turma,
+            "serie": a.serie,
+            "escola": a.escola,
+            "periodo": a.periodo,
+            "curso": a.curso,
+        }
+        for a in alunos
+    ]
+
+    return JsonResponse({
+        "total_alunos": len(resultado),
+        "alunos": resultado
+    })
+
+
+
+@csrf_exempt
+def get_aluno_detalhe(request, aluno_id):
+    """Retorna os dados completos de um aluno específico."""
+    aluno = Estudante.objects.filter(id=aluno_id).first()
+    if not aluno:
+        return JsonResponse({"message": "Aluno não encontrado."}, status=404)
+
+    return JsonResponse({
+        "aluno": {
+            "id": aluno.id,
+            "nome_completo": aluno.nome_completo,
+            "turma": aluno.turma,
+            "serie": aluno.serie,
+            "escola": aluno.escola,
+            "periodo": aluno.periodo,
+            "curso": aluno.curso,
+            "modo_de_ensino": aluno.modo_de_ensino,
+            "posicao_ordem": aluno.posicao_ordem,
+        }
+    })
+
+@csrf_exempt
+def editar_aluno(request, aluno_id):
+    """Atualiza os dados de um aluno."""
+    if request.method != "POST":
+        return JsonResponse({"message": "Método não permitido."}, status=405)
+
+    aluno = Estudante.objects.filter(id=aluno_id).first()
+    if not aluno:
+        return JsonResponse({"message": "Aluno não encontrado."}, status=404)
+
+    try:
+        body = json.loads(request.body)
+    except json.JSONDecodeError:
+        return JsonResponse({"message": "JSON inválido."}, status=400)
+
+    nome_completo = (body.get("nome_completo") or "").strip().upper()
+    turma = (body.get("turma") or "").strip()
+    serie = (body.get("serie") or "").strip()
+    escola = (body.get("escola") or "").strip()
+    periodo = (body.get("periodo") or "").strip()
+    curso = (body.get("curso") or "").strip()
+
+    if not nome_completo:
+        return JsonResponse({"message": "O campo 'nome_completo' é obrigatório."}, status=400)
+
+    aluno.nome_completo = nome_completo
+    aluno.turma = turma
+    aluno.serie = serie
+    aluno.escola = escola
+    aluno.periodo = periodo
+    aluno.curso = curso
+    aluno.save()
+
+    return JsonResponse({
+        "message": "Aluno atualizado com sucesso.",
+        "aluno": {
+            "id": aluno.id,
+            "nome_completo": aluno.nome_completo,
+            "turma": aluno.turma,
+            "serie": aluno.serie,
+            "escola": aluno.escola,
+            "periodo": aluno.periodo,
+            "curso": aluno.curso,
+        }
+    })
+
+
+
+@csrf_exempt
+def deletar_aluno(request, aluno_id):
+    """
+    Remove um aluno. Recusa a exclusão se houver notas ou frequências
+    lançadas para ele, evitando apagar histórico acadêmico por engano.
+    """
+    if request.method != "DELETE":
+        return JsonResponse({"message": "Método não permitido."}, status=405)
+
+    aluno = Estudante.objects.filter(id=aluno_id).first()
+    if not aluno:
+        return JsonResponse({"message": "Aluno não encontrado."}, status=404)
+
+    tem_notas = Nota.objects.filter(aluno_id=aluno_id).exists()
+    tem_frequencia = Frequencia.objects.filter(aluno_id=aluno_id).exists()
+
+    if tem_notas or tem_frequencia:
+        return JsonResponse(
+            {
+                "message": (
+                    "Não é possível apagar este aluno: existem notas ou "
+                    "frequências lançadas em seu histórico. Remova esses "
+                    "lançamentos antes de excluir o aluno."
+                )
+            },
+            status=400
+        )
+
+    nome = aluno.nome_completo
+    aluno.delete()
+
+    return JsonResponse({
+        "message": f"Aluno {nome} removido com sucesso."
+    })
