@@ -4,6 +4,9 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import styles from "./page.module.css";
+import logo from "../../../assets/logo.png";
+import Image from "next/image";
+
 
 const API_BASE = "https://upgraded-space-spork-4j9vqpw9q5g5fprr-8000.app.github.dev";
 
@@ -92,7 +95,12 @@ export default function AlunosCoordenacaoPage() {
   if (loading) {
     return (
       <div className={styles.pageLoading}>
-        <p className={styles.subtituloLoading}>Verificando credenciais…</p>
+        <div className={styles.cardLoading}>
+          <div className={styles.headerLoading}>
+            <Image src={logo} alt="Logo do SIAA" className={styles.loadingLogo} priority />
+            <p className={styles.subtituloLoading}>Verificando sessão…</p>
+          </div>
+        </div>
       </div>
     );
   }
