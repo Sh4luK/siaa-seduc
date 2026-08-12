@@ -1,16 +1,23 @@
 // "use client";
 
 // import { useEffect, useState } from "react";
-// import { useRouter } from "next/navigation";
+// import { useParams, useRouter } from "next/navigation";
 // import styles from "./page.module.css";
 
 // const API_BASE = "https://upgraded-space-spork-4j9vqpw9q5g5fprr-8000.app.github.dev";
 
-// function novoVinculo() {
-//   return { id: crypto.randomUUID(), turma: "", etapa: "", disciplinas: [], disciplinaInput: "" };
+// function novoVinculo(dados) {
+//   return {
+//     id: crypto.randomUUID(),
+//     turma: dados?.turma || "",
+//     etapa: dados?.etapa || "",
+//     disciplinas: dados?.disciplinas || [],
+//     disciplinaInput: "",
+//   };
 // }
 
-// export default function NovoProfessorPage() {
+// export default function EditarProfessorPage() {
+//   const { professorId } = useParams();
 //   const router = useRouter();
 
 //   const [loading, setLoading] = useState(true);
@@ -38,6 +45,17 @@
 //           const escolaData = await escolaRes.json();
 //           setEscola(escolaData.escola || "");
 //         }
+
+//         const detalheRes = await fetch(`${API_BASE}/api/coordenacao/professores/${professorId}`);
+//         if (!detalheRes.ok) throw new Error(`Falha ao buscar professor (status ${detalheRes.status})`);
+//         const detalheData = await detalheRes.json();
+
+//         setNomeCompleto(detalheData.professor.nome_completo);
+
+//         const vinculosCarregados = (detalheData.vinculos || []).map((v) =>
+//           novoVinculo({ turma: v.turma, etapa: v.etapa, disciplinas: v.disciplinas })
+//         );
+//         setVinculos(vinculosCarregados.length > 0 ? vinculosCarregados : [novoVinculo()]);
 //       } catch (error) {
 //         setErros([`Erro ao carregar dados: ${error.message}`]);
 //       } finally {
@@ -46,12 +64,10 @@
 //     }
 
 //     init();
-//   }, [router]);
+//   }, [professorId, router]);
 
 //   function atualizarVinculo(id, campo, valor) {
-//     setVinculos((prev) =>
-//       prev.map((v) => (v.id === id ? { ...v, [campo]: valor } : v))
-//     );
+//     setVinculos((prev) => prev.map((v) => (v.id === id ? { ...v, [campo]: valor } : v)));
 //   }
 
 //   function adicionarDisciplina(id) {
@@ -73,9 +89,7 @@
 //   function removerDisciplina(id, disciplina) {
 //     setVinculos((prev) =>
 //       prev.map((v) =>
-//         v.id === id
-//           ? { ...v, disciplinas: v.disciplinas.filter((d) => d !== disciplina) }
-//           : v
+//         v.id === id ? { ...v, disciplinas: v.disciplinas.filter((d) => d !== disciplina) } : v
 //       )
 //     );
 //   }
@@ -103,13 +117,10 @@
 
 //     const errosValidacao = [];
 //     if (!nomeCompleto.trim()) errosValidacao.push("O nome completo é obrigatório.");
-//     if (!senha.trim()) errosValidacao.push("A senha é obrigatória.");
 
 //     vinculos.forEach((v, i) => {
 //       if (!v.turma.trim() || !v.etapa.trim() || v.disciplinas.length === 0) {
-//         errosValidacao.push(
-//           `Vínculo ${i + 1}: preencha turma, etapa e ao menos uma disciplina.`
-//         );
+//         errosValidacao.push(`Vínculo ${i + 1}: preencha turma, etapa e ao menos uma disciplina.`);
 //       }
 //     });
 
@@ -120,7 +131,7 @@
 //     }
 
 //     try {
-//       const res = await fetch(`${API_BASE}/api/coordenacao/professores/criar`, {
+//       const res = await fetch(`${API_BASE}/api/coordenacao/professores/${professorId}/editar`, {
 //         method: "POST",
 //         headers: { "Content-Type": "application/json" },
 //         body: JSON.stringify({
@@ -137,7 +148,7 @@
 
 //       if (!res.ok) {
 //         const corpoErro = await res.text();
-//         let msg = `Falha ao cadastrar (status ${res.status})`;
+//         let msg = `Falha ao salvar (status ${res.status})`;
 //         try {
 //           const json = JSON.parse(corpoErro);
 //           if (json.message) msg = json.message;
@@ -145,12 +156,12 @@
 //         throw new Error(msg);
 //       }
 
-//       setMensagem("Professor cadastrado com sucesso.");
+//       setMensagem("Professor atualizado com sucesso.");
 //       setTimeout(() => {
 //         router.push("/coordenacao/professores");
 //       }, 900);
 //     } catch (error) {
-//       setErros([`Erro ao cadastrar professor: ${error.message}`]);
+//       setErros([`Erro ao salvar alterações: ${error.message}`]);
 //     } finally {
 //       setSaving(false);
 //     }
@@ -169,8 +180,8 @@
 //       <div className={styles.wrapper}>
 //         <div className={styles.headerRow}>
 //           <div>
-//             <h1 className={styles.title}>Novo professor</h1>
-//             <p className={styles.subtitle}>Cadastre um professor e seus vínculos de turma.</p>
+//             <h1 className={styles.title}>Editar professor</h1>
+//             <p className={styles.subtitle}>Atualize os dados e vínculos do professor.</p>
 //           </div>
 //           <button
 //             type="button"
@@ -199,7 +210,6 @@
 //               id="nome_completo"
 //               type="text"
 //               className={styles.input}
-//               placeholder="Ex: João da Silva"
 //               value={nomeCompleto}
 //               onChange={(e) => setNomeCompleto(e.target.value)}
 //               required
@@ -222,16 +232,15 @@
 
 //             <div className={styles.campo}>
 //               <label className={styles.label} htmlFor="senha">
-//                 Senha de acesso <span className={styles.obrigatorio}>*</span>
+//                 Nova senha <span className={styles.opcional}>(deixe em branco para manter a atual)</span>
 //               </label>
 //               <input
 //                 id="senha"
 //                 type="text"
 //                 className={styles.input}
-//                 placeholder="Senha para login do professor"
+//                 placeholder="••••••••"
 //                 value={senha}
 //                 onChange={(e) => setSenha(e.target.value)}
-//                 required
 //               />
 //             </div>
 //           </div>
@@ -239,7 +248,7 @@
 //           <div className={styles.secaoDivisor}>
 //             <h2 className={styles.secaoTitulo}>Turmas e disciplinas</h2>
 //             <p className={styles.secaoSubtitulo}>
-//               Adicione cada turma que o professor leciona, com a etapa e as disciplinas correspondentes.
+//               Alterar os vínculos substitui completamente as turmas atuais deste professor.
 //             </p>
 //           </div>
 
@@ -335,7 +344,7 @@
 //           </button>
 
 //           <button type="submit" className={styles.botaoSalvar} disabled={saving}>
-//             {saving ? "Cadastrando..." : "Cadastrar professor"}
+//             {saving ? "Salvando..." : "Salvar alterações"}
 //           </button>
 //         </form>
 //       </div>
@@ -346,16 +355,23 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import styles from "./page.module.css";
 
 const API_BASE = "https://upgraded-space-spork-4j9vqpw9q5g5fprr-8000.app.github.dev";
 
-function novoVinculo() {
-  return { id: crypto.randomUUID(), turma: "", etapa: "", disciplinas: [], disciplinaSelect: "" };
+function novoVinculo(dados) {
+  return {
+    id: crypto.randomUUID(),
+    turma: dados?.turma || "",
+    etapa: dados?.etapa || "",
+    disciplinas: dados?.disciplinas || [],
+    disciplinaSelect: "",
+  };
 }
 
-export default function NovoProfessorPage() {
+export default function EditarProfessorPage() {
+  const { professorId } = useParams();
   const router = useRouter();
 
   const [loading, setLoading] = useState(true);
@@ -382,19 +398,31 @@ export default function NovoProfessorPage() {
           return;
         }
 
-        const escolaRes = await fetch(`${API_BASE}/api/coordenacao/escola`);
+        const [escolaRes, opcoesRes, detalheRes] = await Promise.all([
+          fetch(`${API_BASE}/api/coordenacao/escola`),
+          fetch(`${API_BASE}/api/coordenacao/opcoes-cadastro-professor`),
+          fetch(`${API_BASE}/api/coordenacao/professores/${professorId}`),
+        ]);
+
         if (escolaRes.ok) {
           const escolaData = await escolaRes.json();
           setEscola(escolaData.escola || "");
         }
 
-        const opcoesRes = await fetch(`${API_BASE}/api/coordenacao/opcoes-cadastro-professor`);
         if (!opcoesRes.ok) throw new Error(`Falha ao buscar opções (status ${opcoesRes.status})`);
         const opcoesData = await opcoesRes.json();
-
         setOpcoesTurmas(opcoesData.turmas || []);
         setOpcoesEtapas(opcoesData.etapas || []);
         setOpcoesDisciplinas(opcoesData.disciplinas || []);
+
+        if (!detalheRes.ok) throw new Error(`Falha ao buscar professor (status ${detalheRes.status})`);
+        const detalheData = await detalheRes.json();
+        setNomeCompleto(detalheData.professor.nome_completo);
+
+        const vinculosCarregados = (detalheData.vinculos || []).map((v) =>
+          novoVinculo({ turma: v.turma, etapa: v.etapa, disciplinas: v.disciplinas })
+        );
+        setVinculos(vinculosCarregados.length > 0 ? vinculosCarregados : [novoVinculo()]);
       } catch (error) {
         setErros([`Erro ao carregar dados: ${error.message}`]);
       } finally {
@@ -403,12 +431,10 @@ export default function NovoProfessorPage() {
     }
 
     init();
-  }, [router]);
+  }, [professorId, router]);
 
   function atualizarVinculo(id, campo, valor) {
-    setVinculos((prev) =>
-      prev.map((v) => (v.id === id ? { ...v, [campo]: valor } : v))
-    );
+    setVinculos((prev) => prev.map((v) => (v.id === id ? { ...v, [campo]: valor } : v)));
   }
 
   function adicionarDisciplina(id, disciplina) {
@@ -429,9 +455,7 @@ export default function NovoProfessorPage() {
   function removerDisciplina(id, disciplina) {
     setVinculos((prev) =>
       prev.map((v) =>
-        v.id === id
-          ? { ...v, disciplinas: v.disciplinas.filter((d) => d !== disciplina) }
-          : v
+        v.id === id ? { ...v, disciplinas: v.disciplinas.filter((d) => d !== disciplina) } : v
       )
     );
   }
@@ -452,13 +476,10 @@ export default function NovoProfessorPage() {
 
     const errosValidacao = [];
     if (!nomeCompleto.trim()) errosValidacao.push("O nome completo é obrigatório.");
-    if (!senha.trim()) errosValidacao.push("A senha é obrigatória.");
 
     vinculos.forEach((v, i) => {
       if (!v.turma || !v.etapa || v.disciplinas.length === 0) {
-        errosValidacao.push(
-          `Vínculo ${i + 1}: selecione turma, etapa e ao menos uma disciplina.`
-        );
+        errosValidacao.push(`Vínculo ${i + 1}: selecione turma, etapa e ao menos uma disciplina.`);
       }
     });
 
@@ -469,7 +490,7 @@ export default function NovoProfessorPage() {
     }
 
     try {
-      const res = await fetch(`${API_BASE}/api/coordenacao/professores/criar`, {
+      const res = await fetch(`${API_BASE}/api/coordenacao/professores/${professorId}/editar`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -486,7 +507,7 @@ export default function NovoProfessorPage() {
 
       if (!res.ok) {
         const corpoErro = await res.text();
-        let msg = `Falha ao cadastrar (status ${res.status})`;
+        let msg = `Falha ao salvar (status ${res.status})`;
         try {
           const json = JSON.parse(corpoErro);
           if (json.message) msg = json.message;
@@ -494,12 +515,12 @@ export default function NovoProfessorPage() {
         throw new Error(msg);
       }
 
-      setMensagem("Professor cadastrado com sucesso.");
+      setMensagem("Professor atualizado com sucesso.");
       setTimeout(() => {
         router.push("/coordenacao/professores");
       }, 900);
     } catch (error) {
-      setErros([`Erro ao cadastrar professor: ${error.message}`]);
+      setErros([`Erro ao salvar alterações: ${error.message}`]);
     } finally {
       setSaving(false);
     }
@@ -518,8 +539,8 @@ export default function NovoProfessorPage() {
       <div className={styles.wrapper}>
         <div className={styles.headerRow}>
           <div>
-            <h1 className={styles.title}>Novo professor</h1>
-            <p className={styles.subtitle}>Cadastre um professor e seus vínculos de turma.</p>
+            <h1 className={styles.title}>Editar professor</h1>
+            <p className={styles.subtitle}>Atualize os dados e vínculos do professor.</p>
           </div>
           <button
             type="button"
@@ -548,7 +569,6 @@ export default function NovoProfessorPage() {
               id="nome_completo"
               type="text"
               className={styles.input}
-              placeholder="Ex: João da Silva"
               value={nomeCompleto}
               onChange={(e) => setNomeCompleto(e.target.value)}
               required
@@ -571,16 +591,15 @@ export default function NovoProfessorPage() {
 
             <div className={styles.campo}>
               <label className={styles.label} htmlFor="senha">
-                Senha de acesso <span className={styles.obrigatorio}>*</span>
+                Nova senha <span className={styles.opcional}>(deixe em branco para manter a atual)</span>
               </label>
               <input
                 id="senha"
                 type="text"
                 className={styles.input}
-                placeholder="Senha para login do professor"
+                placeholder="••••••••"
                 value={senha}
                 onChange={(e) => setSenha(e.target.value)}
-                required
               />
             </div>
           </div>
@@ -588,7 +607,7 @@ export default function NovoProfessorPage() {
           <div className={styles.secaoDivisor}>
             <h2 className={styles.secaoTitulo}>Turmas e disciplinas</h2>
             <p className={styles.secaoSubtitulo}>
-              Selecione cada turma que o professor leciona, com a etapa e as disciplinas correspondentes.
+              Alterar os vínculos substitui completamente as turmas atuais deste professor.
             </p>
           </div>
 
@@ -690,7 +709,7 @@ export default function NovoProfessorPage() {
           </button>
 
           <button type="submit" className={styles.botaoSalvar} disabled={saving}>
-            {saving ? "Cadastrando..." : "Cadastrar professor"}
+            {saving ? "Salvando..." : "Salvar alterações"}
           </button>
         </form>
       </div>

@@ -1977,3 +1977,167 @@ def get_escola_coordenador(request):
         "return": True,
         "escola": coordenador.escola or ""
     })
+
+@csrf_exempt
+def get_professor_detalhe(request, professor_id):
+    """Retorna os dados de um professor com seus vínculos de turma/disciplina."""
+    professor = Professor.objects.filter(id=professor_id).first()
+    if not professor:
+        return JsonResponse({"message": "Professor não encontrado."}, status=404)
+
+    registros = AtravessaPor.objects.filter(professor_id=professor_id)
+
+    turmas_map = {}
+    for r in registros:
+        chave = r.turma
+        if chave not in turmas_map:
+            turmas_map[chave] = {
+                "turma": r.turma,
+                "etapa": r.etapa,
+                "escola": r.escola,
+                "disciplinas": [],
+                "registro_ids": [],
+            }
+        turmas_map[chave]["disciplinas"].append(r.disciplina_lecionada)
+        turmas_map[chave]["registro_ids"].append(r.id)
+
+    return JsonResponse({
+        "professor": {
+            "id": professor.id,
+            "nome_completo": professor.nome_completo,
+        },
+        "vinculos": list(turmas_map.values()),
+    })
+
+
+@csrf_exempt
+def editar_professor(request, professor_id):
+    """
+    Atualiza o nome/senha do professor e substitui completamente seus
+    vínculos de turma/disciplina pelos novos vínculos enviados.
+    """
+    if request.method != "POST":
+        return JsonResponse({"message": "Método não permitido."}, status=405)
+
+    professor = Professor.objects.filter(id=professor_id).first()
+    if not professor:
+        return JsonResponse({"message": "Professor não encontrado."}, status=404)
+
+    try:
+        body = json.loads(request.body)
+    except json.JSONDecodeError:
+        return JsonResponse({"message": "JSON inválido."}, status=400)
+
+    nome_completo = (body.get("nome_completo") or "").strip().upper()
+    senha = (body.get("senha") or "").strip()
+    escola = (body.get("escola") or "").strip()
+    vinculos = body.get("vinculos", [])
+
+    if not nome_completo:
+        return JsonResponse({"message": "O campo 'nome_completo' é obrigatório."}, status=400)
+
+    if Professor.objects.filter(nome_completo=nome_completo).exclude(id=professor_id).exists():
+        return JsonResponse(
+            {"message": "Já existe outro professor cadastrado com esse nome."},
+            status=400
+        )
+
+    erros_vinculos = []
+    for i, v in enumerate(vinculos):
+        turma = (v.get("turma") or "").strip()
+        etapa = (v.get("etapa") or "").strip()
+        disciplinas = [d.strip() for d in (v.get("disciplinas") or []) if d.strip()]
+
+        if not turma or not etapa or not disciplinas:
+            erros_vinculos.append(
+                f"Vínculo {i + 1}: turma, etapa e ao menos uma disciplina são obrigatórios."
+            )
+
+    if erros_vinculos:
+        return JsonResponse({"message": " | ".join(erros_vinculos)}, status=400)
+
+    professor.nome_completo = nome_completo
+    if senha:
+        professor.senha = senha
+    professor.save()
+
+    # Substitui todos os vínculos existentes pelos novos enviados.
+    # ⚠️ Isso apaga registros de AtravessaPor antigos — se algum tiver
+    # notas/frequência vinculadas, elas seriam perdidas via cascade.
+    # Por segurança, checamos antes de apagar.
+    registros_antigos = AtravessaPor.objects.filter(professor_id=professor_id)
+    ids_com_dados = []
+    for r in registros_antigos:
+        tem_notas = Nota.objects.filter(turma_id=r.id).exists()
+        tem_frequencia = Frequencia.objects.filter(turma_id=r.id).exists()
+        if tem_notas or tem_frequencia:
+            ids_com_dados.append(r.id)
+
+    if ids_com_dados:
+        return JsonResponse(
+            {
+                "message": (
+                    f"Não é possível substituir os vínculos: existem notas ou frequências "
+                    f"lançadas em {len(ids_com_dados)} vínculo(s) existente(s). "
+                    f"Remova os lançamentos antes de alterar as turmas deste professor."
+                )
+            },
+            status=400
+        )
+
+    registros_antigos.delete()
+
+    for v in vinculos:
+        turma = v.get("turma").strip()
+        etapa = v.get("etapa").strip()
+        disciplinas = [d.strip() for d in v.get("disciplinas", []) if d.strip()]
+
+        for disciplina in disciplinas:
+            AtravessaPor.objects.create(
+                professor=professor,
+                escola=escola,
+                turma=turma,
+                etapa=etapa,
+                disciplina_lecionada=disciplina,
+            )
+
+    return JsonResponse({
+        "message": "Professor atualizado com sucesso.",
+        "professor": {
+            "id": professor.id,
+            "nome_completo": professor.nome_completo,
+        }
+    })
+
+@csrf_exempt
+def get_opcoes_cadastro_professor(request):
+    """
+    Retorna as listas distintas de turmas, etapas e disciplinas já
+    existentes no sistema, para alimentar os selects do formulário de
+    cadastro/edição de professor — evita digitação livre e inconsistências.
+    """
+    turmas = list(
+        AtravessaPor.objects.exclude(turma="")
+        .values_list("turma", flat=True)
+        .distinct()
+        .order_by("turma")
+    )
+
+    etapas = list(
+        AtravessaPor.objects.exclude(etapa="")
+        .values_list("etapa", flat=True)
+        .distinct()
+        .order_by("etapa")
+    )
+
+    disciplinas = list(
+        Disciplina.objects.values_list("nome_disciplina", flat=True)
+        .distinct()
+        .order_by("nome_disciplina")
+    )
+
+    return JsonResponse({
+        "turmas": turmas,
+        "etapas": etapas,
+        "disciplinas": disciplinas,
+    })

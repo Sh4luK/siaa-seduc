@@ -185,6 +185,15 @@ export default function ProfessoresCoordenacaoPage() {
 
               return (
                 <li key={professor.id} className={styles.professorCard}>
+                  {/* <div className={styles.professorHeader}>
+                    <span className={styles.professorAvatar}>{iniciais}</span>
+                    <div className={styles.professorInfo}>
+                      <p className={styles.professorNome}>{professor.nome_completo}</p>
+                      <p className={styles.professorMeta}>
+                        {professor.total_turmas} turma(s) · {professor.total_disciplinas} disciplina(s)
+                      </p>
+                    </div>
+                  </div> */}
                   <div className={styles.professorHeader}>
                     <span className={styles.professorAvatar}>{iniciais}</span>
                     <div className={styles.professorInfo}>
@@ -193,6 +202,16 @@ export default function ProfessoresCoordenacaoPage() {
                         {professor.total_turmas} turma(s) · {professor.total_disciplinas} disciplina(s)
                       </p>
                     </div>
+                    <Link
+                      href={`/coordenacao/professores/${professor.id}/editar`}
+                      className={styles.editarBotao}
+                    >
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M7 7h-1a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-1" />
+                        <path d="M20.385 6.585a2.1 2.1 0 0 0 -2.97 -2.97l-8.415 8.385v3h3l8.385 -8.415z" />
+                      </svg>
+                      Editar
+                    </Link>
                   </div>
 
                   {professor.turmas.length === 0 ? (

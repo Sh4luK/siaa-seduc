@@ -43,4 +43,7 @@ urlpatterns = [
     path("api/coordenacao/professores", app.views.get_professores_coordenacao, name="get_professores_coordenacao"),
     path("api/coordenacao/professores/criar", app.views.criar_professor, name="criar_professor"),
     path("api/coordenacao/escola", app.views.get_escola_coordenador, name="get_escola_coordenador"),
+    path("api/coordenacao/professores/<int:professor_id>", app.views.get_professor_detalhe, name="get_professor_detalhe"),
+    path("api/coordenacao/professores/<int:professor_id>/editar", app.views.editar_professor, name="editar_professor"),
+    path("api/coordenacao/opcoes-cadastro-professor", app.views.get_opcoes_cadastro_professor, name="get_opcoes_cadastro_professor"),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
