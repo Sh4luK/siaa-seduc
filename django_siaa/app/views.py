@@ -2272,3 +2272,40 @@ def editar_aluno(request, aluno_id):
             "curso": aluno.curso,
         }
     })
+
+
+
+@csrf_exempt
+def deletar_aluno(request, aluno_id):
+    """
+    Remove um aluno. Recusa a exclusão se houver notas ou frequências
+    lançadas para ele, evitando apagar histórico acadêmico por engano.
+    """
+    if request.method != "DELETE":
+        return JsonResponse({"message": "Método não permitido."}, status=405)
+
+    aluno = Estudante.objects.filter(id=aluno_id).first()
+    if not aluno:
+        return JsonResponse({"message": "Aluno não encontrado."}, status=404)
+
+    tem_notas = Nota.objects.filter(aluno_id=aluno_id).exists()
+    tem_frequencia = Frequencia.objects.filter(aluno_id=aluno_id).exists()
+
+    if tem_notas or tem_frequencia:
+        return JsonResponse(
+            {
+                "message": (
+                    "Não é possível apagar este aluno: existem notas ou "
+                    "frequências lançadas em seu histórico. Remova esses "
+                    "lançamentos antes de excluir o aluno."
+                )
+            },
+            status=400
+        )
+
+    nome = aluno.nome_completo
+    aluno.delete()
+
+    return JsonResponse({
+        "message": f"Aluno {nome} removido com sucesso."
+    })
