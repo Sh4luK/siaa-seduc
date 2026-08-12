@@ -2204,3 +2204,26 @@ def get_alunos_coordenacao(request):
         "alunos": resultado
     })
 
+
+
+@csrf_exempt
+def get_aluno_detalhe(request, aluno_id):
+    """Retorna os dados completos de um aluno específico."""
+    aluno = Estudante.objects.filter(id=aluno_id).first()
+    if not aluno:
+        return JsonResponse({"message": "Aluno não encontrado."}, status=404)
+
+    return JsonResponse({
+        "aluno": {
+            "id": aluno.id,
+            "nome_completo": aluno.nome_completo,
+            "turma": aluno.turma,
+            "serie": aluno.serie,
+            "escola": aluno.escola,
+            "periodo": aluno.periodo,
+            "curso": aluno.curso,
+            "modo_de_ensino": aluno.modo_de_ensino,
+            "posicao_ordem": aluno.posicao_ordem,
+        }
+    })
+
