@@ -51,4 +51,5 @@ urlpatterns = [
     path("api/coordenacao/alunos/<int:aluno_id>", app.views.get_aluno_detalhe, name="get_aluno_detalhe"),
     path("api/coordenacao/alunos/<int:aluno_id>/editar", app.views.editar_aluno, name="editar_aluno"),
     path("api/coordenacao/alunos/<int:aluno_id>/deletar", app.views.deletar_aluno, name="deletar_aluno"),
+    path("api/coordenacao/alunos/criar", app.views.criar_aluno, name="criar_aluno"),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
