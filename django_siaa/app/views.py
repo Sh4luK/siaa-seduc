@@ -2366,3 +2366,37 @@ def criar_aluno(request):
             "curso": aluno.curso,
         }
     })
+
+@csrf_exempt
+def get_opcoes_cadastro_aluno(request):
+    """
+    Retorna as listas distintas de turmas, séries e cursos já existentes
+    no sistema, para alimentar os selects do formulário de cadastro/edição
+    de aluno — evita digitação livre e inconsistências.
+    """
+    turmas = list(
+        Estudante.objects.exclude(turma="")
+        .values_list("turma", flat=True)
+        .distinct()
+        .order_by("turma")
+    )
+
+    series = list(
+        Estudante.objects.exclude(serie="")
+        .values_list("serie", flat=True)
+        .distinct()
+        .order_by("serie")
+    )
+
+    cursos = list(
+        Estudante.objects.exclude(curso="")
+        .values_list("curso", flat=True)
+        .distinct()
+        .order_by("curso")
+    )
+
+    return JsonResponse({
+        "turmas": turmas,
+        "series": series,
+        "cursos": cursos,
+    })
