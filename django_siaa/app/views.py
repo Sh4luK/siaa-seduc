@@ -2309,3 +2309,60 @@ def deletar_aluno(request, aluno_id):
     return JsonResponse({
         "message": f"Aluno {nome} removido com sucesso."
     })
+
+
+@csrf_exempt
+def criar_aluno(request):
+    """Cadastra um novo aluno."""
+    if request.method != "POST":
+        return JsonResponse({"message": "Método não permitido."}, status=405)
+
+    try:
+        body = json.loads(request.body)
+    except json.JSONDecodeError:
+        return JsonResponse({"message": "JSON inválido."}, status=400)
+
+    nome_completo = (body.get("nome_completo") or "").strip().upper()
+    senha = (body.get("senha") or "").strip()
+    turma = (body.get("turma") or "").strip()
+    serie = (body.get("serie") or "").strip()
+    escola = (body.get("escola") or "").strip()
+    periodo = (body.get("periodo") or "").strip()
+    curso = (body.get("curso") or "").strip()
+    modo_de_ensino = (body.get("modo_de_ensino") or "").strip()
+
+    if not nome_completo or not senha:
+        return JsonResponse(
+            {"message": "Campos 'nome_completo' e 'senha' são obrigatórios."},
+            status=400
+        )
+
+    if Estudante.objects.filter(nome_completo=nome_completo).exists():
+        return JsonResponse(
+            {"message": "Já existe um aluno cadastrado com esse nome."},
+            status=400
+        )
+
+    aluno = Estudante.objects.create(
+        nome_completo=nome_completo,
+        senha=senha,
+        turma=turma,
+        serie=serie,
+        escola=escola,
+        periodo=periodo,
+        curso=curso,
+        modo_de_ensino=modo_de_ensino,
+    )
+
+    return JsonResponse({
+        "message": "Aluno cadastrado com sucesso.",
+        "aluno": {
+            "id": aluno.id,
+            "nome_completo": aluno.nome_completo,
+            "turma": aluno.turma,
+            "serie": aluno.serie,
+            "escola": aluno.escola,
+            "periodo": aluno.periodo,
+            "curso": aluno.curso,
+        }
+    })
