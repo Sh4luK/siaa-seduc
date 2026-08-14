@@ -2574,3 +2574,22 @@ def get_eventos_coordenacao(request):
         "eventos": resultado
     })
 
+
+
+@csrf_exempt
+def get_evento_detalhe(request, evento_id):
+    """Retorna os dados de um evento específico."""
+    evento = Evento.objects.filter(id=evento_id).first()
+    if not evento:
+        return JsonResponse({"message": "Evento não encontrado."}, status=404)
+
+    return JsonResponse({
+        "evento": {
+            "id": evento.id,
+            "titulo": evento.titulo,
+            "descricao": evento.descricao,
+            "data": evento.data.isoformat(),
+            "turma_id": evento.turma_id,
+            "nome_turma": evento.turma.turma if evento.turma else None,
+        }
+    })
