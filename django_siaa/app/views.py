@@ -2529,15 +2529,15 @@ def criar_advertencia(request, aluno_id):
     })
 
 
-# @csrf_exempt
-# def deletar_advertencia(request, advertencia_id):
-#     """Remove uma advertência."""
-#     if request.method != "DELETE":
-#         return JsonResponse({"message": "Método não permitido."}, status=405)
+@csrf_exempt
+def deletar_advertencia(request, advertencia_id):
+    """Remove uma advertência."""
+    if request.method != "DELETE":
+        return JsonResponse({"message": "Método não permitido."}, status=405)
 
-#     advertencia = Advertencia.objects.filter(id=advertencia_id).first()
-#     if not advertencia:
-#         return JsonResponse({"message": "Advertência não encontrada."}, status=404)
+    advertencia = Advertencia.objects.filter(id=advertencia_id).first()
+    if not advertencia:
+        return JsonResponse({"message": "Advertência não encontrada."}, status=404)
 
-#     advertencia.delete()
-#     return JsonResponse({"message": "Advertência removida com sucesso."})
+    advertencia.delete()
+    return JsonResponse({"message": "Advertência removida com sucesso."})
