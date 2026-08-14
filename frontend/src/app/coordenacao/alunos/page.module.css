@@ -525,10 +525,23 @@ thead .stickyCol {
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
 }
 
+/* .alunoCardHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+} */
+
 .alunoCardHeader {
   display: flex;
   align-items: center;
   gap: 0.75rem;
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+}
+
+.alunoCardHeader:hover .alunoNome {
+  color: #93c5fd;
 }
 
 .alunoAvatar {
