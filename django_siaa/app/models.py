@@ -263,3 +263,18 @@ class Coordenador(models.Model):
         return self.nome_completo
 
 
+class Advertencia(models.Model):
+    aluno = models.ForeignKey("app.Estudante", on_delete=models.CASCADE, related_name="advertencias")
+    professor = models.ForeignKey("app.Professor", on_delete=models.SET_NULL, null=True, blank=True, related_name="advertencias_aplicadas")
+
+    titulo = models.CharField(max_length=255)
+    descricao = models.TextField(blank=True, default="")
+    data = models.DateField(auto_now_add=True)
+
+    criado_em = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-criado_em"]
+
+    def __str__(self):
+        return f"{self.aluno} - {self.titulo} - {self.data}"
