@@ -2541,3 +2541,36 @@ def deletar_advertencia(request, advertencia_id):
 
     advertencia.delete()
     return JsonResponse({"message": "Advertência removida com sucesso."})
+
+
+@csrf_exempt
+def get_eventos_coordenacao(request):
+    """Lista todos os eventos do calendário, opcionalmente filtrados por mês/ano."""
+    mes = request.GET.get("mes")
+    ano = request.GET.get("ano")
+
+    eventos = Evento.objects.select_related("turma", "professor").all()
+
+    if mes and ano:
+        eventos = eventos.filter(data__year=ano, data__month=mes)
+    elif ano:
+        eventos = eventos.filter(data__year=ano)
+
+    resultado = [
+        {
+            "id": e.id,
+            "titulo": e.titulo,
+            "descricao": e.descricao,
+            "data": e.data.isoformat(),
+            "turma_id": e.turma_id,
+            "nome_turma": e.turma.turma if e.turma else None,
+            "professor": e.professor.nome_completo if e.professor else None,
+        }
+        for e in eventos
+    ]
+
+    return JsonResponse({
+        "total_eventos": len(resultado),
+        "eventos": resultado
+    })
+
