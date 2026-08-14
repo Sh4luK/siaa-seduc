@@ -54,6 +54,6 @@ urlpatterns = [
     path("api/coordenacao/alunos/criar", app.views.criar_aluno, name="criar_aluno"),
     path("api/coordenacao/opcoes-cadastro-aluno", app.views.get_opcoes_cadastro_aluno, name="get_opcoes_cadastro_aluno"),
     path("api/coordenacao/alunos/<int:aluno_id>/visao-geral", app.views.get_aluno_visao_geral, name="get_aluno_visao_geral"),
-# path("api/coordenacao/alunos/<int:aluno_id>/advertencias/criar", app.views.criar_advertencia, name="criar_advertencia"),
+    path("api/coordenacao/alunos/<int:aluno_id>/advertencias/criar", app.views.criar_advertencia, name="criar_advertencia"),
 # path("api/coordenacao/advertencias/<int:advertencia_id>/deletar", app.views.deletar_advertencia, name="deletar_advertencia"),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
