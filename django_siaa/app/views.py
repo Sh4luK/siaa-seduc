@@ -2490,43 +2490,43 @@ def get_aluno_visao_geral(request, aluno_id):
     })
 
 
-# @csrf_exempt
-# def criar_advertencia(request, aluno_id):
-#     """Registra uma nova advertência para o aluno."""
-#     if request.method != "POST":
-#         return JsonResponse({"message": "Método não permitido."}, status=405)
+@csrf_exempt
+def criar_advertencia(request, aluno_id):
+    """Registra uma nova advertência para o aluno."""
+    if request.method != "POST":
+        return JsonResponse({"message": "Método não permitido."}, status=405)
 
-#     aluno = Estudante.objects.filter(id=aluno_id).first()
-#     if not aluno:
-#         return JsonResponse({"message": "Aluno não encontrado."}, status=404)
+    aluno = Estudante.objects.filter(id=aluno_id).first()
+    if not aluno:
+        return JsonResponse({"message": "Aluno não encontrado."}, status=404)
 
-#     try:
-#         body = json.loads(request.body)
-#     except json.JSONDecodeError:
-#         return JsonResponse({"message": "JSON inválido."}, status=400)
+    try:
+        body = json.loads(request.body)
+    except json.JSONDecodeError:
+        return JsonResponse({"message": "JSON inválido."}, status=400)
 
-#     titulo = (body.get("titulo") or "").strip()
-#     descricao = (body.get("descricao") or "").strip()
+    titulo = (body.get("titulo") or "").strip()
+    descricao = (body.get("descricao") or "").strip()
 
-#     if not titulo:
-#         return JsonResponse({"message": "O campo 'titulo' é obrigatório."}, status=400)
+    if not titulo:
+        return JsonResponse({"message": "O campo 'titulo' é obrigatório."}, status=400)
 
-#     advertencia = Advertencia.objects.create(
-#         aluno=aluno,
-#         titulo=titulo,
-#         descricao=descricao,
-#     )
+    advertencia = Advertencia.objects.create(
+        aluno=aluno,
+        titulo=titulo,
+        descricao=descricao,
+    )
 
-#     return JsonResponse({
-#         "message": "Advertência registrada com sucesso.",
-#         "advertencia": {
-#             "id": advertencia.id,
-#             "titulo": advertencia.titulo,
-#             "descricao": advertencia.descricao,
-#             "data": advertencia.data.isoformat(),
-#             "professor": None,
-#         }
-#     })
+    return JsonResponse({
+        "message": "Advertência registrada com sucesso.",
+        "advertencia": {
+            "id": advertencia.id,
+            "titulo": advertencia.titulo,
+            "descricao": advertencia.descricao,
+            "data": advertencia.data.isoformat(),
+            "professor": None,
+        }
+    })
 
 
 # @csrf_exempt
