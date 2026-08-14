@@ -2408,86 +2408,86 @@ def _turma_normalizada(texto):
     return texto.replace(" ", "").strip().upper()
 
 
-# @csrf_exempt
-# def get_aluno_visao_geral(request, aluno_id):
-#     """
-#     Retorna, para um aluno específico: dados básicos, comunicados relevantes
-#     (gerais do professor ou direcionados à turma do aluno), eventos do
-#     calendário relevantes (gerais ou da turma), e advertências recebidas.
-#     """
-#     aluno = Estudante.objects.filter(id=aluno_id).first()
-#     if not aluno:
-#         return JsonResponse({"message": "Aluno não encontrado."}, status=404)
+@csrf_exempt
+def get_aluno_visao_geral(request, aluno_id):
+    """
+    Retorna, para um aluno específico: dados básicos, comunicados relevantes
+    (gerais do professor ou direcionados à turma do aluno), eventos do
+    calendário relevantes (gerais ou da turma), e advertências recebidas.
+    """
+    aluno = Estudante.objects.filter(id=aluno_id).first()
+    if not aluno:
+        return JsonResponse({"message": "Aluno não encontrado."}, status=404)
 
-#     turma_aluno_norm = _turma_normalizada(aluno.turma)
+    turma_aluno_norm = _turma_normalizada(aluno.turma)
 
-#     # --- Comunicados relevantes: gerais (sem turma) OU da turma do aluno ---
-#     comunicados_qs = Comunicado.objects.select_related("turma").order_by("-criado_em")
-#     comunicados = []
-#     for c in comunicados_qs:
-#         if c.turma is None:
-#             comunicados.append(c)
-#         elif _turma_normalizada(c.turma.turma) == turma_aluno_norm:
-#             comunicados.append(c)
+    # --- Comunicados relevantes: gerais (sem turma) OU da turma do aluno ---
+    comunicados_qs = Comunicado.objects.select_related("turma").order_by("-criado_em")
+    comunicados = []
+    for c in comunicados_qs:
+        if c.turma is None:
+            comunicados.append(c)
+        elif _turma_normalizada(c.turma.turma) == turma_aluno_norm:
+            comunicados.append(c)
 
-#     comunicados_json = [
-#         {
-#             "id": c.id,
-#             "titulo": c.titulo,
-#             "mensagem": c.mensagem,
-#             "data": c.data.isoformat(),
-#             "nome_turma": c.turma.turma if c.turma else None,
-#         }
-#         for c in comunicados[:30]
-#     ]
+    comunicados_json = [
+        {
+            "id": c.id,
+            "titulo": c.titulo,
+            "mensagem": c.mensagem,
+            "data": c.data.isoformat(),
+            "nome_turma": c.turma.turma if c.turma else None,
+        }
+        for c in comunicados[:30]
+    ]
 
-#     # --- Eventos relevantes: gerais (sem turma) OU da turma do aluno ---
-#     eventos_qs = Evento.objects.select_related("turma").order_by("-data")
-#     eventos = []
-#     for e in eventos_qs:
-#         if e.turma is None:
-#             eventos.append(e)
-#         elif _turma_normalizada(e.turma.turma) == turma_aluno_norm:
-#             eventos.append(e)
+    # --- Eventos relevantes: gerais (sem turma) OU da turma do aluno ---
+    eventos_qs = Evento.objects.select_related("turma").order_by("-data")
+    eventos = []
+    for e in eventos_qs:
+        if e.turma is None:
+            eventos.append(e)
+        elif _turma_normalizada(e.turma.turma) == turma_aluno_norm:
+            eventos.append(e)
 
-#     eventos_json = [
-#         {
-#             "id": e.id,
-#             "titulo": e.titulo,
-#             "descricao": e.descricao,
-#             "data": e.data.isoformat(),
-#             "nome_turma": e.turma.turma if e.turma else None,
-#         }
-#         for e in eventos[:30]
-#     ]
+    eventos_json = [
+        {
+            "id": e.id,
+            "titulo": e.titulo,
+            "descricao": e.descricao,
+            "data": e.data.isoformat(),
+            "nome_turma": e.turma.turma if e.turma else None,
+        }
+        for e in eventos[:30]
+    ]
 
-#     # --- Advertências do aluno ---
-#     advertencias_qs = Advertencia.objects.filter(aluno_id=aluno_id).select_related("professor")
-#     advertencias_json = [
-#         {
-#             "id": a.id,
-#             "titulo": a.titulo,
-#             "descricao": a.descricao,
-#             "data": a.data.isoformat(),
-#             "professor": a.professor.nome_completo if a.professor else None,
-#         }
-#         for a in advertencias_qs
-#     ]
+    # --- Advertências do aluno ---
+    advertencias_qs = Advertencia.objects.filter(aluno_id=aluno_id).select_related("professor")
+    advertencias_json = [
+        {
+            "id": a.id,
+            "titulo": a.titulo,
+            "descricao": a.descricao,
+            "data": a.data.isoformat(),
+            "professor": a.professor.nome_completo if a.professor else None,
+        }
+        for a in advertencias_qs
+    ]
 
-#     return JsonResponse({
-#         "aluno": {
-#             "id": aluno.id,
-#             "nome_completo": aluno.nome_completo,
-#             "turma": aluno.turma,
-#             "serie": aluno.serie,
-#             "escola": aluno.escola,
-#             "periodo": aluno.periodo,
-#             "curso": aluno.curso,
-#         },
-#         "comunicados": comunicados_json,
-#         "eventos": eventos_json,
-#         "advertencias": advertencias_json,
-#     })
+    return JsonResponse({
+        "aluno": {
+            "id": aluno.id,
+            "nome_completo": aluno.nome_completo,
+            "turma": aluno.turma,
+            "serie": aluno.serie,
+            "escola": aluno.escola,
+            "periodo": aluno.periodo,
+            "curso": aluno.curso,
+        },
+        "comunicados": comunicados_json,
+        "eventos": eventos_json,
+        "advertencias": advertencias_json,
+    })
 
 
 # @csrf_exempt
