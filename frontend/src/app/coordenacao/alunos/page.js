@@ -425,7 +425,7 @@ export default function AlunosCoordenacaoPage() {
               const confirmando = confirmandoId === aluno.id;
 
               return (
-                <div key={aluno.id} className={styles.alunoCard}>
+                <Link href={`/coordenacao/alunos/${aluno.id}`} key={aluno.id} style={{ textDecoration: "none" }} className={styles.alunoCard}>
                   <div className={styles.alunoCardHeader}>
                     <span className={styles.alunoAvatar}>{iniciais}</span>
                     <p className={styles.alunoNome} title={aluno.nome_completo}>
@@ -506,7 +506,7 @@ export default function AlunosCoordenacaoPage() {
                       </div>
                     )}
                   </div>
-                </div>
+                </Link>
               );
             })}
           </div>

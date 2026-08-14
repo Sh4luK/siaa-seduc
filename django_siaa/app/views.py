@@ -30,6 +30,7 @@ from .models import Conteudo
 from .models import Atividade
 from .models import Comunicado
 from .models import Coordenador
+from .models import Advertencia
 import json
 
 load_dotenv()
@@ -2366,3 +2367,177 @@ def criar_aluno(request):
             "curso": aluno.curso,
         }
     })
+
+@csrf_exempt
+def get_opcoes_cadastro_aluno(request):
+    """
+    Retorna as listas distintas de turmas, séries e cursos já existentes
+    no sistema, para alimentar os selects do formulário de cadastro/edição
+    de aluno — evita digitação livre e inconsistências.
+    """
+    turmas = list(
+        Estudante.objects.exclude(turma="")
+        .values_list("turma", flat=True)
+        .distinct()
+        .order_by("turma")
+    )
+
+    series = list(
+        Estudante.objects.exclude(serie="")
+        .values_list("serie", flat=True)
+        .distinct()
+        .order_by("serie")
+    )
+
+    cursos = list(
+        Estudante.objects.exclude(curso="")
+        .values_list("curso", flat=True)
+        .distinct()
+        .order_by("curso")
+    )
+
+    return JsonResponse({
+        "turmas": turmas,
+        "series": series,
+        "cursos": cursos,
+    })
+
+
+def _turma_normalizada(texto):
+    texto = unicodedata.normalize("NFC", texto or "")
+    return texto.replace(" ", "").strip().upper()
+
+
+@csrf_exempt
+def get_aluno_visao_geral(request, aluno_id):
+    """
+    Retorna, para um aluno específico: dados básicos, comunicados relevantes
+    (gerais do professor ou direcionados à turma do aluno), eventos do
+    calendário relevantes (gerais ou da turma), e advertências recebidas.
+    """
+    aluno = Estudante.objects.filter(id=aluno_id).first()
+    if not aluno:
+        return JsonResponse({"message": "Aluno não encontrado."}, status=404)
+
+    turma_aluno_norm = _turma_normalizada(aluno.turma)
+
+    # --- Comunicados relevantes: gerais (sem turma) OU da turma do aluno ---
+    comunicados_qs = Comunicado.objects.select_related("turma").order_by("-criado_em")
+    comunicados = []
+    for c in comunicados_qs:
+        if c.turma is None:
+            comunicados.append(c)
+        elif _turma_normalizada(c.turma.turma) == turma_aluno_norm:
+            comunicados.append(c)
+
+    comunicados_json = [
+        {
+            "id": c.id,
+            "titulo": c.titulo,
+            "mensagem": c.mensagem,
+            "data": c.data.isoformat(),
+            "nome_turma": c.turma.turma if c.turma else None,
+        }
+        for c in comunicados[:30]
+    ]
+
+    # --- Eventos relevantes: gerais (sem turma) OU da turma do aluno ---
+    eventos_qs = Evento.objects.select_related("turma").order_by("-data")
+    eventos = []
+    for e in eventos_qs:
+        if e.turma is None:
+            eventos.append(e)
+        elif _turma_normalizada(e.turma.turma) == turma_aluno_norm:
+            eventos.append(e)
+
+    eventos_json = [
+        {
+            "id": e.id,
+            "titulo": e.titulo,
+            "descricao": e.descricao,
+            "data": e.data.isoformat(),
+            "nome_turma": e.turma.turma if e.turma else None,
+        }
+        for e in eventos[:30]
+    ]
+
+    # --- Advertências do aluno ---
+    advertencias_qs = Advertencia.objects.filter(aluno_id=aluno_id).select_related("professor")
+    advertencias_json = [
+        {
+            "id": a.id,
+            "titulo": a.titulo,
+            "descricao": a.descricao,
+            "data": a.data.isoformat(),
+            "professor": a.professor.nome_completo if a.professor else None,
+        }
+        for a in advertencias_qs
+    ]
+
+    return JsonResponse({
+        "aluno": {
+            "id": aluno.id,
+            "nome_completo": aluno.nome_completo,
+            "turma": aluno.turma,
+            "serie": aluno.serie,
+            "escola": aluno.escola,
+            "periodo": aluno.periodo,
+            "curso": aluno.curso,
+        },
+        "comunicados": comunicados_json,
+        "eventos": eventos_json,
+        "advertencias": advertencias_json,
+    })
+
+
+@csrf_exempt
+def criar_advertencia(request, aluno_id):
+    """Registra uma nova advertência para o aluno."""
+    if request.method != "POST":
+        return JsonResponse({"message": "Método não permitido."}, status=405)
+
+    aluno = Estudante.objects.filter(id=aluno_id).first()
+    if not aluno:
+        return JsonResponse({"message": "Aluno não encontrado."}, status=404)
+
+    try:
+        body = json.loads(request.body)
+    except json.JSONDecodeError:
+        return JsonResponse({"message": "JSON inválido."}, status=400)
+
+    titulo = (body.get("titulo") or "").strip()
+    descricao = (body.get("descricao") or "").strip()
+
+    if not titulo:
+        return JsonResponse({"message": "O campo 'titulo' é obrigatório."}, status=400)
+
+    advertencia = Advertencia.objects.create(
+        aluno=aluno,
+        titulo=titulo,
+        descricao=descricao,
+    )
+
+    return JsonResponse({
+        "message": "Advertência registrada com sucesso.",
+        "advertencia": {
+            "id": advertencia.id,
+            "titulo": advertencia.titulo,
+            "descricao": advertencia.descricao,
+            "data": advertencia.data.isoformat(),
+            "professor": None,
+        }
+    })
+
+
+@csrf_exempt
+def deletar_advertencia(request, advertencia_id):
+    """Remove uma advertência."""
+    if request.method != "DELETE":
+        return JsonResponse({"message": "Método não permitido."}, status=405)
+
+    advertencia = Advertencia.objects.filter(id=advertencia_id).first()
+    if not advertencia:
+        return JsonResponse({"message": "Advertência não encontrada."}, status=404)
+
+    advertencia.delete()
+    return JsonResponse({"message": "Advertência removida com sucesso."})
