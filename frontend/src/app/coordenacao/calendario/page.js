@@ -244,11 +244,38 @@ export default function CalendarioCoordenacaoPage() {
                             {evento.data.split("-")[2]}
                             <span>{MESES[Number(evento.data.split("-")[1]) - 1].slice(0, 3)}</span>
                           </div>
-                          <div className={styles.eventoCardInfo}>
+                          {/* <div className={styles.eventoCardInfo}>
                             <p className={styles.eventoCardTitulo}>{evento.titulo}</p>
                             {evento.nome_turma && (
                               <span className={styles.eventoCardBadge}>{evento.nome_turma}</span>
                             )}
+                            {evento.descricao && (
+                              <p className={styles.eventoCardDescricao}>{evento.descricao}</p>
+                            )}
+                          </div> */}
+                          <div className={styles.eventoCardInfo}>
+                            <p className={styles.eventoCardTitulo}>{evento.titulo}</p>
+
+                            <div className={styles.eventoCardBadges}>
+                              {evento.nome_turma && (
+                                <span className={styles.eventoCardBadge}>{evento.nome_turma}</span>
+                              )}
+                              {evento.criado_por && (
+                                <span className={styles.eventoCardOrigemBadge}>
+                                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <path d="M3 21l18 0" />
+                                    <path d="M5 21v-14l8 -4v18" />
+                                    <path d="M19 21v-10l-6 -4" />
+                                    <path d="M9 9l0 .01" />
+                                    <path d="M9 12l0 .01" />
+                                    <path d="M9 15l0 .01" />
+                                    <path d="M9 18l0 .01" />
+                                  </svg>
+                                  {evento.criado_por}
+                                </span>
+                              )}
+                            </div>
+
                             {evento.descricao && (
                               <p className={styles.eventoCardDescricao}>{evento.descricao}</p>
                             )}
