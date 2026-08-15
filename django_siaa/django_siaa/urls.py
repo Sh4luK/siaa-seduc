@@ -58,6 +58,7 @@ urlpatterns = [
     path("api/coordenacao/advertencias/<int:advertencia_id>/deletar", app.views.deletar_advertencia, name="deletar_advertencia"),
     path("api/coordenacao/calendario/eventos", app.views.get_eventos_coordenacao, name="get_eventos_coordenacao"),
     path("api/coordenacao/calendario/eventos/<int:evento_id>", app.views.get_evento_detalhe, name="get_evento_detalhe"),
+    path("api/coordenacao/calendario/eventos/criar", app.views.criar_evento_coordenacao, name="criar_evento_coordenacao"),
 
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
