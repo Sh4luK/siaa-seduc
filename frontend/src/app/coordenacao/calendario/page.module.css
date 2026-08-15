@@ -449,3 +449,33 @@
     font-size: 0.6rem;
   }
 }
+
+.eventoTagFinalizado {
+  opacity: 0.45;
+  text-decoration: line-through;
+}
+
+.eventoCardFinalizado {
+  opacity: 0.6;
+}
+
+.eventoCardTopo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.3rem;
+}
+
+.finalizadoBadge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: #94a3b8;
+  background: rgba(148, 163, 184, 0.12);
+  border-radius: 999px;
+  padding: 0.15rem 0.55rem;
+  white-space: nowrap;
+}
