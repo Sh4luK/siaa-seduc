@@ -56,4 +56,11 @@ urlpatterns = [
     path("api/coordenacao/alunos/<int:aluno_id>/visao-geral", app.views.get_aluno_visao_geral, name="get_aluno_visao_geral"),
     path("api/coordenacao/alunos/<int:aluno_id>/advertencias/criar", app.views.criar_advertencia, name="criar_advertencia"),
     path("api/coordenacao/advertencias/<int:advertencia_id>/deletar", app.views.deletar_advertencia, name="deletar_advertencia"),
+    path("api/coordenacao/calendario/eventos", app.views.get_eventos_coordenacao, name="get_eventos_coordenacao"),
+    path("api/coordenacao/calendario/eventos/<int:evento_id>", app.views.get_evento_detalhe, name="get_evento_detalhe"),
+    path("api/coordenacao/calendario/eventos/criar", app.views.criar_evento_coordenacao, name="criar_evento_coordenacao"),
+    path("api/coordenacao/calendario/eventos/<int:evento_id>/editar", app.views.editar_evento_coordenacao, name="editar_evento_coordenacao"),
+    path("api/coordenacao/calendario/eventos/<int:evento_id>/deletar", app.views.deletar_evento_coordenacao, name="deletar_evento_coordenacao"),
+    
+
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -2541,3 +2541,181 @@ def deletar_advertencia(request, advertencia_id):
 
     advertencia.delete()
     return JsonResponse({"message": "Advertência removida com sucesso."})
+
+
+@csrf_exempt
+def get_eventos_coordenacao(request):
+    """Lista todos os eventos do calendário, opcionalmente filtrados por mês/ano."""
+    mes = request.GET.get("mes")
+    ano = request.GET.get("ano")
+
+    eventos = Evento.objects.select_related("turma", "professor").all()
+
+    if mes and ano:
+        eventos = eventos.filter(data__year=ano, data__month=mes)
+    elif ano:
+        eventos = eventos.filter(data__year=ano)
+
+    resultado = [
+        {
+            "id": e.id,
+            "titulo": e.titulo,
+            "descricao": e.descricao,
+            "data": e.data.isoformat(),
+            "turma_id": e.turma_id,
+            "nome_turma": e.turma.turma if e.turma else None,
+            "professor": e.professor.nome_completo if e.professor else None,
+        }
+        for e in eventos
+    ]
+
+    return JsonResponse({
+        "total_eventos": len(resultado),
+        "eventos": resultado
+    })
+
+
+
+@csrf_exempt
+def get_evento_detalhe(request, evento_id):
+    """Retorna os dados de um evento específico."""
+    evento = Evento.objects.filter(id=evento_id).first()
+    if not evento:
+        return JsonResponse({"message": "Evento não encontrado."}, status=404)
+
+    return JsonResponse({
+        "evento": {
+            "id": evento.id,
+            "titulo": evento.titulo,
+            "descricao": evento.descricao,
+            "data": evento.data.isoformat(),
+            "turma_id": evento.turma_id,
+            "nome_turma": evento.turma.turma if evento.turma else None,
+        }
+    })
+
+
+
+@csrf_exempt
+def criar_evento_coordenacao(request):
+    """Cria um novo evento no calendário, a partir da coordenação (sem professor vinculado)."""
+    if request.method != "POST":
+        return JsonResponse({"message": "Método não permitido."}, status=405)
+
+    try:
+        body = json.loads(request.body)
+    except json.JSONDecodeError:
+        return JsonResponse({"message": "JSON inválido."}, status=400)
+
+    titulo = (body.get("titulo") or "").strip()
+    descricao = (body.get("descricao") or "").strip()
+    data_str = body.get("data")
+    turma_id = body.get("turma")
+
+    if not titulo or not data_str:
+        return JsonResponse(
+            {"message": "Campos 'titulo' e 'data' são obrigatórios."},
+            status=400
+        )
+
+    try:
+        data_evento = date.fromisoformat(data_str)
+    except ValueError:
+        return JsonResponse({"message": "Formato de data inválido. Use AAAA-MM-DD."}, status=400)
+
+    turma = None
+    if turma_id:
+        turma = AtravessaPor.objects.filter(id=turma_id).first()
+        if not turma:
+            return JsonResponse({"message": "Turma não encontrada."}, status=404)
+
+    evento = Evento.objects.create(
+        professor=None,
+        turma=turma,
+        titulo=titulo,
+        descricao=descricao,
+        data=data_evento,
+    )
+
+    return JsonResponse({
+        "message": "Evento criado com sucesso.",
+        "evento": {
+            "id": evento.id,
+            "titulo": evento.titulo,
+            "descricao": evento.descricao,
+            "data": evento.data.isoformat(),
+            "turma_id": evento.turma_id,
+            "nome_turma": evento.turma.turma if evento.turma else None,
+        }
+    })
+
+
+
+@csrf_exempt
+def editar_evento_coordenacao(request, evento_id):
+    """Atualiza um evento existente."""
+    if request.method != "POST":
+        return JsonResponse({"message": "Método não permitido."}, status=405)
+
+    evento = Evento.objects.filter(id=evento_id).first()
+    if not evento:
+        return JsonResponse({"message": "Evento não encontrado."}, status=404)
+
+    try:
+        body = json.loads(request.body)
+    except json.JSONDecodeError:
+        return JsonResponse({"message": "JSON inválido."}, status=400)
+
+    titulo = (body.get("titulo") or "").strip()
+    descricao = (body.get("descricao") or "").strip()
+    data_str = body.get("data")
+    turma_id = body.get("turma")
+
+    if not titulo or not data_str:
+        return JsonResponse(
+            {"message": "Campos 'titulo' e 'data' são obrigatórios."},
+            status=400
+        )
+
+    try:
+        data_evento = date.fromisoformat(data_str)
+    except ValueError:
+        return JsonResponse({"message": "Formato de data inválido. Use AAAA-MM-DD."}, status=400)
+
+    turma = None
+    if turma_id:
+        turma = AtravessaPor.objects.filter(id=turma_id).first()
+        if not turma:
+            return JsonResponse({"message": "Turma não encontrada."}, status=404)
+
+    evento.titulo = titulo
+    evento.descricao = descricao
+    evento.data = data_evento
+    evento.turma = turma
+    evento.save()
+
+    return JsonResponse({
+        "message": "Evento atualizado com sucesso.",
+        "evento": {
+            "id": evento.id,
+            "titulo": evento.titulo,
+            "descricao": evento.descricao,
+            "data": evento.data.isoformat(),
+            "turma_id": evento.turma_id,
+            "nome_turma": evento.turma.turma if evento.turma else None,
+        }
+    })
+
+
+@csrf_exempt
+def deletar_evento_coordenacao(request, evento_id):
+    """Remove um evento."""
+    if request.method != "DELETE":
+        return JsonResponse({"message": "Método não permitido."}, status=405)
+
+    evento = Evento.objects.filter(id=evento_id).first()
+    if not evento:
+        return JsonResponse({"message": "Evento não encontrado."}, status=404)
+
+    evento.delete()
+    return JsonResponse({"message": "Evento removido com sucesso."})
