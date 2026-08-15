@@ -2239,6 +2239,46 @@ def deletar_advertencia(request, advertencia_id):
     return JsonResponse({"message": "Advertência removida com sucesso."})
 
 
+# @csrf_exempt
+# def get_eventos_coordenacao(request):
+#     mes = request.GET.get("mes")
+#     ano = request.GET.get("ano")
+
+#     eventos = Evento.objects.select_related("turma", "professor", "coordenador").all()
+
+#     if mes and ano:
+#         eventos = eventos.filter(data__year=ano, data__month=mes)
+#     elif ano:
+#         eventos = eventos.filter(data__year=ano)
+
+#     resultado = []
+#     for e in eventos:
+#         if e.coordenador:
+#             criado_por = f"{e.coordenador.escola or 'Coordenação'}"
+#             origem = "coordenacao"
+#         elif e.professor:
+#             criado_por = e.professor.nome_completo
+#             origem = "professor"
+#         else:
+#             criado_por = None
+#             origem = None
+
+#         resultado.append({
+#             "id": e.id,
+#             "titulo": e.titulo,
+#             "descricao": e.descricao,
+#             "data": e.data.isoformat(),
+#             "turma_id": e.turma_id,
+#             "nome_turma": e.turma.turma if e.turma else None,
+#             "criado_por": criado_por,
+#             "origem": origem,
+#         })
+
+#     return JsonResponse({
+#         "total_eventos": len(resultado),
+#         "eventos": resultado
+#     })
+
 @csrf_exempt
 def get_eventos_coordenacao(request):
     mes = request.GET.get("mes")
@@ -2250,6 +2290,8 @@ def get_eventos_coordenacao(request):
         eventos = eventos.filter(data__year=ano, data__month=mes)
     elif ano:
         eventos = eventos.filter(data__year=ano)
+
+    hoje = date.today()
 
     resultado = []
     for e in eventos:
@@ -2272,6 +2314,7 @@ def get_eventos_coordenacao(request):
             "nome_turma": e.turma.turma if e.turma else None,
             "criado_por": criado_por,
             "origem": origem,
+            "finalizado": e.data < hoje,
         })
 
     return JsonResponse({
