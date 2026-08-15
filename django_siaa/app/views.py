@@ -2706,3 +2706,16 @@ def editar_evento_coordenacao(request, evento_id):
         }
     })
 
+
+@csrf_exempt
+def deletar_evento_coordenacao(request, evento_id):
+    """Remove um evento."""
+    if request.method != "DELETE":
+        return JsonResponse({"message": "Método não permitido."}, status=405)
+
+    evento = Evento.objects.filter(id=evento_id).first()
+    if not evento:
+        return JsonResponse({"message": "Evento não encontrado."}, status=404)
+
+    evento.delete()
+    return JsonResponse({"message": "Evento removido com sucesso."})
