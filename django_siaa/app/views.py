@@ -2241,29 +2241,38 @@ def deletar_advertencia(request, advertencia_id):
 
 @csrf_exempt
 def get_eventos_coordenacao(request):
-    """Lista todos os eventos do calendário, opcionalmente filtrados por mês/ano."""
     mes = request.GET.get("mes")
     ano = request.GET.get("ano")
 
-    eventos = Evento.objects.select_related("turma", "professor").all()
+    eventos = Evento.objects.select_related("turma", "professor", "coordenador").all()
 
     if mes and ano:
         eventos = eventos.filter(data__year=ano, data__month=mes)
     elif ano:
         eventos = eventos.filter(data__year=ano)
 
-    resultado = [
-        {
+    resultado = []
+    for e in eventos:
+        if e.coordenador:
+            criado_por = f"{e.coordenador.escola or 'Coordenação'}"
+            origem = "coordenacao"
+        elif e.professor:
+            criado_por = e.professor.nome_completo
+            origem = "professor"
+        else:
+            criado_por = None
+            origem = None
+
+        resultado.append({
             "id": e.id,
             "titulo": e.titulo,
             "descricao": e.descricao,
             "data": e.data.isoformat(),
             "turma_id": e.turma_id,
             "nome_turma": e.turma.turma if e.turma else None,
-            "professor": e.professor.nome_completo if e.professor else None,
-        }
-        for e in eventos
-    ]
+            "criado_por": criado_por,
+            "origem": origem,
+        })
 
     return JsonResponse({
         "total_eventos": len(resultado),
@@ -2271,11 +2280,9 @@ def get_eventos_coordenacao(request):
     })
 
 
-
 @csrf_exempt
 def get_evento_detalhe(request, evento_id):
-    """Retorna os dados de um evento específico."""
-    evento = Evento.objects.filter(id=evento_id).first()
+    evento = Evento.objects.select_related("coordenador").filter(id=evento_id).first()
     if not evento:
         return JsonResponse({"message": "Evento não encontrado."}, status=404)
 
@@ -2291,12 +2298,17 @@ def get_evento_detalhe(request, evento_id):
     })
 
 
-
 @csrf_exempt
 def criar_evento_coordenacao(request):
-    """Cria um novo evento no calendário, a partir da coordenação (sem professor vinculado)."""
+    """Cria um novo evento no calendário, identificando a escola/coordenação que o criou."""
     if request.method != "POST":
         return JsonResponse({"message": "Método não permitido."}, status=405)
+
+    ip = get_ip()
+    coordenador = Coordenador.objects.filter(ip=ip).first()
+
+    if not coordenador:
+        return JsonResponse({"message": "Coordenador não autenticado."}, status=401)
 
     try:
         body = json.loads(request.body)
@@ -2327,6 +2339,7 @@ def criar_evento_coordenacao(request):
 
     evento = Evento.objects.create(
         professor=None,
+        coordenador=coordenador,
         turma=turma,
         titulo=titulo,
         descricao=descricao,
@@ -2342,14 +2355,14 @@ def criar_evento_coordenacao(request):
             "data": evento.data.isoformat(),
             "turma_id": evento.turma_id,
             "nome_turma": evento.turma.turma if evento.turma else None,
+            "criado_por": coordenador.escola or "Coordenação",
+            "origem": "coordenacao",
         }
     })
 
 
-
 @csrf_exempt
 def editar_evento_coordenacao(request, evento_id):
-    """Atualiza um evento existente."""
     if request.method != "POST":
         return JsonResponse({"message": "Método não permitido."}, status=405)
 
@@ -2390,18 +2403,7 @@ def editar_evento_coordenacao(request, evento_id):
     evento.turma = turma
     evento.save()
 
-    return JsonResponse({
-        "message": "Evento atualizado com sucesso.",
-        "evento": {
-            "id": evento.id,
-            "titulo": evento.titulo,
-            "descricao": evento.descricao,
-            "data": evento.data.isoformat(),
-            "turma_id": evento.turma_id,
-            "nome_turma": evento.turma.turma if evento.turma else None,
-        }
-    })
-
+    return JsonResponse({"message": "Evento atualizado com sucesso."})
 
 @csrf_exempt
 def deletar_evento_coordenacao(request, evento_id):
