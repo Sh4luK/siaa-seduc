@@ -8,7 +8,7 @@ import logo from "../../../assets/logo.png";
 import Image from "next/image";
 
 
-const API_BASE = "https://cuddly-yodel-5gprv7xpvp7rf755x-8000.app.github.dev";
+const API_BASE = "http://127.0.0.1:8000";
 
 export default function ProfessoresCoordenacaoPage() {
   const [authenticated, setAuthenticated] = useState(null);

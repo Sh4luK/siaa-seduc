@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import styles from "./page.module.css"
 
-const API_BASE = "https://cuddly-yodel-5gprv7xpvp7rf755x-8000.app.github.dev";
+const API_BASE = "http://127.0.0.1:8000";
 
 export default function CoordenacaoLoginPage() {
   const [verificandoSessao, setVerificandoSessao] = useState(true);
