@@ -22,7 +22,7 @@ export default function alunoPage() {
     useEffect(() => {
         async function verifyAuthentication() {
             try {
-                const url = "http://127.0.0.1:8000/api/students/auth"
+                const url = "https://q0w7c17l-8000.brs.devtunnels.ms/api/students/auth"
                 const response = await fetch(url)
                 const data = await response.json()
                 console.log(data)
@@ -40,7 +40,7 @@ export default function alunoPage() {
             }
         }
         async function getStudent() {
-            const url = "http://127.0.0.1:8000/api/students/auth"
+            const url = "https://q0w7c17l-8000.brs.devtunnels.ms/api/students/auth"
 
             fetch(url)
                 .then((res) => {

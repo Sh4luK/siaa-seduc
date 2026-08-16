@@ -28,7 +28,7 @@ export default function AlunoLoginPage() {
         setMessage("")
 
         try {
-            const response = await fetch(`http://127.0.0.1:8000/api/students/search?fullname=${encodeURIComponent(fullName)}`);
+            const response = await fetch(`https://q0w7c17l-8000.brs.devtunnels.ms/api/students/search?fullname=${encodeURIComponent(fullName)}`);
             const data = await response.json();
             const clearName = (text) => {
                 if (!text) return '';
@@ -63,7 +63,7 @@ export default function AlunoLoginPage() {
     }
     async function auth_student_button() {
         try {
-            const url = `http://127.0.0.1:8000/api/students/login?fullname=${encodeURIComponent(fullName)}&password=${password}`
+            const url = `https://q0w7c17l-8000.brs.devtunnels.ms/api/students/login?fullname=${encodeURIComponent(fullName)}&password=${password}`
             const student_login = await fetch(url)
             const data = await student_login.json()
             if (data.return === true) {
@@ -76,7 +76,7 @@ export default function AlunoLoginPage() {
         }
 
     }
-    const authUrl = "http://127.0.0.1:8000/api/students/auth"
+    const authUrl = "https://q0w7c17l-8000.brs.devtunnels.ms/api/students/auth"
     // const auth_student = fetch(authUrl)
     // auth_student.then(async(res)=>{
     //     const data = await res.json()
@@ -90,7 +90,7 @@ export default function AlunoLoginPage() {
         async function verifyAuthentication() {
             try {
 
-                const url = "http://127.0.0.1:8000/api/students/auth"
+                const url = "https://q0w7c17l-8000.brs.devtunnels.ms/api/students/auth"
                 const response = await fetch(url)
                 const data = await response.json()
 
