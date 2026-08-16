@@ -12,7 +12,7 @@ export default function CorrigirAlunos() {
   useEffect(() => {
     async function allStudents() {
       const response = await fetch(
-        "https://upgraded-space-spork-4j9vqpw9q5g5fprr-8000.app.github.dev/api/students/search",
+        "https://cuddly-yodel-5gprv7xpvp7rf755x-8000.app.github.dev/api/students/search",
       );
       if (!response.ok) {
         throw new Error();
