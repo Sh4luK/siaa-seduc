@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import styles from "./page.module.css";
 
-const API_BASE = "https://q0w7c17l-8000.brs.devtunnels.ms";
+const API_BASE = "https://cuddly-yodel-5gprv7xpvp7rf755x-8000.app.github.dev";
 
 const SECOES = [
   {
