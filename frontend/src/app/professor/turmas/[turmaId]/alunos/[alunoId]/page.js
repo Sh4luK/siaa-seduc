@@ -5,7 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import layoutStyles from "../../../../page.module.css";
 import styles from "./notas.module.css";
 
-const API_BASE = "http://127.0.0.1:8000";
+const API_BASE = "https://q0w7c17l-8000.brs.devtunnels.ms";
 
 const RF_OPCOES = [
   ["CUR", "Cursando"], ["AP", "Aprovado"], ["RE", "Reprovado"],

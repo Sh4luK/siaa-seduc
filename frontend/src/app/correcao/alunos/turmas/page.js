@@ -12,7 +12,7 @@ export default function CorrigirAlunos() {
   useEffect(() => {
     async function allStudents() {
       const response = await fetch(
-        "http://127.0.0.1:8000/api/students/search",
+        "https://q0w7c17l-8000.brs.devtunnels.ms/api/students/search",
       );
       if (!response.ok) {
         throw new Error();

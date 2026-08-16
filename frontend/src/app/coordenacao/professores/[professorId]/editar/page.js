@@ -6,7 +6,7 @@ import styles from "./page.module.css";
 import Image from "next/image";
 import logo from "@/assets/logo.png";
 
-const API_BASE = "http://127.0.0.1:8000";
+const API_BASE = "https://q0w7c17l-8000.brs.devtunnels.ms";
 
 function novoVinculo(dados) {
   return {

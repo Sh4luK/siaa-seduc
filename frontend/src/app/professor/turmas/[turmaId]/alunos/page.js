@@ -31,7 +31,7 @@
 //     async function verifyAuthentication() {
 //       try {
 //         const url =
-//           "http://127.0.0.1:8000/api/teacher/auth";
+//           "https://q0w7c17l-8000.brs.devtunnels.ms/api/teacher/auth";
 //         const response = await fetch(url);
 //         const data = await response.json();
 
@@ -52,7 +52,7 @@
 //     async function getData() {
 //       try {
 //         const urlAuth =
-//           "http://127.0.0.1:8000/api/teacher/auth";
+//           "https://q0w7c17l-8000.brs.devtunnels.ms/api/teacher/auth";
 //         const authResponse = await fetch(urlAuth);
 //         if (!authResponse.ok) {
 //           throw new Error();
@@ -79,8 +79,8 @@
 //       }
 
 //       try {
-//         const urlTurmas = `http://127.0.0.1:8000/api/teacher/search/turmas?nome_completo=${encodeURIComponent(nomeCompleto)}`;
-//         const urlDisciplinas = `http://127.0.0.1:8000/api/teacher/search/disciplinas?nome_completo=${encodeURIComponent(nomeCompleto)}`;
+//         const urlTurmas = `https://q0w7c17l-8000.brs.devtunnels.ms/api/teacher/search/turmas?nome_completo=${encodeURIComponent(nomeCompleto)}`;
+//         const urlDisciplinas = `https://q0w7c17l-8000.brs.devtunnels.ms/api/teacher/search/disciplinas?nome_completo=${encodeURIComponent(nomeCompleto)}`;
 //         const response1 = await fetch(urlTurmas);
 //         const response2 = await fetch(urlDisciplinas);
 
@@ -99,7 +99,7 @@
 //     }
 //     async function getTurma() {
 //       try {
-//         const url = `http://127.0.0.1:8000/api/teacher/search/turma?turma=${turmaId}`;
+//         const url = `https://q0w7c17l-8000.brs.devtunnels.ms/api/teacher/search/turma?turma=${turmaId}`;
 //         const response = await fetch(url);
 
 //         if (!response.ok) {
@@ -118,7 +118,7 @@
 //     async function getTurmaLength() {
 //       try {
 //         const getTurma = await fetch(
-//           `http://127.0.0.1:8000/api/teacher/search/turma?turma=${turmaId}`,
+//           `https://q0w7c17l-8000.brs.devtunnels.ms/api/teacher/search/turma?turma=${turmaId}`,
 //         );
 //         const getData = await getTurma.json();
 //         console.log("1) getData da turma:", getData);
@@ -133,9 +133,9 @@
 //           setTurmaLength(0);
 //           return;
 //         }
-//         //http://127.0.0.1:8000/api/teacher/get/alunos?turma=EMTPDES-SIS-2%C2%AA%20SERIE-INTEGRAL-I-A
+//         //https://q0w7c17l-8000.brs.devtunnels.ms/api/teacher/get/alunos?turma=EMTPDES-SIS-2%C2%AA%20SERIE-INTEGRAL-I-A
 //         const turmaName = encodeURIComponent(turmaObj["turma"]);
-//         const urlAlunos = `http://127.0.0.1:8000/api/teacher/get/alunos?turma=${turmaName}`;
+//         const urlAlunos = `https://q0w7c17l-8000.brs.devtunnels.ms/api/teacher/get/alunos?turma=${turmaName}`;
 //         console.log("4) URL chamada:", urlAlunos);
 
 //         const response = await fetch(urlAlunos);
@@ -340,7 +340,7 @@ import { useEffect, useState } from "react";
 import layoutStyles from "../../../page.module.css"
 import styles from "./alunos.module.css"
 
-const API_BASE = "http://127.0.0.1:8000";
+const API_BASE = "https://q0w7c17l-8000.brs.devtunnels.ms";
 
 export default function AlunosDaTurmaPage() {
   const { turmaId } = useParams();
