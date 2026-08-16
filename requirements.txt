@@ -1,1 +1,7 @@
-django requests djangorestframework django-cors-headers python-dotenv pathlib json pandas openpyxl
+django
+requests
+djangorestframework
+django-cors-headers
+python-dotenv
+pandas
+openpyxl
