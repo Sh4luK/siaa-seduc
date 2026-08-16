@@ -8,7 +8,7 @@ import logo from "../../../assets/logo.png";
 import Image from "next/image";
 
 
-const API_BASE = "https://upgraded-space-spork-4j9vqpw9q5g5fprr-8000.app.github.dev";
+const API_BASE = "https://cuddly-yodel-5gprv7xpvp7rf755x-8000.app.github.dev";
 
 export default function ProfessoresCoordenacaoPage() {
   const [authenticated, setAuthenticated] = useState(null);
