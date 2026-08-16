@@ -6,7 +6,7 @@ import styles from "./page.module.css";
 import Image from "next/image";
 import logo from "@/assets/logo.png";
 
-const API_BASE = "https://upgraded-space-spork-4j9vqpw9q5g5fprr-8000.app.github.dev";
+const API_BASE = "https://cuddly-yodel-5gprv7xpvp7rf755x-8000.app.github.dev";
 
 export default function EditarEventoPage() {
   const { eventoId } = useParams();
