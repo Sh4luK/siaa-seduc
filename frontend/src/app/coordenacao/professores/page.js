@@ -8,7 +8,7 @@ import logo from "../../../assets/logo.png";
 import Image from "next/image";
 
 
-const API_BASE = "http://127.0.0.1:8000";
+const API_BASE = "https://q0w7c17l-8000.brs.devtunnels.ms";
 
 export default function ProfessoresCoordenacaoPage() {
   const [authenticated, setAuthenticated] = useState(null);
