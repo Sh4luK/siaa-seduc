@@ -12,7 +12,7 @@ export default function CorrigirAlunos() {
   useEffect(() => {
     async function allStudents() {
       const response = await fetch(
-        "https://cuddly-yodel-5gprv7xpvp7rf755x-8000.app.github.dev/api/students/search",
+        "http://127.0.0.1:8000/api/students/search",
       );
       if (!response.ok) {
         throw new Error();

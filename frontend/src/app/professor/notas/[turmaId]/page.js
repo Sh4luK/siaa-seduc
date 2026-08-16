@@ -5,7 +5,7 @@
 // import layoutStyles from "../../../page.module.css";
 // import styles from "./notasTurma.module.css";
 
-// const API_BASE = "https://cuddly-yodel-5gprv7xpvp7rf755x-8000.app.github.dev";
+// const API_BASE = "http://127.0.0.1:8000";
 
 // const CAMPOS = [
 //   "nm1_t1", "nm2_t1", "nm3_t1", "rpt_t1",
@@ -355,7 +355,7 @@
 // import layoutStyles from "../../../page.module.css";
 // import styles from "./notasTurma.module.css";
 
-// const API_BASE = "https://cuddly-yodel-5gprv7xpvp7rf755x-8000.app.github.dev";
+// const API_BASE = "http://127.0.0.1:8000";
 
 // const CAMPOS = [
 //   "nm1_t1", "nm2_t1", "nm3_t1", "rpt_t1",
@@ -720,7 +720,7 @@ import Link from "next/link";
 import layoutStyles from "../../../page.module.css";
 import styles from "./notasTurma.module.css";
 
-const API_BASE = "https://cuddly-yodel-5gprv7xpvp7rf755x-8000.app.github.dev";
+const API_BASE = "http://127.0.0.1:8000";
 
 const CAMPOS = [
   "nm1_t1", "nm2_t1", "nm3_t1", "rpt_t1",

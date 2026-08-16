@@ -5,7 +5,7 @@
 // import layoutStyles from "../page.module.css";
 // import styles from "./boletim.module.css";
 
-// const API_BASE = "https://cuddly-yodel-5gprv7xpvp7rf755x-8000.app.github.dev";
+// const API_BASE = "http://127.0.0.1:8000";
 
 // const RF_LABELS = {
 //   CUR: "Cursando", AP: "Aprovado", RE: "Reprovado", DE: "Desistente",
@@ -147,7 +147,7 @@ import { useRouter } from "next/navigation";
 import layoutStyles from "../page.module.css";
 import styles from "./boletim.module.css";
 
-const API_BASE = "https://cuddly-yodel-5gprv7xpvp7rf755x-8000.app.github.dev";
+const API_BASE = "http://127.0.0.1:8000";
 
 const RF_LABELS = {
   CUR: "Cursando", AP: "Aprovado", RE: "Reprovado", DE: "Desistente",

@@ -7,7 +7,7 @@ import styles from "./page.module.css";
 import Image from "next/image";
 import logo from "@/assets/logo.png";
 
-const API_BASE = "https://cuddly-yodel-5gprv7xpvp7rf755x-8000.app.github.dev";
+const API_BASE = "http://127.0.0.1:8000";
 
 const MESES = [
   "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
