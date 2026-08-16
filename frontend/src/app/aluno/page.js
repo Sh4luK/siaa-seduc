@@ -22,7 +22,7 @@ export default function alunoPage() {
     useEffect(() => {
         async function verifyAuthentication() {
             try {
-                const url = "https://cuddly-yodel-5gprv7xpvp7rf755x-8000.app.github.dev/api/students/auth"
+                const url = "http://127.0.0.1:8000/api/students/auth"
                 const response = await fetch(url)
                 const data = await response.json()
                 console.log(data)
@@ -40,7 +40,7 @@ export default function alunoPage() {
             }
         }
         async function getStudent() {
-            const url = "https://cuddly-yodel-5gprv7xpvp7rf755x-8000.app.github.dev/api/students/auth"
+            const url = "http://127.0.0.1:8000/api/students/auth"
 
             fetch(url)
                 .then((res) => {
