@@ -2529,3 +2529,36 @@ def get_comunicados_coordenacao(request):
         "total_comunicados": len(resultado),
         "comunicados": resultado
     })
+
+
+
+@csrf_exempt
+def get_comunicado_detalhe(request, comunicado_id):
+    """Retorna os dados completos de um comunicado específico."""
+    comunicado = Comunicado.objects.select_related("turma", "professor", "coordenador").filter(id=comunicado_id).first()
+    if not comunicado:
+        return JsonResponse({"message": "Comunicado não encontrado."}, status=404)
+
+    if comunicado.coordenador:
+        criado_por = comunicado.coordenador.escola or "Coordenação"
+        origem = "coordenacao"
+    elif comunicado.professor:
+        criado_por = comunicado.professor.nome_completo
+        origem = "professor"
+    else:
+        criado_por = None
+        origem = None
+
+    return JsonResponse({
+        "comunicado": {
+            "id": comunicado.id,
+            "titulo": comunicado.titulo,
+            "mensagem": comunicado.mensagem,
+            "data": comunicado.data.isoformat(),
+            "turma_id": comunicado.turma_id,
+            "nome_turma": comunicado.turma.turma if comunicado.turma else None,
+            "criado_por": criado_por,
+            "origem": origem,
+        }
+    })
+
