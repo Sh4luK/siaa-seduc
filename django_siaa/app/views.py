@@ -2658,3 +2658,16 @@ def editar_comunicado_coordenacao(request, comunicado_id):
     return JsonResponse({"message": "Comunicado atualizado com sucesso."})
 
 
+
+@csrf_exempt
+def deletar_comunicado_coordenacao(request, comunicado_id):
+    """Remove um comunicado."""
+    if request.method != "DELETE":
+        return JsonResponse({"message": "Método não permitido."}, status=405)
+
+    comunicado = Comunicado.objects.filter(id=comunicado_id).first()
+    if not comunicado:
+        return JsonResponse({"message": "Comunicado não encontrado."}, status=404)
+
+    comunicado.delete()
+    return JsonResponse({"message": "Comunicado removido com sucesso."})
