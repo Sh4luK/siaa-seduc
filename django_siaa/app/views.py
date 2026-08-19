@@ -2341,9 +2341,71 @@ def get_evento_detalhe(request, evento_id):
     })
 
 
+# @csrf_exempt
+# def criar_evento_coordenacao(request):
+#     """Cria um novo evento no calendário, identificando a escola/coordenação que o criou."""
+#     if request.method != "POST":
+#         return JsonResponse({"message": "Método não permitido."}, status=405)
+
+#     ip = get_ip()
+#     coordenador = Coordenador.objects.filter(ip=ip).first()
+
+#     if not coordenador:
+#         return JsonResponse({"message": "Coordenador não autenticado."}, status=401)
+
+#     try:
+#         body = json.loads(request.body)
+#     except json.JSONDecodeError:
+#         return JsonResponse({"message": "JSON inválido."}, status=400)
+
+#     titulo = (body.get("titulo") or "").strip()
+#     descricao = (body.get("descricao") or "").strip()
+#     data_str = body.get("data")
+#     turma_id = body.get("turma")
+
+#     if not titulo or not data_str:
+#         return JsonResponse(
+#             {"message": "Campos 'titulo' e 'data' são obrigatórios."},
+#             status=400
+#         )
+
+#     try:
+#         data_evento = date.fromisoformat(data_str)
+#     except ValueError:
+#         return JsonResponse({"message": "Formato de data inválido. Use AAAA-MM-DD."}, status=400)
+
+#     turma = None
+#     if turma_id:
+#         turma = AtravessaPor.objects.filter(id=turma_id).first()
+#         if not turma:
+#             return JsonResponse({"message": "Turma não encontrada."}, status=404)
+
+#     evento = Evento.objects.create(
+#         professor=None,
+#         coordenador=coordenador,
+#         turma=turma,
+#         titulo=titulo,
+#         descricao=descricao,
+#         data=data_evento,
+#     )
+
+#     return JsonResponse({
+#         "message": "Evento criado com sucesso.",
+#         "evento": {
+#             "id": evento.id,
+#             "titulo": evento.titulo,
+#             "descricao": evento.descricao,
+#             "data": evento.data.isoformat(),
+#             "turma_id": evento.turma_id,
+#             "nome_turma": evento.turma.turma if evento.turma else None,
+#             "criado_por": coordenador.escola or "Coordenação",
+#             "origem": "coordenacao",
+#         }
+#     })
+
+
 @csrf_exempt
 def criar_evento_coordenacao(request):
-    """Cria um novo evento no calendário, identificando a escola/coordenação que o criou."""
     if request.method != "POST":
         return JsonResponse({"message": "Método não permitido."}, status=405)
 
