@@ -392,3 +392,50 @@
   border-color: #3b82f6;
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
 }
+
+
+.secaoDivisor {
+  padding-top: 0.5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.secaoTitulo {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #f8fafc;
+  margin: 0.75rem 0 0.3rem;
+}
+
+.secaoSubtitulo {
+  font-size: 0.82rem;
+  color: #94a3b8;
+  margin: 0;
+}
+
+.tipoEventoRow {
+  display: flex;
+  gap: 0.6rem;
+}
+
+.tipoEventoBotao {
+  flex: 1;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #cbd5e1;
+  background: #0f1829;
+  border: 1.5px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  padding: 0.65rem 1rem;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.tipoEventoBotao:hover {
+  border-color: rgba(59, 130, 246, 0.4);
+}
+
+.tipoEventoAtivo {
+  background: rgba(59, 130, 246, 0.15);
+  border-color: #3b82f6;
+  color: #93c5fd;
+}
