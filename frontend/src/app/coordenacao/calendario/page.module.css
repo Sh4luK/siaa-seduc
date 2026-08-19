@@ -479,3 +479,9 @@
   padding: 0.15rem 0.55rem;
   white-space: nowrap;
 }
+
+.eventoCardLink {
+  display: contents;
+  text-decoration: none;
+  color: inherit;
+}
