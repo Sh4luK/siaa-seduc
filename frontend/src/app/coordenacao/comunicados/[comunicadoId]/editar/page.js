@@ -15,6 +15,7 @@ export default function EditarComunicadoPage() {
 
   const [authenticated, setAuthenticated] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [data, setData] = useState("");
 
   const [tipo, setTipo] = useState("geral");
   const [professores, setProfessores] = useState([]);
@@ -56,6 +57,7 @@ export default function EditarComunicadoPage() {
 
         setTitulo(c.titulo);
         setMensagem(c.mensagem);
+        setData(c.data);
 
         if (c.turma_id) {
           setTipo("especifico");
@@ -125,6 +127,7 @@ export default function EditarComunicadoPage() {
             titulo: titulo.trim(),
             mensagem: mensagem.trim(),
             turma: tipo === "especifico" ? turmaId : null,
+            data,
           }),
         }
       );
@@ -135,7 +138,7 @@ export default function EditarComunicadoPage() {
         try {
           const json = JSON.parse(corpo);
           if (json?.message) msg = json.message;
-        } catch {}
+        } catch { }
         throw new Error(msg);
       }
 
@@ -241,6 +244,17 @@ export default function EditarComunicadoPage() {
               </div>
             </>
           )}
+
+          <div className={styles.campo}>
+            <label className={styles.label} htmlFor="data">Data</label>
+            <input
+              id="data"
+              type="date"
+              className={styles.input}
+              value={data}
+              onChange={(e) => setData(e.target.value)}
+            />
+          </div>
 
           <div className={styles.campo}>
             <label className={styles.label} htmlFor="titulo">Título</label>
