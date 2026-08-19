@@ -1,6 +1,7 @@
 from django.db import models
 from decimal import Decimal
 from django.db import models
+from datetime import date
 
 class Professor(models.Model):
     nome_completo = models.CharField(max_length=255, unique=True, null=True)
@@ -324,6 +325,21 @@ class Advertencia(models.Model):
         return f"{self.aluno} - {self.titulo} - {self.data}"
 
 
+# class Comunicado(models.Model):
+#     professor = models.ForeignKey(
+#         Professor, null=True, blank=True, on_delete=models.CASCADE, related_name="comunicados"
+#     )
+#     coordenador = models.ForeignKey(
+#         Coordenador, null=True, blank=True, on_delete=models.CASCADE, related_name="comunicados"
+#     )
+#     turma = models.ForeignKey(
+#         AtravessaPor, null=True, blank=True, on_delete=models.CASCADE
+#     )
+#     titulo = models.CharField(max_length=255)
+#     mensagem = models.TextField()
+#     data = models.DateField(auto_now_add=True)
+
+
 class Comunicado(models.Model):
     professor = models.ForeignKey(
         Professor, null=True, blank=True, on_delete=models.CASCADE, related_name="comunicados"
@@ -336,4 +352,4 @@ class Comunicado(models.Model):
     )
     titulo = models.CharField(max_length=255)
     mensagem = models.TextField()
-    data = models.DateField(auto_now_add=True)
+    data = models.DateField(default=date.today)
