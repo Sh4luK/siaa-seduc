@@ -2495,3 +2495,37 @@ def get_turmas_do_professor(request, professor_id):
         "professor": {"id": professor.id, "nome_completo": professor.nome_completo},
         "turmas": list(turmas_map.values()),
     })
+
+
+@csrf_exempt
+def get_comunicados_coordenacao(request):
+    """Lista todos os comunicados (de professores e da coordenação)."""
+    comunicados = Comunicado.objects.select_related("turma", "professor", "coordenador").order_by("-data")
+
+    resultado = []
+    for c in comunicados:
+        if c.coordenador:
+            criado_por = c.coordenador.escola or "Coordenação"
+            origem = "coordenacao"
+        elif c.professor:
+            criado_por = c.professor.nome_completo
+            origem = "professor"
+        else:
+            criado_por = None
+            origem = None
+
+        resultado.append({
+            "id": c.id,
+            "titulo": c.titulo,
+            "mensagem": c.mensagem,
+            "data": c.data.isoformat(),
+            "turma_id": c.turma_id,
+            "nome_turma": c.turma.turma if c.turma else None,
+            "criado_por": criado_por,
+            "origem": origem,
+        })
+
+    return JsonResponse({
+        "total_comunicados": len(resultado),
+        "comunicados": resultado
+    })
