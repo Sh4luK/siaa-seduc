@@ -2460,3 +2460,44 @@ def deletar_evento_coordenacao(request, evento_id):
 
     evento.delete()
     return JsonResponse({"message": "Evento removido com sucesso."})
+
+
+@csrf_exempt
+def get_lista_professores_simples(request):
+    """Lista simples de professores (id + nome), para popular selects."""
+    professores = Professor.objects.all().order_by("nome_completo")
+
+    resultado = [
+        {"id": p.id, "nome_completo": p.nome_completo}
+        for p in professores
+    ]
+
+    return JsonResponse({"professores": resultado})
+
+
+@csrf_exempt
+def get_turmas_do_professor(request, professor_id):
+    """
+    Retorna as turmas (agrupadas, sem repetir disciplina) que um professor
+    específico leciona — usado para popular o select de turma depois que
+    a coordenação escolhe o professor.
+    """
+    professor = Professor.objects.filter(id=professor_id).first()
+    if not professor:
+        return JsonResponse({"message": "Professor não encontrado."}, status=404)
+
+    registros = AtravessaPor.objects.filter(professor_id=professor_id)
+
+    turmas_map = {}
+    for r in registros:
+        if r.turma not in turmas_map:
+            turmas_map[r.turma] = {
+                "nome_turma": r.turma,
+                "etapa": r.etapa,
+                "registro_id": r.id,  # qualquer registro daquele grupo serve como turma_id do evento
+            }
+
+    return JsonResponse({
+        "professor": {"id": professor.id, "nome_completo": professor.nome_completo},
+        "turmas": list(turmas_map.values()),
+    })
