@@ -23,7 +23,7 @@ export default function NovoComunicadoPage() {
 
   const [titulo, setTitulo] = useState("");
   const [mensagem, setMensagem] = useState("");
-
+  const [data, setData] = useState(() => new Date().toISOString().split("T")[0]);
   const [enviando, setEnviando] = useState(false);
   const [erros, setErros] = useState([]);
 
@@ -102,6 +102,7 @@ export default function NovoComunicadoPage() {
           titulo: titulo.trim(),
           mensagem: mensagem.trim(),
           turma: tipo === "especifico" ? turmaId : null,
+          data,
         }),
       });
 
@@ -111,7 +112,7 @@ export default function NovoComunicadoPage() {
         try {
           const json = JSON.parse(corpo);
           if (json?.message) msg = json.message;
-        } catch {}
+        } catch { }
         throw new Error(msg);
       }
 
@@ -218,6 +219,17 @@ export default function NovoComunicadoPage() {
               </div>
             </>
           )}
+          
+          <div className={styles.campo}>
+            <label className={styles.label} htmlFor="data">Data</label>
+            <input
+              id="data"
+              type="date"
+              className={styles.input}
+              value={data}
+              onChange={(e) => setData(e.target.value)}
+            />
+          </div>
 
           <div className={styles.campo}>
             <label className={styles.label} htmlFor="titulo">Título</label>
