@@ -48,7 +48,7 @@ export default function EventoDetalhePage() {
       setErro("");
       try {
         const res = await fetch(
-          `${API_BASE}/api/coordenacao/eventos/${eventoId}/`,
+          `${API_BASE}/api/coordenacao/calendario/eventos/${eventoId}`,
           { credentials: "include" }
         );
 
@@ -65,7 +65,7 @@ export default function EventoDetalhePage() {
         }
 
         const data = await res.json();
-        setEvento(data);
+        setEvento(data.evento);
       } catch (e) {
         setErro(e.message || "Erro ao carregar evento.");
       } finally {
@@ -153,16 +153,14 @@ export default function EventoDetalhePage() {
         <div className={styles.cabecalho}>
           <div className={styles.badges}>
             <span
-              className={`${styles.badge} ${
-                geral ? styles.badgeGeral : styles.badgeEspecifico
-              }`}
+              className={`${styles.badge} ${geral ? styles.badgeGeral : styles.badgeEspecifico
+                }`}
             >
               {geral ? "Evento geral" : "Evento específico"}
             </span>
             <span
-              className={`${styles.badge} ${
-                finalizado ? styles.badgeFinalizado : styles.badgeAgendado
-              }`}
+              className={`${styles.badge} ${finalizado ? styles.badgeFinalizado : styles.badgeAgendado
+                }`}
             >
               {finalizado ? "Finalizado" : "Agendado"}
             </span>
@@ -192,9 +190,7 @@ export default function EventoDetalhePage() {
           {evento.professor && (
             <div className={styles.bloco}>
               <span className={styles.blocoLabel}>Professor</span>
-              <p className={styles.blocoTexto}>
-                {evento.professor?.nome_completo || evento.professor}
-              </p>
+              <p className={styles.blocoTexto}>{evento.professor}</p>
             </div>
           )}
 
@@ -204,6 +200,13 @@ export default function EventoDetalhePage() {
               <p className={styles.blocoTexto}>
                 {evento.coordenador?.nome_completo || evento.coordenador}
               </p>
+            </div>
+          )}
+
+          {evento.criado_por && (
+            <div className={styles.bloco}>
+              <span className={styles.blocoLabel}>Criado por</span>
+              <p className={styles.blocoTexto}>{evento.criado_por}</p>
             </div>
           )}
         </div>
