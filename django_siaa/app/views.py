@@ -1675,6 +1675,7 @@ def get_escola_coordenador(request):
         "escola": coordenador.escola or ""
     })
 
+
 @csrf_exempt
 def get_professor_detalhe(request, professor_id):
     """Retorna os dados de um professor com seus vínculos de turma/disciplina."""
@@ -2239,46 +2240,6 @@ def deletar_advertencia(request, advertencia_id):
     return JsonResponse({"message": "Advertência removida com sucesso."})
 
 
-# @csrf_exempt
-# def get_eventos_coordenacao(request):
-#     mes = request.GET.get("mes")
-#     ano = request.GET.get("ano")
-
-#     eventos = Evento.objects.select_related("turma", "professor", "coordenador").all()
-
-#     if mes and ano:
-#         eventos = eventos.filter(data__year=ano, data__month=mes)
-#     elif ano:
-#         eventos = eventos.filter(data__year=ano)
-
-#     resultado = []
-#     for e in eventos:
-#         if e.coordenador:
-#             criado_por = f"{e.coordenador.escola or 'Coordenação'}"
-#             origem = "coordenacao"
-#         elif e.professor:
-#             criado_por = e.professor.nome_completo
-#             origem = "professor"
-#         else:
-#             criado_por = None
-#             origem = None
-
-#         resultado.append({
-#             "id": e.id,
-#             "titulo": e.titulo,
-#             "descricao": e.descricao,
-#             "data": e.data.isoformat(),
-#             "turma_id": e.turma_id,
-#             "nome_turma": e.turma.turma if e.turma else None,
-#             "criado_por": criado_por,
-#             "origem": origem,
-#         })
-
-#     return JsonResponse({
-#         "total_eventos": len(resultado),
-#         "eventos": resultado
-#     })
-
 @csrf_exempt
 def get_eventos_coordenacao(request):
     mes = request.GET.get("mes")
@@ -2323,11 +2284,41 @@ def get_eventos_coordenacao(request):
     })
 
 
+# @csrf_exempt
+# def get_evento_detalhe(request, evento_id):
+#     evento = Evento.objects.select_related("coordenador").filter(id=evento_id).first()
+#     if not evento:
+#         return JsonResponse({"message": "Evento não encontrado."}, status=404)
+
+#     return JsonResponse({
+#         "evento": {
+#             "id": evento.id,
+#             "titulo": evento.titulo,
+#             "descricao": evento.descricao,
+#             "data": evento.data.isoformat(),
+#             "turma_id": evento.turma_id,
+#             "nome_turma": evento.turma.turma if evento.turma else None,
+#         }
+#     })
+
 @csrf_exempt
 def get_evento_detalhe(request, evento_id):
-    evento = Evento.objects.select_related("coordenador").filter(id=evento_id).first()
+    """Retorna os dados completos de um evento específico, incluindo status calculado."""
+    evento = Evento.objects.select_related("turma", "professor", "coordenador").filter(id=evento_id).first()
     if not evento:
         return JsonResponse({"message": "Evento não encontrado."}, status=404)
+
+    hoje = date.today()
+
+    if evento.coordenador:
+        criado_por = evento.coordenador.escola or "Coordenação"
+        origem = "coordenacao"
+    elif evento.professor:
+        criado_por = evento.professor.nome_completo
+        origem = "professor"
+    else:
+        criado_por = None
+        origem = None
 
     return JsonResponse({
         "evento": {
@@ -2337,71 +2328,13 @@ def get_evento_detalhe(request, evento_id):
             "data": evento.data.isoformat(),
             "turma_id": evento.turma_id,
             "nome_turma": evento.turma.turma if evento.turma else None,
+            "professor": evento.professor.nome_completo if evento.professor else None,
+            "criado_por": criado_por,
+            "origem": origem,
+            "finalizado": evento.data < hoje,
         }
     })
 
-
-# @csrf_exempt
-# def criar_evento_coordenacao(request):
-#     """Cria um novo evento no calendário, identificando a escola/coordenação que o criou."""
-#     if request.method != "POST":
-#         return JsonResponse({"message": "Método não permitido."}, status=405)
-
-#     ip = get_ip()
-#     coordenador = Coordenador.objects.filter(ip=ip).first()
-
-#     if not coordenador:
-#         return JsonResponse({"message": "Coordenador não autenticado."}, status=401)
-
-#     try:
-#         body = json.loads(request.body)
-#     except json.JSONDecodeError:
-#         return JsonResponse({"message": "JSON inválido."}, status=400)
-
-#     titulo = (body.get("titulo") or "").strip()
-#     descricao = (body.get("descricao") or "").strip()
-#     data_str = body.get("data")
-#     turma_id = body.get("turma")
-
-#     if not titulo or not data_str:
-#         return JsonResponse(
-#             {"message": "Campos 'titulo' e 'data' são obrigatórios."},
-#             status=400
-#         )
-
-#     try:
-#         data_evento = date.fromisoformat(data_str)
-#     except ValueError:
-#         return JsonResponse({"message": "Formato de data inválido. Use AAAA-MM-DD."}, status=400)
-
-#     turma = None
-#     if turma_id:
-#         turma = AtravessaPor.objects.filter(id=turma_id).first()
-#         if not turma:
-#             return JsonResponse({"message": "Turma não encontrada."}, status=404)
-
-#     evento = Evento.objects.create(
-#         professor=None,
-#         coordenador=coordenador,
-#         turma=turma,
-#         titulo=titulo,
-#         descricao=descricao,
-#         data=data_evento,
-#     )
-
-#     return JsonResponse({
-#         "message": "Evento criado com sucesso.",
-#         "evento": {
-#             "id": evento.id,
-#             "titulo": evento.titulo,
-#             "descricao": evento.descricao,
-#             "data": evento.data.isoformat(),
-#             "turma_id": evento.turma_id,
-#             "nome_turma": evento.turma.turma if evento.turma else None,
-#             "criado_por": coordenador.escola or "Coordenação",
-#             "origem": "coordenacao",
-#         }
-#     })
 
 
 @csrf_exempt
@@ -2563,3 +2496,291 @@ def get_turmas_do_professor(request, professor_id):
         "professor": {"id": professor.id, "nome_completo": professor.nome_completo},
         "turmas": list(turmas_map.values()),
     })
+
+
+@csrf_exempt
+def get_comunicados_coordenacao(request):
+    """Lista todos os comunicados (de professores e da coordenação)."""
+    comunicados = Comunicado.objects.select_related("turma", "professor", "coordenador").order_by("-data")
+
+    resultado = []
+    for c in comunicados:
+        if c.coordenador:
+            criado_por = c.coordenador.escola or "Coordenação"
+            origem = "coordenacao"
+        elif c.professor:
+            criado_por = c.professor.nome_completo
+            origem = "professor"
+        else:
+            criado_por = None
+            origem = None
+
+        resultado.append({
+            "id": c.id,
+            "titulo": c.titulo,
+            "mensagem": c.mensagem,
+            "data": c.data.isoformat(),
+            "turma_id": c.turma_id,
+            "nome_turma": c.turma.turma if c.turma else None,
+            "criado_por": criado_por,
+            "origem": origem,
+        })
+
+    return JsonResponse({
+        "total_comunicados": len(resultado),
+        "comunicados": resultado
+    })
+
+
+
+@csrf_exempt
+def get_comunicado_detalhe(request, comunicado_id):
+    """Retorna os dados completos de um comunicado específico."""
+    comunicado = Comunicado.objects.select_related("turma", "professor", "coordenador").filter(id=comunicado_id).first()
+    if not comunicado:
+        return JsonResponse({"message": "Comunicado não encontrado."}, status=404)
+
+    if comunicado.coordenador:
+        criado_por = comunicado.coordenador.escola or "Coordenação"
+        origem = "coordenacao"
+    elif comunicado.professor:
+        criado_por = comunicado.professor.nome_completo
+        origem = "professor"
+    else:
+        criado_por = None
+        origem = None
+
+    return JsonResponse({
+        "comunicado": {
+            "id": comunicado.id,
+            "titulo": comunicado.titulo,
+            "mensagem": comunicado.mensagem,
+            "data": comunicado.data.isoformat(),
+            "turma_id": comunicado.turma_id,
+            "nome_turma": comunicado.turma.turma if comunicado.turma else None,
+            "criado_por": criado_por,
+            "origem": origem,
+        }
+    })
+
+
+@csrf_exempt
+# def criar_comunicado_coordenacao(request):
+#     """Cria um novo comunicado emitido pela coordenação (geral ou por turma)."""
+#     if request.method != "POST":
+#         return JsonResponse({"message": "Método não permitido."}, status=405)
+
+#     ip = get_ip()
+#     coordenador = Coordenador.objects.filter(ip=ip).first()
+
+#     if not coordenador:
+#         return JsonResponse({"message": "Coordenador não autenticado."}, status=401)
+
+#     try:
+#         body = json.loads(request.body)
+#     except json.JSONDecodeError:
+#         return JsonResponse({"message": "JSON inválido."}, status=400)
+
+#     titulo = (body.get("titulo") or "").strip()
+#     mensagem = (body.get("mensagem") or "").strip()
+#     turma_id = body.get("turma")
+
+#     if not titulo or not mensagem:
+#         return JsonResponse(
+#             {"message": "Campos 'titulo' e 'mensagem' são obrigatórios."},
+#             status=400
+#         )
+
+#     turma = None
+#     if turma_id:
+#         turma = AtravessaPor.objects.filter(id=turma_id).first()
+#         if not turma:
+#             return JsonResponse({"message": "Turma não encontrada."}, status=404)
+
+#     comunicado = Comunicado.objects.create(
+#         professor=None,
+#         coordenador=coordenador,
+#         turma=turma,
+#         titulo=titulo,
+#         mensagem=mensagem,
+#     )
+
+#     return JsonResponse({
+#         "message": "Comunicado criado com sucesso.",
+#         "comunicado": {
+#             "id": comunicado.id,
+#             "titulo": comunicado.titulo,
+#             "mensagem": comunicado.mensagem,
+#             "data": comunicado.data.isoformat(),
+#             "turma_id": comunicado.turma_id,
+#             "nome_turma": comunicado.turma.turma if comunicado.turma else None,
+#             "criado_por": coordenador.escola or "Coordenação",
+#             "origem": "coordenacao",
+#         }
+#     })
+
+
+@csrf_exempt
+def criar_comunicado_coordenacao(request):
+    """Cria um novo comunicado emitido pela coordenação (geral ou por turma)."""
+    if request.method != "POST":
+        return JsonResponse({"message": "Método não permitido."}, status=405)
+
+    ip = get_ip()
+    coordenador = Coordenador.objects.filter(ip=ip).first()
+
+    if not coordenador:
+        return JsonResponse({"message": "Coordenador não autenticado."}, status=401)
+
+    try:
+        body = json.loads(request.body)
+    except json.JSONDecodeError:
+        return JsonResponse({"message": "JSON inválido."}, status=400)
+
+    titulo = (body.get("titulo") or "").strip()
+    mensagem = (body.get("mensagem") or "").strip()
+    turma_id = body.get("turma")
+    data_str = body.get("data")
+
+    if not titulo or not mensagem:
+        return JsonResponse(
+            {"message": "Campos 'titulo' e 'mensagem' são obrigatórios."},
+            status=400
+        )
+
+    data_comunicado = date.today()
+    if data_str:
+        try:
+            data_comunicado = date.fromisoformat(data_str)
+        except ValueError:
+            return JsonResponse({"message": "Formato de data inválido. Use AAAA-MM-DD."}, status=400)
+
+    turma = None
+    if turma_id:
+        turma = AtravessaPor.objects.filter(id=turma_id).first()
+        if not turma:
+            return JsonResponse({"message": "Turma não encontrada."}, status=404)
+
+    comunicado = Comunicado.objects.create(
+        professor=None,
+        coordenador=coordenador,
+        turma=turma,
+        titulo=titulo,
+        mensagem=mensagem,
+        data=data_comunicado,
+    )
+
+    return JsonResponse({
+        "message": "Comunicado criado com sucesso.",
+        "comunicado": {
+            "id": comunicado.id,
+            "titulo": comunicado.titulo,
+            "mensagem": comunicado.mensagem,
+            "data": comunicado.data.isoformat(),
+            "turma_id": comunicado.turma_id,
+            "nome_turma": comunicado.turma.turma if comunicado.turma else None,
+            "criado_por": coordenador.escola or "Coordenação",
+            "origem": "coordenacao",
+        }
+    })
+
+
+# @csrf_exempt
+# def editar_comunicado_coordenacao(request, comunicado_id):
+#     """Atualiza título, mensagem e turma de um comunicado."""
+#     if request.method != "POST":
+#         return JsonResponse({"message": "Método não permitido."}, status=405)
+
+#     comunicado = Comunicado.objects.filter(id=comunicado_id).first()
+#     if not comunicado:
+#         return JsonResponse({"message": "Comunicado não encontrado."}, status=404)
+
+#     try:
+#         body = json.loads(request.body)
+#     except json.JSONDecodeError:
+#         return JsonResponse({"message": "JSON inválido."}, status=400)
+
+#     titulo = (body.get("titulo") or "").strip()
+#     mensagem = (body.get("mensagem") or "").strip()
+#     turma_id = body.get("turma")
+
+#     if not titulo or not mensagem:
+#         return JsonResponse(
+#             {"message": "Campos 'titulo' e 'mensagem' são obrigatórios."},
+#             status=400
+#         )
+
+#     turma = None
+#     if turma_id:
+#         turma = AtravessaPor.objects.filter(id=turma_id).first()
+#         if not turma:
+#             return JsonResponse({"message": "Turma não encontrada."}, status=404)
+
+#     comunicado.titulo = titulo
+#     comunicado.mensagem = mensagem
+#     comunicado.turma = turma
+#     comunicado.save()
+
+#     return JsonResponse({"message": "Comunicado atualizado com sucesso."})
+
+@csrf_exempt
+def editar_comunicado_coordenacao(request, comunicado_id):
+    """Atualiza título, mensagem, turma e data de um comunicado."""
+    if request.method != "POST":
+        return JsonResponse({"message": "Método não permitido."}, status=405)
+
+    comunicado = Comunicado.objects.filter(id=comunicado_id).first()
+    if not comunicado:
+        return JsonResponse({"message": "Comunicado não encontrado."}, status=404)
+
+    try:
+        body = json.loads(request.body)
+    except json.JSONDecodeError:
+        return JsonResponse({"message": "JSON inválido."}, status=400)
+
+    titulo = (body.get("titulo") or "").strip()
+    mensagem = (body.get("mensagem") or "").strip()
+    turma_id = body.get("turma")
+    data_str = body.get("data")
+
+    if not titulo or not mensagem:
+        return JsonResponse(
+            {"message": "Campos 'titulo' e 'mensagem' são obrigatórios."},
+            status=400
+        )
+
+    if not data_str:
+        return JsonResponse({"message": "O campo 'data' é obrigatório."}, status=400)
+
+    try:
+        data_comunicado = date.fromisoformat(data_str)
+    except ValueError:
+        return JsonResponse({"message": "Formato de data inválido. Use AAAA-MM-DD."}, status=400)
+
+    turma = None
+    if turma_id:
+        turma = AtravessaPor.objects.filter(id=turma_id).first()
+        if not turma:
+            return JsonResponse({"message": "Turma não encontrada."}, status=404)
+
+    comunicado.titulo = titulo
+    comunicado.mensagem = mensagem
+    comunicado.turma = turma
+    comunicado.data = data_comunicado
+    comunicado.save()
+
+    return JsonResponse({"message": "Comunicado atualizado com sucesso."})
+
+
+@csrf_exempt
+def deletar_comunicado_coordenacao(request, comunicado_id):
+    """Remove um comunicado."""
+    if request.method != "DELETE":
+        return JsonResponse({"message": "Método não permitido."}, status=405)
+
+    comunicado = Comunicado.objects.filter(id=comunicado_id).first()
+    if not comunicado:
+        return JsonResponse({"message": "Comunicado não encontrado."}, status=404)
+
+    comunicado.delete()
+    return JsonResponse({"message": "Comunicado removido com sucesso."})

@@ -237,7 +237,7 @@ export default function CalendarioCoordenacaoPage() {
                     className={`${styles.diaCelula} ${isHoje ? styles.diaCelulaHoje : ""}`}
                   >
                     <span className={styles.diaNumero}>{dia}</span>
-                    {eventosDoDia.map((evento) => (
+                    {/* {eventosDoDia.map((evento) => (
                       <div
                         key={evento.id}
                         className={`${styles.eventoTag} ${evento.finalizado ? styles.eventoTagFinalizado : ""}`}
@@ -245,6 +245,16 @@ export default function CalendarioCoordenacaoPage() {
                       >
                         {evento.titulo}
                       </div>
+                    ))} */}
+                    {eventosDoDia.map((evento) => (
+                      <Link
+                        key={evento.id}
+                        href={`/coordenacao/calendario/${evento.id}`}
+                        className={`${styles.eventoTag} ${evento.finalizado ? styles.eventoTagFinalizado : ""}`}
+                        title={evento.titulo}
+                      >
+                        {evento.titulo}
+                      </Link>
                     ))}
                   </div>
                 );
@@ -350,48 +360,94 @@ export default function CalendarioCoordenacaoPage() {
                         //     </div>
                         //   )}
                         // </li>
+                        // <li
+                        //   key={evento.id}
+                        //   className={`${styles.eventoCard} ${evento.finalizado ? styles.eventoCardFinalizado : ""}`}
+                        // >
+                        //   <div className={styles.eventoCardData}>
+                        //     {evento.data.split("-")[2]}
+                        //     <span>{MESES[Number(evento.data.split("-")[1]) - 1].slice(0, 3)}</span>
+                        //   </div>
+                        //   <div className={styles.eventoCardInfo}>
+                        //     <div className={styles.eventoCardTopo}>
+                        //       <p className={styles.eventoCardTitulo}>{evento.titulo}</p>
+                        //       {evento.finalizado && (
+                        //         <span className={styles.finalizadoBadge}>Evento finalizado</span>
+                        //       )}
+                        //     </div>
+
+                        //     <div className={styles.eventoCardBadges}>
+                        //       {evento.nome_turma && (
+                        //         <span className={styles.eventoCardBadge}>{evento.nome_turma}</span>
+                        //       )}
+                        //       {evento.criado_por && (
+                        //         <span className={styles.eventoCardOrigemBadge}>
+                        //           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        //             <path d="M3 21l18 0" />
+                        //             <path d="M5 21v-14l8 -4v18" />
+                        //             <path d="M19 21v-10l-6 -4" />
+                        //             <path d="M9 9l0 .01" />
+                        //             <path d="M9 12l0 .01" />
+                        //             <path d="M9 15l0 .01" />
+                        //             <path d="M9 18l0 .01" />
+                        //           </svg>
+                        //           {evento.criado_por}
+                        //         </span>
+                        //       )}
+                        //     </div>
+
+                        //     {evento.descricao && (
+                        //       <p className={styles.eventoCardDescricao}>{evento.descricao}</p>
+                        //     )}
+                        //   </div>
+
+                        //   {/* ... resto (botões de editar/apagar) continua igual ... */}
+                        // </li>
                         <li
                           key={evento.id}
                           className={`${styles.eventoCard} ${evento.finalizado ? styles.eventoCardFinalizado : ""}`}
                         >
-                          <div className={styles.eventoCardData}>
-                            {evento.data.split("-")[2]}
-                            <span>{MESES[Number(evento.data.split("-")[1]) - 1].slice(0, 3)}</span>
-                          </div>
-                          <div className={styles.eventoCardInfo}>
-                            <div className={styles.eventoCardTopo}>
-                              <p className={styles.eventoCardTitulo}>{evento.titulo}</p>
-                              {evento.finalizado && (
-                                <span className={styles.finalizadoBadge}>Evento finalizado</span>
+                          <Link
+                            href={`/coordenacao/calendario/${evento.id}`}
+                            className={styles.eventoCardLink}
+                          >
+                            <div className={styles.eventoCardData}>
+                              {evento.data.split("-")[2]}
+                              <span>{MESES[Number(evento.data.split("-")[1]) - 1].slice(0, 3)}</span>
+                            </div>
+                            <div className={styles.eventoCardInfo}>
+                              <div className={styles.eventoCardTopo}>
+                                <p className={styles.eventoCardTitulo}>{evento.titulo}</p>
+                                {evento.finalizado && (
+                                  <span className={styles.finalizadoBadge}>Evento finalizado</span>
+                                )}
+                              </div>
+
+                              <div className={styles.eventoCardBadges}>
+                                {evento.nome_turma && (
+                                  <span className={styles.eventoCardBadge}>{evento.nome_turma}</span>
+                                )}
+                                {evento.criado_por && (
+                                  <span className={styles.eventoCardOrigemBadge}>
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                      <path d="M3 21l18 0" />
+                                      <path d="M5 21v-14l8 -4v18" />
+                                      <path d="M19 21v-10l-6 -4" />
+                                      <path d="M9 9l0 .01" />
+                                      <path d="M9 12l0 .01" />
+                                      <path d="M9 15l0 .01" />
+                                      <path d="M9 18l0 .01" />
+                                    </svg>
+                                    {evento.criado_por}
+                                  </span>
+                                )}
+                              </div>
+
+                              {evento.descricao && (
+                                <p className={styles.eventoCardDescricao}>{evento.descricao}</p>
                               )}
                             </div>
-
-                            <div className={styles.eventoCardBadges}>
-                              {evento.nome_turma && (
-                                <span className={styles.eventoCardBadge}>{evento.nome_turma}</span>
-                              )}
-                              {evento.criado_por && (
-                                <span className={styles.eventoCardOrigemBadge}>
-                                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                    <path d="M3 21l18 0" />
-                                    <path d="M5 21v-14l8 -4v18" />
-                                    <path d="M19 21v-10l-6 -4" />
-                                    <path d="M9 9l0 .01" />
-                                    <path d="M9 12l0 .01" />
-                                    <path d="M9 15l0 .01" />
-                                    <path d="M9 18l0 .01" />
-                                  </svg>
-                                  {evento.criado_por}
-                                </span>
-                              )}
-                            </div>
-
-                            {evento.descricao && (
-                              <p className={styles.eventoCardDescricao}>{evento.descricao}</p>
-                            )}
-                          </div>
-
-                          {/* ... resto (botões de editar/apagar) continua igual ... */}
+                          </Link>
                         </li>
                       );
                     })}

@@ -1,6 +1,7 @@
 from django.db import models
 from decimal import Decimal
 from django.db import models
+from datetime import date
 
 class Professor(models.Model):
     nome_completo = models.CharField(max_length=255, unique=True, null=True)
@@ -279,21 +280,22 @@ class Atividade(models.Model):
         return f"{self.titulo} - {self.turma} - {self.data}"
 
 
-class Comunicado(models.Model):
-    professor = models.ForeignKey("app.Professor", on_delete=models.CASCADE, related_name="comunicados")
-    turma = models.ForeignKey("app.AtravessaPor", on_delete=models.CASCADE, related_name="comunicados", null=True, blank=True)
+# class Comunicado(models.Model):
+#     professor = models.ForeignKey("app.Professor", on_delete=models.CASCADE, related_name="comunicados")
+#     turma = models.ForeignKey("app.AtravessaPor", on_delete=models.CASCADE, related_name="comunicados", null=True, blank=True)
 
-    titulo = models.CharField(max_length=255)
-    mensagem = models.TextField()
-    data = models.DateField(auto_now_add=True)
+#     titulo = models.CharField(max_length=255)
+#     mensagem = models.TextField()
+#     data = models.DateField(auto_now_add=True)
 
-    criado_em = models.DateTimeField(auto_now_add=True)
+#     criado_em = models.DateTimeField(auto_now_add=True)
 
-    class Meta:
-        ordering = ["-criado_em"]
+#     class Meta:
+#         ordering = ["-criado_em"]
 
-    def __str__(self):
-        return f"{self.titulo} - {self.data}"
+#     def __str__(self):
+#         return f"{self.titulo} - {self.data}"
+
 
 
 class Coordenador(models.Model):
@@ -321,3 +323,33 @@ class Advertencia(models.Model):
 
     def __str__(self):
         return f"{self.aluno} - {self.titulo} - {self.data}"
+
+
+# class Comunicado(models.Model):
+#     professor = models.ForeignKey(
+#         Professor, null=True, blank=True, on_delete=models.CASCADE, related_name="comunicados"
+#     )
+#     coordenador = models.ForeignKey(
+#         Coordenador, null=True, blank=True, on_delete=models.CASCADE, related_name="comunicados"
+#     )
+#     turma = models.ForeignKey(
+#         AtravessaPor, null=True, blank=True, on_delete=models.CASCADE
+#     )
+#     titulo = models.CharField(max_length=255)
+#     mensagem = models.TextField()
+#     data = models.DateField(auto_now_add=True)
+
+
+class Comunicado(models.Model):
+    professor = models.ForeignKey(
+        Professor, null=True, blank=True, on_delete=models.CASCADE, related_name="comunicados"
+    )
+    coordenador = models.ForeignKey(
+        Coordenador, null=True, blank=True, on_delete=models.CASCADE, related_name="comunicados"
+    )
+    turma = models.ForeignKey(
+        AtravessaPor, null=True, blank=True, on_delete=models.CASCADE
+    )
+    titulo = models.CharField(max_length=255)
+    mensagem = models.TextField()
+    data = models.DateField(default=date.today)
