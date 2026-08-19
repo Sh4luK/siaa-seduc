@@ -2562,3 +2562,60 @@ def get_comunicado_detalhe(request, comunicado_id):
         }
     })
 
+
+@csrf_exempt
+def criar_comunicado_coordenacao(request):
+    """Cria um novo comunicado emitido pela coordenação (geral ou por turma)."""
+    if request.method != "POST":
+        return JsonResponse({"message": "Método não permitido."}, status=405)
+
+    ip = get_ip()
+    coordenador = Coordenador.objects.filter(ip=ip).first()
+
+    if not coordenador:
+        return JsonResponse({"message": "Coordenador não autenticado."}, status=401)
+
+    try:
+        body = json.loads(request.body)
+    except json.JSONDecodeError:
+        return JsonResponse({"message": "JSON inválido."}, status=400)
+
+    titulo = (body.get("titulo") or "").strip()
+    mensagem = (body.get("mensagem") or "").strip()
+    turma_id = body.get("turma")
+
+    if not titulo or not mensagem:
+        return JsonResponse(
+            {"message": "Campos 'titulo' e 'mensagem' são obrigatórios."},
+            status=400
+        )
+
+    turma = None
+    if turma_id:
+        turma = AtravessaPor.objects.filter(id=turma_id).first()
+        if not turma:
+            return JsonResponse({"message": "Turma não encontrada."}, status=404)
+
+    comunicado = Comunicado.objects.create(
+        professor=None,
+        coordenador=coordenador,
+        turma=turma,
+        titulo=titulo,
+        mensagem=mensagem,
+    )
+
+    return JsonResponse({
+        "message": "Comunicado criado com sucesso.",
+        "comunicado": {
+            "id": comunicado.id,
+            "titulo": comunicado.titulo,
+            "mensagem": comunicado.mensagem,
+            "data": comunicado.data.isoformat(),
+            "turma_id": comunicado.turma_id,
+            "nome_turma": comunicado.turma.turma if comunicado.turma else None,
+            "criado_por": coordenador.escola or "Coordenação",
+            "origem": "coordenacao",
+        }
+    })
+
+
