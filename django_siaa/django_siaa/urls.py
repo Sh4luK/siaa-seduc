@@ -61,6 +61,6 @@ urlpatterns = [
     path("api/coordenacao/calendario/eventos/criar", app.views.criar_evento_coordenacao, name="criar_evento_coordenacao"),
     path("api/coordenacao/calendario/eventos/<int:evento_id>/editar", app.views.editar_evento_coordenacao, name="editar_evento_coordenacao"),
     path("api/coordenacao/calendario/eventos/<int:evento_id>/deletar", app.views.deletar_evento_coordenacao, name="deletar_evento_coordenacao"),
-    
-
+    path("api/coordenacao/professores-simples", app.views.get_lista_professores_simples, name="get_lista_professores_simples"),
+    path("api/coordenacao/professores/<int:professor_id>/turmas", app.views.get_turmas_do_professor, name="get_turmas_do_professor"),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
