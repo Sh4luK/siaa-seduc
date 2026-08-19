@@ -2619,3 +2619,42 @@ def criar_comunicado_coordenacao(request):
     })
 
 
+@csrf_exempt
+def editar_comunicado_coordenacao(request, comunicado_id):
+    """Atualiza título, mensagem e turma de um comunicado."""
+    if request.method != "POST":
+        return JsonResponse({"message": "Método não permitido."}, status=405)
+
+    comunicado = Comunicado.objects.filter(id=comunicado_id).first()
+    if not comunicado:
+        return JsonResponse({"message": "Comunicado não encontrado."}, status=404)
+
+    try:
+        body = json.loads(request.body)
+    except json.JSONDecodeError:
+        return JsonResponse({"message": "JSON inválido."}, status=400)
+
+    titulo = (body.get("titulo") or "").strip()
+    mensagem = (body.get("mensagem") or "").strip()
+    turma_id = body.get("turma")
+
+    if not titulo or not mensagem:
+        return JsonResponse(
+            {"message": "Campos 'titulo' e 'mensagem' são obrigatórios."},
+            status=400
+        )
+
+    turma = None
+    if turma_id:
+        turma = AtravessaPor.objects.filter(id=turma_id).first()
+        if not turma:
+            return JsonResponse({"message": "Turma não encontrada."}, status=404)
+
+    comunicado.titulo = titulo
+    comunicado.mensagem = mensagem
+    comunicado.turma = turma
+    comunicado.save()
+
+    return JsonResponse({"message": "Comunicado atualizado com sucesso."})
+
+
