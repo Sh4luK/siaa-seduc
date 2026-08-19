@@ -2283,11 +2283,41 @@ def get_eventos_coordenacao(request):
     })
 
 
+# @csrf_exempt
+# def get_evento_detalhe(request, evento_id):
+#     evento = Evento.objects.select_related("coordenador").filter(id=evento_id).first()
+#     if not evento:
+#         return JsonResponse({"message": "Evento não encontrado."}, status=404)
+
+#     return JsonResponse({
+#         "evento": {
+#             "id": evento.id,
+#             "titulo": evento.titulo,
+#             "descricao": evento.descricao,
+#             "data": evento.data.isoformat(),
+#             "turma_id": evento.turma_id,
+#             "nome_turma": evento.turma.turma if evento.turma else None,
+#         }
+#     })
+
 @csrf_exempt
 def get_evento_detalhe(request, evento_id):
-    evento = Evento.objects.select_related("coordenador").filter(id=evento_id).first()
+    """Retorna os dados completos de um evento específico, incluindo status calculado."""
+    evento = Evento.objects.select_related("turma", "professor", "coordenador").filter(id=evento_id).first()
     if not evento:
         return JsonResponse({"message": "Evento não encontrado."}, status=404)
+
+    hoje = date.today()
+
+    if evento.coordenador:
+        criado_por = evento.coordenador.escola or "Coordenação"
+        origem = "coordenacao"
+    elif evento.professor:
+        criado_por = evento.professor.nome_completo
+        origem = "professor"
+    else:
+        criado_por = None
+        origem = None
 
     return JsonResponse({
         "evento": {
@@ -2297,6 +2327,10 @@ def get_evento_detalhe(request, evento_id):
             "data": evento.data.isoformat(),
             "turma_id": evento.turma_id,
             "nome_turma": evento.turma.turma if evento.turma else None,
+            "professor": evento.professor.nome_completo if evento.professor else None,
+            "criado_por": criado_por,
+            "origem": origem,
+            "finalizado": evento.data < hoje,
         }
     })
 
