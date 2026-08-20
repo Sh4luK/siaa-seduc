@@ -206,6 +206,7 @@ function gerarSlots(inicio, fim) {
 
 const TEMPLATES = {
   SERIE_1: { label: "1ª Série", inicio: "07:10", fim: "16:10" },
+  SERIE_2: { label: "2ª Série", inicio: "07:10", fim: "16:10" },
   SERIE_3_MANHA: { label: "3ª Série — Manhã", inicio: "07:10", fim: "12:30" },
   SERIE_3_TARDE: { label: "3ª Série — Tarde", inicio: "13:10", fim: "18:30" },
 };
@@ -213,14 +214,19 @@ const TEMPLATES = {
 function determinarTemplate(turma) {
   const texto = `${turma?.nome_turma || ""} ${turma?.etapa || ""}`.toUpperCase();
 
-  const eh3 = texto.includes("3ª") || texto.includes("3A") || texto.includes("3º") || texto.includes("3 ");
+  const eh1 = texto.includes("1ª") || texto.includes("1A") || texto.includes("1º");
+  const eh2 = texto.includes("2ª") || texto.includes("2A") || texto.includes("2º");
+  const eh3 = texto.includes("3ª") || texto.includes("3A") || texto.includes("3º");
   const ehManha = texto.includes("MANH");
   const ehTarde = texto.includes("TARDE");
 
   if (eh3 && ehTarde) return TEMPLATES.SERIE_3_TARDE;
   if (eh3 && ehManha) return TEMPLATES.SERIE_3_MANHA;
+  if (eh3) return TEMPLATES.SERIE_1; // 3ª sem manhã/tarde identificado, cai no padrão integral
+  if (eh2) return TEMPLATES.SERIE_2;
+  if (eh1) return TEMPLATES.SERIE_1;
 
-  // 1ª série, ou qualquer outra série sem regra específica, cai no padrão genérico
+  // Qualquer série não identificada cai no padrão genérico
   return TEMPLATES.SERIE_1;
 }
 
