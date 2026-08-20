@@ -314,7 +314,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import logo from "../assets/logo.png";
+import logo from "../assets/logo2.png";
 import styles from "./page.module.css";
 
 const ACCESS_POINTS = [
@@ -329,7 +329,7 @@ const ACCESS_POINTS = [
     href: "/responsavel",
     monogram: "R",
     label: "Responsável",
-    description: "Acompanhe o desempenho do seu filho ou filha.",
+    description: "Acompanhe o desempenho do seu filho.",
     tab: "guardian",
   },
   {
