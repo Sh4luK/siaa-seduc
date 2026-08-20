@@ -2960,3 +2960,27 @@ def deletar_advertencia_coordenacao(request, advertencia_id):
     advertencia.delete()
     return JsonResponse({"message": "Registro removido com sucesso."})
 
+
+@csrf_exempt
+def gerar_advertencia_pdf(request, advertencia_id):
+    """Gera o PDF de advertência/penalidade, pronto para impressão."""
+    advertencia = Advertencia.objects.select_related("aluno", "professor", "coordenador").filter(id=advertencia_id).first()
+    if not advertencia:
+        return JsonResponse({"message": "Registro não encontrado."}, status=404)
+
+    contexto = {
+        "advertencia": advertencia,
+        "eh_penalidade": advertencia.tipo == "PENALIDADE",
+        "escola": advertencia.aluno.escola if advertencia.aluno else "",
+        "emitido_por": (advertencia.coordenador.escola or "Coordenação Pedagógica") if advertencia.coordenador else "Coordenação Pedagógica",
+    }
+
+    html_string = render_to_string("advertencias/pdf.html", contexto)
+    pdf_file = HTML(string=html_string).write_pdf()
+
+    prefixo = "penalidade" if advertencia.tipo == "PENALIDADE" else "advertencia"
+    nome_arquivo = f"{prefixo}_{advertencia.id}.pdf"
+
+    response = HttpResponse(pdf_file, content_type="application/pdf")
+    response["Content-Disposition"] = f'inline; filename="{nome_arquivo}"'
+    return response
