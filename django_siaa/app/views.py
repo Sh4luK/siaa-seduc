@@ -2911,3 +2911,38 @@ def criar_advertencia_coordenacao(request):
         "advertencia": {"id": advertencia.id, "tipo": advertencia.tipo}
     })
 
+
+@csrf_exempt
+def editar_advertencia_coordenacao(request, advertencia_id):
+    """Atualiza título, descrição e data. O alvo (aluno/professor) não é editável."""
+    if request.method != "POST":
+        return JsonResponse({"message": "Método não permitido."}, status=405)
+
+    advertencia = Advertencia.objects.filter(id=advertencia_id).first()
+    if not advertencia:
+        return JsonResponse({"message": "Registro não encontrado."}, status=404)
+
+    try:
+        body = json.loads(request.body)
+    except json.JSONDecodeError:
+        return JsonResponse({"message": "JSON inválido."}, status=400)
+
+    titulo = (body.get("titulo") or "").strip()
+    descricao = (body.get("descricao") or "").strip()
+    data_str = body.get("data")
+
+    if not titulo or not descricao:
+        return JsonResponse({"message": "Campos 'titulo' e 'descricao' são obrigatórios."}, status=400)
+
+    if data_str:
+        try:
+            advertencia.data = date.fromisoformat(data_str)
+        except ValueError:
+            return JsonResponse({"message": "Formato de data inválido. Use AAAA-MM-DD."}, status=400)
+
+    advertencia.titulo = titulo
+    advertencia.descricao = descricao
+    advertencia.save()
+
+    return JsonResponse({"message": "Registro atualizado com sucesso."})
+
