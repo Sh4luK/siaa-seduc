@@ -90,6 +90,14 @@
     font-size: 9pt;
     color: #888;
   }
+  .suspensao-aviso {
+    background: #fdecea;
+    border: 1px solid #d1453b;
+    border-radius: 4px;
+    padding: 12px 16px;
+    margin-bottom: 20px;
+    font-size: 11pt;
+  }
 </style>
 </head>
 <body>
@@ -131,6 +139,14 @@
       <span class="campo-valor">{{ advertencia.titulo }}</span>
     </div>
   </div>
+
+  {% if advertencia.is_suspensao %}
+    <div class="suspensao-aviso">
+      <strong>Suspensão aplicada:</strong>
+      de {{ advertencia.data_inicio_suspensao|date:"d/m/Y" }}
+      até {{ advertencia.data_termino_suspensao|date:"d/m/Y" }}.
+    </div>
+  {% endif %}
 
   <p class="descricao-titulo">Descrição da ocorrência</p>
   <div class="descricao-texto">{{ advertencia.descricao }}</div>
