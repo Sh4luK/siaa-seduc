@@ -1,15 +1,15 @@
-/* ---------------------------------------------------------
-   Tokens
---------------------------------------------------------- */
+
 .page {
-  --ink: #10182b;
-  --surface: #1c2b4c;
-  --surface-line: rgba(244, 241, 230, 0.1);
-  --parchment: #f4f1e6;
-  --gold: #c9a227;
-  --gold-soft: #e4c874;
-  --text-primary: #f5f2e9;
-  --text-muted: #9aa5c0;
+  --ink: #0e0f12;
+  --surface: #17181d;
+  --text-primary: #ececec;
+  --text-muted: #8a8a8f;
+  --line: #26272d;
+
+  --tab-student: #5b8def;
+  --tab-guardian: #2dd4bf;
+  --tab-teacher: #f0a942;
+  --tab-staff: #a78bfa;
 
   min-height: 100vh;
   display: flex;
@@ -17,178 +17,181 @@
   justify-content: center;
   padding: 4rem 1.5rem;
   background-color: var(--ink);
-  background-image:
-    radial-gradient(circle at 1px 1px, rgba(244, 241, 230, 0.06) 1px, transparent 0);
-  background-size: 28px 28px;
   color: var(--text-primary);
   font-family: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
 }
 
-.hall {
+.container {
   width: 100%;
-  max-width: 960px;
+  max-width: 620px;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 3rem;
+  gap: 2.75rem;
 }
 
-/* ---------------------------------------------------------
-   Masthead
---------------------------------------------------------- */
 .masthead {
   display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1.5rem;
+}
+
+.mastheadText {
+  display: flex;
   flex-direction: column;
-  align-items: center;
-  text-align: center;
-  gap: 0.75rem;
+  gap: 0.4rem;
+  min-width: 0;
 }
 
 .logo {
-  width: 72px;
+  width: 150px;
   height: auto;
-  margin-bottom: 0.5rem;
+  flex-shrink: 0;
+  opacity: 0.95;
+}
+
+@media (max-width: 480px) {
+  .masthead {
+    flex-direction: column-reverse;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
 }
 
 .eyebrow {
   margin: 0;
-  font-size: 0.75rem;
-  letter-spacing: 0.14em;
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--gold-soft);
-  font-weight: 600;
+  color: var(--text-muted);
 }
 
 .title {
   margin: 0;
-  font-family: "Fraunces", "Georgia", serif;
-  font-optical-sizing: auto;
-  font-weight: 600;
-  font-size: clamp(2rem, 4vw, 2.75rem);
+  font-size: 2.25rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
   color: var(--text-primary);
 }
 
 .subtitle {
-  margin: 0;
-  max-width: 32ch;
+  margin: 0.15rem 0 0;
+  max-width: 40ch;
+  font-size: 0.92rem;
+  font-weight: 400;
   color: var(--text-muted);
-  font-size: 1rem;
 }
 
-/* ---------------------------------------------------------
-   Access grid
---------------------------------------------------------- */
 .grid {
-  width: 100%;
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 1rem;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.9rem;
 }
 
-@media (max-width: 860px) {
-  .grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (max-width: 520px) {
+@media (max-width: 540px) {
   .grid {
     grid-template-columns: 1fr;
   }
 }
 
-.tile {
+.card {
   position: relative;
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  gap: 0.65rem;
-  padding: 1.5rem 1.25rem 1.75rem;
   background-color: var(--surface);
-  border: 1px solid var(--surface-line);
-  border-radius: 4px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 1.5rem 1.35rem 1.35rem;
   text-decoration: none;
   color: var(--text-primary);
-  transition: transform 0.18s ease, border-color 0.18s ease, background-color 0.18s ease;
+  overflow: hidden;
+  transition: border-color 0.15s ease, transform 0.15s ease, background-color 0.15s ease;
 }
 
-.tile:hover,
-.tile:focus-visible {
-  transform: translateY(-3px);
-  border-color: var(--gold);
-  background-color: #22335a;
+.card:hover,
+.card:focus-visible {
+  border-color: #3a3b42;
+  background-color: #1c1d23;
+  transform: translateY(-1px);
 }
 
-.tile:focus-visible {
-  outline: 2px solid var(--gold-soft);
-  outline-offset: 3px;
+.card:focus-visible {
+  outline: 2px solid var(--text-primary);
+  outline-offset: 2px;
 }
 
-.seal {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 2.5rem;
-  height: 2.5rem;
-  border-radius: 50%;
-  background-color: var(--parchment);
-  color: var(--ink);
-  font-family: "Fraunces", "Georgia", serif;
-  font-weight: 600;
-  font-size: 1.05rem;
-}
-
-.tileLabel {
-  font-weight: 600;
-  font-size: 1.05rem;
-}
-
-.tileDescription {
-  color: var(--text-muted);
-  font-size: 0.85rem;
-  line-height: 1.4;
-}
-
-.tileArrow {
+.tab {
   position: absolute;
-  top: 1.4rem;
-  right: 1.25rem;
-  color: var(--gold-soft);
-  opacity: 0;
-  transform: translateX(-4px);
-  transition: opacity 0.18s ease, transform 0.18s ease;
+  top: 0;
+  left: 0;
+  width: 34px;
+  height: 4px;
+  border-radius: 0 0 3px 0;
 }
 
-.tile:hover .tileArrow,
-.tile:focus-visible .tileArrow {
-  opacity: 1;
-  transform: translateX(0);
-}
+.card[data-tab="student"] .tab { background-color: var(--tab-student); }
+.card[data-tab="guardian"] .tab { background-color: var(--tab-guardian); }
+.card[data-tab="teacher"] .tab { background-color: var(--tab-teacher); }
+.card[data-tab="staff"] .tab { background-color: var(--tab-staff); }
 
-/* ---------------------------------------------------------
-   Footer
---------------------------------------------------------- */
-.footer {
+.cardContent {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 1rem;
+  gap: 0.5rem;
+}
+
+.monogram {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
   color: var(--text-muted);
-  font-size: 0.8rem;
 }
 
-.rule {
-  width: 48px;
-  height: 1px;
-  background-color: var(--surface-line);
+.card[data-tab="student"] .monogram { color: var(--tab-student); }
+.card[data-tab="guardian"] .monogram { color: var(--tab-guardian); }
+.card[data-tab="teacher"] .monogram { color: var(--tab-teacher); }
+.card[data-tab="staff"] .monogram { color: var(--tab-staff); }
+
+.cardLabel {
+  font-size: 1.08rem;
+  font-weight: 600;
+  color: var(--text-primary);
 }
 
-/* ---------------------------------------------------------
-   Reduced motion
---------------------------------------------------------- */
+.cardDescription {
+  font-size: 0.82rem;
+  font-weight: 400;
+  line-height: 1.45;
+  color: var(--text-muted);
+}
+
+.cardArrow {
+  align-self: flex-end;
+  margin-top: 1rem;
+  color: var(--text-muted);
+  opacity: 0;
+  transform: translateX(-3px);
+  transition: opacity 0.15s ease, transform 0.15s ease, color 0.15s ease;
+}
+
+.card:hover .cardArrow,
+.card:focus-visible .cardArrow {
+  opacity: 1;
+  transform: translateX(0);
+  color: var(--text-primary);
+}
+
+.footer {
+  padding-top: 1.75rem;
+  border-top: 1px solid var(--line);
+  color: var(--text-muted);
+  font-size: 0.75rem;
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .tile,
-  .tileArrow {
+  .card,
+  .cardArrow {
     transition: none;
   }
 }
