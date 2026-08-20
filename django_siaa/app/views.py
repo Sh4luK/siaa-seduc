@@ -3114,3 +3114,23 @@ def get_horarios_turma(request, nome_turma):
     })
 
 
+
+@csrf_exempt
+def get_opcoes_horario_turma(request, nome_turma):
+    """Lista as combinações disciplina+professor disponíveis para essa turma, para popular os selects da grade."""
+    nome_turma = unquote(nome_turma)
+
+    registros = AtravessaPor.objects.filter(turma=nome_turma).select_related("professor")
+    if not registros.exists():
+        return JsonResponse({"message": "Turma não encontrada."}, status=404)
+
+    resultado = []
+    for r in registros:
+        disciplina = resolver_disciplina_da_turma(r)
+        resultado.append({
+            "atravessa_por_id": r.id,
+            "disciplina": disciplina.nome_disciplina if disciplina else r.disciplina_lecionada,
+            "professor": r.professor.nome_completo,
+        })
+
+    return JsonResponse({"opcoes": resultado})
