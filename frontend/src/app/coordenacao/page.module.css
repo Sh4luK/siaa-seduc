@@ -1,4 +1,4 @@
-.page {
+/* .page {
   min-height: 100vh;
   background: #0b1220;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -195,5 +195,252 @@
 
   .title {
     font-size: 1.4rem;
+  }
+} */
+
+
+/* ---------------------------------------------------------
+   Page
+--------------------------------------------------------- */
+.page {
+  min-height: 100vh;
+  background-color: #f5f7fa;
+  color: #1a2942;
+  font-family: "IBM Plex Sans", "Inter", "Segoe UI", system-ui, sans-serif;
+}
+
+/* ---------------------------------------------------------
+   Top bar — identidade institucional
+--------------------------------------------------------- */
+.topBar {
+  background-color: #0a2f5c;
+  color: #cfe0f5;
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  padding: 0.5rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  text-align: center;
+}
+
+.topBarDivider {
+  width: 1px;
+  height: 12px;
+  background-color: rgba(207, 224, 245, 0.35);
+}
+
+@media (max-width: 480px) {
+  .topBarDivider {
+    display: none;
+  }
+}
+
+/* ---------------------------------------------------------
+   Wrapper
+--------------------------------------------------------- */
+.wrapper {
+  max-width: 780px;
+  margin: 0 auto;
+  padding: 3.5rem 1.5rem 3rem;
+}
+
+/* ---------------------------------------------------------
+   Masthead
+--------------------------------------------------------- */
+.masthead {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  margin-bottom: 2.75rem;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.logo {
+  width: 64px;
+  height: auto;
+  flex-shrink: 0;
+}
+
+.mastheadText {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  min-width: 0;
+}
+
+.eyebrow {
+  margin: 0;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #0b4f9e;
+}
+
+.title {
+  margin: 0;
+  font-size: 1.9rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: #1a2942;
+}
+
+.subtitle {
+  margin: 0.2rem 0 0;
+  font-size: 0.92rem;
+  color: #5b6b85;
+}
+
+@media (max-width: 520px) {
+  .masthead {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.9rem;
+  }
+}
+
+/* ---------------------------------------------------------
+   Grid of cards
+--------------------------------------------------------- */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.9rem;
+}
+
+@media (max-width: 560px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.card {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.9rem;
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 1.35rem;
+  text-decoration: none;
+  color: #1a2942;
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+}
+
+.card:hover,
+.card:focus-visible {
+  border-color: #0b4f9e;
+  box-shadow: 0 4px 14px rgba(11, 79, 158, 0.12);
+  transform: translateY(-2px);
+}
+
+.card:focus-visible {
+  outline: 2px solid #0b4f9e;
+  outline-offset: 2px;
+}
+
+.iconCircle {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background-color: #eaf1fb;
+  color: #0b4f9e;
+}
+
+.cardBody {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  min-width: 0;
+  flex: 1;
+}
+
+.cardLabel {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1a2942;
+}
+
+.cardDescription {
+  font-size: 0.82rem;
+  line-height: 1.45;
+  color: #5b6b85;
+}
+
+.cardArrow {
+  position: absolute;
+  top: 1.35rem;
+  right: 1.1rem;
+  color: #5b6b85;
+  opacity: 0;
+  transform: translateX(-3px);
+  transition: opacity 0.15s ease, transform 0.15s ease, color 0.15s ease;
+}
+
+.card:hover .cardArrow,
+.card:focus-visible .cardArrow {
+  opacity: 1;
+  transform: translateX(0);
+  color: #0b4f9e;
+}
+
+/* ---------------------------------------------------------
+   Loading
+--------------------------------------------------------- */
+.pageLoading {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f5f7fa;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  padding: 1.5rem;
+}
+
+.cardLoading {
+  width: 100%;
+  max-width: 400px;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 2.25rem 2rem;
+  box-shadow: 0 1px 3px rgba(16, 24, 40, 0.06);
+}
+
+.headerLoading {
+  text-align: center;
+  margin-bottom: 1.75rem;
+}
+
+.subtituloLoading {
+  font-size: 0.85rem;
+  color: #5b6b85;
+  margin: 0;
+}
+
+.loadingLogo {
+  width: 96px;
+  height: auto;
+  opacity: 0.92;
+}
+
+/* ---------------------------------------------------------
+   Reduced motion
+--------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  .card,
+  .cardArrow {
+    transition: none;
   }
 }
