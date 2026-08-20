@@ -2786,3 +2786,36 @@ def deletar_comunicado_coordenacao(request, comunicado_id):
 
     comunicado.delete()
     return JsonResponse({"message": "Comunicado removido com sucesso."})
+
+
+@csrf_exempt
+def get_advertencias_coordenacao(request):
+    """Lista advertências (alunos) e penalidades (professores)."""
+    tipo = request.GET.get("tipo")  # opcional: ADVERTENCIA ou PENALIDADE
+
+    advertencias = Advertencia.objects.select_related("aluno", "professor", "coordenador").order_by("-data")
+
+    if tipo:
+        advertencias = advertencias.filter(tipo=tipo)
+
+    resultado = []
+    for a in advertencias:
+        resultado.append({
+            "id": a.id,
+            "tipo": a.tipo,
+            "titulo": a.titulo,
+            "descricao": a.descricao,
+            "data": a.data.isoformat(),
+            "aluno_id": a.aluno_id,
+            "aluno_nome": a.aluno.nome_completo if a.aluno else None,
+            "aluno_turma": a.aluno.turma if a.aluno else None,
+            "professor_id": a.professor_id,
+            "professor_nome": a.professor.nome_completo if a.professor else None,
+            "emitido_por": (a.coordenador.escola or "Coordenação") if a.coordenador else None,
+        })
+
+    return JsonResponse({
+        "total_advertencias": len(resultado),
+        "advertencias": resultado
+    })
+
