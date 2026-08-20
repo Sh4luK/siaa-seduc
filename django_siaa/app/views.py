@@ -2819,3 +2819,27 @@ def get_advertencias_coordenacao(request):
         "advertencias": resultado
     })
 
+
+@csrf_exempt
+def get_advertencia_detalhe(request, advertencia_id):
+    """Retorna os dados completos de uma advertência/penalidade."""
+    advertencia = Advertencia.objects.select_related("aluno", "professor", "coordenador").filter(id=advertencia_id).first()
+    if not advertencia:
+        return JsonResponse({"message": "Registro não encontrado."}, status=404)
+
+    return JsonResponse({
+        "advertencia": {
+            "id": advertencia.id,
+            "tipo": advertencia.tipo,
+            "titulo": advertencia.titulo,
+            "descricao": advertencia.descricao,
+            "data": advertencia.data.isoformat(),
+            "aluno_id": advertencia.aluno_id,
+            "aluno_nome": advertencia.aluno.nome_completo if advertencia.aluno else None,
+            "aluno_turma": advertencia.aluno.turma if advertencia.aluno else None,
+            "professor_id": advertencia.professor_id,
+            "professor_nome": advertencia.professor.nome_completo if advertencia.professor else None,
+            "emitido_por": (advertencia.coordenador.escola or "Coordenação") if advertencia.coordenador else None,
+        }
+    })
+
