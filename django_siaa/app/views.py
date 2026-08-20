@@ -2812,6 +2812,9 @@ def get_advertencias_coordenacao(request):
             "professor_id": a.professor_id,
             "professor_nome": a.professor.nome_completo if a.professor else None,
             "emitido_por": (a.coordenador.escola or "Coordenação") if a.coordenador else None,
+            "is_suspensao": a.is_suspensao,
+            "data_inicio_suspensao": a.data_inicio_suspensao.isoformat() if a.data_inicio_suspensao else None,
+            "data_termino_suspensao": a.data_termino_suspensao.isoformat() if a.data_termino_suspensao else None,
         })
 
     return JsonResponse({
