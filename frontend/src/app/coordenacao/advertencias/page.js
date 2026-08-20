@@ -158,7 +158,7 @@ export default function AdvertenciasCoordenacaoPage() {
                   </div>
                 </Link>
 
-                
+                <a
                   href={`${API_BASE}/api/coordenacao/advertencias/${a.id}/pdf`}
                   target="_blank"
                   rel="noopener noreferrer"
