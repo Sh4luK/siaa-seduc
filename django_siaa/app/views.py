@@ -32,6 +32,8 @@ from .models import Comunicado
 from .models import Coordenador
 from .models import Advertencia
 import json
+from django.template.loader import render_to_string
+from weasyprint import HTML
 
 load_dotenv()
 
