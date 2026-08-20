@@ -191,41 +191,100 @@ export default function NovaAdvertenciaPage() {
             </div>
           </div>
 
-          {tipo === "ADVERTENCIA" && (
+          {/* {tipo === "ADVERTENCIA" ? (
             <div className={styles.campo}>
-              <label className={styles.checkboxLabel}>
-                <input
-                  type="checkbox"
-                  checked={isSuspensao}
-                  onChange={(e) => setIsSuspensao(e.target.checked)}
-                />
-                É uma suspensão?
-              </label>
+              <label className={styles.label} htmlFor="buscaAluno">Aluno</label>
+              <input
+                id="buscaAluno"
+                type="text"
+                className={styles.input}
+                placeholder="Buscar por nome..."
+                value={buscaAluno}
+                onChange={(e) => setBuscaAluno(e.target.value)}
+              />
+              <select
+                className={styles.select}
+                value={alunoId}
+                onChange={(e) => setAlunoId(e.target.value)}
+                size={Math.min(6, Math.max(3, alunosFiltrados.length))}
+              >
+                {alunosFiltrados.map((a) => (
+                  <option key={a.id} value={a.id}>
+                    {a.nome_completo} — {a.turma}
+                  </option>
+                ))}
+              </select>
+            </div>
+          ) : (
+            <div className={styles.campo}>
+              <label className={styles.label} htmlFor="professor">Professor</label>
+              <select
+                id="professor"
+                className={styles.select}
+                value={professorId}
+                onChange={(e) => setProfessorId(e.target.value)}
+              >
+                <option value="">Selecione um professor</option>
+                {professores.map((p) => (
+                  <option key={p.id} value={p.id}>{p.nome_completo}</option>
+                ))}
+              </select>
+            </div>
+          )} */}
+          {tipo === "ADVERTENCIA" ? (
+            <div className={styles.campo}>
+              <label className={styles.label} htmlFor="buscaAluno">Aluno</label>
+              <input
+                id="buscaAluno"
+                type="text"
+                className={styles.input}
+                placeholder="Buscar por nome..."
+                value={buscaAluno}
+                onChange={(e) => setBuscaAluno(e.target.value)}
+              />
 
-              {isSuspensao && (
-                <div className={styles.suspensaoCampos}>
-                  <div className={styles.campo}>
-                    <label className={styles.label} htmlFor="dataInicioSuspensao">Início da suspensão</label>
-                    <input
-                      id="dataInicioSuspensao"
-                      type="date"
-                      className={styles.input}
-                      value={dataInicioSuspensao}
-                      onChange={(e) => setDataInicioSuspensao(e.target.value)}
-                    />
-                  </div>
-                  <div className={styles.campo}>
-                    <label className={styles.label} htmlFor="dataTerminoSuspensao">Término da suspensão</label>
-                    <input
-                      id="dataTerminoSuspensao"
-                      type="date"
-                      className={styles.input}
-                      value={dataTerminoSuspensao}
-                      onChange={(e) => setDataTerminoSuspensao(e.target.value)}
-                    />
-                  </div>
-                </div>
-              )}
+              <div className={styles.alunoLista} role="listbox" aria-label="Selecione um aluno">
+                {alunosFiltrados.length === 0 ? (
+                  <p className={styles.alunoListaVazio}>Nenhum aluno encontrado.</p>
+                ) : (
+                  alunosFiltrados.map((a) => {
+                    const selecionado = String(alunoId) === String(a.id);
+                    return (
+                      <button
+                        key={a.id}
+                        type="button"
+                        role="option"
+                        aria-selected={selecionado}
+                        className={`${styles.alunoItem} ${selecionado ? styles.alunoItemSelecionado : ""}`}
+                        onClick={() => setAlunoId(a.id)}
+                      >
+                        <span className={styles.alunoNome}>{a.nome_completo}</span>
+                        <span className={styles.alunoTurma}>{a.turma}</span>
+                        {selecionado && (
+                          <svg className={styles.alunoCheck} width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M5 12l5 5l10 -10" />
+                          </svg>
+                        )}
+                      </button>
+                    );
+                  })
+                )}
+              </div>
+            </div>
+          ) : (
+            <div className={styles.campo}>
+              <label className={styles.label} htmlFor="professor">Professor</label>
+              <select
+                id="professor"
+                className={styles.select}
+                value={professorId}
+                onChange={(e) => setProfessorId(e.target.value)}
+              >
+                <option value="">Selecione um professor</option>
+                {professores.map((p) => (
+                  <option key={p.id} value={p.id}>{p.nome_completo}</option>
+                ))}
+              </select>
             </div>
           )}
 
