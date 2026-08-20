@@ -1,7 +1,7 @@
 import "bootstrap/dist/css/bootstrap.min.css";
 
 export const metadata = {
-  title: "Bem-vindo ao SIAA"
+  title: "Sistema Integrado de Acompanhamento Acadêmico (FAPEPI/SEDUC)"
 } 
 
 export default function RootLayout({ children }) {

@@ -312,3 +312,26 @@ class Comunicado(models.Model):
     titulo = models.CharField(max_length=255)
     mensagem = models.TextField()
     data = models.DateField(default=date.today)
+
+
+class HorarioAula(models.Model):
+    DIA_CHOICES = [
+        ("SEG", "Segunda-feira"),
+        ("TER", "Terça-feira"),
+        ("QUA", "Quarta-feira"),
+        ("QUI", "Quinta-feira"),
+        ("SEX", "Sexta-feira"),
+    ]
+
+    turma = models.ForeignKey(
+        AtravessaPor, on_delete=models.CASCADE, related_name="horarios"
+    )
+    dia_semana = models.CharField(max_length=3, choices=DIA_CHOICES)
+    hora_inicio = models.TimeField()
+    hora_fim = models.TimeField()
+
+    class Meta:
+        ordering = ["dia_semana", "hora_inicio"]
+
+    def __str__(self):
+        return f"{self.turma.turma} — {self.get_dia_semana_display()} {self.hora_inicio}–{self.hora_fim}"

@@ -1,4 +1,5 @@
 from urllib.parse import urlparse
+from urllib.parse import unquote
 from datetime import date
 import unicodedata
 from django.db.models.functions import Replace
@@ -31,6 +32,7 @@ from .models import Atividade
 from .models import Comunicado
 from .models import Coordenador
 from .models import Advertencia
+from .models import HorarioAula
 import json
 from django.template.loader import render_to_string
 from weasyprint import HTML
@@ -3044,3 +3046,155 @@ def gerar_advertencia_pdf(request, advertencia_id):
     response = HttpResponse(pdf_file, content_type="application/pdf")
     response["Content-Disposition"] = f'inline; filename="{nome_arquivo}"'
     return response
+
+
+@csrf_exempt
+def get_turmas_coordenacao(request):
+    """Lista as turmas distintas (nome + etapa + escola + total de alunos), para a tela de horários."""
+    registros = AtravessaPor.objects.exclude(turma="").values("turma", "etapa", "escola").distinct()
+
+    turmas_map = {}
+    for r in registros:
+        nome = r["turma"]
+        if nome not in turmas_map:
+            turmas_map[nome] = {
+                "nome_turma": nome,
+                "etapa": r["etapa"],
+                "escola": r["escola"],
+            }
+
+    resultado = list(turmas_map.values())
+    resultado.sort(key=lambda t: t["nome_turma"])
+
+    for t in resultado:
+        t["total_alunos"] = buscar_alunos_por_turma(t["nome_turma"]).count()
+
+    return JsonResponse({
+        "total_turmas": len(resultado),
+        "turmas": resultado
+    })
+
+
+@csrf_exempt
+def get_horarios_turma(request, nome_turma):
+    """Retorna a grade de horários (segunda a sexta) de uma turma, com disciplina e professor de cada aula."""
+    nome_turma = unquote(nome_turma)
+
+    registros_turma = AtravessaPor.objects.filter(turma=nome_turma).select_related("professor")
+    if not registros_turma.exists():
+        return JsonResponse({"message": "Turma não encontrada."}, status=404)
+
+    horarios = HorarioAula.objects.filter(
+        turma__in=registros_turma
+    ).select_related("turma", "turma__professor").order_by("dia_semana", "hora_inicio")
+
+    resultado = []
+    for h in horarios:
+        disciplina = resolver_disciplina_da_turma(h.turma)
+        resultado.append({
+            "id": h.id,
+            "atravessa_por_id": h.turma_id,
+            "dia_semana": h.dia_semana,
+            "hora_inicio": h.hora_inicio.strftime("%H:%M"),
+            "hora_fim": h.hora_fim.strftime("%H:%M"),
+            "disciplina": disciplina.nome_disciplina if disciplina else h.turma.disciplina_lecionada,
+            "professor": h.turma.professor.nome_completo,
+        })
+
+    primeiro_registro = registros_turma.first()
+
+    return JsonResponse({
+        "turma": {
+            "nome_turma": nome_turma,
+            "etapa": primeiro_registro.etapa,
+            "escola": primeiro_registro.escola,
+        },
+        "total_horarios": len(resultado),
+        "horarios": resultado
+    })
+
+
+
+@csrf_exempt
+def get_opcoes_horario_turma(request, nome_turma):
+    """Lista as combinações disciplina+professor disponíveis para essa turma, para popular os selects da grade."""
+    nome_turma = unquote(nome_turma)
+
+    registros = AtravessaPor.objects.filter(turma=nome_turma).select_related("professor")
+    if not registros.exists():
+        return JsonResponse({"message": "Turma não encontrada."}, status=404)
+
+    resultado = []
+    for r in registros:
+        disciplina = resolver_disciplina_da_turma(r)
+        resultado.append({
+            "atravessa_por_id": r.id,
+            "disciplina": disciplina.nome_disciplina if disciplina else r.disciplina_lecionada,
+            "professor": r.professor.nome_completo,
+        })
+
+    return JsonResponse({"opcoes": resultado})
+
+
+
+@csrf_exempt
+def salvar_horario_turma(request, nome_turma):
+    """
+    Salva a grade de horários de uma turma. Recebe a lista completa de células
+    (dia + hora_inicio + hora_fim + atravessa_por_id ou null para célula vazia)
+    e substitui os registros existentes de cada célula.
+    """
+    if request.method != "POST":
+        return JsonResponse({"message": "Método não permitido."}, status=405)
+
+    nome_turma = unquote(nome_turma)
+
+    try:
+        body = json.loads(request.body)
+    except json.JSONDecodeError:
+        return JsonResponse({"message": "JSON inválido."}, status=400)
+
+    atribuicoes = body.get("atribuicoes", [])
+    if not atribuicoes:
+        return JsonResponse({"message": "Nenhuma atribuição enviada."}, status=400)
+
+    dias_validos = dict(HorarioAula.DIA_CHOICES).keys()
+    erros = []
+    total_salvos = 0
+    total_removidos = 0
+
+    for item in atribuicoes:
+        dia = item.get("dia_semana")
+        hora_inicio_str = item.get("hora_inicio")
+        hora_fim_str = item.get("hora_fim")
+        atravessa_por_id = item.get("atravessa_por_id")
+
+        if dia not in dias_validos or not hora_inicio_str or not hora_fim_str:
+            erros.append(f"Célula inválida ignorada: {item}")
+            continue
+
+        # Remove qualquer registro existente nessa célula (dia + hora de início) da turma.
+        HorarioAula.objects.filter(
+            turma__turma=nome_turma, dia_semana=dia, hora_inicio=hora_inicio_str
+        ).delete()
+        total_removidos += 1
+
+        if atravessa_por_id:
+            atravessa_por = AtravessaPor.objects.filter(id=atravessa_por_id, turma=nome_turma).first()
+            if not atravessa_por:
+                erros.append(f"Vínculo {atravessa_por_id} não pertence a esta turma — ignorado.")
+                continue
+
+            HorarioAula.objects.create(
+                turma=atravessa_por,
+                dia_semana=dia,
+                hora_inicio=hora_inicio_str,
+                hora_fim=hora_fim_str,
+            )
+            total_salvos += 1
+
+    return JsonResponse({
+        "message": "Grade de horários salva com sucesso.",
+        "total_salvos": total_salvos,
+        "erros": erros,
+    })
