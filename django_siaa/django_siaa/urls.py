@@ -71,6 +71,9 @@ urlpatterns = [
     path('api/coordenacao/advertencias', app.views.views.get_advertencias_coordenacao, name='get_advertencias_coordenacao'),
     path('api/coordenacao/advertencias/criar', app.views.criar_advertencia_coordenacao, name='criar_advertencia_coordenacao'),
     path('api/coordenacao/advertencias/<int:advertencia_id>', app.views.get_advertencia_detalhe, name='get_advertencia_detalhe'),
+    path('api/coordenacao/advertencias/<int:advertencia_id>/editar', app.views.views.editar_advertencia_coordenacao, name='editar_advertencia_coordenacao'),
+        path('api/coordenacao/advertencias/<int:advertencia_id>/deletar', app.views.deletar_advertencia_coordenacao, name='deletar_advertencia_coordenacao'),
+        path('api/coordenacao/advertencias/<int:advertencia_id>/pdf', app.views.gerar_advertencia_pdf, name='gerar_advertencia_pdf'),
 
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
