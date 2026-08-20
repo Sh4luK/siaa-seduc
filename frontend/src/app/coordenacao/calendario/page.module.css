@@ -1,4 +1,4 @@
-.page {
+/* .page {
   min-height: 100vh;
   background: #0b1220;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -298,16 +298,6 @@
   margin: 0 0 0.3rem;
 }
 
-/* .eventoCardBadge {
-  display: inline-block;
-  font-size: 0.68rem;
-  font-weight: 700;
-  color: #86efac;
-  background: rgba(34, 197, 94, 0.12);
-  border-radius: 999px;
-  padding: 0.15rem 0.55rem;
-  margin-bottom: 0.4rem;
-} */
 
 .eventoCardBadges {
   display: flex;
@@ -484,4 +474,355 @@
   display: contents;
   text-decoration: none;
   color: inherit;
+} */
+
+
+.page {
+  min-height: 100vh;
+  background: #f5f7fa;
+  color: #1a2942;
+  padding: 32px;
+}
+
+.wrapper {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.voltarLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #5b6b85;
+  text-decoration: none;
+  font-size: 14px;
+  margin-bottom: 24px;
+}
+
+.voltarLink:hover {
+  color: #0b4f9e;
+}
+
+.headerRow {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.title {
+  font-size: 26px;
+  font-weight: 700;
+  color: #1a2942;
+  margin: 0 0 4px 0;
+}
+
+.subtitle {
+  font-size: 14px;
+  color: #5b6b85;
+  margin: 0;
+}
+
+.novoBotao {
+  padding: 10px 18px;
+  border-radius: 8px;
+  background: #0b4f9e;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 0.15s ease;
+}
+
+.novoBotao:hover {
+  background: #0a2f5c;
+}
+
+.listaErros {
+  background: rgba(220, 38, 38, 0.06);
+  border: 1px solid rgba(220, 38, 38, 0.25);
+  color: #b91c1c;
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin-bottom: 20px;
+  font-size: 14px;
+}
+
+.mensagemSucesso {
+  background: rgba(21, 128, 61, 0.06);
+  border: 1px solid rgba(21, 128, 61, 0.25);
+  color: #15803d;
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin-bottom: 20px;
+  font-size: 14px;
+}
+
+.navegacaoMes {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.navMesBotao {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  background: #fff;
+  color: #5b6b85;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.navMesBotao:hover {
+  border-color: #0b4f9e;
+  color: #0b4f9e;
+}
+
+.mesLabel {
+  font-size: 15px;
+  font-weight: 700;
+  color: #1a2942;
+  min-width: 160px;
+  text-align: center;
+}
+
+.calendarioGrid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+  margin-bottom: 32px;
+}
+
+.diaSemanaLabel {
+  text-align: center;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #5b6b85;
+  padding-bottom: 6px;
+}
+
+.diaCelulaVazia {
+  aspect-ratio: 1;
+}
+
+.diaCelula {
+  aspect-ratio: 1;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  overflow: hidden;
+}
+
+.diaCelulaHoje {
+  border-color: #0b4f9e;
+  background: #eaf1fb;
+}
+
+.diaNumero {
+  font-size: 12px;
+  font-weight: 600;
+  color: #5b6b85;
+}
+
+.diaCelulaHoje .diaNumero {
+  color: #0b4f9e;
+}
+
+.eventoTag {
+  display: block;
+  font-size: 10px;
+  padding: 2px 5px;
+  border-radius: 4px;
+  background: rgba(11, 79, 158, 0.1);
+  color: #0b4f9e;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-decoration: none;
+}
+
+.eventoTagFinalizado {
+  background: #f1f5f9;
+  color: #94a3b8;
+}
+
+.listaEventosSection {
+  margin-top: 8px;
+}
+
+.listaEventosTitulo {
+  font-size: 16px;
+  font-weight: 700;
+  color: #1a2942;
+  margin: 0 0 14px 0;
+}
+
+.vazio {
+  color: #5b6b85;
+  font-size: 14px;
+  text-align: center;
+  padding: 32px 0;
+}
+
+.eventosList {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 0;
+  margin: 0;
+}
+
+.eventoCard {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 14px;
+}
+
+.eventoCardFinalizado {
+  opacity: 0.65;
+}
+
+.eventoCardLink {
+  display: contents;
+  text-decoration: none;
+  color: inherit;
+}
+
+.eventoCardData {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 8px;
+  background: #eaf1fb;
+  color: #0b4f9e;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.eventoCardData span {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: #5b6b85;
+}
+
+.eventoCardInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.eventoCardTopo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.eventoCardTitulo {
+  font-size: 14.5px;
+  font-weight: 600;
+  color: #1a2942;
+  margin: 0;
+}
+
+.finalizadoBadge {
+  font-size: 10.5px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: #f1f5f9;
+  color: #64748b;
+}
+
+.eventoCardBadges {
+  display: flex;
+  gap: 6px;
+  margin-top: 4px;
+  flex-wrap: wrap;
+}
+
+.eventoCardBadge {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: rgba(11, 79, 158, 0.08);
+  color: #0b4f9e;
+}
+
+.eventoCardOrigemBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: #f1f5f9;
+  color: #5b6b85;
+}
+
+.eventoCardDescricao {
+  font-size: 12.5px;
+  color: #5b6b85;
+  margin: 4px 0 0;
+}
+
+.pageLoading {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f5f7fa;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  padding: 1.5rem;
+}
+
+.cardLoading {
+  width: 100%;
+  max-width: 400px;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 2.25rem 2rem;
+  box-shadow: 0 1px 3px rgba(16, 24, 40, 0.06);
+}
+
+.headerLoading {
+  text-align: center;
+  margin-bottom: 1.75rem;
+}
+
+.subtituloLoading {
+  font-size: 0.85rem;
+  color: #5b6b85;
+  margin: 0;
+}
+
+.loadingLogo {
+  width: 96px;
+  height: auto;
+  opacity: 0.92;
 }
