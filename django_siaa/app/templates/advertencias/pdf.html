@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<style>
+  @page {
+    size: A4;
+    margin: 2.5cm 2cm;
+  }
+  body {
+    font-family: "Helvetica", "Arial", sans-serif;
+    color: #1a1a1a;
+    font-size: 12pt;
+    line-height: 1.5;
+  }
+  .header {
+    text-align: center;
+    border-bottom: 2px solid #1a1a1a;
+    padding-bottom: 12px;
+    margin-bottom: 28px;
+  }
+  .header .orgao {
+    font-size: 10pt;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #444;
+    margin: 0 0 4px;
+  }
+  .header .sistema {
+    font-size: 11pt;
+    color: #666;
+    margin: 0;
+  }
+  .titulo-documento {
+    text-align: center;
+    font-size: 16pt;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin: 24px 0 32px;
+  }
+  .campos {
+    margin-bottom: 24px;
+  }
+  .campo-linha {
+    display: flex;
+    margin-bottom: 8px;
+  }
+  .campo-label {
+    font-weight: bold;
+    width: 130px;
+    flex-shrink: 0;
+  }
+  .campo-valor {
+    flex: 1;
+  }
+  .descricao-titulo {
+    font-weight: bold;
+    margin-top: 20px;
+    margin-bottom: 8px;
+  }
+  .descricao-texto {
+    text-align: justify;
+    white-space: pre-wrap;
+    border: 1px solid #ccc;
+    padding: 16px;
+    border-radius: 4px;
+    min-height: 120px;
+  }
+  .assinaturas {
+    margin-top: 72px;
+    display: flex;
+    justify-content: space-between;
+  }
+  .assinatura {
+    width: 45%;
+    text-align: center;
+  }
+  .assinatura-linha {
+    border-top: 1px solid #1a1a1a;
+    margin-bottom: 6px;
+  }
+  .assinatura-label {
+    font-size: 10pt;
+    color: #444;
+  }
+  .rodape {
+    margin-top: 48px;
+    text-align: center;
+    font-size: 9pt;
+    color: #888;
+  }
+</style>
+</head>
+<body>
+  <div class="header">
+    <p class="orgao">Governo do Estado do Piauí — Secretaria de Estado da Educação</p>
+    <p class="sistema">SIAA · Sistema Integrado de Acompanhamento Acadêmico</p>
+  </div>
+
+  <h1 class="titulo-documento">
+    {% if eh_penalidade %}Termo de Penalidade{% else %}Termo de Advertência{% endif %}
+  </h1>
+
+  <div class="campos">
+    {% if eh_penalidade %}
+      <div class="campo-linha">
+        <span class="campo-label">Professor(a):</span>
+        <span class="campo-valor">{{ advertencia.professor.nome_completo }}</span>
+      </div>
+    {% else %}
+      <div class="campo-linha">
+        <span class="campo-label">Aluno(a):</span>
+        <span class="campo-valor">{{ advertencia.aluno.nome_completo }}</span>
+      </div>
+      <div class="campo-linha">
+        <span class="campo-label">Turma:</span>
+        <span class="campo-valor">{{ advertencia.aluno.turma }}</span>
+      </div>
+      <div class="campo-linha">
+        <span class="campo-label">Escola:</span>
+        <span class="campo-valor">{{ escola }}</span>
+      </div>
+    {% endif %}
+    <div class="campo-linha">
+      <span class="campo-label">Data:</span>
+      <span class="campo-valor">{{ advertencia.data|date:"d/m/Y" }}</span>
+    </div>
+    <div class="campo-linha">
+      <span class="campo-label">Assunto:</span>
+      <span class="campo-valor">{{ advertencia.titulo }}</span>
+    </div>
+  </div>
+
+  <p class="descricao-titulo">Descrição da ocorrência</p>
+  <div class="descricao-texto">{{ advertencia.descricao }}</div>
+
+  <div class="assinaturas">
+    <div class="assinatura">
+      <div class="assinatura-linha"></div>
+      <p class="assinatura-label">{{ emitido_por }}</p>
+    </div>
+    <div class="assinatura">
+      <div class="assinatura-linha"></div>
+      <p class="assinatura-label">
+        {% if eh_penalidade %}Assinatura do(a) professor(a){% else %}Assinatura do(a) responsável{% endif %}
+      </p>
+    </div>
+  </div>
+
+  <p class="rodape">Documento emitido pelo SIAA em {{ advertencia.data|date:"d/m/Y" }}.</p>
+</body>
+</html>
