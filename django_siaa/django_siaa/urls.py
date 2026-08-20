@@ -76,6 +76,7 @@ urlpatterns = [
     path('api/coordenacao/advertencias/<int:advertencia_id>/pdf', app.views.gerar_advertencia_pdf, name='gerar_advertencia_pdf'),
     path('api/coordenacao/turmas', app.views.get_turmas_coordenacao, name='get_turmas_coordenacao'),
     path('api/coordenacao/turmas/<str:nome_turma>/horarios', app.views.get_horarios_turma, name='get_horarios_turma'),
-
+    path('api/coordenacao/turmas/<str:nome_turma>/horarios/opcoes', app.views.get_opcoes_horario_turma, name='get_opcoes_horario_turma'),
+    path('api/coordenacao/turmas/<str:nome_turma>/horarios/salvar', app.views.salvar_horario_turma, name='salvar_horario_turma'),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
