@@ -3093,6 +3093,7 @@ def get_horarios_turma(request, nome_turma):
         disciplina = resolver_disciplina_da_turma(h.turma)
         resultado.append({
             "id": h.id,
+            "atravessa_por_id": h.turma_id,
             "dia_semana": h.dia_semana,
             "hora_inicio": h.hora_inicio.strftime("%H:%M"),
             "hora_fim": h.hora_fim.strftime("%H:%M"),
