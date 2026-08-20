@@ -2123,7 +2123,7 @@ def get_aluno_visao_geral(request, aluno_id):
     turma_aluno_norm = _turma_normalizada(aluno.turma)
 
     # --- Comunicados relevantes: gerais (sem turma) OU da turma do aluno ---
-    comunicados_qs = Comunicado.objects.select_related("turma").order_by("-criado_em")
+    comunicados_qs = Comunicado.objects.select_related("turma").order_by("-data")
     comunicados = []
     for c in comunicados_qs:
         if c.turma is None:
