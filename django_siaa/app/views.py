@@ -2946,7 +2946,6 @@ def criar_advertencia_coordenacao(request):
 
 @csrf_exempt
 def editar_advertencia_coordenacao(request, advertencia_id):
-    """Atualiza título, descrição e data. O alvo (aluno/professor) não é editável."""
     if request.method != "POST":
         return JsonResponse({"message": "Método não permitido."}, status=405)
 
@@ -2962,6 +2961,9 @@ def editar_advertencia_coordenacao(request, advertencia_id):
     titulo = (body.get("titulo") or "").strip()
     descricao = (body.get("descricao") or "").strip()
     data_str = body.get("data")
+    is_suspensao = bool(body.get("is_suspensao"))
+    inicio_susp_str = body.get("data_inicio_suspensao")
+    termino_susp_str = body.get("data_termino_suspensao")
 
     if not titulo or not descricao:
         return JsonResponse({"message": "Campos 'titulo' e 'descricao' são obrigatórios."}, status=400)
@@ -2971,6 +2973,32 @@ def editar_advertencia_coordenacao(request, advertencia_id):
             advertencia.data = date.fromisoformat(data_str)
         except ValueError:
             return JsonResponse({"message": "Formato de data inválido. Use AAAA-MM-DD."}, status=400)
+
+    if advertencia.tipo == "ADVERTENCIA" and is_suspensao:
+        if not inicio_susp_str or not termino_susp_str:
+            return JsonResponse(
+                {"message": "Informe data de início e término da suspensão."},
+                status=400
+            )
+        try:
+            data_inicio_suspensao = date.fromisoformat(inicio_susp_str)
+            data_termino_suspensao = date.fromisoformat(termino_susp_str)
+        except ValueError:
+            return JsonResponse({"message": "Formato de data de suspensão inválido. Use AAAA-MM-DD."}, status=400)
+
+        if data_termino_suspensao < data_inicio_suspensao:
+            return JsonResponse(
+                {"message": "A data de término da suspensão não pode ser anterior à data de início."},
+                status=400
+            )
+
+        advertencia.is_suspensao = True
+        advertencia.data_inicio_suspensao = data_inicio_suspensao
+        advertencia.data_termino_suspensao = data_termino_suspensao
+    else:
+        advertencia.is_suspensao = False
+        advertencia.data_inicio_suspensao = None
+        advertencia.data_termino_suspensao = None
 
     advertencia.titulo = titulo
     advertencia.descricao = descricao
