@@ -49,7 +49,7 @@ export default function AdvertenciaDetalhePage() {
           try {
             const json = JSON.parse(corpoErro);
             if (json?.message) mensagem = json.message;
-          } catch {}
+          } catch { }
           throw new Error(mensagem);
         }
         const data = await res.json();
@@ -131,6 +131,16 @@ export default function AdvertenciaDetalhePage() {
               <div className={styles.bloco}>
                 <span className={styles.blocoLabel}>Turma</span>
                 <p className={styles.blocoTexto}>{advertencia.aluno_turma}</p>
+              </div>
+            )}
+
+            {!ehPenalidade && advertencia.is_suspensao && (
+              <div className={styles.bloco}>
+                <span className={styles.blocoLabel}>Período de suspensão</span>
+                <p className={styles.blocoTexto}>
+                  {advertencia.data_inicio_suspensao?.split("-").reverse().join("/")} até{" "}
+                  {advertencia.data_termino_suspensao?.split("-").reverse().join("/")}
+                </p>
               </div>
             )}
 
