@@ -32,6 +32,7 @@ from .models import Atividade
 from .models import Comunicado
 from .models import Coordenador
 from .models import Advertencia
+from .models import HorarioAula
 import json
 from django.template.loader import render_to_string
 from weasyprint import HTML
