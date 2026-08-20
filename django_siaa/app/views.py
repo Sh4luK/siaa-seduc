@@ -2843,3 +2843,71 @@ def get_advertencia_detalhe(request, advertencia_id):
         }
     })
 
+
+@csrf_exempt
+def criar_advertencia_coordenacao(request):
+    """Cria uma advertência (aluno) ou penalidade (professor)."""
+    if request.method != "POST":
+        return JsonResponse({"message": "Método não permitido."}, status=405)
+
+    ip = get_ip()
+    coordenador = Coordenador.objects.filter(ip=ip).first()
+    if not coordenador:
+        return JsonResponse({"message": "Coordenador não autenticado."}, status=401)
+
+    try:
+        body = json.loads(request.body)
+    except json.JSONDecodeError:
+        return JsonResponse({"message": "JSON inválido."}, status=400)
+
+    tipo = body.get("tipo")
+    titulo = (body.get("titulo") or "").strip()
+    descricao = (body.get("descricao") or "").strip()
+    data_str = body.get("data")
+    aluno_id = body.get("aluno")
+    professor_id = body.get("professor")
+
+    if tipo not in ("ADVERTENCIA", "PENALIDADE"):
+        return JsonResponse({"message": "O campo 'tipo' deve ser 'ADVERTENCIA' ou 'PENALIDADE'."}, status=400)
+
+    if not titulo or not descricao:
+        return JsonResponse({"message": "Campos 'titulo' e 'descricao' são obrigatórios."}, status=400)
+
+    data_registro = date.today()
+    if data_str:
+        try:
+            data_registro = date.fromisoformat(data_str)
+        except ValueError:
+            return JsonResponse({"message": "Formato de data inválido. Use AAAA-MM-DD."}, status=400)
+
+    aluno = None
+    professor = None
+
+    if tipo == "ADVERTENCIA":
+        if not aluno_id:
+            return JsonResponse({"message": "O campo 'aluno' é obrigatório para advertências."}, status=400)
+        aluno = Estudante.objects.filter(id=aluno_id).first()
+        if not aluno:
+            return JsonResponse({"message": "Aluno não encontrado."}, status=404)
+    else:
+        if not professor_id:
+            return JsonResponse({"message": "O campo 'professor' é obrigatório para penalidades."}, status=400)
+        professor = Professor.objects.filter(id=professor_id).first()
+        if not professor:
+            return JsonResponse({"message": "Professor não encontrado."}, status=404)
+
+    advertencia = Advertencia.objects.create(
+        tipo=tipo,
+        aluno=aluno,
+        professor=professor,
+        coordenador=coordenador,
+        titulo=titulo,
+        descricao=descricao,
+        data=data_registro,
+    )
+
+    return JsonResponse({
+        "message": "Registro criado com sucesso.",
+        "advertencia": {"id": advertencia.id, "tipo": advertencia.tipo}
+    })
+
