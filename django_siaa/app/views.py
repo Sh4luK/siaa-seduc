@@ -3073,3 +3073,42 @@ def get_turmas_coordenacao(request):
         "turmas": resultado
     })
 
+
+@csrf_exempt
+def get_horarios_turma(request, nome_turma):
+    """Retorna a grade de horários (segunda a sexta) de uma turma, com disciplina e professor de cada aula."""
+    nome_turma = unquote(nome_turma)
+
+    registros_turma = AtravessaPor.objects.filter(turma=nome_turma).select_related("professor")
+    if not registros_turma.exists():
+        return JsonResponse({"message": "Turma não encontrada."}, status=404)
+
+    horarios = HorarioAula.objects.filter(
+        turma__in=registros_turma
+    ).select_related("turma", "turma__professor").order_by("dia_semana", "hora_inicio")
+
+    resultado = []
+    for h in horarios:
+        disciplina = resolver_disciplina_da_turma(h.turma)
+        resultado.append({
+            "id": h.id,
+            "dia_semana": h.dia_semana,
+            "hora_inicio": h.hora_inicio.strftime("%H:%M"),
+            "hora_fim": h.hora_fim.strftime("%H:%M"),
+            "disciplina": disciplina.nome_disciplina if disciplina else h.turma.disciplina_lecionada,
+            "professor": h.turma.professor.nome_completo,
+        })
+
+    primeiro_registro = registros_turma.first()
+
+    return JsonResponse({
+        "turma": {
+            "nome_turma": nome_turma,
+            "etapa": primeiro_registro.etapa,
+            "escola": primeiro_registro.escola,
+        },
+        "total_horarios": len(resultado),
+        "horarios": resultado
+    })
+
+
