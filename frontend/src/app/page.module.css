@@ -1,4 +1,4 @@
-
+/* 
 .page {
   --ink: #0e0f12;
   --surface: #17181d;
@@ -189,6 +189,254 @@
   font-size: 0.75rem;
 }
 
+@media (prefers-reduced-motion: reduce) {
+  .card,
+  .cardArrow {
+    transition: none;
+  }
+} */
+
+
+/* ---------------------------------------------------------
+   Tokens
+--------------------------------------------------------- */
+.page {
+  --azul: #0b4f9e;
+  --azul-escuro: #0a2f5c;
+  --azul-claro: #eaf1fb;
+  --fundo: #f5f7fa;
+  --branco: #ffffff;
+  --texto: #1a2942;
+  --texto-muted: #5b6b85;
+  --borda: #e2e8f0;
+
+  --tab-student: #0b4f9e;
+  --tab-guardian: #0d8a6e;
+  --tab-teacher: #b5670a;
+  --tab-staff: #6d28d9;
+
+  min-height: 100vh;
+  background-color: var(--fundo);
+  color: var(--texto);
+  font-family: "IBM Plex Sans", "Inter", "Segoe UI", system-ui, sans-serif;
+}
+
+/* ---------------------------------------------------------
+   Top bar — identidade institucional
+--------------------------------------------------------- */
+.topBar {
+  background-color: var(--azul-escuro);
+  color: #cfe0f5;
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  padding: 0.5rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  text-align: center;
+}
+
+.topBarDivider {
+  width: 1px;
+  height: 12px;
+  background-color: rgba(207, 224, 245, 0.35);
+}
+
+@media (max-width: 480px) {
+  .topBarDivider {
+    display: none;
+  }
+}
+
+/* ---------------------------------------------------------
+   Container
+--------------------------------------------------------- */
+.container {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 3.5rem 1.5rem 3rem;
+}
+
+/* ---------------------------------------------------------
+   Masthead
+--------------------------------------------------------- */
+.masthead {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  margin-bottom: 2.75rem;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid var(--borda);
+}
+
+.logo {
+  width: 64px;
+  height: auto;
+  flex-shrink: 0;
+}
+
+.mastheadText {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  min-width: 0;
+}
+
+.eyebrow {
+  margin: 0;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--azul);
+}
+
+.title {
+  margin: 0;
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--texto);
+}
+
+.subtitle {
+  margin: 0.2rem 0 0;
+  max-width: 46ch;
+  font-size: 0.92rem;
+  color: var(--texto-muted);
+}
+
+@media (max-width: 520px) {
+  .masthead {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.9rem;
+  }
+}
+
+/* ---------------------------------------------------------
+   Grid of cards
+--------------------------------------------------------- */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.9rem;
+}
+
+@media (max-width: 560px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.card {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.9rem;
+  background-color: var(--branco);
+  border: 1px solid var(--borda);
+  border-radius: 8px;
+  padding: 1.35rem;
+  text-decoration: none;
+  color: var(--texto);
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+}
+
+.card:hover,
+.card:focus-visible {
+  border-color: var(--azul);
+  box-shadow: 0 4px 14px rgba(11, 79, 158, 0.12);
+  transform: translateY(-2px);
+}
+
+.card:focus-visible {
+  outline: 2px solid var(--azul);
+  outline-offset: 2px;
+}
+
+.iconCircle {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background-color: var(--azul-claro);
+  color: var(--azul);
+}
+
+.card[data-tab="student"] .iconCircle { background-color: rgba(11, 79, 158, 0.1); color: var(--tab-student); }
+.card[data-tab="guardian"] .iconCircle { background-color: rgba(13, 138, 110, 0.1); color: var(--tab-guardian); }
+.card[data-tab="teacher"] .iconCircle { background-color: rgba(181, 103, 10, 0.1); color: var(--tab-teacher); }
+.card[data-tab="staff"] .iconCircle { background-color: rgba(109, 40, 217, 0.1); color: var(--tab-staff); }
+
+.cardBody {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  min-width: 0;
+  flex: 1;
+}
+
+.cardLabel {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--texto);
+}
+
+.cardDescription {
+  font-size: 0.82rem;
+  line-height: 1.45;
+  color: var(--texto-muted);
+}
+
+.cardArrow {
+  position: absolute;
+  top: 1.35rem;
+  right: 1.1rem;
+  color: var(--texto-muted);
+  opacity: 0;
+  transform: translateX(-3px);
+  transition: opacity 0.15s ease, transform 0.15s ease, color 0.15s ease;
+}
+
+.card:hover .cardArrow,
+.card:focus-visible .cardArrow {
+  opacity: 1;
+  transform: translateX(0);
+  color: var(--azul);
+}
+
+/* ---------------------------------------------------------
+   Footer
+--------------------------------------------------------- */
+.footer {
+  margin-top: 2.75rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  color: var(--texto-muted);
+  font-size: 0.78rem;
+  text-align: center;
+}
+
+.rule {
+  width: 40px;
+  height: 2px;
+  background-color: var(--azul);
+  border-radius: 2px;
+}
+
+/* ---------------------------------------------------------
+   Reduced motion
+--------------------------------------------------------- */
 @media (prefers-reduced-motion: reduce) {
   .card,
   .cardArrow {
