@@ -70,5 +70,7 @@ urlpatterns = [
     path('api/coordenacao/comunicados/<int:comunicado_id>/deletar', app.views.deletar_comunicado_coordenacao, name='deletar_comunicado_coordenacao'),
     path('api/coordenacao/advertencias', app.views.views.get_advertencias_coordenacao, name='get_advertencias_coordenacao'),
     path('api/coordenacao/advertencias/criar', app.views.criar_advertencia_coordenacao, name='criar_advertencia_coordenacao'),
+    path('api/coordenacao/advertencias/<int:advertencia_id>', app.views.get_advertencia_detalhe, name='get_advertencia_detalhe'),
+
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
