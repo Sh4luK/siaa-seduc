@@ -2852,7 +2852,6 @@ def get_advertencia_detalhe(request, advertencia_id):
 
 @csrf_exempt
 def criar_advertencia_coordenacao(request):
-    """Cria uma advertência (aluno) ou penalidade (professor)."""
     if request.method != "POST":
         return JsonResponse({"message": "Método não permitido."}, status=405)
 
@@ -2872,6 +2871,9 @@ def criar_advertencia_coordenacao(request):
     data_str = body.get("data")
     aluno_id = body.get("aluno")
     professor_id = body.get("professor")
+    is_suspensao = bool(body.get("is_suspensao"))
+    inicio_susp_str = body.get("data_inicio_suspensao")
+    termino_susp_str = body.get("data_termino_suspensao")
 
     if tipo not in ("ADVERTENCIA", "PENALIDADE"):
         return JsonResponse({"message": "O campo 'tipo' deve ser 'ADVERTENCIA' ou 'PENALIDADE'."}, status=400)
@@ -2901,6 +2903,28 @@ def criar_advertencia_coordenacao(request):
         professor = Professor.objects.filter(id=professor_id).first()
         if not professor:
             return JsonResponse({"message": "Professor não encontrado."}, status=404)
+        is_suspensao = False  # suspensão só se aplica a advertência de aluno
+
+    data_inicio_suspensao = None
+    data_termino_suspensao = None
+
+    if is_suspensao:
+        if not inicio_susp_str or not termino_susp_str:
+            return JsonResponse(
+                {"message": "Informe data de início e término da suspensão."},
+                status=400
+            )
+        try:
+            data_inicio_suspensao = date.fromisoformat(inicio_susp_str)
+            data_termino_suspensao = date.fromisoformat(termino_susp_str)
+        except ValueError:
+            return JsonResponse({"message": "Formato de data de suspensão inválido. Use AAAA-MM-DD."}, status=400)
+
+        if data_termino_suspensao < data_inicio_suspensao:
+            return JsonResponse(
+                {"message": "A data de término da suspensão não pode ser anterior à data de início."},
+                status=400
+            )
 
     advertencia = Advertencia.objects.create(
         tipo=tipo,
@@ -2910,13 +2934,15 @@ def criar_advertencia_coordenacao(request):
         titulo=titulo,
         descricao=descricao,
         data=data_registro,
+        is_suspensao=is_suspensao,
+        data_inicio_suspensao=data_inicio_suspensao,
+        data_termino_suspensao=data_termino_suspensao,
     )
 
     return JsonResponse({
         "message": "Registro criado com sucesso.",
         "advertencia": {"id": advertencia.id, "tipo": advertencia.tipo}
     })
-
 
 @csrf_exempt
 def editar_advertencia_coordenacao(request, advertencia_id):
