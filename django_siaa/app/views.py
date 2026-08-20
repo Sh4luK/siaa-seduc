@@ -1,4 +1,5 @@
 from urllib.parse import urlparse
+from urllib.parse import unquote
 from datetime import date
 import unicodedata
 from django.db.models.functions import Replace
@@ -3044,3 +3045,31 @@ def gerar_advertencia_pdf(request, advertencia_id):
     response = HttpResponse(pdf_file, content_type="application/pdf")
     response["Content-Disposition"] = f'inline; filename="{nome_arquivo}"'
     return response
+
+
+@csrf_exempt
+def get_turmas_coordenacao(request):
+    """Lista as turmas distintas (nome + etapa + escola + total de alunos), para a tela de horários."""
+    registros = AtravessaPor.objects.exclude(turma="").values("turma", "etapa", "escola").distinct()
+
+    turmas_map = {}
+    for r in registros:
+        nome = r["turma"]
+        if nome not in turmas_map:
+            turmas_map[nome] = {
+                "nome_turma": nome,
+                "etapa": r["etapa"],
+                "escola": r["escola"],
+            }
+
+    resultado = list(turmas_map.values())
+    resultado.sort(key=lambda t: t["nome_turma"])
+
+    for t in resultado:
+        t["total_alunos"] = buscar_alunos_por_turma(t["nome_turma"]).count()
+
+    return JsonResponse({
+        "total_turmas": len(resultado),
+        "turmas": resultado
+    })
+
