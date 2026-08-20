@@ -27,6 +27,10 @@ export default function NovaAdvertenciaPage() {
   const [descricao, setDescricao] = useState("");
   const [data, setData] = useState(() => new Date().toISOString().split("T")[0]);
 
+  const [isSuspensao, setIsSuspensao] = useState(false);
+  const [dataInicioSuspensao, setDataInicioSuspensao] = useState("");
+  const [dataTerminoSuspensao, setDataTerminoSuspensao] = useState("");
+
   const [enviando, setEnviando] = useState(false);
   const [erros, setErros] = useState([]);
 
@@ -86,6 +90,11 @@ export default function NovaAdvertenciaPage() {
       return;
     }
 
+    if (tipo === "ADVERTENCIA" && isSuspensao && (!dataInicioSuspensao || !dataTerminoSuspensao)) {
+      setErros(["Informe as datas de início e término da suspensão."]);
+      return;
+    }
+
     setEnviando(true);
     try {
       const res = await fetch(`${API_BASE}/api/coordenacao/advertencias/criar`, {
@@ -98,6 +107,9 @@ export default function NovaAdvertenciaPage() {
           data,
           aluno: tipo === "ADVERTENCIA" ? alunoId : null,
           professor: tipo === "PENALIDADE" ? professorId : null,
+          is_suspensao: tipo === "ADVERTENCIA" ? isSuspensao : false,
+          data_inicio_suspensao: tipo === "ADVERTENCIA" && isSuspensao ? dataInicioSuspensao : null,
+          data_termino_suspensao: tipo === "ADVERTENCIA" && isSuspensao ? dataTerminoSuspensao : null,
         }),
       });
 
@@ -107,12 +119,11 @@ export default function NovaAdvertenciaPage() {
         try {
           const json = JSON.parse(corpo);
           if (json?.message) msg = json.message;
-        } catch {}
+        } catch { }
         throw new Error(msg);
       }
 
       const data_resposta = JSON.parse(corpo);
-      // Redireciona já para a tela de detalhe, onde o botão "Emitir PDF" fica em destaque.
       router.push(`/coordenacao/advertencias/${data_resposta.advertencia.id}`);
     } catch (error) {
       setErros([error.message]);
@@ -180,44 +191,41 @@ export default function NovaAdvertenciaPage() {
             </div>
           </div>
 
-          {tipo === "ADVERTENCIA" ? (
+          {tipo === "ADVERTENCIA" && (
             <div className={styles.campo}>
-              <label className={styles.label} htmlFor="buscaAluno">Aluno</label>
-              <input
-                id="buscaAluno"
-                type="text"
-                className={styles.input}
-                placeholder="Buscar por nome..."
-                value={buscaAluno}
-                onChange={(e) => setBuscaAluno(e.target.value)}
-              />
-              <select
-                className={styles.select}
-                value={alunoId}
-                onChange={(e) => setAlunoId(e.target.value)}
-                size={Math.min(6, Math.max(3, alunosFiltrados.length))}
-              >
-                {alunosFiltrados.map((a) => (
-                  <option key={a.id} value={a.id}>
-                    {a.nome_completo} — {a.turma}
-                  </option>
-                ))}
-              </select>
-            </div>
-          ) : (
-            <div className={styles.campo}>
-              <label className={styles.label} htmlFor="professor">Professor</label>
-              <select
-                id="professor"
-                className={styles.select}
-                value={professorId}
-                onChange={(e) => setProfessorId(e.target.value)}
-              >
-                <option value="">Selecione um professor</option>
-                {professores.map((p) => (
-                  <option key={p.id} value={p.id}>{p.nome_completo}</option>
-                ))}
-              </select>
+              <label className={styles.checkboxLabel}>
+                <input
+                  type="checkbox"
+                  checked={isSuspensao}
+                  onChange={(e) => setIsSuspensao(e.target.checked)}
+                />
+                É uma suspensão?
+              </label>
+
+              {isSuspensao && (
+                <div className={styles.suspensaoCampos}>
+                  <div className={styles.campo}>
+                    <label className={styles.label} htmlFor="dataInicioSuspensao">Início da suspensão</label>
+                    <input
+                      id="dataInicioSuspensao"
+                      type="date"
+                      className={styles.input}
+                      value={dataInicioSuspensao}
+                      onChange={(e) => setDataInicioSuspensao(e.target.value)}
+                    />
+                  </div>
+                  <div className={styles.campo}>
+                    <label className={styles.label} htmlFor="dataTerminoSuspensao">Término da suspensão</label>
+                    <input
+                      id="dataTerminoSuspensao"
+                      type="date"
+                      className={styles.input}
+                      value={dataTerminoSuspensao}
+                      onChange={(e) => setDataTerminoSuspensao(e.target.value)}
+                    />
+                  </div>
+                </div>
+              )}
             </div>
           )}
 
