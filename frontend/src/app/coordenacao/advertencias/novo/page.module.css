@@ -202,3 +202,39 @@
   height: auto;
   opacity: 0.92;
 }
+
+.checkboxLabel {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: #dbe1ec;
+  cursor: pointer;
+}
+
+.checkboxLabel input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: #b91c1c;
+  cursor: pointer;
+}
+
+.suspensaoCampos {
+  display: flex;
+  gap: 12px;
+  margin-top: 12px;
+  padding: 14px;
+  background: #0b1220;
+  border: 1px solid rgba(252, 165, 165, 0.2);
+  border-radius: 8px;
+}
+
+.suspensaoCampos .campo {
+  flex: 1;
+}
+
+@media (max-width: 480px) {
+  .suspensaoCampos {
+    flex-direction: column;
+  }
+}
