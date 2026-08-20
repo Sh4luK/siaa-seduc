@@ -2946,3 +2946,17 @@ def editar_advertencia_coordenacao(request, advertencia_id):
 
     return JsonResponse({"message": "Registro atualizado com sucesso."})
 
+
+@csrf_exempt
+def deletar_advertencia_coordenacao(request, advertencia_id):
+    """Remove uma advertência/penalidade."""
+    if request.method != "DELETE":
+        return JsonResponse({"message": "Método não permitido."}, status=405)
+
+    advertencia = Advertencia.objects.filter(id=advertencia_id).first()
+    if not advertencia:
+        return JsonResponse({"message": "Registro não encontrado."}, status=404)
+
+    advertencia.delete()
+    return JsonResponse({"message": "Registro removido com sucesso."})
+
