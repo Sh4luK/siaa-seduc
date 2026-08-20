@@ -3134,3 +3134,67 @@ def get_opcoes_horario_turma(request, nome_turma):
         })
 
     return JsonResponse({"opcoes": resultado})
+
+
+
+@csrf_exempt
+def salvar_horario_turma(request, nome_turma):
+    """
+    Salva a grade de horários de uma turma. Recebe a lista completa de células
+    (dia + hora_inicio + hora_fim + atravessa_por_id ou null para célula vazia)
+    e substitui os registros existentes de cada célula.
+    """
+    if request.method != "POST":
+        return JsonResponse({"message": "Método não permitido."}, status=405)
+
+    nome_turma = unquote(nome_turma)
+
+    try:
+        body = json.loads(request.body)
+    except json.JSONDecodeError:
+        return JsonResponse({"message": "JSON inválido."}, status=400)
+
+    atribuicoes = body.get("atribuicoes", [])
+    if not atribuicoes:
+        return JsonResponse({"message": "Nenhuma atribuição enviada."}, status=400)
+
+    dias_validos = dict(HorarioAula.DIA_CHOICES).keys()
+    erros = []
+    total_salvos = 0
+    total_removidos = 0
+
+    for item in atribuicoes:
+        dia = item.get("dia_semana")
+        hora_inicio_str = item.get("hora_inicio")
+        hora_fim_str = item.get("hora_fim")
+        atravessa_por_id = item.get("atravessa_por_id")
+
+        if dia not in dias_validos or not hora_inicio_str or not hora_fim_str:
+            erros.append(f"Célula inválida ignorada: {item}")
+            continue
+
+        # Remove qualquer registro existente nessa célula (dia + hora de início) da turma.
+        HorarioAula.objects.filter(
+            turma__turma=nome_turma, dia_semana=dia, hora_inicio=hora_inicio_str
+        ).delete()
+        total_removidos += 1
+
+        if atravessa_por_id:
+            atravessa_por = AtravessaPor.objects.filter(id=atravessa_por_id, turma=nome_turma).first()
+            if not atravessa_por:
+                erros.append(f"Vínculo {atravessa_por_id} não pertence a esta turma — ignorado.")
+                continue
+
+            HorarioAula.objects.create(
+                turma=atravessa_por,
+                dia_semana=dia,
+                hora_inicio=hora_inicio_str,
+                hora_fim=hora_fim_str,
+            )
+            total_salvos += 1
+
+    return JsonResponse({
+        "message": "Grade de horários salva com sucesso.",
+        "total_salvos": total_salvos,
+        "erros": erros,
+    })
