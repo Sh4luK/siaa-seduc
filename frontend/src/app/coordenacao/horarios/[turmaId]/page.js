@@ -264,7 +264,7 @@ export default function HorarioTurmaPage() {
           try {
             const json = JSON.parse(corpoErro);
             if (json?.message) mensagem = json.message;
-          } catch {}
+          } catch { }
           throw new Error(mensagem);
         }
 
@@ -339,7 +339,12 @@ export default function HorarioTurmaPage() {
               {turma?.etapa} · {turma?.escola}
             </p>
           </div>
-          <span className={styles.turnoBadge}>{template.label} · {template.inicio}–{template.fim}</span>
+          <div className={styles.headerAcoes}>
+            <span className={styles.turnoBadge}>{template.label} · {template.inicio}–{template.fim}</span>
+            <Link href={`/coordenacao/horarios/${turmaId}/editar`} className={styles.editarBotao}>
+              Editar horário
+            </Link>
+          </div>
         </div>
 
         <div className={styles.tabelaWrapper}>
