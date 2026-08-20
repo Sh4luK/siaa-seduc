@@ -7,7 +7,7 @@ import styles from "./page.module.css";
 import logo from "../../../assets/logo.png";
 import Image from "next/image";
 
-const API_BASE = "https://cuddly-yodel-5gprv7xpvp7rf755x-8000.app.github.dev";
+const API_BASE = "https://obscure-happiness-v67rpjq7p96vfxj4g-8000.app.github.dev";
 
 export default function AlunosCoordenacaoPage() {
   const [authenticated, setAuthenticated] = useState(null);

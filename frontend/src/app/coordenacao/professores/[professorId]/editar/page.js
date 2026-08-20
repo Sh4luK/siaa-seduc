@@ -6,7 +6,7 @@ import styles from "./page.module.css";
 import Image from "next/image";
 import logo from "@/assets/logo.png";
 
-const API_BASE = "https://cuddly-yodel-5gprv7xpvp7rf755x-8000.app.github.dev";
+const API_BASE = "https://obscure-happiness-v67rpjq7p96vfxj4g-8000.app.github.dev";
 
 function novoVinculo(dados) {
   return {
