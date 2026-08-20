@@ -1,0 +1,166 @@
+.page {
+  min-height: 100vh;
+  background: #0b1220;
+  color: #e5e9f0;
+  padding: 40px 24px;
+}
+
+.wrapper {
+  max-width: 980px;
+  margin: 0 auto;
+}
+
+.voltarLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: #93a4c3;
+  text-decoration: none;
+  font-size: 14px;
+  margin-bottom: 24px;
+}
+
+.voltarLink:hover {
+  color: #60a5fa;
+}
+
+.headerRow {
+  margin-bottom: 28px;
+}
+
+.title {
+  font-size: 26px;
+  font-weight: 700;
+  color: #f4f6f9;
+  margin: 0 0 4px 0;
+}
+
+.subtitle {
+  font-size: 14px;
+  color: #93a4c3;
+  margin: 0;
+}
+
+.vazio {
+  color: #93a4c3;
+  font-size: 14px;
+  padding: 40px 0;
+  text-align: center;
+}
+
+.estadoErro {
+  text-align: center;
+  color: #fca5a5;
+  padding: 16px 0;
+}
+
+.grade {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 12px;
+}
+
+@media (max-width: 860px) {
+  .grade {
+    grid-template-columns: 1fr;
+  }
+}
+
+.coluna {
+  background: #131c2e;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-height: 120px;
+}
+
+.colunaTitulo {
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #6b7ba0;
+  margin: 0;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.colunaVazia {
+  font-size: 13px;
+  color: #4a5570;
+  margin: 8px 0 0;
+}
+
+.aulas {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.aula {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 10px;
+  background: #0b1220;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 8px;
+}
+
+.aulaHorario {
+  font-size: 11px;
+  font-weight: 600;
+  color: #60a5fa;
+  font-family: "IBM Plex Mono", monospace;
+}
+
+.aulaDisciplina {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #f4f6f9;
+}
+
+.aulaProfessor {
+  font-size: 12px;
+  color: #93a4c3;
+}
+
+.pageLoading {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #0b1220;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  padding: 1.5rem;
+}
+
+.cardLoading {
+  width: 100%;
+  max-width: 400px;
+  background: #131c2e;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  padding: 2.25rem 2rem;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.35);
+}
+
+.headerLoading {
+  text-align: center;
+  margin-bottom: 1.75rem;
+}
+
+.subtituloLoading {
+  font-size: 0.85rem;
+  color: #94a3b8;
+  margin: 0;
+}
+
+.loadingLogo {
+  width: 96px;
+  height: auto;
+  opacity: 0.92;
+}
