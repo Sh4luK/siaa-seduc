@@ -177,43 +177,6 @@ class Frequencia(models.Model):
         return f"{self.aluno} - {self.disciplina} - {self.data} - {status}"
 
 
-# class Evento(models.Model):
-#     professor = models.ForeignKey("app.Professor", on_delete=models.CASCADE, related_name="eventos")
-#     turma = models.ForeignKey("app.AtravessaPor", on_delete=models.CASCADE, related_name="eventos", null=True, blank=True)
-
-#     titulo = models.CharField(max_length=255)
-#     descricao = models.TextField(blank=True, default="")
-#     data = models.DateField()
-
-#     criado_em = models.DateTimeField(auto_now_add=True)
-#     atualizado_em = models.DateTimeField(auto_now=True)
-
-#     class Meta:
-#         ordering = ["data"]
-
-#     def __str__(self):
-#         return f"{self.titulo} - {self.data}"
-
-# class Evento(models.Model):
-#     professor = models.ForeignKey(
-#         "app.Professor", on_delete=models.CASCADE, related_name="eventos",
-#         null=True, blank=True
-#     )
-#     turma = models.ForeignKey("app.AtravessaPor", on_delete=models.CASCADE, related_name="eventos", null=True, blank=True)
-#     ano_letivo = models.PositiveIntegerField(default=2026)
-
-#     titulo = models.CharField(max_length=255)
-#     descricao = models.TextField(blank=True, default="")
-#     data = models.DateField()
-
-#     criado_em = models.DateTimeField(auto_now_add=True)
-
-#     class Meta:
-#         ordering = ["data"]
-
-#     def __str__(self):
-#         return f"{self.titulo} - {self.data}"
-
 class Evento(models.Model):
     professor = models.ForeignKey(
         "app.Professor", on_delete=models.CASCADE, related_name="eventos",
@@ -280,23 +243,6 @@ class Atividade(models.Model):
         return f"{self.titulo} - {self.turma} - {self.data}"
 
 
-# class Comunicado(models.Model):
-#     professor = models.ForeignKey("app.Professor", on_delete=models.CASCADE, related_name="comunicados")
-#     turma = models.ForeignKey("app.AtravessaPor", on_delete=models.CASCADE, related_name="comunicados", null=True, blank=True)
-
-#     titulo = models.CharField(max_length=255)
-#     mensagem = models.TextField()
-#     data = models.DateField(auto_now_add=True)
-
-#     criado_em = models.DateTimeField(auto_now_add=True)
-
-#     class Meta:
-#         ordering = ["-criado_em"]
-
-#     def __str__(self):
-#         return f"{self.titulo} - {self.data}"
-
-
 
 class Coordenador(models.Model):
     nome_completo = models.CharField(max_length=255)
@@ -308,36 +254,49 @@ class Coordenador(models.Model):
         return self.nome_completo
 
 
-class Advertencia(models.Model):
-    aluno = models.ForeignKey("app.Estudante", on_delete=models.CASCADE, related_name="advertencias")
-    professor = models.ForeignKey("app.Professor", on_delete=models.SET_NULL, null=True, blank=True, related_name="advertencias_aplicadas")
+# class Advertencia(models.Model):
+#     TIPO_CHOICES = [
+#         ("ADVERTENCIA", "Advertência"),
+#         ("PENALIDADE", "Penalidade"),
+#     ]
 
-    titulo = models.CharField(max_length=255)
-    descricao = models.TextField(blank=True, default="")
-    data = models.DateField(auto_now_add=True)
-
-    criado_em = models.DateTimeField(auto_now_add=True)
-
-    class Meta:
-        ordering = ["-criado_em"]
-
-    def __str__(self):
-        return f"{self.aluno} - {self.titulo} - {self.data}"
-
-
-# class Comunicado(models.Model):
+#     tipo = models.CharField(max_length=20, choices=TIPO_CHOICES, default="ADVERTENCIA")
+#     aluno = models.ForeignKey(
+#         Estudante, null=True, blank=True, on_delete=models.CASCADE, related_name="advertencias"
+#     )
 #     professor = models.ForeignKey(
-#         Professor, null=True, blank=True, on_delete=models.CASCADE, related_name="comunicados"
+#         Professor, null=True, blank=True, on_delete=models.CASCADE, related_name="advertencias"
 #     )
 #     coordenador = models.ForeignKey(
-#         Coordenador, null=True, blank=True, on_delete=models.CASCADE, related_name="comunicados"
-#     )
-#     turma = models.ForeignKey(
-#         AtravessaPor, null=True, blank=True, on_delete=models.CASCADE
+#         Coordenador, null=True, blank=True, on_delete=models.CASCADE, related_name="advertencias_emitidas"
 #     )
 #     titulo = models.CharField(max_length=255)
-#     mensagem = models.TextField()
-#     data = models.DateField(auto_now_add=True)
+#     descricao = models.TextField()
+#     data = models.DateField(default=date.today)
+
+class Advertencia(models.Model):
+    TIPO_CHOICES = [
+        ("ADVERTENCIA", "Advertência"),
+        ("PENALIDADE", "Penalidade"),
+    ]
+
+    tipo = models.CharField(max_length=20, choices=TIPO_CHOICES, default="ADVERTENCIA")
+    aluno = models.ForeignKey(
+        Estudante, null=True, blank=True, on_delete=models.CASCADE, related_name="advertencias"
+    )
+    professor = models.ForeignKey(
+        Professor, null=True, blank=True, on_delete=models.CASCADE, related_name="advertencias"
+    )
+    coordenador = models.ForeignKey(
+        Coordenador, null=True, blank=True, on_delete=models.CASCADE, related_name="advertencias_emitidas"
+    )
+    titulo = models.CharField(max_length=255)
+    descricao = models.TextField()
+    data = models.DateField(default=date.today)
+
+    is_suspensao = models.BooleanField(default=False)
+    data_inicio_suspensao = models.DateField(null=True, blank=True)
+    data_termino_suspensao = models.DateField(null=True, blank=True)
 
 
 class Comunicado(models.Model):

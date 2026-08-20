@@ -32,6 +32,8 @@ from .models import Comunicado
 from .models import Coordenador
 from .models import Advertencia
 import json
+from django.template.loader import render_to_string
+from weasyprint import HTML
 
 load_dotenv()
 
@@ -2784,3 +2786,261 @@ def deletar_comunicado_coordenacao(request, comunicado_id):
 
     comunicado.delete()
     return JsonResponse({"message": "Comunicado removido com sucesso."})
+
+
+@csrf_exempt
+def get_advertencias_coordenacao(request):
+    """Lista advertências (alunos) e penalidades (professores)."""
+    tipo = request.GET.get("tipo")  # opcional: ADVERTENCIA ou PENALIDADE
+
+    advertencias = Advertencia.objects.select_related("aluno", "professor", "coordenador").order_by("-data")
+
+    if tipo:
+        advertencias = advertencias.filter(tipo=tipo)
+
+    resultado = []
+    for a in advertencias:
+        resultado.append({
+            "id": a.id,
+            "tipo": a.tipo,
+            "titulo": a.titulo,
+            "descricao": a.descricao,
+            "data": a.data.isoformat(),
+            "aluno_id": a.aluno_id,
+            "aluno_nome": a.aluno.nome_completo if a.aluno else None,
+            "aluno_turma": a.aluno.turma if a.aluno else None,
+            "professor_id": a.professor_id,
+            "professor_nome": a.professor.nome_completo if a.professor else None,
+            "emitido_por": (a.coordenador.escola or "Coordenação") if a.coordenador else None,
+            "is_suspensao": a.is_suspensao,
+            "data_inicio_suspensao": a.data_inicio_suspensao.isoformat() if a.data_inicio_suspensao else None,
+            "data_termino_suspensao": a.data_termino_suspensao.isoformat() if a.data_termino_suspensao else None,
+        })
+
+    return JsonResponse({
+        "total_advertencias": len(resultado),
+        "advertencias": resultado
+    })
+
+
+@csrf_exempt
+def get_advertencia_detalhe(request, advertencia_id):
+    """Retorna os dados completos de uma advertência/penalidade."""
+    advertencia = Advertencia.objects.select_related("aluno", "professor", "coordenador").filter(id=advertencia_id).first()
+    if not advertencia:
+        return JsonResponse({"message": "Registro não encontrado."}, status=404)
+
+    return JsonResponse({
+        "advertencia": {
+            "id": advertencia.id,
+            "tipo": advertencia.tipo,
+            "titulo": advertencia.titulo,
+            "descricao": advertencia.descricao,
+            "data": advertencia.data.isoformat(),
+            "aluno_id": advertencia.aluno_id,
+            "aluno_nome": advertencia.aluno.nome_completo if advertencia.aluno else None,
+            "aluno_turma": advertencia.aluno.turma if advertencia.aluno else None,
+            "professor_id": advertencia.professor_id,
+            "professor_nome": advertencia.professor.nome_completo if advertencia.professor else None,
+            "emitido_por": (advertencia.coordenador.escola or "Coordenação") if advertencia.coordenador else None,
+            "is_suspensao": advertencia.is_suspensao,
+            "data_inicio_suspensao": advertencia.data_inicio_suspensao.isoformat() if advertencia.data_inicio_suspensao else None,
+            "data_termino_suspensao": advertencia.data_termino_suspensao.isoformat() if advertencia.data_termino_suspensao else None,
+        }
+    })
+
+
+@csrf_exempt
+def criar_advertencia_coordenacao(request):
+    if request.method != "POST":
+        return JsonResponse({"message": "Método não permitido."}, status=405)
+
+    ip = get_ip()
+    coordenador = Coordenador.objects.filter(ip=ip).first()
+    if not coordenador:
+        return JsonResponse({"message": "Coordenador não autenticado."}, status=401)
+
+    try:
+        body = json.loads(request.body)
+    except json.JSONDecodeError:
+        return JsonResponse({"message": "JSON inválido."}, status=400)
+
+    tipo = body.get("tipo")
+    titulo = (body.get("titulo") or "").strip()
+    descricao = (body.get("descricao") or "").strip()
+    data_str = body.get("data")
+    aluno_id = body.get("aluno")
+    professor_id = body.get("professor")
+    is_suspensao = bool(body.get("is_suspensao"))
+    inicio_susp_str = body.get("data_inicio_suspensao")
+    termino_susp_str = body.get("data_termino_suspensao")
+
+    if tipo not in ("ADVERTENCIA", "PENALIDADE"):
+        return JsonResponse({"message": "O campo 'tipo' deve ser 'ADVERTENCIA' ou 'PENALIDADE'."}, status=400)
+
+    if not titulo or not descricao:
+        return JsonResponse({"message": "Campos 'titulo' e 'descricao' são obrigatórios."}, status=400)
+
+    data_registro = date.today()
+    if data_str:
+        try:
+            data_registro = date.fromisoformat(data_str)
+        except ValueError:
+            return JsonResponse({"message": "Formato de data inválido. Use AAAA-MM-DD."}, status=400)
+
+    aluno = None
+    professor = None
+
+    if tipo == "ADVERTENCIA":
+        if not aluno_id:
+            return JsonResponse({"message": "O campo 'aluno' é obrigatório para advertências."}, status=400)
+        aluno = Estudante.objects.filter(id=aluno_id).first()
+        if not aluno:
+            return JsonResponse({"message": "Aluno não encontrado."}, status=404)
+    else:
+        if not professor_id:
+            return JsonResponse({"message": "O campo 'professor' é obrigatório para penalidades."}, status=400)
+        professor = Professor.objects.filter(id=professor_id).first()
+        if not professor:
+            return JsonResponse({"message": "Professor não encontrado."}, status=404)
+        is_suspensao = False  # suspensão só se aplica a advertência de aluno
+
+    data_inicio_suspensao = None
+    data_termino_suspensao = None
+
+    if is_suspensao:
+        if not inicio_susp_str or not termino_susp_str:
+            return JsonResponse(
+                {"message": "Informe data de início e término da suspensão."},
+                status=400
+            )
+        try:
+            data_inicio_suspensao = date.fromisoformat(inicio_susp_str)
+            data_termino_suspensao = date.fromisoformat(termino_susp_str)
+        except ValueError:
+            return JsonResponse({"message": "Formato de data de suspensão inválido. Use AAAA-MM-DD."}, status=400)
+
+        if data_termino_suspensao < data_inicio_suspensao:
+            return JsonResponse(
+                {"message": "A data de término da suspensão não pode ser anterior à data de início."},
+                status=400
+            )
+
+    advertencia = Advertencia.objects.create(
+        tipo=tipo,
+        aluno=aluno,
+        professor=professor,
+        coordenador=coordenador,
+        titulo=titulo,
+        descricao=descricao,
+        data=data_registro,
+        is_suspensao=is_suspensao,
+        data_inicio_suspensao=data_inicio_suspensao,
+        data_termino_suspensao=data_termino_suspensao,
+    )
+
+    return JsonResponse({
+        "message": "Registro criado com sucesso.",
+        "advertencia": {"id": advertencia.id, "tipo": advertencia.tipo}
+    })
+
+@csrf_exempt
+def editar_advertencia_coordenacao(request, advertencia_id):
+    if request.method != "POST":
+        return JsonResponse({"message": "Método não permitido."}, status=405)
+
+    advertencia = Advertencia.objects.filter(id=advertencia_id).first()
+    if not advertencia:
+        return JsonResponse({"message": "Registro não encontrado."}, status=404)
+
+    try:
+        body = json.loads(request.body)
+    except json.JSONDecodeError:
+        return JsonResponse({"message": "JSON inválido."}, status=400)
+
+    titulo = (body.get("titulo") or "").strip()
+    descricao = (body.get("descricao") or "").strip()
+    data_str = body.get("data")
+    is_suspensao = bool(body.get("is_suspensao"))
+    inicio_susp_str = body.get("data_inicio_suspensao")
+    termino_susp_str = body.get("data_termino_suspensao")
+
+    if not titulo or not descricao:
+        return JsonResponse({"message": "Campos 'titulo' e 'descricao' são obrigatórios."}, status=400)
+
+    if data_str:
+        try:
+            advertencia.data = date.fromisoformat(data_str)
+        except ValueError:
+            return JsonResponse({"message": "Formato de data inválido. Use AAAA-MM-DD."}, status=400)
+
+    if advertencia.tipo == "ADVERTENCIA" and is_suspensao:
+        if not inicio_susp_str or not termino_susp_str:
+            return JsonResponse(
+                {"message": "Informe data de início e término da suspensão."},
+                status=400
+            )
+        try:
+            data_inicio_suspensao = date.fromisoformat(inicio_susp_str)
+            data_termino_suspensao = date.fromisoformat(termino_susp_str)
+        except ValueError:
+            return JsonResponse({"message": "Formato de data de suspensão inválido. Use AAAA-MM-DD."}, status=400)
+
+        if data_termino_suspensao < data_inicio_suspensao:
+            return JsonResponse(
+                {"message": "A data de término da suspensão não pode ser anterior à data de início."},
+                status=400
+            )
+
+        advertencia.is_suspensao = True
+        advertencia.data_inicio_suspensao = data_inicio_suspensao
+        advertencia.data_termino_suspensao = data_termino_suspensao
+    else:
+        advertencia.is_suspensao = False
+        advertencia.data_inicio_suspensao = None
+        advertencia.data_termino_suspensao = None
+
+    advertencia.titulo = titulo
+    advertencia.descricao = descricao
+    advertencia.save()
+
+    return JsonResponse({"message": "Registro atualizado com sucesso."})
+
+
+@csrf_exempt
+def deletar_advertencia_coordenacao(request, advertencia_id):
+    """Remove uma advertência/penalidade."""
+    if request.method != "DELETE":
+        return JsonResponse({"message": "Método não permitido."}, status=405)
+
+    advertencia = Advertencia.objects.filter(id=advertencia_id).first()
+    if not advertencia:
+        return JsonResponse({"message": "Registro não encontrado."}, status=404)
+
+    advertencia.delete()
+    return JsonResponse({"message": "Registro removido com sucesso."})
+
+
+@csrf_exempt
+def gerar_advertencia_pdf(request, advertencia_id):
+    """Gera o PDF de advertência/penalidade, pronto para impressão."""
+    advertencia = Advertencia.objects.select_related("aluno", "professor", "coordenador").filter(id=advertencia_id).first()
+    if not advertencia:
+        return JsonResponse({"message": "Registro não encontrado."}, status=404)
+
+    contexto = {
+        "advertencia": advertencia,
+        "eh_penalidade": advertencia.tipo == "PENALIDADE",
+        "escola": advertencia.aluno.escola if advertencia.aluno else "",
+        "emitido_por": (advertencia.coordenador.escola or "Coordenação Pedagógica") if advertencia.coordenador else "Coordenação Pedagógica",
+    }
+
+    html_string = render_to_string("advertencias/pdf.html", contexto)
+    pdf_file = HTML(string=html_string).write_pdf()
+
+    prefixo = "penalidade" if advertencia.tipo == "PENALIDADE" else "advertencia"
+    nome_arquivo = f"{prefixo}_{advertencia.id}.pdf"
+
+    response = HttpResponse(pdf_file, content_type="application/pdf")
+    response["Content-Disposition"] = f'inline; filename="{nome_arquivo}"'
+    return response
