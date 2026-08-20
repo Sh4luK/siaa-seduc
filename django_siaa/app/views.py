@@ -2843,6 +2843,9 @@ def get_advertencia_detalhe(request, advertencia_id):
             "professor_id": advertencia.professor_id,
             "professor_nome": advertencia.professor.nome_completo if advertencia.professor else None,
             "emitido_por": (advertencia.coordenador.escola or "Coordenação") if advertencia.coordenador else None,
+            "is_suspensao": advertencia.is_suspensao,
+            "data_inicio_suspensao": advertencia.data_inicio_suspensao.isoformat() if advertencia.data_inicio_suspensao else None,
+            "data_termino_suspensao": advertencia.data_termino_suspensao.isoformat() if advertencia.data_termino_suspensao else None,
         }
     })
 
