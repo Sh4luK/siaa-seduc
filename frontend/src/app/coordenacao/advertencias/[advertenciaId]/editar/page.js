@@ -48,6 +48,9 @@ export default function EditarAdvertenciaPage() {
         setTitulo(a.titulo);
         setDescricao(a.descricao);
         setData(a.data);
+        setIsSuspensao(a.is_suspensao || false);
+        setDataInicioSuspensao(a.data_inicio_suspensao || "");
+        setDataTerminoSuspensao(a.data_termino_suspensao || "");
       } catch (error) {
         setErros([`Erro ao carregar registro: ${error.message}`]);
       } finally {
@@ -78,6 +81,9 @@ export default function EditarAdvertenciaPage() {
             titulo: titulo.trim(),
             descricao: descricao.trim(),
             data,
+            is_suspensao: tipo === "ADVERTENCIA" ? isSuspensao : false,
+            data_inicio_suspensao: tipo === "ADVERTENCIA" && isSuspensao ? dataInicioSuspensao : null,
+            data_termino_suspensao: tipo === "ADVERTENCIA" && isSuspensao ? dataTerminoSuspensao : null,
           }),
         }
       );
@@ -88,7 +94,7 @@ export default function EditarAdvertenciaPage() {
         try {
           const json = JSON.parse(corpo);
           if (json?.message) msg = json.message;
-        } catch {}
+        } catch { }
         throw new Error(msg);
       }
 
