@@ -1,0 +1,112 @@
+.page {
+  min-height: 100vh;
+  background: #f5f7fa;
+  color: #1a2942;
+  font-family: "IBM Plex Sans", "Inter", "Segoe UI", system-ui, sans-serif;
+  padding: 40px 24px;
+}
+
+.wrapper {
+  max-width: 760px;
+  margin: 0 auto;
+}
+
+.voltarLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: #5b6b85;
+  text-decoration: none;
+  font-size: 14px;
+  margin-bottom: 24px;
+}
+
+.voltarLink:hover {
+  color: #0b4f9e;
+}
+
+.title {
+  font-size: 26px;
+  font-weight: 700;
+  color: #1a2942;
+  margin: 0 0 6px 0;
+}
+
+.subtitle {
+  font-size: 14px;
+  color: #5b6b85;
+  margin: 0 0 28px 0;
+  max-width: 60ch;
+}
+
+.grid {
+  display: grid;
+  gap: 12px;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 18px 20px;
+  text-decoration: none;
+  color: inherit;
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.card:hover {
+  border-color: rgba(11, 79, 158, 0.3);
+  box-shadow: 0 4px 14px rgba(11, 79, 158, 0.1);
+}
+
+.cardLabel {
+  font-size: 15px;
+  font-weight: 700;
+  color: #1a2942;
+}
+
+.cardDescription {
+  font-size: 13px;
+  color: #5b6b85;
+  line-height: 1.5;
+}
+
+.pageLoading {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f5f7fa;
+  padding: 1.5rem;
+}
+
+.cardLoading {
+  width: 100%;
+  max-width: 400px;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 2.25rem 2rem;
+  box-shadow: 0 1px 3px rgba(16, 24, 40, 0.06);
+}
+
+.headerLoading {
+  text-align: center;
+  margin-bottom: 1.75rem;
+}
+
+.subtituloLoading {
+  font-size: 0.85rem;
+  color: #5b6b85;
+  margin: 0;
+}
+
+.loadingLogo {
+  width: 96px;
+  height: auto;
+  opacity: 0.92;
+}
