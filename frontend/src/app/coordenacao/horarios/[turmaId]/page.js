@@ -29,21 +29,6 @@ function paraHHMM(minutos) {
   return `${h}:${m}`;
 }
 
-// function gerarSlots(inicio, fim) {
-//   const inicioMin = paraMinutos(inicio);
-//   const fimMin = paraMinutos(fim);
-//   const slots = [];
-//   let atual = inicioMin;
-
-//   while (atual < fimMin) {
-//     const proximo = Math.min(atual + 60, fimMin);
-//     slots.push({ inicio: paraHHMM(atual), fim: paraHHMM(proximo) });
-//     atual = proximo;
-//   }
-
-//   return slots;
-// }
-
 const INTERVALOS = [
   { inicio: "10:10", fim: "10:30", label: "Intervalo" },
   { inicio: "12:10", fim: "13:10", label: "Almoço" },
