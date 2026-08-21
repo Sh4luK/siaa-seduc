@@ -78,5 +78,13 @@ urlpatterns = [
     path('api/coordenacao/turmas/<str:nome_turma>/horarios', app.views.get_horarios_turma, name='get_horarios_turma'),
     path('api/coordenacao/turmas/<str:nome_turma>/horarios/opcoes', app.views.get_opcoes_horario_turma, name='get_opcoes_horario_turma'),
     path('api/coordenacao/turmas/<str:nome_turma>/horarios/salvar', app.views.salvar_horario_turma, name='salvar_horario_turma'),
+    path('api/corrigir/disciplinas', app.views.get_disciplinas_corrigir, name='get_disciplinas_corrigir'),
+    path('api/corrigir/disciplinas/criar', app.views.criar_disciplina_corrigir, name='criar_disciplina_corrigir'),
+    path('api/corrigir/disciplinas/<int:disciplina_id>/renomear', app.views.renomear_disciplina, name='renomear_disciplina'),
+    path('api/corrigir/disciplinas/corrigir-nome-lecionado', app.views.corrigir_nome_lecionado, name='corrigir_nome_lecionado'),
+    path('api/corrigir/turmas', app.views.get_turmas_corrigir, name='get_turmas_corrigir'),
+    path('api/corrigir/turmas/renomear', app.views.renomear_turma, name='renomear_turma'),
+    path('api/corrigir/alunos', app.views.get_alunos_corrigir, name='get_alunos_corrigir'),
+    path('api/corrigir/alunos/<int:aluno_id>/mover-turma', app.views.mover_aluno_turma, name='mover_aluno_turma'),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
