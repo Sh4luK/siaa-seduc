@@ -123,20 +123,6 @@ def search_student(request):
                     "curso": page_content.get('curso')
                 })
 
-
-        # for student in students_data:
-        #     match_fullname = True
-        #     match_course = True
-
-        #     if fullName and fullName not in student.get('nome_completo', '').lower():
-        #         match_name = False
-            
-        #     if course and course != student.get('curso', '').lower():
-        #         match_course = False
-            
-        #     if match_name and match_course:
-        #         results.append(student)
-
         print({
             "total_encontrado": len(results),
             "estudante": results
@@ -2288,23 +2274,6 @@ def get_eventos_coordenacao(request):
     })
 
 
-# @csrf_exempt
-# def get_evento_detalhe(request, evento_id):
-#     evento = Evento.objects.select_related("coordenador").filter(id=evento_id).first()
-#     if not evento:
-#         return JsonResponse({"message": "Evento não encontrado."}, status=404)
-
-#     return JsonResponse({
-#         "evento": {
-#             "id": evento.id,
-#             "titulo": evento.titulo,
-#             "descricao": evento.descricao,
-#             "data": evento.data.isoformat(),
-#             "turma_id": evento.turma_id,
-#             "nome_turma": evento.turma.turma if evento.turma else None,
-#         }
-#     })
-
 @csrf_exempt
 def get_evento_detalhe(request, evento_id):
     """Retorna os dados completos de um evento específico, incluindo status calculado."""
@@ -2568,61 +2537,6 @@ def get_comunicado_detalhe(request, comunicado_id):
     })
 
 
-@csrf_exempt
-# def criar_comunicado_coordenacao(request):
-#     """Cria um novo comunicado emitido pela coordenação (geral ou por turma)."""
-#     if request.method != "POST":
-#         return JsonResponse({"message": "Método não permitido."}, status=405)
-
-#     ip = get_ip()
-#     coordenador = Coordenador.objects.filter(ip=ip).first()
-
-#     if not coordenador:
-#         return JsonResponse({"message": "Coordenador não autenticado."}, status=401)
-
-#     try:
-#         body = json.loads(request.body)
-#     except json.JSONDecodeError:
-#         return JsonResponse({"message": "JSON inválido."}, status=400)
-
-#     titulo = (body.get("titulo") or "").strip()
-#     mensagem = (body.get("mensagem") or "").strip()
-#     turma_id = body.get("turma")
-
-#     if not titulo or not mensagem:
-#         return JsonResponse(
-#             {"message": "Campos 'titulo' e 'mensagem' são obrigatórios."},
-#             status=400
-#         )
-
-#     turma = None
-#     if turma_id:
-#         turma = AtravessaPor.objects.filter(id=turma_id).first()
-#         if not turma:
-#             return JsonResponse({"message": "Turma não encontrada."}, status=404)
-
-#     comunicado = Comunicado.objects.create(
-#         professor=None,
-#         coordenador=coordenador,
-#         turma=turma,
-#         titulo=titulo,
-#         mensagem=mensagem,
-#     )
-
-#     return JsonResponse({
-#         "message": "Comunicado criado com sucesso.",
-#         "comunicado": {
-#             "id": comunicado.id,
-#             "titulo": comunicado.titulo,
-#             "mensagem": comunicado.mensagem,
-#             "data": comunicado.data.isoformat(),
-#             "turma_id": comunicado.turma_id,
-#             "nome_turma": comunicado.turma.turma if comunicado.turma else None,
-#             "criado_por": coordenador.escola or "Coordenação",
-#             "origem": "coordenacao",
-#         }
-#     })
-
 
 @csrf_exempt
 def criar_comunicado_coordenacao(request):
@@ -2688,44 +2602,6 @@ def criar_comunicado_coordenacao(request):
         }
     })
 
-
-# @csrf_exempt
-# def editar_comunicado_coordenacao(request, comunicado_id):
-#     """Atualiza título, mensagem e turma de um comunicado."""
-#     if request.method != "POST":
-#         return JsonResponse({"message": "Método não permitido."}, status=405)
-
-#     comunicado = Comunicado.objects.filter(id=comunicado_id).first()
-#     if not comunicado:
-#         return JsonResponse({"message": "Comunicado não encontrado."}, status=404)
-
-#     try:
-#         body = json.loads(request.body)
-#     except json.JSONDecodeError:
-#         return JsonResponse({"message": "JSON inválido."}, status=400)
-
-#     titulo = (body.get("titulo") or "").strip()
-#     mensagem = (body.get("mensagem") or "").strip()
-#     turma_id = body.get("turma")
-
-#     if not titulo or not mensagem:
-#         return JsonResponse(
-#             {"message": "Campos 'titulo' e 'mensagem' são obrigatórios."},
-#             status=400
-#         )
-
-#     turma = None
-#     if turma_id:
-#         turma = AtravessaPor.objects.filter(id=turma_id).first()
-#         if not turma:
-#             return JsonResponse({"message": "Turma não encontrada."}, status=404)
-
-#     comunicado.titulo = titulo
-#     comunicado.mensagem = mensagem
-#     comunicado.turma = turma
-#     comunicado.save()
-
-#     return JsonResponse({"message": "Comunicado atualizado com sucesso."})
 
 @csrf_exempt
 def editar_comunicado_coordenacao(request, comunicado_id):
@@ -3198,3 +3074,211 @@ def salvar_horario_turma(request, nome_turma):
         "total_salvos": total_salvos,
         "erros": erros,
     })
+
+@csrf_exempt
+def get_disciplinas_corrigir(request):
+    """Lista disciplinas cadastradas + nomes 'órfãos' usados em AtravessaPor sem Disciplina correspondente."""
+    disciplinas = Disciplina.objects.all().order_by("nome_disciplina")
+
+    resultado = []
+    for d in disciplinas:
+        total_vinculos = AtravessaPor.objects.filter(disciplina_lecionada__iexact=d.nome_disciplina).count()
+        resultado.append({
+            "id": d.id,
+            "nome_disciplina": d.nome_disciplina,
+            "total_vinculos": total_vinculos,
+        })
+
+    nomes_disciplina = set(d.nome_disciplina.strip().lower() for d in disciplinas)
+    nomes_lecionados = AtravessaPor.objects.exclude(disciplina_lecionada="").values_list(
+        "disciplina_lecionada", flat=True
+    ).distinct()
+
+    orfaos = []
+    for nome in nomes_lecionados:
+        if nome.strip().lower() not in nomes_disciplina:
+            total = AtravessaPor.objects.filter(disciplina_lecionada=nome).count()
+            orfaos.append({"nome_lecionado": nome, "total_vinculos": total})
+
+    return JsonResponse({"disciplinas": resultado, "orfaos": orfaos})
+
+
+@csrf_exempt
+def renomear_disciplina(request, disciplina_id):
+    """Renomeia uma disciplina cadastrada."""
+    if request.method != "POST":
+        return JsonResponse({"message": "Método não permitido."}, status=405)
+
+    disciplina = Disciplina.objects.filter(id=disciplina_id).first()
+    if not disciplina:
+        return JsonResponse({"message": "Disciplina não encontrada."}, status=404)
+
+    try:
+        body = json.loads(request.body)
+    except json.JSONDecodeError:
+        return JsonResponse({"message": "JSON inválido."}, status=400)
+
+    novo_nome = (body.get("nome_disciplina") or "").strip()
+    if not novo_nome:
+        return JsonResponse({"message": "O nome não pode ficar vazio."}, status=400)
+
+    disciplina.nome_disciplina = novo_nome
+    disciplina.save()
+
+    return JsonResponse({"message": "Disciplina renomeada com sucesso."})
+
+
+@csrf_exempt
+def criar_disciplina_corrigir(request):
+    """Cadastra uma nova disciplina (usado para resolver órfãos sem Disciplina correspondente)."""
+    if request.method != "POST":
+        return JsonResponse({"message": "Método não permitido."}, status=405)
+
+    try:
+        body = json.loads(request.body)
+    except json.JSONDecodeError:
+        return JsonResponse({"message": "JSON inválido."}, status=400)
+
+    nome = (body.get("nome_disciplina") or "").strip()
+    if not nome:
+        return JsonResponse({"message": "O nome não pode ficar vazio."}, status=400)
+
+    if Disciplina.objects.filter(nome_disciplina__iexact=nome).exists():
+        return JsonResponse({"message": "Já existe uma disciplina com esse nome."}, status=400)
+
+    disciplina = Disciplina.objects.create(nome_disciplina=nome)
+
+    return JsonResponse({
+        "message": "Disciplina criada com sucesso.",
+        "disciplina": {"id": disciplina.id, "nome_disciplina": disciplina.nome_disciplina}
+    })
+
+
+@csrf_exempt
+def corrigir_nome_lecionado(request):
+    """Corrige em massa o texto de AtravessaPor.disciplina_lecionada, trocando um nome órfão pelo correto."""
+    if request.method != "POST":
+        return JsonResponse({"message": "Método não permitido."}, status=405)
+
+    try:
+        body = json.loads(request.body)
+    except json.JSONDecodeError:
+        return JsonResponse({"message": "JSON inválido."}, status=400)
+
+    nome_atual = (body.get("nome_atual") or "").strip()
+    nome_correto = (body.get("nome_correto") or "").strip()
+
+    if not nome_atual or not nome_correto:
+        return JsonResponse({"message": "Informe 'nome_atual' e 'nome_correto'."}, status=400)
+
+    total = AtravessaPor.objects.filter(disciplina_lecionada=nome_atual).update(
+        disciplina_lecionada=nome_correto
+    )
+
+    return JsonResponse({
+        "message": f"{total} vínculo(s) corrigido(s).",
+        "total_corrigidos": total,
+    })
+
+
+@csrf_exempt
+def get_turmas_corrigir(request):
+    """Lista nomes de turma distintos usados em AtravessaPor e Estudante, mostrando divergências entre as duas."""
+    turmas_atravessa = set(
+        AtravessaPor.objects.exclude(turma="").values_list("turma", flat=True).distinct()
+    )
+    turmas_estudante = set(
+        Estudante.objects.exclude(turma="").values_list("turma", flat=True).distinct()
+    )
+
+    todas_turmas = sorted(turmas_atravessa | turmas_estudante)
+
+    resultado = []
+    for nome in todas_turmas:
+        resultado.append({
+            "nome_turma": nome,
+            "existe_em_atravessa_por": nome in turmas_atravessa,
+            "existe_em_estudante": nome in turmas_estudante,
+            "total_registros": AtravessaPor.objects.filter(turma=nome).count(),
+            "total_alunos": Estudante.objects.filter(turma=nome).count(),
+        })
+
+    return JsonResponse({"turmas": resultado})
+
+
+@csrf_exempt
+def renomear_turma(request):
+    """Renomeia uma turma em massa, sincronizando AtravessaPor.turma e Estudante.turma (ligados por texto)."""
+    if request.method != "POST":
+        return JsonResponse({"message": "Método não permitido."}, status=405)
+
+    try:
+        body = json.loads(request.body)
+    except json.JSONDecodeError:
+        return JsonResponse({"message": "JSON inválido."}, status=400)
+
+    turma_antiga = (body.get("turma_antiga") or "").strip()
+    turma_nova = (body.get("turma_nova") or "").strip()
+
+    if not turma_antiga or not turma_nova:
+        return JsonResponse({"message": "Informe 'turma_antiga' e 'turma_nova'."}, status=400)
+
+    total_atravessa = AtravessaPor.objects.filter(turma=turma_antiga).update(turma=turma_nova)
+    total_estudante = Estudante.objects.filter(turma=turma_antiga).update(turma=turma_nova)
+
+    return JsonResponse({
+        "message": f"{total_atravessa} vínculo(s) e {total_estudante} aluno(s) atualizados.",
+        "total_atravessa": total_atravessa,
+        "total_estudante": total_estudante,
+    })
+
+
+@csrf_exempt
+def get_alunos_corrigir(request):
+    """Lista alunos com a turma atual, para correção rápida de matrícula."""
+    busca = request.GET.get("busca", "").strip()
+
+    alunos = Estudante.objects.all().order_by("nome_completo")
+    if busca:
+        alunos = alunos.filter(nome_completo__icontains=busca)
+
+    resultado = [
+        {"id": a.id, "nome_completo": a.nome_completo, "turma": a.turma, "serie": a.serie, "escola": a.escola}
+        for a in alunos[:200]
+    ]
+
+    turmas_disponiveis = sorted(
+        set(Estudante.objects.exclude(turma="").values_list("turma", flat=True).distinct())
+        | set(AtravessaPor.objects.exclude(turma="").values_list("turma", flat=True).distinct())
+    )
+
+    return JsonResponse({
+        "total_alunos": len(resultado),
+        "alunos": resultado,
+        "turmas_disponiveis": turmas_disponiveis,
+    })
+
+
+@csrf_exempt
+def mover_aluno_turma(request, aluno_id):
+    """Atualiza rapidamente a turma de um aluno (correção de matrícula)."""
+    if request.method != "POST":
+        return JsonResponse({"message": "Método não permitido."}, status=405)
+
+    aluno = Estudante.objects.filter(id=aluno_id).first()
+    if not aluno:
+        return JsonResponse({"message": "Aluno não encontrado."}, status=404)
+
+    try:
+        body = json.loads(request.body)
+    except json.JSONDecodeError:
+        return JsonResponse({"message": "JSON inválido."}, status=400)
+
+    nova_turma = (body.get("turma") or "").strip()
+    if not nova_turma:
+        return JsonResponse({"message": "Informe a nova turma."}, status=400)
+
+    aluno.turma = nova_turma
+    aluno.save()
+
+    return JsonResponse({"message": f"{aluno.nome_completo} movido para {nova_turma}."})
