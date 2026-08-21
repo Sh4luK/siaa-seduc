@@ -1,4 +1,4 @@
-.page {
+/* .page {
   min-height: 100vh;
   background: #0b1220;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -176,7 +176,6 @@
   background: #0b1220;
 }
 
-/* ===== Seção de vínculos ===== */
 .secaoDivisor {
   padding-top: 0.5rem;
   border-top: 1px solid rgba(255, 255, 255, 0.08);
@@ -234,7 +233,7 @@
   background: rgba(239, 68, 68, 0.1);
 }
 
-/* ===== Chips de disciplinas ===== */
+
 .chipsWrapper {
   display: flex;
   flex-wrap: wrap;
@@ -300,7 +299,7 @@
   background: rgba(59, 130, 246, 0.2);
 }
 
-/* ===== Botões finais ===== */
+
 .adicionarVinculoBotao {
   align-self: flex-start;
   font-size: 0.82rem;
@@ -438,4 +437,427 @@
   background: rgba(59, 130, 246, 0.15);
   border-color: #3b82f6;
   color: #93c5fd;
+} */
+
+.page {
+  min-height: 100vh;
+  background: #f5f7fa;
+  font-family: "IBM Plex Sans", "Inter", "Segoe UI", system-ui, sans-serif;
+  color: #1a2942;
+}
+
+.pageLoading {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f5f7fa;
+  font-family: "IBM Plex Sans", "Inter", "Segoe UI", system-ui, sans-serif;
+  padding: 1.5rem;
+}
+
+.cardLoading {
+  width: 100%;
+  max-width: 400px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 2.25rem 2rem;
+  box-shadow: 0 1px 3px rgba(16, 24, 40, 0.06);
+}
+
+.headerLoading {
+  text-align: center;
+  margin-bottom: 1.75rem;
+}
+
+.subtituloLoading {
+  font-size: 0.85rem;
+  color: #5b6b85;
+  margin: 0;
+}
+
+.logo {
+  width: 56px;
+  height: 56px;
+  object-fit: contain;
+  margin-bottom: 0.85rem;
+}
+
+.loadingLogo {
+  width: 96px;
+  height: auto;
+  opacity: 0.92;
+}
+
+.wrapper {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 3rem 2rem;
+}
+
+.headerRow {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1a2942;
+  margin: 0 0 0.3rem;
+}
+
+.subtitle {
+  font-size: 0.9rem;
+  color: #5b6b85;
+  margin: 0;
+}
+
+.voltarBotao {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #1a2942;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.voltarBotao:hover {
+  background: #f1f5f9;
+}
+
+.listaErros {
+  list-style: none;
+  color: #b91c1c;
+  background: rgba(220, 38, 38, 0.06);
+  border: 1px solid rgba(220, 38, 38, 0.25);
+  padding: 0.85rem 1.1rem;
+  border-radius: 8px;
+  margin-bottom: 1.25rem;
+  font-size: 0.85rem;
+}
+
+.mensagemSucesso {
+  color: #15803d;
+  background: rgba(21, 128, 61, 0.06);
+  border: 1px solid rgba(21, 128, 61, 0.25);
+  padding: 0.7rem 1rem;
+  border-radius: 8px;
+  margin-bottom: 1.25rem;
+  font-size: 0.88rem;
+  font-weight: 500;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 1.75rem;
+  box-shadow: 0 1px 3px rgba(16, 24, 40, 0.06);
+}
+
+.linhaDupla {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.1rem;
+}
+
+.campo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.label {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #1a2942;
+}
+
+.obrigatorio {
+  color: #dc2626;
+}
+
+.input,
+.inputDesabilitado {
+  width: 100%;
+  padding: 0.65rem 0.85rem;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  color: #1a2942;
+  background: #ffffff;
+  box-sizing: border-box;
+  font-family: inherit;
+}
+
+.input::placeholder {
+  color: #94a3b8;
+}
+
+.input:focus {
+  outline: none;
+  border-color: #0b4f9e;
+  box-shadow: 0 0 0 3px rgba(11, 79, 158, 0.12);
+}
+
+.inputDesabilitado {
+  color: #94a3b8;
+  cursor: not-allowed;
+  background: #f1f5f9;
+}
+
+/* ===== Seção de vínculos ===== */
+.secaoDivisor {
+  padding-top: 0.5rem;
+  border-top: 1px solid #e2e8f0;
+}
+
+.secaoTitulo {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #1a2942;
+  margin: 0.75rem 0 0.3rem;
+}
+
+.secaoSubtitulo {
+  font-size: 0.82rem;
+  color: #5b6b85;
+  margin: 0;
+}
+
+.vinculoCard {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 1.1rem;
+}
+
+.vinculoHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.vinculoNumero {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #0b4f9e;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.removerVinculoBotao {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #b91c1c;
+  background: transparent;
+  border: 1px solid rgba(220, 38, 38, 0.25);
+  border-radius: 8px;
+  padding: 0.3rem 0.7rem;
+  cursor: pointer;
+}
+
+.removerVinculoBotao:hover {
+  background: rgba(220, 38, 38, 0.06);
+}
+
+/* ===== Chips de disciplinas ===== */
+.chipsWrapper {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-bottom: 0.5rem;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #0b4f9e;
+  background: rgba(11, 79, 158, 0.08);
+  border: 1px solid rgba(11, 79, 158, 0.22);
+  border-radius: 999px;
+  padding: 0.3rem 0.5rem 0.3rem 0.75rem;
+}
+
+.chipRemover {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border: none;
+  background: rgba(11, 79, 158, 0.18);
+  color: #ffffff;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 0.75rem;
+  line-height: 1;
+  padding: 0;
+}
+
+.chipRemover:hover {
+  background: rgba(11, 79, 158, 0.3);
+}
+
+.disciplinaInputRow {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.disciplinaInputRow .input {
+  flex: 1;
+}
+
+.adicionarChipBotao {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #0b4f9e;
+  background: rgba(11, 79, 158, 0.08);
+  border: 1px solid rgba(11, 79, 158, 0.22);
+  border-radius: 8px;
+  padding: 0 1rem;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.adicionarChipBotao:hover {
+  background: rgba(11, 79, 158, 0.14);
+}
+
+/* ===== Botões finais ===== */
+.adicionarVinculoBotao {
+  align-self: flex-start;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #0b4f9e;
+  background: transparent;
+  border: 1px dashed rgba(11, 79, 158, 0.35);
+  border-radius: 8px;
+  padding: 0.6rem 1.1rem;
+  cursor: pointer;
+}
+
+.adicionarVinculoBotao:hover {
+  background: rgba(11, 79, 158, 0.06);
+}
+
+.botaoSalvar {
+  padding: 0.75rem 1.6rem;
+  background: #0b4f9e;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.botaoSalvar:hover {
+  background: #0a2f5c;
+}
+
+.botaoSalvar:disabled {
+  background: #cbd5e1;
+  color: #64748b;
+  cursor: not-allowed;
+}
+
+@media (max-width: 600px) {
+  .wrapper {
+    padding: 2rem 1.25rem;
+  }
+
+  .linhaDupla {
+    grid-template-columns: 1fr;
+  }
+}
+
+.select {
+  width: 100%;
+  padding: 0.65rem 0.85rem;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  color: #1a2942;
+  background: #ffffff;
+  box-sizing: border-box;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.select:focus {
+  outline: none;
+  border-color: #0b4f9e;
+  box-shadow: 0 0 0 3px rgba(11, 79, 158, 0.12);
+}
+
+.textarea {
+  width: 100%;
+  padding: 0.65rem 0.85rem;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-family: inherit;
+  color: #1a2942;
+  background: #ffffff;
+  box-sizing: border-box;
+  resize: vertical;
+  min-height: 100px;
+  line-height: 1.5;
+}
+
+.textarea::placeholder {
+  color: #94a3b8;
+}
+
+.textarea:focus {
+  outline: none;
+  border-color: #0b4f9e;
+  box-shadow: 0 0 0 3px rgba(11, 79, 158, 0.12);
+}
+
+.tipoEventoRow {
+  display: flex;
+  gap: 0.6rem;
+}
+
+.tipoEventoBotao {
+  flex: 1;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #1a2942;
+  background: #ffffff;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 0.65rem 1rem;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.tipoEventoBotao:hover {
+  border-color: rgba(11, 79, 158, 0.35);
+}
+
+.tipoEventoAtivo {
+  background: rgba(11, 79, 158, 0.1);
+  border-color: #0b4f9e;
+  color: #0b4f9e;
 }
