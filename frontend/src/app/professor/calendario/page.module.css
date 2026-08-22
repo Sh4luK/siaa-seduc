@@ -1,4 +1,4 @@
-.headerRow {
+/* .headerRow {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
@@ -42,7 +42,7 @@
   color: #6b7280;
 }
 
-/* ===== Navegação de mês ===== */
+
 .navegacaoMes {
   display: flex;
   align-items: center;
@@ -80,7 +80,7 @@
   text-transform: capitalize;
 }
 
-/* ===== Grid do calendário ===== */
+
 .calendarioGrid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
@@ -136,7 +136,7 @@
   white-space: nowrap;
 }
 
-/* ===== Lista de eventos do mês ===== */
+
 .listaEventosSection {
   margin-top: 1rem;
 }
@@ -240,6 +240,281 @@
 .eventoDeletar:hover {
   background: #fef2f2;
   color: #b91c1c;
+}
+
+@media (max-width: 700px) {
+  .diaCelula {
+    min-height: 50px;
+    padding: 0.25rem;
+  }
+
+  .eventoTag {
+    display: none;
+  }
+
+  .diaSemanaLabel {
+    font-size: 0.6rem;
+  }
+} */
+
+.headerRow {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.listaErros {
+  list-style: none;
+  color: #b91c1c;
+  background: rgba(220, 38, 38, 0.06);
+  border: 1px solid rgba(220, 38, 38, 0.25);
+  padding: 0.85rem 1.1rem;
+  border-radius: 8px;
+  margin-bottom: 1.25rem;
+  font-size: 0.85rem;
+}
+
+.subtitle {
+  font-size: 0.9rem;
+  color: #5b6b85;
+}
+
+/* ===== Navegação de mês ===== */
+.navegacaoMes {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.navMesBotao {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  background: #ffffff;
+  color: #5b6b85;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.navMesBotao:hover {
+  background: rgba(11, 79, 158, 0.06);
+  border-color: #0b4f9e;
+  color: #0b4f9e;
+}
+
+.mesLabel {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #1a2942;
+  min-width: 180px;
+  text-align: center;
+  text-transform: capitalize;
+}
+
+/* ===== Grid do calendário ===== */
+.calendarioGrid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0.4rem;
+  margin-bottom: 2rem;
+}
+
+.diaSemanaLabel {
+  text-align: center;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #5b6b85;
+  text-transform: uppercase;
+  padding-bottom: 0.5rem;
+}
+
+.diaCelulaVazia {
+  min-height: 70px;
+}
+
+.diaCelula {
+  min-height: 70px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 0.4rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  overflow: hidden;
+}
+
+.diaCelulaHoje {
+  border-color: #0b4f9e;
+  background: #eaf1fb;
+}
+
+.diaNumero {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #1a2942;
+}
+
+.eventoTag {
+  font-size: 0.62rem;
+  font-weight: 600;
+  color: #0b4f9e;
+  background: rgba(11, 79, 158, 0.1);
+  border-radius: 4px;
+  padding: 0.15rem 0.35rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.eventoTagFinalizado {
+  color: #94a3b8;
+  background: #f1f5f9;
+}
+
+/* ===== Lista de eventos do mês ===== */
+.listaEventosSection {
+  margin-top: 1rem;
+}
+
+.listaEventosTitulo {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #1a2942;
+  margin: 0 0 1rem;
+}
+
+.vazio {
+  font-size: 0.9rem;
+  color: #5b6b85;
+  padding: 1.5rem;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  text-align: center;
+}
+
+.eventosList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.eventoCard {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 0.9rem 1.1rem;
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
+}
+
+.eventoCardFinalizado {
+  opacity: 0.65;
+}
+
+.eventoCardData {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 48px;
+  background: #eaf1fb;
+  color: #0b4f9e;
+  border-radius: 8px;
+  padding: 0.4rem;
+  font-size: 1.05rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.eventoCardData span {
+  font-size: 0.62rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #5b6b85;
+}
+
+.eventoCardInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.eventoCardTopo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.eventoCardTitulo {
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: #1a2942;
+  margin: 0;
+}
+
+.finalizadoBadge {
+  font-size: 0.65rem;
+  font-weight: 600;
+  padding: 0.1rem 0.5rem;
+  border-radius: 999px;
+  background: #f1f5f9;
+  color: #64748b;
+}
+
+.eventoCardBadges {
+  display: flex;
+  gap: 0.4rem;
+  margin: 0.3rem 0;
+  flex-wrap: wrap;
+}
+
+.eventoCardBadgeGeral,
+.eventoCardBadgeEspecifico {
+  font-size: 0.68rem;
+  font-weight: 600;
+  padding: 0.15rem 0.55rem;
+  border-radius: 999px;
+}
+
+.eventoCardBadgeGeral {
+  color: #0b4f9e;
+  background: rgba(11, 79, 158, 0.08);
+}
+
+.eventoCardBadgeEspecifico {
+  color: #b5670a;
+  background: rgba(181, 103, 10, 0.08);
+}
+
+.eventoCardOrigemBadge {
+  font-size: 0.68rem;
+  font-weight: 600;
+  padding: 0.15rem 0.55rem;
+  border-radius: 999px;
+  color: #5b6b85;
+  background: #f1f5f9;
+}
+
+.eventoCardDescricao {
+  font-size: 0.8rem;
+  color: #5b6b85;
+  margin: 0.3rem 0 0;
 }
 
 @media (max-width: 700px) {
