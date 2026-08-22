@@ -126,13 +126,19 @@ export default function NovoEventoPage() {
   if (loading) {
     return (
       <div className={layoutStyles.page}>
-        <p>Carregando...</p>
+        <div className={layoutStyles.loadingWrap}>
+          <Image src={logo} alt="Logo do SIAA" className={layoutStyles.loadingLogo} priority />
+          <div className={layoutStyles.loadingBar}>
+            <span className={layoutStyles.loadingBarFill} />
+          </div>
+          <p className={layoutStyles.loadingText}>Verificando credenciais…</p>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className={layoutStyles.page}>
+    <div className={`${styles.page} ${styles.pageCentered}`}>
       <div className={layoutStyles.content}>
         <main className={layoutStyles.main}>
           <div className={styles.wrapper}>
