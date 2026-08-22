@@ -256,26 +256,6 @@ class Coordenador(models.Model):
         return self.nome_completo
 
 
-# class Advertencia(models.Model):
-#     TIPO_CHOICES = [
-#         ("ADVERTENCIA", "Advertência"),
-#         ("PENALIDADE", "Penalidade"),
-#     ]
-
-#     tipo = models.CharField(max_length=20, choices=TIPO_CHOICES, default="ADVERTENCIA")
-#     aluno = models.ForeignKey(
-#         Estudante, null=True, blank=True, on_delete=models.CASCADE, related_name="advertencias"
-#     )
-#     professor = models.ForeignKey(
-#         Professor, null=True, blank=True, on_delete=models.CASCADE, related_name="advertencias"
-#     )
-#     coordenador = models.ForeignKey(
-#         Coordenador, null=True, blank=True, on_delete=models.CASCADE, related_name="advertencias_emitidas"
-#     )
-#     titulo = models.CharField(max_length=255)
-#     descricao = models.TextField()
-#     data = models.DateField(default=date.today)
-
 class Advertencia(models.Model):
     TIPO_CHOICES = [
         ("ADVERTENCIA", "Advertência"),
@@ -413,3 +393,15 @@ class Alternativa(models.Model):
 
     class Meta:
         ordering = ["letra"]
+
+
+class Avaliacao(models.Model):
+    professor = models.ForeignKey(Professor, on_delete=models.CASCADE, related_name="avaliacoes")
+    turma = models.ForeignKey(AtravessaPor, on_delete=models.CASCADE, related_name="avaliacoes")
+    titulo = models.CharField(max_length=255)
+    curso = models.CharField(max_length=255, blank=True)
+    data = models.DateField(default=date.today)
+
+    def __str__(self):
+        return f"{self.titulo} — {self.turma.turma}"
+
