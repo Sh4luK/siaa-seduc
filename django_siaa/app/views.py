@@ -4164,3 +4164,38 @@ def criar_avaliacao(request):
     })
 
 
+@csrf_exempt
+def gerar_avaliacao_pdf(request, avaliacao_id):
+    """Gera o PDF da avaliação, pronto para impressão."""
+    avaliacao = Avaliacao.objects.select_related("turma").filter(id=avaliacao_id).first()
+    if not avaliacao:
+        return JsonResponse({"message": "Avaliação não encontrada."}, status=404)
+
+    disciplina = resolver_disciplina_da_turma(avaliacao.turma)
+
+    questoes = avaliacao.questoes.prefetch_related("alternativas").all()
+
+    # Anexa a letra (A, B, C...) a cada alternativa antes de renderizar no template.
+    letras = string.ascii_uppercase
+    for questao in questoes:
+        for idx, alternativa in enumerate(questao.alternativas.all()):
+            alternativa.letra = letras[idx] if idx < len(letras) else "?"
+
+    # WeasyPrint precisa de um caminho absoluto de arquivo (ou file:// URL) para
+    # imagens locais — não aceita paths relativos do template estático do Django.
+    logo_path = f"file://{os.path.join(settings.BASE_DIR, 'app', 'static', 'logo.png')}"
+
+    contexto = {
+        "avaliacao": avaliacao,
+        "disciplina": disciplina.nome_disciplina if disciplina else avaliacao.turma.disciplina_lecionada,
+        "questoes": questoes,
+        "logo_path": logo_path,
+    }
+
+    html_string = render_to_string("avaliacoes/pdf.html", contexto)
+    pdf_file = HTML(string=html_string).write_pdf()
+
+    nome_arquivo = f"avaliacao_{avaliacao.id}.pdf"
+    response = HttpResponse(pdf_file, content_type="application/pdf")
+    response["Content-Disposition"] = f'inline; filename="{nome_arquivo}"'
+    return response
