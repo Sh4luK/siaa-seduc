@@ -1,0 +1,799 @@
+﻿<!doctype html>
+<html lang="pt-BR" class="h-full">
+ <head><script src="/_sdk/telemetry_sdk.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SIAA - Módulo Professor</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.0/dist/umd/lucide.min.js"></script>
+  <script src="/_sdk/element_sdk.js"></script>
+  <script src="/_sdk/data_sdk.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { main: ['Source Sans 3', 'sans-serif'] },
+          colors: {
+            brand: { 50:'#eef7ed', 100:'#d5ecd2', 200:'#a8d8a2', 300:'#6fbc66', 400:'#3d9b32', 500:'#1a7a10', 600:'#14600c', 700:'#0f4809', 800:'#0a3006', 900:'#051803' },
+            surface: { 50:'#f8faf8', 100:'#f0f4f0', 200:'#e2e8e1', 300:'#c8d4c7' },
+            accent: { 500:'#e67e22', 600:'#d35400' }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    * { font-family: 'Source Sans 3', sans-serif; }
+    .nav-item { transition: all 0.2s; }
+    .nav-item:hover { background: rgba(26,122,16,0.1); }
+    .nav-item.active { background: rgba(26,122,16,0.15); border-left: 3px solid #1a7a10; }
+    .card-hover { transition: transform 0.15s, box-shadow 0.15s; }
+    .card-hover:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0,0,0,0.1); }
+    .fade-in { animation: fadeIn 0.3s ease; }
+    @keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+    .modal-overlay { background: rgba(0,0,0,0.5); backdrop-filter: blur(2px); }
+    @media print {
+      .no-print { display: none !important; }
+      .print-only { display: block !important; }
+    }
+    .tab-active { border-bottom: 2px solid #1a7a10; color: #1a7a10; font-weight: 600; }
+  </style>
+  <style>body { box-sizing: border-box; }</style>
+ </head>
+ <body class="h-full bg-surface-50 text-gray-800">
+  <div id="app" class="h-full flex overflow-hidden"><!-- Sidebar -->
+   <aside id="sidebar" class="w-64 bg-white border-r border-surface-200 flex flex-col no-print">
+    <div class="p-4 border-b border-surface-200">
+     <div class="flex items-center gap-2">
+      <div class="w-9 h-9 bg-brand-500 rounded-lg flex items-center justify-center"><span class="text-white font-bold text-sm">S</span>
+      </div>
+      <div>
+       <h1 class="text-sm font-bold text-brand-700">SIAA</h1>
+       <p class="text-xs text-gray-500">Módulo Professor</p>
+      </div>
+     </div>
+    </div>
+    <nav class="flex-1 py-2 overflow-y-auto">
+     <div class="px-3 py-1 text-xs font-semibold text-gray-400 uppercase">
+      Menu Principal
+     </div><button onclick="navigate('dashboard')" class="nav-item active w-full text-left px-4 py-2.5 flex items-center gap-3 text-sm" data-nav="dashboard"> <i data-lucide="layout-dashboard" class="w-4 h-4"></i> Painel </button> <button onclick="navigate('calendario')" class="nav-item w-full text-left px-4 py-2.5 flex items-center gap-3 text-sm" data-nav="calendario"> <i data-lucide="calendar" class="w-4 h-4"></i> Calendário Escolar </button> <button onclick="navigate('horario')" class="nav-item w-full text-left px-4 py-2.5 flex items-center gap-3 text-sm" data-nav="horario"> <i data-lucide="clock" class="w-4 h-4"></i> Horário de Aulas </button> <button onclick="navigate('frequencia')" class="nav-item w-full text-left px-4 py-2.5 flex items-center gap-3 text-sm" data-nav="frequencia"> <i data-lucide="check-square" class="w-4 h-4"></i> Frequência </button> <button onclick="navigate('conteudo')" class="nav-item w-full text-left px-4 py-2.5 flex items-center gap-3 text-sm" data-nav="conteudo"> <i data-lucide="book-open" class="w-4 h-4"></i> Conteúdo </button> <button onclick="navigate('atividade')" class="nav-item w-full text-left px-4 py-2.5 flex items-center gap-3 text-sm" data-nav="atividade"> <i data-lucide="file-text" class="w-4 h-4"></i> Atividades </button> <button onclick="navigate('avaliacao')" class="nav-item w-full text-left px-4 py-2.5 flex items-center gap-3 text-sm" data-nav="avaliacao"> <i data-lucide="clipboard" class="w-4 h-4"></i> Avaliação </button> <button onclick="navigate('qualitativo')" class="nav-item w-full text-left px-4 py-2.5 flex items-center gap-3 text-sm" data-nav="qualitativo"> <i data-lucide="star" class="w-4 h-4"></i> Av. Qualitativa </button> <button onclick="navigate('rendimento')" class="nav-item w-full text-left px-4 py-2.5 flex items-center gap-3 text-sm" data-nav="rendimento"> <i data-lucide="bar-chart-2" class="w-4 h-4"></i> Ficha de Rendimento </button> <button onclick="navigate('advertencia')" class="nav-item w-full text-left px-4 py-2.5 flex items-center gap-3 text-sm" data-nav="advertencia"> <i data-lucide="alert-triangle" class="w-4 h-4"></i> Advertência </button>
+    </nav>
+    <div class="p-3 border-t border-surface-200">
+     <div class="flex items-center gap-2">
+      <div class="w-8 h-8 bg-brand-100 rounded-full flex items-center justify-center"><i data-lucide="user" class="w-4 h-4 text-brand-600"></i>
+      </div>
+      <div>
+       <p id="sidebarTeacher" class="text-xs font-medium">Professor</p>
+       <p id="sidebarSubject" class="text-xs text-gray-400">Disciplina</p>
+      </div>
+     </div>
+    </div>
+   </aside><!-- Main Content -->
+   <main class="flex-1 overflow-y-auto">
+    <header class="bg-white border-b border-surface-200 px-6 py-3 flex items-center justify-between no-print">
+     <div>
+      <h2 id="pageTitle" class="text-lg font-bold text-gray-800">Painel</h2>
+      <p id="pageSubtitle" class="text-xs text-gray-500">Visão geral do sistema</p>
+     </div>
+     <div class="flex items-center gap-3"><span class="text-xs text-gray-500" id="currentDate"></span>
+     </div>
+    </header>
+    <div id="content" class="p-6 fade-in"><!-- Content loaded dynamically -->
+    </div>
+   </main>
+  </div><!-- Toast -->
+  <div id="toast" class="fixed bottom-4 right-4 bg-brand-600 text-white px-4 py-2 rounded-lg shadow-lg text-sm hidden z-50 transition-opacity"></div><!-- Modal -->
+  <div id="modal" class="fixed inset-0 modal-overlay z-40 hidden flex items-center justify-center p-4">
+   <div id="modalContent" class="bg-white rounded-xl shadow-2xl max-w-lg w-full max-h-[90%] overflow-y-auto p-6"></div>
+  </div>
+  <script>
+// ============ STATE ============
+let allRecords = [];
+let currentPage = 'dashboard';
+const defaultConfig = {
+  school_name: 'Escola Estadual do Piauí',
+  teacher_name: 'Professor(a)',
+  subject_name: 'Disciplina',
+  primary_color: '#1a7a10',
+  surface_color: '#ffffff',
+  text_color: '#1f2937',
+  action_color: '#e67e22',
+  secondary_color: '#f0f4f0',
+  font_family: 'Source Sans 3',
+  font_size: 14
+};
+let config = { ...defaultConfig };
+
+// Sample students for demo
+const sampleStudents = [
+  { id: 'S001', name: 'Ana Maria Silva' },
+  { id: 'S002', name: 'Bruno Costa Oliveira' },
+  { id: 'S003', name: 'Carlos Eduardo Santos' },
+  { id: 'S004', name: 'Diana Ferreira Lima' },
+  { id: 'S005', name: 'Eduardo Alves Pereira' },
+  { id: 'S006', name: 'Fernanda Souza Rocha' },
+  { id: 'S007', name: 'Gabriel Martins Nunes' },
+  { id: 'S008', name: 'Helena Rodrigues Dias' }
+];
+
+// ============ SDK INIT ============
+window.elementSdk.init({
+  defaultConfig,
+  onConfigChange: async (c) => {
+    config = { ...defaultConfig, ...c };
+    document.getElementById('sidebarTeacher').textContent = config.teacher_name;
+    document.getElementById('sidebarSubject').textContent = config.subject_name;
+    renderCurrentPage();
+  },
+  mapToCapabilities: (c) => ({
+    recolorables: [
+      { get: () => c.primary_color || defaultConfig.primary_color, set: v => { config.primary_color = v; window.elementSdk.setConfig({ primary_color: v }); } },
+      { get: () => c.surface_color || defaultConfig.surface_color, set: v => { config.surface_color = v; window.elementSdk.setConfig({ surface_color: v }); } },
+      { get: () => c.text_color || defaultConfig.text_color, set: v => { config.text_color = v; window.elementSdk.setConfig({ text_color: v }); } },
+      { get: () => c.action_color || defaultConfig.action_color, set: v => { config.action_color = v; window.elementSdk.setConfig({ action_color: v }); } },
+      { get: () => c.secondary_color || defaultConfig.secondary_color, set: v => { config.secondary_color = v; window.elementSdk.setConfig({ secondary_color: v }); } }
+    ],
+    borderables: [],
+    fontEditable: { get: () => c.font_family || defaultConfig.font_family, set: v => { config.font_family = v; window.elementSdk.setConfig({ font_family: v }); } },
+    fontSizeable: { get: () => c.font_size || defaultConfig.font_size, set: v => { config.font_size = v; window.elementSdk.setConfig({ font_size: v }); } }
+  }),
+  mapToEditPanelValues: (c) => new Map([
+    ['school_name', c.school_name || defaultConfig.school_name],
+    ['teacher_name', c.teacher_name || defaultConfig.teacher_name],
+    ['subject_name', c.subject_name || defaultConfig.subject_name]
+  ])
+});
+
+const dataHandler = {
+  onDataChanged(data) {
+    allRecords = data;
+    renderCurrentPage();
+  }
+};
+window.dataSdk.init(dataHandler);
+
+// ============ NAVIGATION ============
+function navigate(page) {
+  currentPage = page;
+  document.querySelectorAll('.nav-item').forEach(el => {
+    el.classList.toggle('active', el.dataset.nav === page);
+  });
+  const titles = {
+    dashboard: ['Painel', 'Visão geral do sistema'],
+    calendario: ['Calendário Escolar', 'Gerencie o calendário letivo'],
+    horario: ['Horário de Aulas', 'Configure sua grade horária semanal'],
+    frequencia: ['Frequência', 'Registre a frequência dos alunos'],
+    conteudo: ['Conteúdo', 'Envie conteúdos para os alunos'],
+    atividade: ['Atividades', 'Crie e gerencie atividades'],
+    avaliacao: ['Avaliação', 'Crie avaliações com correção'],
+    qualitativo: ['Avaliação Qualitativa', 'Registro qualitativo dos alunos'],
+    rendimento: ['Ficha de Rendimento', 'Sistema trimestral SEDUC-PI'],
+    advertencia: ['Advertência', 'Envie recados e advertências']
+  };
+  document.getElementById('pageTitle').textContent = titles[page][0];
+  document.getElementById('pageSubtitle').textContent = titles[page][1];
+  renderCurrentPage();
+}
+
+function renderCurrentPage() {
+  const el = document.getElementById('content');
+  el.classList.remove('fade-in');
+  void el.offsetWidth;
+  el.classList.add('fade-in');
+  const renderers = { dashboard: renderDashboard, calendario: renderCalendario, horario: renderHorario, frequencia: renderFrequencia, conteudo: renderConteudo, atividade: renderAtividade, avaliacao: renderAvaliacao, qualitativo: renderQualitativo, rendimento: renderRendimento, advertencia: renderAdvertencia };
+  (renderers[currentPage] || renderDashboard)();
+}
+
+// ============ UTILITIES ============
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.remove('hidden');
+  setTimeout(() => t.classList.add('hidden'), 3000);
+}
+function showModal(html) {
+  document.getElementById('modalContent').innerHTML = html;
+  document.getElementById('modal').classList.remove('hidden');
+}
+function closeModal() { document.getElementById('modal').classList.add('hidden'); }
+document.getElementById('modal').addEventListener('click', e => { if (e.target.id === 'modal') closeModal(); });
+
+function getRecords(type) { return allRecords.filter(r => r.type === type); }
+
+function formatDate(d) { return new Date(d).toLocaleDateString('pt-BR'); }
+
+// ============ DASHBOARD ============
+function renderDashboard() {
+  const cal = getRecords('calendario').length;
+  const hor = getRecords('horario').length;
+  const freq = getRecords('frequencia').length;
+  const atv = getRecords('atividade').length;
+  const aval = getRecords('avaliacao').length;
+  const adv = getRecords('advertencia').length;
+
+  document.getElementById('content').innerHTML = `
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+      <div class="card-hover bg-white rounded-xl p-5 border border-surface-200 cursor-pointer" onclick="navigate('calendario')">
+        <div class="flex items-center gap-3 mb-2"><div class="w-10 h-10 bg-brand-50 rounded-lg flex items-center justify-center"><i data-lucide="calendar" class="w-5 h-5 text-brand-600"></i></div><h3 class="font-semibold">Calendário</h3></div>
+        <p class="text-2xl font-bold text-brand-600">${cal}</p><p class="text-xs text-gray-500">eventos cadastrados</p>
+      </div>
+      <div class="card-hover bg-white rounded-xl p-5 border border-surface-200 cursor-pointer" onclick="navigate('horario')">
+        <div class="flex items-center gap-3 mb-2"><div class="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center"><i data-lucide="clock" class="w-5 h-5 text-blue-600"></i></div><h3 class="font-semibold">Horários</h3></div>
+        <p class="text-2xl font-bold text-blue-600">${hor}</p><p class="text-xs text-gray-500">aulas na semana</p>
+      </div>
+      <div class="card-hover bg-white rounded-xl p-5 border border-surface-200 cursor-pointer" onclick="navigate('frequencia')">
+        <div class="flex items-center gap-3 mb-2"><div class="w-10 h-10 bg-emerald-50 rounded-lg flex items-center justify-center"><i data-lucide="check-square" class="w-5 h-5 text-emerald-600"></i></div><h3 class="font-semibold">Frequência</h3></div>
+        <p class="text-2xl font-bold text-emerald-600">${freq}</p><p class="text-xs text-gray-500">registros</p>
+      </div>
+      <div class="card-hover bg-white rounded-xl p-5 border border-surface-200 cursor-pointer" onclick="navigate('atividade')">
+        <div class="flex items-center gap-3 mb-2"><div class="w-10 h-10 bg-orange-50 rounded-lg flex items-center justify-center"><i data-lucide="file-text" class="w-5 h-5 text-orange-600"></i></div><h3 class="font-semibold">Atividades</h3></div>
+        <p class="text-2xl font-bold text-orange-600">${atv}</p><p class="text-xs text-gray-500">criadas</p>
+      </div>
+      <div class="card-hover bg-white rounded-xl p-5 border border-surface-200 cursor-pointer" onclick="navigate('avaliacao')">
+        <div class="flex items-center gap-3 mb-2"><div class="w-10 h-10 bg-purple-50 rounded-lg flex items-center justify-center"><i data-lucide="clipboard" class="w-5 h-5 text-purple-600"></i></div><h3 class="font-semibold">Avaliações</h3></div>
+        <p class="text-2xl font-bold text-purple-600">${aval}</p><p class="text-xs text-gray-500">aplicadas</p>
+      </div>
+      <div class="card-hover bg-white rounded-xl p-5 border border-surface-200 cursor-pointer" onclick="navigate('advertencia')">
+        <div class="flex items-center gap-3 mb-2"><div class="w-10 h-10 bg-red-50 rounded-lg flex items-center justify-center"><i data-lucide="alert-triangle" class="w-5 h-5 text-red-600"></i></div><h3 class="font-semibold">Advertências</h3></div>
+        <p class="text-2xl font-bold text-red-600">${adv}</p><p class="text-xs text-gray-500">enviadas</p>
+      </div>
+    </div>
+    <div class="bg-white rounded-xl p-5 border border-surface-200">
+      <h3 class="font-semibold mb-3">Informações</h3>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+        <div><span class="text-gray-500">Escola:</span> <strong>${config.school_name}</strong></div>
+        <div><span class="text-gray-500">Professor:</span> <strong>${config.teacher_name}</strong></div>
+        <div><span class="text-gray-500">Disciplina:</span> <strong>${config.subject_name}</strong></div>
+      </div>
+    </div>
+  `;
+  lucide.createIcons();
+}
+
+// ============ CALENDÁRIO ============
+function renderCalendario() {
+  const events = getRecords('calendario');
+  document.getElementById('content').innerHTML = `
+    <div class="flex justify-between items-center mb-4">
+      <p class="text-sm text-gray-500">${events.length} evento(s) cadastrado(s)</p>
+      <button onclick="showCalendarioForm()" class="bg-brand-500 hover:bg-brand-600 text-white px-4 py-2 rounded-lg text-sm flex items-center gap-2"><i data-lucide="plus" class="w-4 h-4"></i> Novo Evento</button>
+    </div>
+    <div class="bg-white rounded-xl border border-surface-200 overflow-hidden">
+      ${events.length === 0 ? '<p class="p-6 text-center text-gray-400 text-sm">Nenhum evento cadastrado. Adicione eventos ao calendário escolar.</p>' : `
+      <table class="w-full text-sm">
+        <thead class="bg-surface-100"><tr><th class="text-left p-3">Data</th><th class="text-left p-3">Evento</th><th class="text-left p-3">Descrição</th><th class="p-3">Ações</th></tr></thead>
+        <tbody>${events.sort((a,b)=>a.date?.localeCompare(b.date)).map(e => `
+          <tr class="border-t border-surface-200"><td class="p-3">${formatDate(e.date)}</td><td class="p-3 font-medium">${e.title}</td><td class="p-3 text-gray-500">${e.description||'-'}</td>
+          <td class="p-3 text-center"><button onclick="deleteRecord('${e.__backendId}')" class="text-red-500 hover:text-red-700"><i data-lucide="trash-2" class="w-4 h-4"></i></button></td></tr>
+        `).join('')}</tbody>
+      </table>`}
+    </div>
+  `;
+  lucide.createIcons();
+}
+function showCalendarioForm() {
+  showModal(`
+    <h3 class="text-lg font-bold mb-4">Novo Evento</h3>
+    <form onsubmit="saveCalendario(event)">
+      <div class="space-y-3">
+        <div><label class="block text-sm font-medium mb-1">Data</label><input type="date" id="calDate" required class="w-full border rounded-lg px-3 py-2 text-sm"></div>
+        <div><label class="block text-sm font-medium mb-1">Título</label><input type="text" id="calTitle" required class="w-full border rounded-lg px-3 py-2 text-sm" placeholder="Ex: Início do 1º Trimestre"></div>
+        <div><label class="block text-sm font-medium mb-1">Descrição</label><textarea id="calDesc" class="w-full border rounded-lg px-3 py-2 text-sm" rows="2"></textarea></div>
+      </div>
+      <div class="flex justify-end gap-2 mt-4"><button type="button" onclick="closeModal()" class="px-4 py-2 border rounded-lg text-sm">Cancelar</button><button type="submit" class="bg-brand-500 text-white px-4 py-2 rounded-lg text-sm">Salvar</button></div>
+    </form>
+  `);
+}
+async function saveCalendario(e) {
+  e.preventDefault();
+  if (allRecords.length >= 999) { showToast('Limite de registros atingido!'); return; }
+  const r = await window.dataSdk.create({ type:'calendario', date: document.getElementById('calDate').value, title: document.getElementById('calTitle').value, description: document.getElementById('calDesc').value, created_at: new Date().toISOString() });
+  if (r.isOk) { closeModal(); showToast('Evento salvo!'); } else { showToast('Erro ao salvar.'); }
+}
+
+// ============ HORÁRIO ============
+function renderHorario() {
+  const slots = getRecords('horario');
+  const days = ['Segunda','Terça','Quarta','Quinta','Sexta'];
+  document.getElementById('content').innerHTML = `
+    <div class="flex justify-between items-center mb-4">
+      <p class="text-sm text-gray-500">Grade horária semanal</p>
+      <button onclick="showHorarioForm()" class="bg-brand-500 hover:bg-brand-600 text-white px-4 py-2 rounded-lg text-sm flex items-center gap-2"><i data-lucide="plus" class="w-4 h-4"></i> Adicionar Aula</button>
+    </div>
+    <div class="bg-white rounded-xl border border-surface-200 overflow-x-auto">
+      <table class="w-full text-sm">
+        <thead class="bg-surface-100"><tr><th class="p-3 text-left">Horário</th>${days.map(d=>`<th class="p-3 text-center">${d}</th>`).join('')}</tr></thead>
+        <tbody>
+          ${['07:00-07:50','07:50-08:40','08:40-09:30','09:45-10:35','10:35-11:25','11:25-12:15'].map(time => `
+            <tr class="border-t border-surface-200">
+              <td class="p-3 font-medium text-gray-600">${time}</td>
+              ${days.map(day => {
+                const slot = slots.find(s => s.day_of_week === day && s.time_start === time.split('-')[0]);
+                return `<td class="p-2 text-center">${slot ? `<div class="bg-brand-50 border border-brand-200 rounded-lg p-2"><span class="text-xs font-medium text-brand-700">${slot.class_name || config.subject_name}</span><br><span class="text-xs text-gray-500">${slot.description||''}</span></div>` : '<span class="text-gray-300">—</span>'}</td>`;
+              }).join('')}
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    </div>
+  `;
+  lucide.createIcons();
+}
+function showHorarioForm() {
+  showModal(`
+    <h3 class="text-lg font-bold mb-4">Adicionar Aula</h3>
+    <form onsubmit="saveHorario(event)">
+      <div class="space-y-3">
+        <div><label class="block text-sm font-medium mb-1">Dia da Semana</label><select id="horDay" required class="w-full border rounded-lg px-3 py-2 text-sm"><option>Segunda</option><option>Terça</option><option>Quarta</option><option>Quinta</option><option>Sexta</option></select></div>
+        <div class="grid grid-cols-2 gap-3"><div><label class="block text-sm font-medium mb-1">Início</label><input type="time" id="horStart" required class="w-full border rounded-lg px-3 py-2 text-sm"></div><div><label class="block text-sm font-medium mb-1">Fim</label><input type="time" id="horEnd" required class="w-full border rounded-lg px-3 py-2 text-sm"></div></div>
+        <div><label class="block text-sm font-medium mb-1">Turma</label><input type="text" id="horClass" required class="w-full border rounded-lg px-3 py-2 text-sm" placeholder="Ex: 9º Ano A"></div>
+        <div><label class="block text-sm font-medium mb-1">Observação</label><input type="text" id="horDesc" class="w-full border rounded-lg px-3 py-2 text-sm"></div>
+      </div>
+      <div class="flex justify-end gap-2 mt-4"><button type="button" onclick="closeModal()" class="px-4 py-2 border rounded-lg text-sm">Cancelar</button><button type="submit" class="bg-brand-500 text-white px-4 py-2 rounded-lg text-sm">Salvar</button></div>
+    </form>
+  `);
+}
+async function saveHorario(e) {
+  e.preventDefault();
+  if (allRecords.length >= 999) { showToast('Limite atingido!'); return; }
+  const r = await window.dataSdk.create({ type:'horario', day_of_week: document.getElementById('horDay').value, time_start: document.getElementById('horStart').value, time_end: document.getElementById('horEnd').value, class_name: document.getElementById('horClass').value, description: document.getElementById('horDesc').value, created_at: new Date().toISOString() });
+  if (r.isOk) { closeModal(); showToast('Aula adicionada!'); } else { showToast('Erro.'); }
+}
+
+// ============ FREQUÊNCIA ============
+function renderFrequencia() {
+  const freqs = getRecords('frequencia');
+  document.getElementById('content').innerHTML = `
+    <div class="flex justify-between items-center mb-4">
+      <p class="text-sm text-gray-500">${freqs.length} registro(s) de frequência</p>
+      <button onclick="showFrequenciaForm()" class="bg-brand-500 hover:bg-brand-600 text-white px-4 py-2 rounded-lg text-sm flex items-center gap-2"><i data-lucide="plus" class="w-4 h-4"></i> Registrar Frequência</button>
+    </div>
+    <div class="bg-white rounded-xl border border-surface-200 overflow-hidden">
+      ${freqs.length === 0 ? '<p class="p-6 text-center text-gray-400 text-sm">Nenhuma frequência registrada.</p>' : `
+      <table class="w-full text-sm">
+        <thead class="bg-surface-100"><tr><th class="p-3 text-left">Data</th><th class="p-3 text-left">Aluno</th><th class="p-3 text-center">Status</th><th class="p-3">Ações</th></tr></thead>
+        <tbody>${freqs.sort((a,b)=>(b.date||'').localeCompare(a.date||'')).map(f => `
+          <tr class="border-t border-surface-200">
+            <td class="p-3">${formatDate(f.date)}</td>
+            <td class="p-3">${f.student_name}</td>
+            <td class="p-3 text-center"><span class="px-2 py-0.5 rounded-full text-xs font-medium ${f.status==='P'?'bg-green-100 text-green-700':f.status==='F'?'bg-red-100 text-red-700':'bg-yellow-100 text-yellow-700'}">${f.status==='P'?'Presente':f.status==='F'?'Falta':'Justificada'}</span></td>
+            <td class="p-3 text-center"><button onclick="deleteRecord('${f.__backendId}')" class="text-red-500 hover:text-red-700"><i data-lucide="trash-2" class="w-4 h-4"></i></button></td>
+          </tr>
+        `).join('')}</tbody>
+      </table>`}
+    </div>
+  `;
+  lucide.createIcons();
+}
+function showFrequenciaForm() {
+  showModal(`
+    <h3 class="text-lg font-bold mb-4">Registrar Frequência</h3>
+    <form onsubmit="saveFrequencia(event)">
+      <div class="space-y-3">
+        <div><label class="block text-sm font-medium mb-1">Data</label><input type="date" id="freqDate" required value="${new Date().toISOString().split('T')[0]}" class="w-full border rounded-lg px-3 py-2 text-sm"></div>
+        <div class="border rounded-lg p-3">
+          <p class="text-sm font-medium mb-2">Alunos</p>
+          ${sampleStudents.map(s => `
+            <div class="flex items-center justify-between py-1.5 border-b border-surface-100 last:border-0">
+              <span class="text-sm">${s.name}</span>
+              <div class="flex gap-1">
+                <label class="flex items-center gap-1 text-xs"><input type="radio" name="freq_${s.id}" value="P" checked class="accent-green-600"> P</label>
+                <label class="flex items-center gap-1 text-xs"><input type="radio" name="freq_${s.id}" value="F" class="accent-red-600"> F</label>
+                <label class="flex items-center gap-1 text-xs"><input type="radio" name="freq_${s.id}" value="J" class="accent-yellow-600"> J</label>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+      <div class="flex justify-end gap-2 mt-4"><button type="button" onclick="closeModal()" class="px-4 py-2 border rounded-lg text-sm">Cancelar</button><button type="submit" class="bg-brand-500 text-white px-4 py-2 rounded-lg text-sm">Salvar</button></div>
+    </form>
+  `);
+}
+async function saveFrequencia(e) {
+  e.preventDefault();
+  const date = document.getElementById('freqDate').value;
+  for (const s of sampleStudents) {
+    if (allRecords.length >= 999) { showToast('Limite atingido!'); return; }
+    const status = document.querySelector(`input[name="freq_${s.id}"]:checked`).value;
+    await window.dataSdk.create({ type:'frequencia', date, student_name: s.name, student_id: s.id, status, created_at: new Date().toISOString() });
+  }
+  closeModal(); showToast('Frequência registrada!');
+}
+
+// ============ CONTEÚDO ============
+function renderConteudo() {
+  const contents = getRecords('conteudo');
+  document.getElementById('content').innerHTML = `
+    <div class="flex justify-between items-center mb-4">
+      <p class="text-sm text-gray-500">${contents.length} conteúdo(s)</p>
+      <button onclick="showConteudoForm()" class="bg-brand-500 hover:bg-brand-600 text-white px-4 py-2 rounded-lg text-sm flex items-center gap-2"><i data-lucide="plus" class="w-4 h-4"></i> Novo Conteúdo</button>
+    </div>
+    <div class="grid gap-3">
+      ${contents.length === 0 ? '<div class="bg-white rounded-xl p-6 border border-surface-200 text-center text-gray-400 text-sm">Nenhum conteúdo enviado.</div>' : contents.map(c => `
+        <div class="bg-white rounded-xl p-4 border border-surface-200 card-hover">
+          <div class="flex justify-between items-start">
+            <div><h4 class="font-semibold">${c.title}</h4><p class="text-sm text-gray-500 mt-1">${c.description||''}</p><p class="text-xs text-gray-400 mt-2">${formatDate(c.created_at)}</p></div>
+            <button onclick="deleteRecord('${c.__backendId}')" class="text-red-500 hover:text-red-700"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+          </div>
+          ${c.content ? `<div class="mt-3 p-3 bg-surface-50 rounded-lg text-sm">${c.content}</div>` : ''}
+        </div>
+      `).join('')}
+    </div>
+  `;
+  lucide.createIcons();
+}
+function showConteudoForm() {
+  showModal(`
+    <h3 class="text-lg font-bold mb-4">Novo Conteúdo</h3>
+    <form onsubmit="saveConteudo(event)">
+      <div class="space-y-3">
+        <div><label class="block text-sm font-medium mb-1">Título</label><input type="text" id="contTitle" required class="w-full border rounded-lg px-3 py-2 text-sm"></div>
+        <div><label class="block text-sm font-medium mb-1">Descrição</label><input type="text" id="contDesc" class="w-full border rounded-lg px-3 py-2 text-sm"></div>
+        <div><label class="block text-sm font-medium mb-1">Conteúdo</label><textarea id="contContent" rows="5" class="w-full border rounded-lg px-3 py-2 text-sm" placeholder="Digite o conteúdo da aula..."></textarea></div>
+      </div>
+      <div class="flex justify-end gap-2 mt-4"><button type="button" onclick="closeModal()" class="px-4 py-2 border rounded-lg text-sm">Cancelar</button><button type="submit" class="bg-brand-500 text-white px-4 py-2 rounded-lg text-sm">Enviar</button></div>
+    </form>
+  `);
+}
+async function saveConteudo(e) {
+  e.preventDefault();
+  if (allRecords.length >= 999) { showToast('Limite atingido!'); return; }
+  const r = await window.dataSdk.create({ type:'conteudo', title: document.getElementById('contTitle').value, description: document.getElementById('contDesc').value, content: document.getElementById('contContent').value, created_at: new Date().toISOString() });
+  if (r.isOk) { closeModal(); showToast('Conteúdo enviado!'); }
+}
+
+// ============ ATIVIDADE ============
+function renderAtividade() {
+  const activities = getRecords('atividade');
+  document.getElementById('content').innerHTML = `
+    <div class="flex justify-between items-center mb-4">
+      <p class="text-sm text-gray-500">${activities.length} atividade(s)</p>
+      <button onclick="showAtividadeForm()" class="bg-brand-500 hover:bg-brand-600 text-white px-4 py-2 rounded-lg text-sm flex items-center gap-2"><i data-lucide="plus" class="w-4 h-4"></i> Nova Atividade</button>
+    </div>
+    <div class="grid gap-3">
+      ${activities.length === 0 ? '<div class="bg-white rounded-xl p-6 border border-surface-200 text-center text-gray-400 text-sm">Nenhuma atividade criada.</div>' : activities.map(a => `
+        <div class="bg-white rounded-xl p-4 border border-surface-200 card-hover">
+          <div class="flex justify-between items-start">
+            <div>
+              <div class="flex items-center gap-2"><h4 class="font-semibold">${a.title}</h4><span class="px-2 py-0.5 rounded-full text-xs ${a.correction_type==='automatica'?'bg-blue-100 text-blue-700':'bg-orange-100 text-orange-700'}">${a.correction_type==='automatica'?'Correção Automática':'Correção Manual'}</span></div>
+              <p class="text-sm text-gray-500 mt-1">${a.description||''}</p>
+              <p class="text-xs text-gray-400 mt-2">Prazo: ${a.due_date ? formatDate(a.due_date) : 'Sem prazo'}</p>
+            </div>
+            <button onclick="deleteRecord('${a.__backendId}')" class="text-red-500 hover:text-red-700"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+          </div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+  lucide.createIcons();
+}
+function showAtividadeForm() {
+  showModal(`
+    <h3 class="text-lg font-bold mb-4">Nova Atividade</h3>
+    <form onsubmit="saveAtividade(event)">
+      <div class="space-y-3">
+        <div><label class="block text-sm font-medium mb-1">Título</label><input type="text" id="atvTitle" required class="w-full border rounded-lg px-3 py-2 text-sm"></div>
+        <div><label class="block text-sm font-medium mb-1">Descrição/Enunciado</label><textarea id="atvDesc" rows="3" class="w-full border rounded-lg px-3 py-2 text-sm"></textarea></div>
+        <div><label class="block text-sm font-medium mb-1">Prazo de Entrega</label><input type="date" id="atvDue" class="w-full border rounded-lg px-3 py-2 text-sm"></div>
+        <div><label class="block text-sm font-medium mb-1">Tipo de Correção</label><select id="atvCorr" class="w-full border rounded-lg px-3 py-2 text-sm"><option value="manual">Manual (Professor corrige)</option><option value="automatica">Automática (Sistema corrige)</option></select></div>
+        <div><label class="block text-sm font-medium mb-1">Conteúdo da Atividade</label><textarea id="atvContent" rows="4" class="w-full border rounded-lg px-3 py-2 text-sm" placeholder="Questões, instruções..."></textarea></div>
+      </div>
+      <div class="flex justify-end gap-2 mt-4"><button type="button" onclick="closeModal()" class="px-4 py-2 border rounded-lg text-sm">Cancelar</button><button type="submit" class="bg-brand-500 text-white px-4 py-2 rounded-lg text-sm">Criar</button></div>
+    </form>
+  `);
+}
+async function saveAtividade(e) {
+  e.preventDefault();
+  if (allRecords.length >= 999) { showToast('Limite atingido!'); return; }
+  const r = await window.dataSdk.create({ type:'atividade', title: document.getElementById('atvTitle').value, description: document.getElementById('atvDesc').value, due_date: document.getElementById('atvDue').value, correction_type: document.getElementById('atvCorr').value, content: document.getElementById('atvContent').value, created_at: new Date().toISOString() });
+  if (r.isOk) { closeModal(); showToast('Atividade criada! Notificação enviada aos alunos.'); }
+}
+
+// ============ AVALIAÇÃO ============
+function renderAvaliacao() {
+  const evals = getRecords('avaliacao');
+  document.getElementById('content').innerHTML = `
+    <div class="flex justify-between items-center mb-4">
+      <p class="text-sm text-gray-500">${evals.length} avaliação(ões)</p>
+      <button onclick="showAvaliacaoForm()" class="bg-brand-500 hover:bg-brand-600 text-white px-4 py-2 rounded-lg text-sm flex items-center gap-2"><i data-lucide="plus" class="w-4 h-4"></i> Nova Avaliação</button>
+    </div>
+    <div class="grid gap-3">
+      ${evals.length === 0 ? '<div class="bg-white rounded-xl p-6 border border-surface-200 text-center text-gray-400 text-sm">Nenhuma avaliação criada.</div>' : evals.map(a => `
+        <div class="bg-white rounded-xl p-4 border border-surface-200 card-hover">
+          <div class="flex justify-between items-start">
+            <div>
+              <div class="flex items-center gap-2"><h4 class="font-semibold">${a.title}</h4><span class="px-2 py-0.5 rounded-full text-xs bg-purple-100 text-purple-700">${a.trimester||1}º Trimestre</span><span class="px-2 py-0.5 rounded-full text-xs ${a.correction_type==='automatica'?'bg-blue-100 text-blue-700':'bg-orange-100 text-orange-700'}">${a.correction_type==='automatica'?'Auto':'Manual'}</span></div>
+              <p class="text-sm text-gray-500 mt-1">${a.description||''}</p>
+              <p class="text-xs text-gray-400 mt-2">Data: ${a.date ? formatDate(a.date) : '-'} | Valor: ${a.grade||10} pts</p>
+            </div>
+            <div class="flex gap-2">
+              <button onclick="showCorrecao('${a.__backendId}')" class="text-brand-600 hover:text-brand-800 text-xs border border-brand-200 rounded px-2 py-1">Corrigir</button>
+              <button onclick="deleteRecord('${a.__backendId}')" class="text-red-500 hover:text-red-700"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+            </div>
+          </div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+  lucide.createIcons();
+}
+function showAvaliacaoForm() {
+  showModal(`
+    <h3 class="text-lg font-bold mb-4">Nova Avaliação</h3>
+    <form onsubmit="saveAvaliacao(event)">
+      <div class="space-y-3">
+        <div class="p-3 bg-surface-50 rounded-lg border text-center text-xs text-gray-500">
+          <strong>${config.school_name}</strong><br>
+          Prof(a): ${config.teacher_name} | Disciplina: ${config.subject_name}
+        </div>
+        <div><label class="block text-sm font-medium mb-1">Título</label><input type="text" id="evalTitle" required class="w-full border rounded-lg px-3 py-2 text-sm" placeholder="Ex: Prova 1 - 1º Trimestre"></div>
+        <div class="grid grid-cols-2 gap-3">
+          <div><label class="block text-sm font-medium mb-1">Data</label><input type="date" id="evalDate" class="w-full border rounded-lg px-3 py-2 text-sm"></div>
+          <div><label class="block text-sm font-medium mb-1">Trimestre</label><select id="evalTri" class="w-full border rounded-lg px-3 py-2 text-sm"><option value="1">1º Trimestre</option><option value="2">2º Trimestre</option><option value="3">3º Trimestre</option></select></div>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div><label class="block text-sm font-medium mb-1">Valor (pontos)</label><input type="number" id="evalGrade" value="10" class="w-full border rounded-lg px-3 py-2 text-sm"></div>
+          <div><label class="block text-sm font-medium mb-1">Correção</label><select id="evalCorr" class="w-full border rounded-lg px-3 py-2 text-sm"><option value="manual">Manual</option><option value="automatica">Automática</option></select></div>
+        </div>
+        <div><label class="block text-sm font-medium mb-1">Descrição</label><textarea id="evalDesc" rows="2" class="w-full border rounded-lg px-3 py-2 text-sm"></textarea></div>
+      </div>
+      <div class="flex justify-end gap-2 mt-4"><button type="button" onclick="closeModal()" class="px-4 py-2 border rounded-lg text-sm">Cancelar</button><button type="submit" class="bg-brand-500 text-white px-4 py-2 rounded-lg text-sm">Criar</button></div>
+    </form>
+  `);
+}
+async function saveAvaliacao(e) {
+  e.preventDefault();
+  if (allRecords.length >= 999) { showToast('Limite atingido!'); return; }
+  const r = await window.dataSdk.create({ type:'avaliacao', title: document.getElementById('evalTitle').value, date: document.getElementById('evalDate').value, trimester: parseInt(document.getElementById('evalTri').value), grade: parseFloat(document.getElementById('evalGrade').value), correction_type: document.getElementById('evalCorr').value, description: document.getElementById('evalDesc').value, created_at: new Date().toISOString() });
+  if (r.isOk) { closeModal(); showToast('Avaliação criada!'); }
+}
+function showCorrecao(evalId) {
+  const eval_ = allRecords.find(r => r.__backendId === evalId);
+  showModal(`
+    <h3 class="text-lg font-bold mb-4">Correção: ${eval_?.title||''}</h3>
+    <form onsubmit="saveNotas(event, '${evalId}')">
+      <div class="border rounded-lg overflow-hidden">
+        <table class="w-full text-sm">
+          <thead class="bg-surface-100"><tr><th class="p-2 text-left">Aluno</th><th class="p-2 text-center w-24">Nota</th></tr></thead>
+          <tbody>${sampleStudents.map(s => `
+            <tr class="border-t"><td class="p-2">${s.name}</td><td class="p-2"><input type="number" step="0.1" min="0" max="${eval_?.grade||10}" class="w-full border rounded px-2 py-1 text-center text-sm nota-input" data-student="${s.id}" data-student-name="${s.name}"></td></tr>
+          `).join('')}</tbody>
+        </table>
+      </div>
+      <div class="flex justify-end gap-2 mt-4"><button type="button" onclick="closeModal()" class="px-4 py-2 border rounded-lg text-sm">Cancelar</button><button type="submit" class="bg-brand-500 text-white px-4 py-2 rounded-lg text-sm">Salvar Notas</button></div>
+    </form>
+  `);
+}
+async function saveNotas(e, evalId) {
+  e.preventDefault();
+  const eval_ = allRecords.find(r => r.__backendId === evalId);
+  const inputs = document.querySelectorAll('.nota-input');
+  for (const inp of inputs) {
+    if (inp.value && allRecords.length < 999) {
+      await window.dataSdk.create({ type:'nota', student_id: inp.dataset.student, student_name: inp.dataset.studentName, grade: parseFloat(inp.value), title: eval_?.title||'', trimester: eval_?.trimester||1, subject: config.subject_name, created_at: new Date().toISOString() });
+    }
+  }
+  closeModal(); showToast('Notas salvas! Enviadas ao módulo aluno e pais.');
+}
+
+// ============ QUALITATIVO ============
+function renderQualitativo() {
+  const quals = getRecords('qualitativo');
+  const aspects = ['Participação','Comportamento','Trabalho em Equipe','Pontualidade','Organização','Criatividade'];
+  document.getElementById('content').innerHTML = `
+    <div class="flex justify-between items-center mb-4">
+      <p class="text-sm text-gray-500">Avaliação Qualitativa - Conceitos</p>
+      <button onclick="showQualitativoForm()" class="bg-brand-500 hover:bg-brand-600 text-white px-4 py-2 rounded-lg text-sm flex items-center gap-2"><i data-lucide="plus" class="w-4 h-4"></i> Avaliar</button>
+    </div>
+    <div class="bg-white rounded-xl border border-surface-200 p-4 mb-4">
+      <h4 class="font-semibold text-sm mb-2">Legenda de Conceitos</h4>
+      <div class="flex flex-wrap gap-3 text-xs">
+        <span class="px-2 py-1 bg-green-100 text-green-700 rounded">MB - Muito Bom</span>
+        <span class="px-2 py-1 bg-blue-100 text-blue-700 rounded">B - Bom</span>
+        <span class="px-2 py-1 bg-yellow-100 text-yellow-700 rounded">R - Regular</span>
+        <span class="px-2 py-1 bg-red-100 text-red-700 rounded">I - Insuficiente</span>
+      </div>
+    </div>
+    <div class="bg-white rounded-xl border border-surface-200 overflow-x-auto">
+      ${quals.length === 0 ? '<p class="p-6 text-center text-gray-400 text-sm">Nenhuma avaliação qualitativa registrada.</p>' : `
+      <table class="w-full text-sm">
+        <thead class="bg-surface-100"><tr><th class="p-3 text-left">Aluno</th><th class="p-3">Trimestre</th>${aspects.map(a=>`<th class="p-3 text-center">${a}</th>`).join('')}<th class="p-3">Ações</th></tr></thead>
+        <tbody>${quals.map(q => `
+          <tr class="border-t"><td class="p-3">${q.student_name}</td><td class="p-3 text-center">${q.trimester}º</td>
+          ${aspects.map(a => { const v = q[a.toLowerCase().replace(/ /g,'_')]||'-'; const cls = v==='MB'?'bg-green-100 text-green-700':v==='B'?'bg-blue-100 text-blue-700':v==='R'?'bg-yellow-100 text-yellow-700':'bg-red-100 text-red-700'; return `<td class="p-3 text-center"><span class="px-2 py-0.5 rounded text-xs ${cls}">${v}</span></td>`; }).join('')}
+          <td class="p-3 text-center"><button onclick="deleteRecord('${q.__backendId}')" class="text-red-500"><i data-lucide="trash-2" class="w-4 h-4"></i></button></td></tr>
+        `).join('')}</tbody>
+      </table>`}
+    </div>
+  `;
+  lucide.createIcons();
+}
+function showQualitativoForm() {
+  const aspects = ['Participação','Comportamento','Trabalho em Equipe','Pontualidade','Organização','Criatividade'];
+  showModal(`
+    <h3 class="text-lg font-bold mb-4">Avaliação Qualitativa</h3>
+    <form onsubmit="saveQualitativo(event)">
+      <div class="space-y-3">
+        <div class="grid grid-cols-2 gap-3">
+          <div><label class="block text-sm font-medium mb-1">Aluno</label><select id="qualStudent" class="w-full border rounded-lg px-3 py-2 text-sm">${sampleStudents.map(s=>`<option value="${s.id}" data-name="${s.name}">${s.name}</option>`).join('')}</select></div>
+          <div><label class="block text-sm font-medium mb-1">Trimestre</label><select id="qualTri" class="w-full border rounded-lg px-3 py-2 text-sm"><option value="1">1º</option><option value="2">2º</option><option value="3">3º</option></select></div>
+        </div>
+        ${aspects.map(a => `
+          <div class="flex items-center justify-between"><label class="text-sm">${a}</label><select id="qual_${a.toLowerCase().replace(/ /g,'_')}" class="border rounded px-2 py-1 text-sm"><option value="MB">MB</option><option value="B">B</option><option value="R">R</option><option value="I">I</option></select></div>
+        `).join('')}
+      </div>
+      <div class="flex justify-end gap-2 mt-4"><button type="button" onclick="closeModal()" class="px-4 py-2 border rounded-lg text-sm">Cancelar</button><button type="submit" class="bg-brand-500 text-white px-4 py-2 rounded-lg text-sm">Salvar</button></div>
+    </form>
+  `);
+}
+async function saveQualitativo(e) {
+  e.preventDefault();
+  if (allRecords.length >= 999) { showToast('Limite atingido!'); return; }
+  const sel = document.getElementById('qualStudent');
+  const aspects = ['participação','comportamento','trabalho_em_equipe','pontualidade','organização','criatividade'];
+  const data = { type:'qualitativo', student_id: sel.value, student_name: sel.options[sel.selectedIndex].dataset.name, trimester: parseInt(document.getElementById('qualTri').value), created_at: new Date().toISOString() };
+  aspects.forEach(a => { data[a] = document.getElementById('qual_'+a).value; });
+  const r = await window.dataSdk.create(data);
+  if (r.isOk) { closeModal(); showToast('Avaliação qualitativa salva!'); }
+}
+
+// ============ FICHA DE RENDIMENTO ============
+function renderRendimento() {
+  const notas = getRecords('nota');
+  const freqs = getRecords('frequencia');
+  
+  document.getElementById('content').innerHTML = `
+    <div class="flex justify-between items-center mb-4">
+      <div class="flex items-center gap-3">
+        <select id="rendStudent" onchange="updateRendimento()" class="border rounded-lg px-3 py-2 text-sm">
+          <option value="">Selecione um aluno</option>
+          ${sampleStudents.map(s=>`<option value="${s.id}">${s.name}</option>`).join('')}
+        </select>
+      </div>
+      <button onclick="window.print()" class="border border-brand-500 text-brand-600 px-4 py-2 rounded-lg text-sm flex items-center gap-2"><i data-lucide="printer" class="w-4 h-4"></i> Imprimir</button>
+    </div>
+    <div id="fichaRendimento" class="bg-white rounded-xl border border-surface-200 p-6">
+      <div class="text-center border-b pb-4 mb-4">
+        <p class="text-xs text-gray-500">GOVERNO DO ESTADO DO PIAUÍ</p>
+        <p class="text-xs text-gray-500">SECRETARIA DE ESTADO DA EDUCAÇÃO - SEDUC</p>
+        <h3 class="font-bold text-sm mt-1">${config.school_name}</h3>
+        <p class="text-xs text-gray-500 mt-1">FICHA DE RENDIMENTO ESCOLAR - ANO LETIVO 2024</p>
+      </div>
+      <div class="grid grid-cols-3 gap-3 text-xs mb-4">
+        <div><strong>Professor:</strong> ${config.teacher_name}</div>
+        <div><strong>Disciplina:</strong> ${config.subject_name}</div>
+        <div><strong>Aluno:</strong> <span id="rendStudentName">-</span></div>
+      </div>
+      <table class="w-full text-xs border-collapse border border-gray-300">
+        <thead>
+          <tr class="bg-surface-100">
+            <th class="border border-gray-300 p-2" rowspan="2">COMPONENTE CURRICULAR</th>
+            <th class="border border-gray-300 p-1" colspan="4">1º TRIMESTRE</th>
+            <th class="border border-gray-300 p-1" colspan="4">2º TRIMESTRE</th>
+            <th class="border border-gray-300 p-1" colspan="4">3º TRIMESTRE</th>
+            <th class="border border-gray-300 p-1" rowspan="2">MF</th>
+            <th class="border border-gray-300 p-1" rowspan="2">RESULTADO</th>
+          </tr>
+          <tr class="bg-surface-100">
+            <th class="border border-gray-300 p-1">N</th><th class="border border-gray-300 p-1">F</th><th class="border border-gray-300 p-1">%F</th><th class="border border-gray-300 p-1">TF</th>
+            <th class="border border-gray-300 p-1">N</th><th class="border border-gray-300 p-1">F</th><th class="border border-gray-300 p-1">%F</th><th class="border border-gray-300 p-1">TF</th>
+            <th class="border border-gray-300 p-1">N</th><th class="border border-gray-300 p-1">F</th><th class="border border-gray-300 p-1">%F</th><th class="border border-gray-300 p-1">TF</th>
+          </tr>
+        </thead>
+        <tbody id="rendBody">
+          <tr><td colspan="16" class="border border-gray-300 p-4 text-center text-gray-400">Selecione um aluno para ver a ficha</td></tr>
+        </tbody>
+      </table>
+      <div class="mt-3 text-xs text-gray-500">
+        <p><strong>N</strong> = Nota | <strong>F</strong> = Faltas | <strong>%F</strong> = % Frequência | <strong>TF</strong> = Total Faltas | <strong>MF</strong> = Média Final</p>
+        <p class="mt-1">Aprovado: MF ≥ 6,0 e Frequência ≥ 75%</p>
+      </div>
+    </div>
+  `;
+  lucide.createIcons();
+}
+function updateRendimento() {
+  const studentId = document.getElementById('rendStudent').value;
+  if (!studentId) return;
+  const student = sampleStudents.find(s => s.id === studentId);
+  document.getElementById('rendStudentName').textContent = student?.name || '-';
+  
+  const notas = getRecords('nota').filter(n => n.student_id === studentId);
+  const freqs = getRecords('frequencia').filter(f => f.student_id === studentId);
+  
+  let row = `<tr><td class="border border-gray-300 p-2 font-medium">${config.subject_name}</td>`;
+  let totalNotas = 0; let countNotas = 0;
+  
+  for (let tri = 1; tri <= 3; tri++) {
+    const triNotas = notas.filter(n => n.trimester === tri);
+    const triFreqs = freqs.filter(f => { const m = new Date(f.date).getMonth(); return tri===1?(m>=1&&m<=4):tri===2?(m>=4&&m<=7):(m>=7&&m<=11); });
+    const nota = triNotas.length > 0 ? (triNotas.reduce((s,n)=>s+n.grade,0)/triNotas.length).toFixed(1) : '-';
+    const faltas = triFreqs.filter(f=>f.status==='F').length;
+    const totalAulas = triFreqs.length || 1;
+    const percFreq = ((totalAulas - faltas)/totalAulas * 100).toFixed(0);
+    
+    if (nota !== '-') { totalNotas += parseFloat(nota); countNotas++; }
+    row += `<td class="border border-gray-300 p-1 text-center">${nota}</td><td class="border border-gray-300 p-1 text-center">${faltas}</td><td class="border border-gray-300 p-1 text-center">${percFreq}%</td><td class="border border-gray-300 p-1 text-center">${faltas}</td>`;
+  }
+  
+  const mf = countNotas > 0 ? (totalNotas/countNotas).toFixed(1) : '-';
+  const resultado = mf !== '-' ? (parseFloat(mf) >= 6 ? '<span class="text-green-600 font-bold">APR</span>' : '<span class="text-red-600 font-bold">REP</span>') : '-';
+  row += `<td class="border border-gray-300 p-1 text-center font-bold">${mf}</td><td class="border border-gray-300 p-1 text-center">${resultado}</td></tr>`;
+  
+  document.getElementById('rendBody').innerHTML = row;
+}
+
+// ============ ADVERTÊNCIA ============
+function renderAdvertencia() {
+  const advs = getRecords('advertencia');
+  document.getElementById('content').innerHTML = `
+    <div class="flex justify-between items-center mb-4">
+      <p class="text-sm text-gray-500">${advs.length} registro(s)</p>
+      <button onclick="showAdvertenciaForm()" class="bg-brand-500 hover:bg-brand-600 text-white px-4 py-2 rounded-lg text-sm flex items-center gap-2"><i data-lucide="plus" class="w-4 h-4"></i> Nova Advertência</button>
+    </div>
+    <div class="grid gap-3">
+      ${advs.length === 0 ? '<div class="bg-white rounded-xl p-6 border border-surface-200 text-center text-gray-400 text-sm">Nenhuma advertência registrada.</div>' : advs.map(a => `
+        <div class="bg-white rounded-xl p-4 border ${a.status==='advertencia'?'border-red-200':'border-yellow-200'} card-hover">
+          <div class="flex justify-between items-start">
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="px-2 py-0.5 rounded text-xs font-medium ${a.status==='advertencia'?'bg-red-100 text-red-700':'bg-yellow-100 text-yellow-700'}">${a.status==='advertencia'?'Advertência':'Recado'}</span>
+                <span class="text-xs text-gray-400">${formatDate(a.created_at)}</span>
+              </div>
+              <p class="font-medium mt-1">${a.student_name}</p>
+              <p class="text-sm text-gray-600 mt-1">${a.description||''}</p>
+            </div>
+            <button onclick="deleteRecord('${a.__backendId}')" class="text-red-500"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+          </div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+  lucide.createIcons();
+}
+function showAdvertenciaForm() {
+  showModal(`
+    <h3 class="text-lg font-bold mb-4">Nova Advertência / Recado</h3>
+    <form onsubmit="saveAdvertencia(event)">
+      <div class="space-y-3">
+        <div><label class="block text-sm font-medium mb-1">Aluno</label><select id="advStudent" class="w-full border rounded-lg px-3 py-2 text-sm">${sampleStudents.map(s=>`<option value="${s.id}" data-name="${s.name}">${s.name}</option>`).join('')}</select></div>
+        <div><label class="block text-sm font-medium mb-1">Tipo</label><select id="advType" class="w-full border rounded-lg px-3 py-2 text-sm"><option value="recado">Recado para os Pais</option><option value="advertencia">Advertência</option></select></div>
+        <div><label class="block text-sm font-medium mb-1">Mensagem</label><textarea id="advMsg" rows="3" required class="w-full border rounded-lg px-3 py-2 text-sm" placeholder="Descreva o motivo..."></textarea></div>
+      </div>
+      <div class="flex justify-end gap-2 mt-4"><button type="button" onclick="closeModal()" class="px-4 py-2 border rounded-lg text-sm">Cancelar</button><button type="submit" class="bg-red-500 text-white px-4 py-2 rounded-lg text-sm">Enviar</button></div>
+    </form>
+  `);
+}
+async function saveAdvertencia(e) {
+  e.preventDefault();
+  if (allRecords.length >= 999) { showToast('Limite atingido!'); return; }
+  const sel = document.getElementById('advStudent');
+  const r = await window.dataSdk.create({ type:'advertencia', student_id: sel.value, student_name: sel.options[sel.selectedIndex].dataset.name, status: document.getElementById('advType').value, description: document.getElementById('advMsg').value, created_at: new Date().toISOString() });
+  if (r.isOk) { closeModal(); showToast('Enviado ao módulo pais!'); }
+}
+
+// ============ DELETE ============
+async function deleteRecord(id) {
+  const record = allRecords.find(r => r.__backendId === id);
+  if (!record) return;
+  // Inline confirm
+  const btn = event.target.closest('button');
+  if (btn && !btn.dataset.confirmed) {
+    btn.dataset.confirmed = 'true';
+    btn.innerHTML = '<span class="text-xs">Confirmar?</span>';
+    setTimeout(() => { btn.removeAttribute('data-confirmed'); renderCurrentPage(); }, 3000);
+    return;
+  }
+  const r = await window.dataSdk.delete(record);
+  if (r.isOk) showToast('Removido!');
+}
+
+// ============ INIT ============
+document.getElementById('currentDate').textContent = new Date().toLocaleDateString('pt-BR', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
+document.getElementById('sidebarTeacher').textContent = config.teacher_name;
+document.getElementById('sidebarSubject').textContent = config.subject_name;
+renderDashboard();
+lucide.createIcons();
+</script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a0a964f7f4bcf1ed',t:'MTc4MTI3Mjk1OS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
