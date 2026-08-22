@@ -162,7 +162,7 @@ export default function NovoConteudoPage() {
   }
 
   return (
-    <div className={`${styles.page} ${styles.pageCentered}`}>
+    <div className={styles.page}>
       <div className={layoutStyles.content}>
         <main className={layoutStyles.main}>
           <div className={styles.wrapper}>
