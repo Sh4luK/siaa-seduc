@@ -405,3 +405,17 @@ class Avaliacao(models.Model):
     def __str__(self):
         return f"{self.titulo} — {self.turma.turma}"
 
+class Questao(models.Model):
+    TIPO_CHOICES = [
+        ("DISSERTATIVA", "Dissertativa"),
+        ("OBJETIVA", "Objetiva"),
+    ]
+
+    avaliacao = models.ForeignKey(Avaliacao, on_delete=models.CASCADE, related_name="questoes")
+    ordem = models.PositiveIntegerField(default=0)
+    tipo = models.CharField(max_length=20, choices=TIPO_CHOICES)
+    enunciado = models.TextField()
+
+    class Meta:
+        ordering = ["ordem"]
+
