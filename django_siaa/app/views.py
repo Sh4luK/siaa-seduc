@@ -4079,3 +4079,88 @@ def get_avaliacoes_professor(request):
         "avaliacoes": resultado
     })
 
+
+@csrf_exempt
+def criar_avaliacao(request):
+    """Cria uma avaliação com suas questões (e alternativas, se objetivas)."""
+    if request.method != "POST":
+        return JsonResponse({"message": "Método não permitido."}, status=405)
+
+    ip = get_ip()
+    professor = Professor.objects.filter(ip=ip).first()
+    if not professor:
+        return JsonResponse({"message": "Professor não autenticado."}, status=401)
+
+    try:
+        body = json.loads(request.body)
+    except json.JSONDecodeError:
+        return JsonResponse({"message": "JSON inválido."}, status=400)
+
+    titulo = (body.get("titulo") or "").strip()
+    curso = (body.get("curso") or "").strip()
+    turma_id = body.get("turma")
+    data_str = body.get("data")
+    questoes_input = body.get("questoes", [])
+
+    if not titulo:
+        return JsonResponse({"message": "O título é obrigatório."}, status=400)
+    if not turma_id:
+        return JsonResponse({"message": "Selecione a turma."}, status=400)
+    if not questoes_input:
+        return JsonResponse({"message": "Adicione ao menos uma questão."}, status=400)
+
+    turma = AtravessaPor.objects.filter(id=turma_id, professor=professor).first()
+    if not turma:
+        return JsonResponse({"message": "Turma não encontrada."}, status=404)
+
+    data_avaliacao = date.today()
+    if data_str:
+        try:
+            data_avaliacao = date.fromisoformat(data_str)
+        except ValueError:
+            return JsonResponse({"message": "Formato de data inválido. Use AAAA-MM-DD."}, status=400)
+
+    erros = []
+    for i, q in enumerate(questoes_input):
+        tipo = q.get("tipo")
+        enunciado = (q.get("enunciado") or "").strip()
+        if tipo not in ("DISSERTATIVA", "OBJETIVA"):
+            erros.append(f"Questão {i + 1}: tipo inválido.")
+        if not enunciado:
+            erros.append(f"Questão {i + 1}: enunciado obrigatório.")
+        if tipo == "OBJETIVA":
+            alternativas = [a for a in (q.get("alternativas") or []) if (a or "").strip()]
+            if len(alternativas) < 2:
+                erros.append(f"Questão {i + 1}: adicione ao menos duas alternativas.")
+
+    if erros:
+        return JsonResponse({"message": " | ".join(erros)}, status=400)
+
+    avaliacao = Avaliacao.objects.create(
+        professor=professor,
+        turma=turma,
+        titulo=titulo,
+        curso=curso,
+        data=data_avaliacao,
+    )
+
+    for i, q in enumerate(questoes_input):
+        questao = Questao.objects.create(
+            avaliacao=avaliacao,
+            ordem=i,
+            tipo=q["tipo"],
+            enunciado=q["enunciado"].strip(),
+        )
+
+        if q["tipo"] == "OBJETIVA":
+            for j, texto_alt in enumerate(q.get("alternativas", [])):
+                texto_alt = (texto_alt or "").strip()
+                if texto_alt:
+                    Alternativa.objects.create(questao=questao, ordem=j, texto=texto_alt)
+
+    return JsonResponse({
+        "message": "Avaliação criada com sucesso.",
+        "avaliacao": {"id": avaliacao.id}
+    })
+
+
