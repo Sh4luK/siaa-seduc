@@ -15,7 +15,7 @@
 .title {
   font-size: 1.5rem;
   font-weight: 700;
-  color: #ffffff;
+  /* color: #ffffff; */
   margin: 0 0 0.3rem;
 }
 
@@ -196,4 +196,16 @@
   .linhaDupla {
     grid-template-columns: 1fr;
   }
+}
+
+.page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 1.5rem;
+  min-height: 100vh;
+  background-color: #f5f7fa;
+  color: #1a2942;
+  font-family: "IBM Plex Sans", "Inter", "Segoe UI", system-ui, sans-serif;
 }
