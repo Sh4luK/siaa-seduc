@@ -4,7 +4,8 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import layoutStyles from "../../page.module.css";
 import styles from "./page.module.css";
-
+import Image from "next/image";
+import logo from "../../../../assets/logo.png";
 const API_BASE = "https://obscure-happiness-v67rpjq7p96vfxj4g-8000.app.github.dev";
 
 function hojeISO() {
@@ -149,13 +150,19 @@ export default function NovoConteudoPage() {
   if (loading) {
     return (
       <div className={layoutStyles.page}>
-        <p>Carregando...</p>
+        <div className={layoutStyles.loadingWrap}>
+          <Image src={logo} alt="Logo do SIAA" className={layoutStyles.loadingLogo} priority />
+          <div className={layoutStyles.loadingBar}>
+            <span className={layoutStyles.loadingBarFill} />
+          </div>
+          <p className={layoutStyles.loadingText}>Verificando credenciais…</p>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className={layoutStyles.page}>
+    <div className={`${styles.page} ${styles.pageCentered}`}>
       <div className={layoutStyles.content}>
         <main className={layoutStyles.main}>
           <div className={styles.wrapper}>
