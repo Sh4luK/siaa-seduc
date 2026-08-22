@@ -169,4 +169,208 @@
 
   <p class="rodape">Documento emitido pelo SIAA em {{ avaliacao.data|date:"d/m/Y" }}.</p>
 </body>
+</html><!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<style>
+  @page {
+    size: A4;
+    margin: 2cm 2cm 3cm 2cm;
+    @bottom-center {
+      content: element(rodape);
+    }
+  }
+  body {
+    font-family: "Helvetica", "Arial", sans-serif;
+    color: #1a1a1a;
+    font-size: 11.5pt;
+    line-height: 1.5;
+  }
+
+  /* Cabeçalho */
+  .cabecalho {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    border-bottom: 2px solid #1a1a1a;
+    padding-bottom: 14px;
+    margin-bottom: 18px;
+  }
+  .cabecalho-logo {
+    width: 56px;
+    height: 56px;
+    object-fit: contain;
+    flex-shrink: 0;
+  }
+  .cabecalho-info {
+    flex: 1;
+  }
+  .cabecalho-titulo {
+    font-size: 14pt;
+    font-weight: bold;
+    margin: 0 0 6px;
+  }
+  .cabecalho-linha {
+    display: flex;
+    gap: 24px;
+    font-size: 10pt;
+    margin: 2px 0;
+  }
+  .cabecalho-campo {
+    display: flex;
+    gap: 4px;
+  }
+  .cabecalho-campo strong {
+    font-weight: bold;
+  }
+
+  /* Área de identificação do aluno */
+  .identificacao {
+    border: 1px solid #1a1a1a;
+    border-radius: 4px;
+    padding: 10px 14px;
+    margin-bottom: 22px;
+    display: flex;
+    gap: 28px;
+  }
+  .identificacao-campo {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .identificacao-campo.numero {
+    flex: 0 0 90px;
+  }
+  .identificacao-label {
+    font-size: 8.5pt;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #555;
+  }
+  .identificacao-linha {
+    border-bottom: 1px solid #1a1a1a;
+    height: 20px;
+  }
+
+  /* Questões */
+  .questao {
+    margin-bottom: 20px;
+    page-break-inside: avoid;
+  }
+  .questao-cabecalho {
+    display: flex;
+    gap: 8px;
+    font-weight: bold;
+    margin-bottom: 6px;
+  }
+  .questao-enunciado {
+    text-align: justify;
+    margin: 0 0 10px;
+  }
+  .questao-linhas-resposta {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-top: 14px;
+  }
+  .linha-resposta {
+    border-bottom: 1px solid #999;
+    height: 1px;
+  }
+  .alternativas {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .alternativa {
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+  }
+  .alternativa-letra {
+    font-weight: bold;
+    flex-shrink: 0;
+  }
+
+  /* Rodapé (repetido em toda página via running element) */
+  .rodape {
+    position: running(rodape);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-size: 8.5pt;
+    color: #888;
+    border-top: 1px solid #ddd;
+    padding-top: 8px;
+  }
+  .rodape img {
+    width: 16px;
+    height: 16px;
+    object-fit: contain;
+  }
+</style>
+</head>
+<body>
+
+  <div class="rodape">
+    <img src="{{ logo_path }}" alt="SIAA">
+    <span>Gerado pelo SIAA</span>
+  </div>
+
+  <div class="cabecalho">
+    <img class="cabecalho-logo" src="{{ logo_path }}" alt="Logo da escola">
+    <div class="cabecalho-info">
+      <p class="cabecalho-titulo">{{ avaliacao.titulo }}</p>
+      <div class="cabecalho-linha">
+        <span class="cabecalho-campo"><strong>Disciplina:</strong> {{ disciplina }}</span>
+        <span class="cabecalho-campo"><strong>Turma:</strong> {{ avaliacao.turma.turma }}</span>
+      </div>
+      <div class="cabecalho-linha">
+        <span class="cabecalho-campo"><strong>Curso:</strong> {{ avaliacao.curso|default:"—" }}</span>
+        <span class="cabecalho-campo"><strong>Data:</strong> {{ avaliacao.data|date:"d/m/Y" }}</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="identificacao">
+    <div class="identificacao-campo numero">
+      <span class="identificacao-label">Nº</span>
+      <span class="identificacao-linha"></span>
+    </div>
+    <div class="identificacao-campo">
+      <span class="identificacao-label">Nome do aluno</span>
+      <span class="identificacao-linha"></span>
+    </div>
+  </div>
+
+  {% for questao in questoes %}
+    <div class="questao">
+      <div class="questao-cabecalho">
+        <span>{{ forloop.counter }}.</span>
+      </div>
+      <p class="questao-enunciado">{{ questao.enunciado }}</p>
+
+      {% if questao.tipo == "OBJETIVA" %}
+        <div class="alternativas">
+          {% for alternativa in questao.alternativas.all %}
+            <div class="alternativa">
+              <span class="alternativa-letra">{{ alternativa.letra }})</span>
+              <span>{{ alternativa.texto }}</span>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="questao-linhas-resposta">
+          <div class="linha-resposta"></div>
+          <div class="linha-resposta"></div>
+          <div class="linha-resposta"></div>
+        </div>
+      {% endif %}
+    </div>
+  {% endfor %}
+
+</body>
 </html>
