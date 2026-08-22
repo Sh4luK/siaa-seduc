@@ -419,3 +419,10 @@ class Questao(models.Model):
     class Meta:
         ordering = ["ordem"]
 
+class Alternativa(models.Model):
+    questao = models.ForeignKey(Questao, on_delete=models.CASCADE, related_name="alternativas")
+    ordem = models.PositiveIntegerField(default=0)
+    texto = models.CharField(max_length=500)
+
+    class Meta:
+        ordering = ["ordem"]
