@@ -39,6 +39,8 @@ from django.core.files.storage import default_storage
 from .models import Avaliacao, Questao, Alternativa
 from django.db import models
 import json
+import string
+from django.templatetags.static import static
 from django.template.loader import render_to_string
 from weasyprint import HTML
 
@@ -4048,3 +4050,32 @@ def avaliacao_emitir_pdf_coordenacao(request, avaliacao_id):
     response = HttpResponse(pdf_file, content_type="application/pdf")
     response["Content-Disposition"] = f'inline; filename="avaliacao_{avaliacao.id}.pdf"'
     return response
+
+@csrf_exempt
+def get_avaliacoes_professor(request):
+    """Lista as avaliações criadas pelo professor autenticado."""
+    ip = get_ip()
+    professor = Professor.objects.filter(ip=ip).first()
+    if not professor:
+        return JsonResponse({"message": "Professor não autenticado."}, status=401)
+
+    avaliacoes = Avaliacao.objects.filter(professor=professor).select_related("turma").order_by("-data")
+
+    resultado = []
+    for a in avaliacoes:
+        disciplina = resolver_disciplina_da_turma(a.turma)
+        resultado.append({
+            "id": a.id,
+            "titulo": a.titulo,
+            "curso": a.curso,
+            "data": a.data.isoformat(),
+            "nome_turma": a.turma.turma,
+            "disciplina": disciplina.nome_disciplina if disciplina else a.turma.disciplina_lecionada,
+            "total_questoes": a.questoes.count(),
+        })
+
+    return JsonResponse({
+        "total_avaliacoes": len(resultado),
+        "avaliacoes": resultado
+    })
+
