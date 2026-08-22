@@ -104,5 +104,8 @@ urlpatterns = [
     path("api/coordenacao/avaliacoes", app.views.get_avaliacoes_coordenacao),
     path("api/coordenacao/avaliacoes/<int:avaliacao_id>", app.views.avaliacao_detalhe_coordenacao),
     path("api/coordenacao/avaliacoes/<int:avaliacao_id>/pdf", app.views.avaliacao_emitir_pdf_coordenacao),
+    path('api/teacher/avaliacoes', views.get_avaliacoes_professor, name='get_avaliacoes_professor'),
+    path('api/teacher/avaliacoes/criar', views.criar_avaliacao, name='criar_avaliacao'),
+    path('api/teacher/avaliacoes/<int:avaliacao_id>/pdf', views.gerar_avaliacao_pdf, name='gerar_avaliacao_pdf'),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
