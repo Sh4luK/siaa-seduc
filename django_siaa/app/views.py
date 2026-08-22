@@ -33,6 +33,7 @@ from .models import Comunicado
 from .models import Coordenador
 from .models import Advertencia
 from .models import HorarioAula
+from django.db import models
 import json
 from django.template.loader import render_to_string
 from weasyprint import HTML
@@ -3282,3 +3283,67 @@ def mover_aluno_turma(request, aluno_id):
     aluno.save()
 
     return JsonResponse({"message": f"{aluno.nome_completo} movido para {nova_turma}."})
+
+
+@csrf_exempt
+def get_eventos_professor_visualizacao(request):
+    """
+    Lista eventos relevantes para o professor autenticado: eventos gerais
+    (sem turma) + eventos específicos das turmas que ele leciona.
+    Somente leitura — professor não cria/edita/apaga eventos.
+    """
+    ip = get_ip()
+    professor = Professor.objects.filter(ip=ip).first()
+
+    if not professor:
+        return JsonResponse({"message": "Professor não autenticado."}, status=401)
+
+    mes = request.GET.get("mes")
+    ano = request.GET.get("ano")
+
+    nomes_turmas_professor = set(
+        AtravessaPor.objects.filter(professor=professor)
+        .exclude(turma="")
+        .values_list("turma", flat=True)
+        .distinct()
+    )
+
+    eventos = Evento.objects.select_related("turma", "professor", "coordenador").filter(
+        models.Q(turma__isnull=True) | models.Q(turma__turma__in=nomes_turmas_professor)
+    )
+
+    if mes and ano:
+        eventos = eventos.filter(data__year=ano, data__month=mes)
+    elif ano:
+        eventos = eventos.filter(data__year=ano)
+
+    hoje = date.today()
+
+    resultado = []
+    for e in eventos.order_by("data"):
+        if e.coordenador:
+            criado_por = e.coordenador.escola or "Coordenação"
+            origem = "coordenacao"
+        elif e.professor:
+            criado_por = e.professor.nome_completo
+            origem = "professor"
+        else:
+            criado_por = None
+            origem = None
+
+        resultado.append({
+            "id": e.id,
+            "titulo": e.titulo,
+            "descricao": e.descricao,
+            "data": e.data.isoformat(),
+            "turma_id": e.turma_id,
+            "nome_turma": e.turma.turma if e.turma else None,
+            "criado_por": criado_por,
+            "origem": origem,
+            "finalizado": e.data < hoje,
+        })
+
+    return JsonResponse({
+        "total_eventos": len(resultado),
+        "eventos": resultado
+    })
