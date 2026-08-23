@@ -1,4 +1,5 @@
 {
   "image": "mcr.microsoft.com/devcontainers/universal:2",
-  "features": {}
+  "features": {},
+  "postCreateCommand": "wget https://www.sqlite.org/2024/sqlite-autoconf-3450100.tar.gz && tar xzf sqlite-autoconf-3450100.tar.gz && cd sqlite-autoconf-3450100 && ./configure --prefix=/usr/local && make -j$(nproc) && sudo make install && cd .. && rm -rf sqlite-autoconf-3450100* && sudo ldconfig"
 }
