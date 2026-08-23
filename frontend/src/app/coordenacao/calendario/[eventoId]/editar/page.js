@@ -6,7 +6,7 @@ import styles from "./page.module.css";
 import Image from "next/image";
 import logo from "@/assets/logo.png";
 
-const API_BASE = "https://obscure-happiness-v67rpjq7p96vfxj4g-8000.app.github.dev";
+const API_BASE = "http://127.0.0.1:8000";
 
 export default function EditarEventoPage() {
   const { eventoId } = useParams();

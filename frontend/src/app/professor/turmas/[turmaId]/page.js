@@ -347,7 +347,7 @@
 // import layoutStyles from "../../page.module.css"
 // import styles from "./turma.module.css"
 
-// const API_BASE = "https://obscure-happiness-v67rpjq7p96vfxj4g-8000.app.github.dev";
+// const API_BASE = "http://127.0.0.1:8000";
 
 // export default function TurmaPage() {
 //   const [authenticated, setAuthenticated] = useState(null)
@@ -670,7 +670,7 @@ import { useEffect, useState } from "react";
 import layoutStyles from "../../page.module.css"
 import styles from "./turma.module.css"
 
-const API_BASE = "https://obscure-happiness-v67rpjq7p96vfxj4g-8000.app.github.dev";
+const API_BASE = "http://127.0.0.1:8000";
 
 export default function TurmaPage() {
   const [authenticated, setAuthenticated] = useState(null)
