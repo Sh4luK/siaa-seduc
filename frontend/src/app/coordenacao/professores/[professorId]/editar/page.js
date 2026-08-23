@@ -8,9 +8,16 @@ import logo from "@/assets/logo.png";
 
 const API_BASE = "http://127.0.0.1:8000";
 
+function gerarId() {
+  if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
+    return crypto.randomUUID();
+  }
+  return "id-" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 10);
+}
+
 function novoVinculo(dados) {
   return {
-    id: crypto.randomUUID(),
+    id: gerarId(),
     turma: dados?.turma || "",
     etapa: dados?.etapa || "",
     disciplinas: dados?.disciplinas || [],
