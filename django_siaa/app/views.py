@@ -3347,3 +3347,24 @@ def get_eventos_professor_visualizacao(request):
         "total_eventos": len(resultado),
         "eventos": resultado
     })
+
+@csrf_exempt
+def get_disciplinas_coordenacao(request):
+    """Lista todas as disciplinas cadastradas (model Disciplina)."""
+    disciplinas = Disciplina.objects.all().order_by("nome_disciplina")
+
+    resultado = []
+    for d in disciplinas:
+        total_vinculos = AtravessaPor.objects.filter(
+            disciplina_lecionada__iexact=d.nome_disciplina
+        ).count()
+        resultado.append({
+            "id": d.id,
+            "nome_disciplina": d.nome_disciplina,
+            "total_vinculos": total_vinculos,
+        })
+
+    return JsonResponse({
+        "total": len(resultado),
+        "disciplinas": resultado,
+    })
