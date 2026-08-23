@@ -3368,3 +3368,31 @@ def get_disciplinas_coordenacao(request):
         "total": len(resultado),
         "disciplinas": resultado,
     })
+
+
+@csrf_exempt
+def renomear_disciplina_coordenacao(request, disciplina_id):
+    """Renomeia uma disciplina cadastrada."""
+    if request.method != "POST":
+        return JsonResponse({"message": "Método não permitido."}, status=405)
+
+    disciplina = Disciplina.objects.filter(id=disciplina_id).first()
+    if not disciplina:
+        return JsonResponse({"message": "Disciplina não encontrada."}, status=404)
+
+    try:
+        body = json.loads(request.body)
+    except json.JSONDecodeError:
+        return JsonResponse({"message": "JSON inválido."}, status=400)
+
+    novo_nome = (body.get("nome_disciplina") or "").strip()
+    if not novo_nome:
+        return JsonResponse({"message": "O nome não pode ficar vazio."}, status=400)
+
+    if Disciplina.objects.filter(nome_disciplina__iexact=novo_nome).exclude(id=disciplina_id).exists():
+        return JsonResponse({"message": "Já existe outra disciplina com esse nome."}, status=400)
+
+    disciplina.nome_disciplina = novo_nome
+    disciplina.save()
+
+    return JsonResponse({"message": "Disciplina renomeada com sucesso."})
