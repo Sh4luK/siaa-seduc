@@ -5,3 +5,4 @@ django-cors-headers
 python-dotenv
 pandas
 openpyxl
+weasyprint
