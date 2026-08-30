@@ -3564,3 +3564,8 @@ def deletar_post(request, post_id):
 
     post.delete()
     return JsonResponse({"message": "Post removido com sucesso."})
+
+
+def _professor_atual(request):
+    ip = get_ip(request)
+    return Professor.objects.filter(ip=ip).first()
