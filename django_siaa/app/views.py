@@ -3754,3 +3754,16 @@ def avaliacao_emitir_pdf(request, avaliacao_id):
     p.save()
     return response
 
+
+def _quebrar_texto(texto, largura_max):
+    palavras = texto.split()
+    linhas, atual = [], ""
+    for palavra in palavras:
+        if len(atual) + len(palavra) + 1 <= largura_max:
+            atual = f"{atual} {palavra}".strip()
+        else:
+            linhas.append(atual)
+            atual = palavra
+    if atual:
+        linhas.append(atual)
+    return linhas
