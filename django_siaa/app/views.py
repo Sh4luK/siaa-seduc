@@ -3691,3 +3691,66 @@ def avaliacao_upload_imagem(request, questao_id):
         questao.save()
         return JsonResponse({"url": questao.imagem.url}, status=200)
     return JsonResponse({"message": "Nenhuma imagem enviada"}, status=400)
+
+
+
+def avaliacao_emitir_pdf(request, avaliacao_id):
+    from reportlab.lib.pagesizes import A4
+    from reportlab.lib.units import cm
+    from reportlab.pdfgen import canvas
+    from reportlab.lib.utils import ImageReader
+
+    professor = _professor_atual(request)
+    avaliacao = Avaliacao.objects.get(id=avaliacao_id, professor=professor)
+
+    response = HttpResponse(content_type="application/pdf")
+    response["Content-Disposition"] = f'attachment; filename="avaliacao_{avaliacao.id}.pdf"'
+
+    p = canvas.Canvas(response, pagesize=A4)
+    largura, altura = A4
+    y = altura - 2 * cm
+
+    p.setFont("Helvetica-Bold", 14)
+    p.drawString(2 * cm, y, avaliacao.titulo)
+    y -= 0.8 * cm
+    p.setFont("Helvetica", 10)
+    p.drawString(2 * cm, y, f"{avaliacao.disciplina.nome_disciplina} — Turma {avaliacao.turma}")
+    y -= 1.2 * cm
+
+    for q in avaliacao.questoes.all():
+        if y < 5 * cm:
+            p.showPage()
+            y = altura - 2 * cm
+
+        p.setFont("Helvetica-Bold", 11)
+        p.drawString(2 * cm, y, f"Questão {q.ordem + 1}")
+        y -= 0.6 * cm
+
+        p.setFont("Helvetica", 10)
+        for linha in _quebrar_texto(q.enunciado, 90):
+            p.drawString(2 * cm, y, linha)
+            y -= 0.5 * cm
+
+        if q.imagem:
+            try:
+                img = ImageReader(q.imagem.path)
+                p.drawImage(img, 2 * cm, y - 6 * cm, width=8 * cm, height=6 * cm, preserveAspectRatio=True)
+                y -= 6.5 * cm
+            except Exception:
+                pass
+
+        if q.tipo == "OBJETIVA":
+            for alt in q.alternativas.all():
+                p.drawString(2.5 * cm, y, f"{alt.letra}) {alt.texto}")
+                y -= 0.5 * cm
+        else:
+            p.drawString(2 * cm, y, "_" * 80)
+            y -= 0.5 * cm
+            p.drawString(2 * cm, y, "_" * 80)
+            y -= 0.5 * cm
+
+        y -= 0.6 * cm
+
+    p.save()
+    return response
+
