@@ -96,5 +96,9 @@ urlpatterns = [
     path("api/blog/posts/criar", app.views.criar_post, name="criar_post"),
     path("api/blog/posts/<int:post_id>/editar", app.views.editar_post, name="editar_post"),
     path("api/blog/posts/<int:post_id>/deletar", app.views.deletar_post, name="deletar_post"),
+    path("api/teacher/avaliacoes", app.views_avaliacoes.avaliacoes_list_create),
+    path("api/teacher/avaliacoes/<int:avaliacao_id>", app.views_avaliacoes.avaliacao_detail),
+    path("api/teacher/avaliacoes/<int:avaliacao_id>/pdf", app.views_avaliacoes.avaliacao_emitir_pdf),
+    path("api/teacher/avaliacoes/questoes/<int:questao_id>/imagem", app.views_avaliacoes.avaliacao_upload_imagem),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
