@@ -33,6 +33,8 @@ from .models import Comunicado
 from .models import Coordenador
 from .models import Advertencia
 from .models import HorarioAula
+from .models import Blogger
+from .models import Post
 from django.db import models
 import json
 from django.template.loader import render_to_string
@@ -3396,3 +3398,169 @@ def renomear_disciplina_coordenacao(request, disciplina_id):
     disciplina.save()
 
     return JsonResponse({"message": "Disciplina renomeada com sucesso."})
+
+@csrf_exempt
+def login_blogger(request):
+    ip = get_ip()
+    nome_completo = request.GET.get("nome_completo").strip().upper()
+    senha = request.GET.get("senha").strip()
+
+    blogger = Blogger.objects.filter(nome_completo=nome_completo, senha=senha).first()
+
+    if blogger is None:
+        return JsonResponse({"return": False})
+
+    Blogger.objects.filter(nome_completo=nome_completo, senha=senha).update(ip=ip)
+    return JsonResponse({"return": True})
+
+
+@csrf_exempt
+def auth_blogger(request):
+    ip = get_ip()
+    blogger = Blogger.objects.filter(ip=ip).first()
+
+    if blogger is None:
+        return JsonResponse({"return": False})
+
+    return JsonResponse({
+        "return": True,
+        "blogger": {"id": blogger.id, "nome_completo": blogger.nome_completo}
+    })
+
+
+@csrf_exempt
+def get_posts(request):
+    """Lista pública de posts do blog (qualquer visitante pode ver)."""
+    posts = Post.objects.select_related("autor").all()
+
+    resultado = [
+        {
+            "id": p.id,
+            "titulo": p.titulo,
+            "resumo": (p.conteudo[:220] + "…") if len(p.conteudo) > 220 else p.conteudo,
+            "tempo_leitura": p.tempo_leitura,
+            "data_criacao": p.data_criacao.isoformat(),
+            "autor": p.autor.nome_completo,
+            "autor_id": p.autor_id,
+        }
+        for p in posts
+    ]
+
+    return JsonResponse({"total_posts": len(resultado), "posts": resultado})
+
+
+@csrf_exempt
+def get_post_detalhe(request, post_id):
+    """Detalhe público de um post."""
+    post = Post.objects.select_related("autor").filter(id=post_id).first()
+    if not post:
+        return JsonResponse({"message": "Post não encontrado."}, status=404)
+
+    return JsonResponse({
+        "post": {
+            "id": post.id,
+            "titulo": post.titulo,
+            "conteudo": post.conteudo,
+            "tempo_leitura": post.tempo_leitura,
+            "data_criacao": post.data_criacao.isoformat(),
+            "autor": post.autor.nome_completo,
+            "autor_id": post.autor_id,
+        }
+    })
+
+
+@csrf_exempt
+def criar_post(request):
+    """Cria um novo post — apenas bloggers autenticados."""
+    if request.method != "POST":
+        return JsonResponse({"message": "Método não permitido."}, status=405)
+
+    ip = get_ip()
+    blogger = Blogger.objects.filter(ip=ip).first()
+    if not blogger:
+        return JsonResponse({"message": "Você precisa estar autenticado para publicar."}, status=401)
+
+    try:
+        body = json.loads(request.body)
+    except json.JSONDecodeError:
+        return JsonResponse({"message": "JSON inválido."}, status=400)
+
+    titulo = (body.get("titulo") or "").strip()
+    conteudo = (body.get("conteudo") or "").strip()
+
+    if not titulo or not conteudo:
+        return JsonResponse({"message": "Campos 'titulo' e 'conteudo' são obrigatórios."}, status=400)
+
+    post = Post.objects.create(
+        autor=blogger,
+        titulo=titulo,
+        conteudo=conteudo,
+    )
+
+    return JsonResponse({
+        "message": "Post publicado com sucesso.",
+        "post": {
+            "id": post.id,
+            "titulo": post.titulo,
+            "tempo_leitura": post.tempo_leitura,
+            "data_criacao": post.data_criacao.isoformat(),
+        }
+    })
+
+
+@csrf_exempt
+def editar_post(request, post_id):
+    """Edita um post — apenas o autor pode editar."""
+    if request.method != "POST":
+        return JsonResponse({"message": "Método não permitido."}, status=405)
+
+    ip = get_ip()
+    blogger = Blogger.objects.filter(ip=ip).first()
+    if not blogger:
+        return JsonResponse({"message": "Você precisa estar autenticado."}, status=401)
+
+    post = Post.objects.filter(id=post_id).first()
+    if not post:
+        return JsonResponse({"message": "Post não encontrado."}, status=404)
+
+    if post.autor_id != blogger.id:
+        return JsonResponse({"message": "Você não tem permissão para editar este post."}, status=403)
+
+    try:
+        body = json.loads(request.body)
+    except json.JSONDecodeError:
+        return JsonResponse({"message": "JSON inválido."}, status=400)
+
+    titulo = (body.get("titulo") or "").strip()
+    conteudo = (body.get("conteudo") or "").strip()
+
+    if not titulo or not conteudo:
+        return JsonResponse({"message": "Campos 'titulo' e 'conteudo' são obrigatórios."}, status=400)
+
+    post.titulo = titulo
+    post.conteudo = conteudo
+    post.save()
+
+    return JsonResponse({"message": "Post atualizado com sucesso."})
+
+
+@csrf_exempt
+def deletar_post(request, post_id):
+    """Remove um post — apenas o autor pode apagar."""
+    if request.method != "DELETE":
+        return JsonResponse({"message": "Método não permitido."}, status=405)
+
+    ip = get_ip()
+    blogger = Blogger.objects.filter(ip=ip).first()
+    if not blogger:
+        return JsonResponse({"message": "Você precisa estar autenticado."}, status=401)
+
+    post = Post.objects.filter(id=post_id).first()
+    if not post:
+        return JsonResponse({"message": "Post não encontrado."}, status=404)
+
+    if post.autor_id != blogger.id:
+        return JsonResponse({"message": "Você não tem permissão para apagar este post."}, status=403)
+
+    post.delete()
+    return JsonResponse({"message": "Post removido com sucesso."})
