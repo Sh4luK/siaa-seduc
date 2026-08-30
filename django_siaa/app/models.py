@@ -2,6 +2,8 @@ from django.db import models
 from decimal import Decimal
 from django.db import models
 from datetime import date
+import re
+import math
 
 class Professor(models.Model):
     nome_completo = models.CharField(max_length=255, unique=True, null=True)
@@ -335,3 +337,38 @@ class HorarioAula(models.Model):
 
     def __str__(self):
         return f"{self.turma.turma} — {self.get_dia_semana_display()} {self.hora_inicio}–{self.hora_fim}"
+
+
+class Blogger(models.Model):
+    nome_completo = models.CharField(max_length=255)
+    senha = models.CharField(max_length=255)
+    ip = models.GenericIPAddressField(null=True, blank=True)
+
+    def __str__(self):
+        return self.nome_completo
+
+class Post(models.Model):
+    autor = models.ForeignKey(Blogger, on_delete=models.CASCADE, related_name="posts")
+    titulo = models.CharField(max_length=255)
+    conteudo = models.TextField()
+    tempo_leitura = models.PositiveIntegerField(default=1)  # em minutos
+
+    data_criacao = models.DateTimeField(auto_now_add=True)
+    atualizado_em = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["-data_criacao"]
+
+    def calcular_tempo_leitura(self):
+        """Estima o tempo de leitura com base na contagem de palavras (~200 palavras/min)."""
+        palavras = re.findall(r"\w+", self.conteudo or "")
+        total_palavras = len(palavras)
+        minutos = math.ceil(total_palavras / 200) if total_palavras > 0 else 1
+        return max(minutos, 1)
+
+    def save(self, *args, **kwargs):
+        self.tempo_leitura = self.calcular_tempo_leitura()
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"{self.titulo} - {self.autor}"
