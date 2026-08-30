@@ -3628,3 +3628,57 @@ def avaliacoes_list_create(request):
 
     return JsonResponse({"message": "Método não permitido"}, status=405)
 
+
+@csrf_exempt
+def avaliacao_detail(request, avaliacao_id):
+    professor = _professor_atual(request)
+    if not professor:
+        return JsonResponse({"message": "Não autenticado"}, status=401)
+
+    try:
+        avaliacao = Avaliacao.objects.get(id=avaliacao_id, professor=professor)
+    except Avaliacao.DoesNotExist:
+        return JsonResponse({"message": "Avaliação não encontrada"}, status=404)
+
+    if request.method == "GET":
+        questoes = []
+        for q in avaliacao.questoes.all():
+            questoes.append({
+                "id": q.id,
+                "ordem": q.ordem,
+                "enunciado": q.enunciado,
+                "tipo": q.tipo,
+                "imagem": q.imagem.url if q.imagem else None,
+                "alternativas": [
+                    {"letra": a.letra, "texto": a.texto, "correta": a.correta}
+                    for a in q.alternativas.all()
+                ] if q.tipo == "OBJETIVA" else [],
+            })
+        return JsonResponse({
+            "id": avaliacao.id,
+            "titulo": avaliacao.titulo,
+            "descricao": avaliacao.descricao,
+            "turma": avaliacao.turma,
+            "disciplina": avaliacao.disciplina.nome_disciplina,
+            "data": avaliacao.data.isoformat(),
+            "ano_letivo": avaliacao.ano_letivo,
+            "questoes": questoes,
+        }, status=200)
+
+    if request.method in ("PUT", "PATCH"):
+        try:
+            body = json.loads(request.body)
+            avaliacao.titulo = body.get("titulo", avaliacao.titulo)
+            avaliacao.descricao = body.get("descricao", avaliacao.descricao)
+            avaliacao.data = body.get("data", avaliacao.data)
+            avaliacao.save()
+            return JsonResponse({"message": "Atualizado"}, status=200)
+        except Exception as e:
+            return JsonResponse({"message": str(e)}, status=400)
+
+    if request.method == "DELETE":
+        avaliacao.delete()
+        return JsonResponse({"message": "Excluído"}, status=200)
+
+    return JsonResponse({"message": "Método não permitido"}, status=405)
+
