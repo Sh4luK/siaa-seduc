@@ -372,3 +372,44 @@ class Post(models.Model):
 
     def __str__(self):
         return f"{self.titulo} - {self.autor}"
+
+# app/models.py — adicionar
+
+class Avaliacao(models.Model):
+    professor = models.ForeignKey(Professor, on_delete=models.CASCADE, related_name="avaliacoes")
+    turma = models.CharField(max_length=100)
+    disciplina = models.ForeignKey(Disciplina, on_delete=models.CASCADE)
+    titulo = models.CharField(max_length=200)
+    descricao = models.TextField(blank=True, null=True)
+    data = models.DateField()
+    ano_letivo = models.IntegerField()
+    data_criacao = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.titulo} - {self.turma}"
+
+
+class Questao(models.Model):
+    TIPO_CHOICES = [
+        ("OBJETIVA", "Objetiva"),
+        ("SUBJETIVA", "Subjetiva"),
+    ]
+
+    avaliacao = models.ForeignKey(Avaliacao, on_delete=models.CASCADE, related_name="questoes")
+    ordem = models.PositiveIntegerField(default=0)
+    enunciado = models.TextField()
+    tipo = models.CharField(max_length=10, choices=TIPO_CHOICES, default="OBJETIVA")
+    imagem = models.ImageField(upload_to="avaliacoes/questoes/", blank=True, null=True)
+
+    class Meta:
+        ordering = ["ordem", "id"]
+
+
+class Alternativa(models.Model):
+    questao = models.ForeignKey(Questao, on_delete=models.CASCADE, related_name="alternativas")
+    letra = models.CharField(max_length=1)  # A, B, C, D, E
+    texto = models.CharField(max_length=300)
+    correta = models.BooleanField(default=False)
+
+    class Meta:
+        ordering = ["letra"]
