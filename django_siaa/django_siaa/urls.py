@@ -89,5 +89,12 @@ urlpatterns = [
     path('api/corrigir/turmas/renomear', app.views.renomear_turma, name='renomear_turma'),
     path('api/corrigir/alunos', app.views.get_alunos_corrigir, name='get_alunos_corrigir'),
     path('api/corrigir/alunos/<int:aluno_id>/mover-turma', app.views.mover_aluno_turma, name='mover_aluno_turma'),
+    path("api/blog/login", app.views.login_blogger, name="login_blogger"),
+    path("api/blog/auth", app.views.auth_blogger, name="auth_blogger"),
+    path("api/blog/posts", app.views.get_posts, name="get_posts"),
+    path("api/blog/posts/<int:post_id>", app.views.get_post_detalhe, name="get_post_detalhe"),
+    path("api/blog/posts/criar", app.views.criar_post, name="criar_post"),
+    path("api/blog/posts/<int:post_id>/editar", app.views.editar_post, name="editar_post"),
+    path("api/blog/posts/<int:post_id>/deletar", app.views.deletar_post, name="deletar_post"),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
