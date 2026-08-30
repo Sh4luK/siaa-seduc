@@ -3682,3 +3682,12 @@ def avaliacao_detail(request, avaliacao_id):
 
     return JsonResponse({"message": "Método não permitido"}, status=405)
 
+
+@csrf_exempt
+def avaliacao_upload_imagem(request, questao_id):
+    questao = Questao.objects.get(id=questao_id)
+    if request.method == "POST" and request.FILES.get("imagem"):
+        questao.imagem = request.FILES["imagem"]
+        questao.save()
+        return JsonResponse({"url": questao.imagem.url}, status=200)
+    return JsonResponse({"message": "Nenhuma imagem enviada"}, status=400)
