@@ -406,7 +406,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import logo from "../assets/logo.png";
+import logo from "../assets/CalistoLogoLogo.png";
 import styles from "./page.module.css";
 
 const ACCESS_POINTS = [
