@@ -1,0 +1,157 @@
+.page {
+  min-height: 100vh;
+  background: #f4f6f9;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  color: #1f2937;
+}
+
+.wrapper {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 3rem 1.5rem;
+}
+
+.voltarLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #6b7280;
+  text-decoration: none;
+  margin-bottom: 1.5rem;
+}
+
+.voltarLink:hover {
+  color: #2563eb;
+}
+
+.listaErros {
+  list-style: none;
+  color: #b91c1c;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  padding: 0.85rem 1.1rem;
+  border-radius: 10px;
+  margin-bottom: 1.25rem;
+  font-size: 0.85rem;
+}
+
+.post {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 18px;
+  padding: 2.25rem;
+}
+
+.postMeta {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+  color: #9ca3af;
+  font-weight: 500;
+  margin-bottom: 0.75rem;
+}
+
+.postTitulo {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #101828;
+  margin: 0 0 1.25rem;
+  line-height: 1.3;
+}
+
+.acoesAutor {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding-bottom: 1.25rem;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.editarBotao {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #1d4ed8;
+  background: #eef2ff;
+  border: 1px solid #c7d2fe;
+  border-radius: 8px;
+  padding: 0.45rem 0.85rem;
+  text-decoration: none;
+}
+
+.editarBotao:hover {
+  background: #dbeafe;
+}
+
+.apagarBotao {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #b91c1c;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  padding: 0.45rem 0.85rem;
+  cursor: pointer;
+}
+
+.apagarBotao:hover {
+  background: #fee2e2;
+}
+
+.confirmacaoWrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+  color: #b91c1c;
+  font-weight: 600;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  padding: 0.4rem 0.7rem;
+}
+
+.confirmarBotao {
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: #ffffff;
+  background: #dc2626;
+  border: none;
+  border-radius: 6px;
+  padding: 0.3rem 0.6rem;
+  cursor: pointer;
+}
+
+.confirmarBotao:hover {
+  background: #b91c1c;
+}
+
+.cancelarBotao {
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: #6b7280;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  padding: 0.3rem 0.6rem;
+  cursor: pointer;
+}
+
+.postConteudo {
+  font-size: 1rem;
+  line-height: 1.75;
+  color: #1f2937;
+}
+
+.postConteudo p {
+  margin: 0 0 1.1rem;
+}
