@@ -35,6 +35,8 @@ from .models import Advertencia
 from .models import HorarioAula
 from .models import Blogger
 from .models import Post
+from django.core.files.storage import default_storage
+from .models import Avaliacao, Questao, Alternativa
 from django.db import models
 import json
 from django.template.loader import render_to_string
@@ -3569,3 +3571,60 @@ def deletar_post(request, post_id):
 def _professor_atual(request):
     ip = get_ip(request)
     return Professor.objects.filter(ip=ip).first()
+
+
+@csrf_exempt
+def avaliacoes_list_create(request):
+    professor = _professor_atual(request)
+    if not professor:
+        return JsonResponse({"message": "Não autenticado"}, status=401)
+
+    if request.method == "GET":
+        turma = request.GET.get("turma")
+        qs = Avaliacao.objects.filter(professor=professor)
+        if turma:
+            qs = qs.filter(turma=turma)
+        data = [{
+            "id": a.id,
+            "titulo": a.titulo,
+            "turma": a.turma,
+            "disciplina": a.disciplina.nome_disciplina,
+            "data": a.data.isoformat(),
+            "ano_letivo": a.ano_letivo,
+            "total_questoes": a.questoes.count(),
+        } for a in qs.order_by("-data")]
+        return JsonResponse({"avaliacoes": data}, status=200)
+
+    if request.method == "POST":
+        try:
+            body = json.loads(request.body)
+            disciplina = Disciplina.objects.get(id=body["disciplina_id"])
+            avaliacao = Avaliacao.objects.create(
+                professor=professor,
+                turma=body["turma"],
+                disciplina=disciplina,
+                titulo=body["titulo"],
+                descricao=body.get("descricao", ""),
+                data=body["data"],
+                ano_letivo=body["ano_letivo"],
+            )
+            for i, q in enumerate(body.get("questoes", [])):
+                questao = Questao.objects.create(
+                    avaliacao=avaliacao,
+                    ordem=i,
+                    enunciado=q["enunciado"],
+                    tipo=q["tipo"],
+                )
+                for alt in q.get("alternativas", []):
+                    Alternativa.objects.create(
+                        questao=questao,
+                        letra=alt["letra"],
+                        texto=alt["texto"],
+                        correta=alt.get("correta", False),
+                    )
+            return JsonResponse({"id": avaliacao.id}, status=201)
+        except Exception as e:
+            return JsonResponse({"message": str(e)}, status=400)
+
+    return JsonResponse({"message": "Método não permitido"}, status=405)
+
