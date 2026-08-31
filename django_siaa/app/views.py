@@ -3903,3 +3903,45 @@ def opcoes_avaliacao(request):
         "turmas": turmas,
         "disciplinas_por_turma": disciplinas_por_turma,
     })
+
+def _coordenador_atual(request):
+    ip = get_ip()
+    return Coordenador.objects.filter(ip=ip).first()
+
+
+@csrf_exempt
+def get_avaliacoes_coordenacao(request):
+    """Lista todas as avaliações cadastradas por qualquer professor."""
+    coordenador = _coordenador_atual(request)
+    if not coordenador:
+        return JsonResponse({"message": "Não autenticado"}, status=401)
+
+    turma = request.GET.get("turma")
+    professor_id = request.GET.get("professor")
+
+    qs = Avaliacao.objects.select_related("professor", "disciplina").all()
+
+    if turma:
+        qs = qs.filter(turma=turma)
+    if professor_id:
+        qs = qs.filter(professor_id=professor_id)
+
+    resultado = [
+        {
+            "id": a.id,
+            "titulo": a.titulo,
+            "turma": a.turma,
+            "disciplina": a.disciplina.nome_disciplina,
+            "professor": a.professor.nome_completo,
+            "professor_id": a.professor_id,
+            "data": a.data.isoformat(),
+            "ano_letivo": a.ano_letivo,
+            "total_questoes": a.questoes.count(),
+        }
+        for a in qs.order_by("-data")
+    ]
+
+    return JsonResponse({
+        "total_avaliacoes": len(resultado),
+        "avaliacoes": resultado,
+    })
