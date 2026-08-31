@@ -128,7 +128,10 @@ export default function AvaliacoesCoordenacaoPage() {
         ) : (
           <div className={styles.grid}>
             {avaliacoes.map((a) => (
-              <div key={a.id} className={styles.card}>
+              <div key={a.id}
+                className={styles.card}
+                onClick={() => router.push(`/coordenacao/avaliacoes/${a.id}`)}
+                style={{ cursor: "pointer" }}>
                 <div className={styles.cardHeader}>
                   <h3 className={styles.cardTitulo}>{a.titulo}</h3>
                   <span className={styles.cardData}>
