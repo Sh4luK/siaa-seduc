@@ -3991,3 +3991,60 @@ def _gerar_pdf_avaliacao(avaliacao):
 
     html_string = render_to_string("avaliacoes/pdf.html", contexto)
     return HTML(string=html_string).write_pdf()
+
+@csrf_exempt
+def avaliacao_detalhe_coordenacao(request, avaliacao_id):
+    """Visualização de uma avaliação específica, sem restrição de professor."""
+    coordenador = _coordenador_atual(request)
+    if not coordenador:
+        return JsonResponse({"message": "Não autenticado"}, status=401)
+
+    try:
+        avaliacao = Avaliacao.objects.select_related("disciplina", "professor").get(id=avaliacao_id)
+    except Avaliacao.DoesNotExist:
+        return JsonResponse({"message": "Avaliação não encontrada"}, status=404)
+
+    questoes = []
+    for q in avaliacao.questoes.all().order_by("ordem"):
+        questoes.append({
+            "id": q.id,
+            "ordem": q.ordem,
+            "enunciado": q.enunciado,
+            "tipo": q.tipo,
+            "imagem": q.imagem.url if q.imagem else None,
+            "alternativas": [
+                {"letra": a.letra, "texto": a.texto, "correta": a.correta}
+                for a in q.alternativas.all()
+            ] if q.tipo == "OBJETIVA" else [],
+        })
+
+    return JsonResponse({
+        "id": avaliacao.id,
+        "titulo": avaliacao.titulo,
+        "descricao": avaliacao.descricao,
+        "turma": avaliacao.turma,
+        "disciplina": avaliacao.disciplina.nome_disciplina,
+        "professor": avaliacao.professor.nome_completo,
+        "data": avaliacao.data.isoformat(),
+        "ano_letivo": avaliacao.ano_letivo,
+        "questoes": questoes,
+    }, status=200)
+
+
+@csrf_exempt
+def avaliacao_emitir_pdf_coordenacao(request, avaliacao_id):
+    """Mesmo PDF da avaliação, mas autenticado como coordenação (sem restrição de professor)."""
+    coordenador = _coordenador_atual(request)
+    if not coordenador:
+        return JsonResponse({"message": "Não autenticado"}, status=401)
+
+    try:
+        avaliacao = Avaliacao.objects.select_related("disciplina", "professor").get(id=avaliacao_id)
+    except Avaliacao.DoesNotExist:
+        return JsonResponse({"message": "Avaliação não encontrada"}, status=404)
+
+    pdf_file = _gerar_pdf_avaliacao(avaliacao)
+
+    response = HttpResponse(pdf_file, content_type="application/pdf")
+    response["Content-Disposition"] = f'inline; filename="avaliacao_{avaliacao.id}.pdf"'
+    return response
