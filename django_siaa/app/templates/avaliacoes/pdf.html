@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<style>
+  @page {
+    size: A4;
+    margin: 2.2cm 2cm;
+  }
+  body {
+    font-family: "Helvetica", "Arial", sans-serif;
+    color: #1a1a1a;
+    font-size: 11pt;
+    line-height: 1.5;
+  }
+  .header {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    border-bottom: 2px solid #1a1a1a;
+    padding-bottom: 12px;
+    margin-bottom: 20px;
+  }
+  .header .logo {
+    width: 60px;
+    height: 60px;
+    object-fit: contain;
+  }
+  .header .info-sistema {
+    flex: 1;
+  }
+  .header .sistema {
+    font-size: 10pt;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #444;
+    margin: 4px 0 2px;
+  }
+  .header .professor {
+    font-size: 10pt;
+    color: #1a1a1a;
+    margin: 0;
+    font-weight: bold;
+  }
+  .dados-avaliacao {
+    margin-bottom: 18px;
+  }
+  .linha {
+    display: flex;
+    gap: 24px;
+    margin-bottom: 6px;
+  }
+  .linha .label {
+    font-weight: bold;
+    margin-right: 4px;
+  }
+  .nome-aluno {
+    margin-top: 12px;
+    align-items: flex-end;
+  }
+  .nome-aluno .linha-preencher {
+    flex: 1;
+    border-bottom: 1px solid #1a1a1a;
+    margin-left: 6px;
+  }
+  .titulo-avaliacao {
+    text-align: center;
+    font-size: 14pt;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    margin: 20px 0 24px;
+    border-top: 1px solid #ccc;
+    border-bottom: 1px solid #ccc;
+    padding: 10px 0;
+  }
+  .questao {
+    margin-bottom: 22px;
+    page-break-inside: avoid;
+  }
+  .questao-numero {
+    font-weight: bold;
+    margin: 0 0 6px;
+  }
+  .questao-tipo {
+    font-weight: normal;
+    color: #666;
+    font-size: 9pt;
+  }
+  .questao-enunciado {
+    margin: 0 0 10px;
+    white-space: pre-wrap;
+  }
+  .questao-imagem {
+    max-width: 280px;
+    max-height: 200px;
+    display: block;
+    margin-bottom: 10px;
+  }
+  .alternativas {
+    margin-left: 4px;
+  }
+  .alternativa {
+    margin: 0 0 5px;
+  }
+  .linha-resposta {
+    border-bottom: 1px solid #999;
+    height: 22px;
+    margin-bottom: 4px;
+  }
+  .rodape {
+    margin-top: 32px;
+    text-align: center;
+    font-size: 9pt;
+    color: #888;
+  }
+</style>
+</head>
+<body>
+  <div class="header">
+    <img src="{{ logo_url }}" class="logo" />
+    <div class="info-sistema">
+      <p class="sistema">SIAA · Sistema Integrado de Acompanhamento Acadêmico</p>
+      <p class="professor">Professor(a): {{ avaliacao.professor.nome_completo }}</p>
+    </div>
+  </div>
+
+  <div class="dados-avaliacao">
+    <div class="linha">
+      <span><span class="label">Matéria:</span>{{ avaliacao.disciplina.nome_disciplina }}</span>
+      <span><span class="label">Curso:</span>{{ curso }}</span>
+    </div>
+    <div class="linha">
+      <span><span class="label">Turma:</span>{{ avaliacao.turma }}</span>
+      <span><span class="label">Data:</span>{{ avaliacao.data|date:"d/m/Y" }}</span>
+    </div>
+    <div class="linha nome-aluno">
+      <span class="label">Nome do aluno:</span>
+      <span class="linha-preencher"></span>
+    </div>
+  </div>
+
+  <h1 class="titulo-avaliacao">{{ avaliacao.titulo }}</h1>
+
+  {% for questao in questoes %}
+  <div class="questao">
+    <p class="questao-numero">
+      Questão {{ forloop.counter }}
+      <span class="questao-tipo">({{ questao.tipo_label }})</span>
+    </p>
+    <p class="questao-enunciado">{{ questao.enunciado }}</p>
+
+    {% if questao.imagem_url %}
+      <img src="{{ questao.imagem_url }}" class="questao-imagem" />
+    {% endif %}
+
+    {% if questao.tipo == "OBJETIVA" %}
+      <div class="alternativas">
+        {% for alt in questao.alternativas %}
+          <p class="alternativa">{{ alt.letra }}) {{ alt.texto }}</p>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="linha-resposta"></div>
+      <div class="linha-resposta"></div>
+    {% endif %}
+  </div>
+  {% endfor %}
+
+  <p class="rodape">Documento emitido pelo SIAA em {{ avaliacao.data|date:"d/m/Y" }}.</p>
+</body>
+</html>
