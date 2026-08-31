@@ -1,0 +1,17 @@
+/* page.module.css */
+.container { padding: 2rem; background: #f4f6f9; min-height: 100vh; }
+.header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.5rem; }
+.meta { color: #667085; font-size: 0.9rem; }
+.acoes { display: flex; align-items: center; gap: 0.6rem; }
+.editarBotao { background: #eff4ff; color: #2563eb; border: none; border-radius: 8px; padding: 0.5rem 1rem; cursor: pointer; font-weight: 600; }
+.excluirBotao { background: #fef2f2; color: #dc2626; border: none; border-radius: 8px; padding: 0.5rem 1rem; cursor: pointer; font-weight: 600; }
+.confirmacao { display: flex; align-items: center; gap: 0.5rem; background: #fef2f2; padding: 0.4rem 0.8rem; border-radius: 8px; }
+.confirmacao button { border: none; background: none; font-weight: 600; cursor: pointer; }
+.questoesLista { display: flex; flex-direction: column; gap: 1rem; }
+.questaoCard { background: white; border-radius: 12px; padding: 1rem; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+.questaoHeader { display: flex; justify-content: space-between; font-weight: 600; margin-bottom: 0.5rem; }
+.tipoBadge { background: #eff4ff; color: #2563eb; padding: 0.2rem 0.6rem; border-radius: 6px; font-size: 0.8rem; }
+.imagemPreview { max-width: 300px; border-radius: 8px; margin: 0.5rem 0; }
+.alternativas { list-style: none; padding: 0; display: flex; flex-direction: column; gap: 0.3rem; }
+.correta { color: #16a34a; font-weight: 600; }
+.erro { color: #dc2626; }
