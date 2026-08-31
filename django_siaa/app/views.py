@@ -3822,6 +3822,51 @@ def avaliacao_upload_imagem(request, questao_id):
 #     p.save()
 #     return response
 
+# def avaliacao_emitir_pdf(request, avaliacao_id):
+#     professor = _professor_atual(request)
+#     if not professor:
+#         return JsonResponse({"message": "Não autenticado"}, status=401)
+
+#     try:
+#         avaliacao = Avaliacao.objects.select_related("disciplina", "professor").get(
+#             id=avaliacao_id, professor=professor
+#         )
+#     except Avaliacao.DoesNotExist:
+#         return JsonResponse({"message": "Avaliação não encontrada"}, status=404)
+
+#     # curso: não existe no model Avaliacao/AtravessaPor, então pega do
+#     # primeiro aluno cadastrado nessa turma (ajuste se tiver fonte melhor)
+#     aluno_da_turma = Estudante.objects.filter(turma=avaliacao.turma).first()
+#     curso = aluno_da_turma.curso if aluno_da_turma else "—"
+
+#     logo_path = os.path.join(settings.BASE_DIR, "app", "static", "img", "logo.png")
+#     logo_url = f"file://{logo_path}"
+
+#     questoes_contexto = []
+#     for q in avaliacao.questoes.all().order_by("ordem"):
+#         questoes_contexto.append({
+#             "enunciado": q.enunciado,
+#             "tipo": q.tipo,
+#             "tipo_label": "Objetiva" if q.tipo == "OBJETIVA" else "Subjetiva",
+#             "imagem_url": f"file://{q.imagem.path}" if q.imagem else None,
+#             "alternativas": q.alternativas.all() if q.tipo == "OBJETIVA" else [],
+#         })
+
+#     contexto = {
+#         "avaliacao": avaliacao,
+#         "curso": curso,
+#         "logo_url": logo_url,
+#         "questoes": questoes_contexto,
+#     }
+
+#     html_string = render_to_string("avaliacoes/pdf.html", contexto)
+#     pdf_file = HTML(string=html_string).write_pdf()
+
+#     nome_arquivo = f"avaliacao_{avaliacao.id}.pdf"
+#     response = HttpResponse(pdf_file, content_type="application/pdf")
+#     response["Content-Disposition"] = f'inline; filename="{nome_arquivo}"'
+#     return response
+
 def avaliacao_emitir_pdf(request, avaliacao_id):
     professor = _professor_atual(request)
     if not professor:
@@ -3834,37 +3879,10 @@ def avaliacao_emitir_pdf(request, avaliacao_id):
     except Avaliacao.DoesNotExist:
         return JsonResponse({"message": "Avaliação não encontrada"}, status=404)
 
-    # curso: não existe no model Avaliacao/AtravessaPor, então pega do
-    # primeiro aluno cadastrado nessa turma (ajuste se tiver fonte melhor)
-    aluno_da_turma = Estudante.objects.filter(turma=avaliacao.turma).first()
-    curso = aluno_da_turma.curso if aluno_da_turma else "—"
+    pdf_file = _gerar_pdf_avaliacao(avaliacao)
 
-    logo_path = os.path.join(settings.BASE_DIR, "app", "static", "img", "logo.png")
-    logo_url = f"file://{logo_path}"
-
-    questoes_contexto = []
-    for q in avaliacao.questoes.all().order_by("ordem"):
-        questoes_contexto.append({
-            "enunciado": q.enunciado,
-            "tipo": q.tipo,
-            "tipo_label": "Objetiva" if q.tipo == "OBJETIVA" else "Subjetiva",
-            "imagem_url": f"file://{q.imagem.path}" if q.imagem else None,
-            "alternativas": q.alternativas.all() if q.tipo == "OBJETIVA" else [],
-        })
-
-    contexto = {
-        "avaliacao": avaliacao,
-        "curso": curso,
-        "logo_url": logo_url,
-        "questoes": questoes_contexto,
-    }
-
-    html_string = render_to_string("avaliacoes/pdf.html", contexto)
-    pdf_file = HTML(string=html_string).write_pdf()
-
-    nome_arquivo = f"avaliacao_{avaliacao.id}.pdf"
     response = HttpResponse(pdf_file, content_type="application/pdf")
-    response["Content-Disposition"] = f'inline; filename="{nome_arquivo}"'
+    response["Content-Disposition"] = f'inline; filename="avaliacao_{avaliacao.id}.pdf"'
     return response
 
 
@@ -3945,3 +3963,31 @@ def get_avaliacoes_coordenacao(request):
         "total_avaliacoes": len(resultado),
         "avaliacoes": resultado,
     })
+
+def _gerar_pdf_avaliacao(avaliacao):
+    """Monta o PDF da avaliação (usado tanto por professor quanto coordenação)."""
+    aluno_da_turma = Estudante.objects.filter(turma=avaliacao.turma).first()
+    curso = aluno_da_turma.curso if aluno_da_turma else "—"
+
+    logo_path = os.path.join(settings.BASE_DIR, "app", "static", "img", "logo.png")
+    logo_url = f"file://{logo_path}"
+
+    questoes_contexto = []
+    for q in avaliacao.questoes.all().order_by("ordem"):
+        questoes_contexto.append({
+            "enunciado": q.enunciado,
+            "tipo": q.tipo,
+            "tipo_label": "Objetiva" if q.tipo == "OBJETIVA" else "Subjetiva",
+            "imagem_url": f"file://{q.imagem.path}" if q.imagem else None,
+            "alternativas": q.alternativas.all() if q.tipo == "OBJETIVA" else [],
+        })
+
+    contexto = {
+        "avaliacao": avaliacao,
+        "curso": curso,
+        "logo_url": logo_url,
+        "questoes": questoes_contexto,
+    }
+
+    html_string = render_to_string("avaliacoes/pdf.html", contexto)
+    return HTML(string=html_string).write_pdf()
