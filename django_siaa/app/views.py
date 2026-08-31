@@ -3569,7 +3569,7 @@ def deletar_post(request, post_id):
 
 
 def _professor_atual(request):
-    ip = get_ip(request)
+    ip = get_ip()
     return Professor.objects.filter(ip=ip).first()
 
 
@@ -3598,7 +3598,10 @@ def avaliacoes_list_create(request):
     if request.method == "POST":
         try:
             body = json.loads(request.body)
-            disciplina = Disciplina.objects.get(id=body["disciplina_id"])
+            disciplina_nome = body["disciplina"]
+            disciplina = Disciplina.objects.filter(nome_disciplina=disciplina_nome).first()
+            if not disciplina:
+                return JsonResponse({"message": f"Disciplina '{disciplina_nome}' não encontrada"}, status=400)
             avaliacao = Avaliacao.objects.create(
                 professor=professor,
                 turma=body["turma"],
@@ -3693,65 +3696,175 @@ def avaliacao_upload_imagem(request, questao_id):
     return JsonResponse({"message": "Nenhuma imagem enviada"}, status=400)
 
 
+# def avaliacao_emitir_pdf(request):
+#     pass  # placeholder para não duplicar import acima
+
+
+# def avaliacao_emitir_pdf(request, avaliacao_id):
+#     from reportlab.lib.pagesizes import A4
+#     from reportlab.lib.units import cm
+#     from reportlab.pdfgen import canvas
+#     from reportlab.lib.utils import ImageReader
+
+#     professor = _professor_atual(request)
+#     if not professor:
+#         return JsonResponse({"message": "Não autenticado"}, status=401)
+
+#     try:
+#         avaliacao = Avaliacao.objects.get(id=avaliacao_id, professor=professor)
+#     except Avaliacao.DoesNotExist:
+#         return JsonResponse({"message": "Avaliação não encontrada"}, status=404)
+
+#     # curso: não existe no model Avaliacao/AtravessaPor, então pega do
+#     # primeiro aluno cadastrado nessa turma (ajuste se tiver fonte melhor)
+#     aluno_da_turma = Estudante.objects.filter(turma=avaliacao.turma).first()
+#     curso = aluno_da_turma.curso if aluno_da_turma else "—"
+
+#     response = HttpResponse(content_type="application/pdf")
+#     response["Content-Disposition"] = f'attachment; filename="avaliacao_{avaliacao.id}.pdf"'
+
+#     p = canvas.Canvas(response, pagesize=A4)
+#     largura, altura = A4
+#     margem_esquerda = 2 * cm
+#     margem_direita = largura - 2 * cm
+
+#     y = altura - 2 * cm
+
+#     # --- Logo (ajuste o caminho para o arquivo real da sua logo) ---
+#     logo_path = os.path.join(settings.BASE_DIR, "app", "static", "img", "logo.png")
+#     logo_largura = 2.5 * cm
+#     logo_altura = 2.5 * cm
+#     if os.path.exists(logo_path):
+#         try:
+#             p.drawImage(
+#                 ImageReader(logo_path),
+#                 margem_esquerda, y - logo_altura,
+#                 width=logo_largura, height=logo_altura,
+#                 preserveAspectRatio=True, mask="auto",
+#             )
+#         except Exception:
+#             pass
+
+#     texto_x = margem_esquerda + logo_largura + 0.5 * cm
+
+#     # --- Nome do professor, logo abaixo da logo (à direita dela) ---
+#     p.setFont("Helvetica-Bold", 11)
+#     p.drawString(texto_x, y - 0.5 * cm, "SIAA-SEDUC")
+#     p.setFont("Helvetica", 9)
+#     p.drawString(texto_x, y - 1.1 * cm, f"Professor(a): {professor.nome_completo}")
+
+#     y -= (logo_altura + 0.6 * cm)
+
+#     # --- Linha divisória ---
+#     p.setStrokeColorRGB(0.7, 0.7, 0.7)
+#     p.line(margem_esquerda, y, margem_direita, y)
+#     y -= 0.7 * cm
+
+#     # --- Título da avaliação ---
+#     p.setFont("Helvetica-Bold", 14)
+#     p.drawString(margem_esquerda, y, avaliacao.titulo)
+#     y -= 0.9 * cm
+
+#     # --- Bloco Matéria / Curso / Turma ---
+#     p.setFont("Helvetica", 10)
+#     p.drawString(margem_esquerda, y, f"Matéria: {avaliacao.disciplina.nome_disciplina}")
+#     p.drawString(margem_esquerda + 8 * cm, y, f"Curso: {curso}")
+#     y -= 0.55 * cm
+#     p.drawString(margem_esquerda, y, f"Turma: {avaliacao.turma}")
+#     p.drawString(margem_esquerda + 8 * cm, y, f"Data: {avaliacao.data.strftime('%d/%m/%Y')}")
+#     y -= 1 * cm
+
+#     # --- Espaço para o aluno escrever o nome ---
+#     p.setFont("Helvetica", 10)
+#     p.drawString(margem_esquerda, y, "Nome do aluno:")
+#     p.line(margem_esquerda + 2.6 * cm, y - 0.05 * cm, margem_direita, y - 0.05 * cm)
+#     y -= 1.3 * cm
+
+#     p.setStrokeColorRGB(0.7, 0.7, 0.7)
+#     p.line(margem_esquerda, y, margem_direita, y)
+#     y -= 0.8 * cm
+
+#     # --- Questões (igual antes) ---
+#     for q in avaliacao.questoes.all():
+#         if y < 5 * cm:
+#             p.showPage()
+#             y = altura - 2 * cm
+
+#         p.setFont("Helvetica-Bold", 11)
+#         p.drawString(margem_esquerda, y, f"Questão {q.ordem + 1}")
+#         y -= 0.6 * cm
+
+#         p.setFont("Helvetica", 10)
+#         for linha in _quebrar_texto(q.enunciado, 90):
+#             p.drawString(margem_esquerda, y, linha)
+#             y -= 0.5 * cm
+
+#         if q.imagem:
+#             try:
+#                 img = ImageReader(q.imagem.path)
+#                 p.drawImage(img, margem_esquerda, y - 6 * cm, width=8 * cm, height=6 * cm, preserveAspectRatio=True)
+#                 y -= 6.5 * cm
+#             except Exception:
+#                 pass
+
+#         if q.tipo == "OBJETIVA":
+#             for alt in q.alternativas.all():
+#                 p.drawString(margem_esquerda + 0.5 * cm, y, f"{alt.letra}) {alt.texto}")
+#                 y -= 0.5 * cm
+#         else:
+#             p.drawString(margem_esquerda, y, "_" * 80)
+#             y -= 0.5 * cm
+#             p.drawString(margem_esquerda, y, "_" * 80)
+#             y -= 0.5 * cm
+
+#         y -= 0.6 * cm
+
+#     p.save()
+#     return response
 
 def avaliacao_emitir_pdf(request, avaliacao_id):
-    from reportlab.lib.pagesizes import A4
-    from reportlab.lib.units import cm
-    from reportlab.pdfgen import canvas
-    from reportlab.lib.utils import ImageReader
-
     professor = _professor_atual(request)
-    avaliacao = Avaliacao.objects.get(id=avaliacao_id, professor=professor)
+    if not professor:
+        return JsonResponse({"message": "Não autenticado"}, status=401)
 
-    response = HttpResponse(content_type="application/pdf")
-    response["Content-Disposition"] = f'attachment; filename="avaliacao_{avaliacao.id}.pdf"'
+    try:
+        avaliacao = Avaliacao.objects.select_related("disciplina", "professor").get(
+            id=avaliacao_id, professor=professor
+        )
+    except Avaliacao.DoesNotExist:
+        return JsonResponse({"message": "Avaliação não encontrada"}, status=404)
 
-    p = canvas.Canvas(response, pagesize=A4)
-    largura, altura = A4
-    y = altura - 2 * cm
+    # curso: não existe no model Avaliacao/AtravessaPor, então pega do
+    # primeiro aluno cadastrado nessa turma (ajuste se tiver fonte melhor)
+    aluno_da_turma = Estudante.objects.filter(turma=avaliacao.turma).first()
+    curso = aluno_da_turma.curso if aluno_da_turma else "—"
 
-    p.setFont("Helvetica-Bold", 14)
-    p.drawString(2 * cm, y, avaliacao.titulo)
-    y -= 0.8 * cm
-    p.setFont("Helvetica", 10)
-    p.drawString(2 * cm, y, f"{avaliacao.disciplina.nome_disciplina} — Turma {avaliacao.turma}")
-    y -= 1.2 * cm
+    logo_path = os.path.join(settings.BASE_DIR, "app", "static", "img", "logo.png")
+    logo_url = f"file://{logo_path}"
 
-    for q in avaliacao.questoes.all():
-        if y < 5 * cm:
-            p.showPage()
-            y = altura - 2 * cm
+    questoes_contexto = []
+    for q in avaliacao.questoes.all().order_by("ordem"):
+        questoes_contexto.append({
+            "enunciado": q.enunciado,
+            "tipo": q.tipo,
+            "tipo_label": "Objetiva" if q.tipo == "OBJETIVA" else "Subjetiva",
+            "imagem_url": f"file://{q.imagem.path}" if q.imagem else None,
+            "alternativas": q.alternativas.all() if q.tipo == "OBJETIVA" else [],
+        })
 
-        p.setFont("Helvetica-Bold", 11)
-        p.drawString(2 * cm, y, f"Questão {q.ordem + 1}")
-        y -= 0.6 * cm
+    contexto = {
+        "avaliacao": avaliacao,
+        "curso": curso,
+        "logo_url": logo_url,
+        "questoes": questoes_contexto,
+    }
 
-        p.setFont("Helvetica", 10)
-        for linha in _quebrar_texto(q.enunciado, 90):
-            p.drawString(2 * cm, y, linha)
-            y -= 0.5 * cm
+    html_string = render_to_string("avaliacoes/pdf.html", contexto)
+    pdf_file = HTML(string=html_string).write_pdf()
 
-        if q.imagem:
-            try:
-                img = ImageReader(q.imagem.path)
-                p.drawImage(img, 2 * cm, y - 6 * cm, width=8 * cm, height=6 * cm, preserveAspectRatio=True)
-                y -= 6.5 * cm
-            except Exception:
-                pass
-
-        if q.tipo == "OBJETIVA":
-            for alt in q.alternativas.all():
-                p.drawString(2.5 * cm, y, f"{alt.letra}) {alt.texto}")
-                y -= 0.5 * cm
-        else:
-            p.drawString(2 * cm, y, "_" * 80)
-            y -= 0.5 * cm
-            p.drawString(2 * cm, y, "_" * 80)
-            y -= 0.5 * cm
-
-        y -= 0.6 * cm
-
-    p.save()
+    nome_arquivo = f"avaliacao_{avaliacao.id}.pdf"
+    response = HttpResponse(pdf_file, content_type="application/pdf")
+    response["Content-Disposition"] = f'inline; filename="{nome_arquivo}"'
     return response
 
 
@@ -3767,3 +3880,26 @@ def _quebrar_texto(texto, largura_max):
     if atual:
         linhas.append(atual)
     return linhas
+
+
+def opcoes_avaliacao(request):
+    professor = _professor_atual(request)
+    if not professor:
+        return JsonResponse({"message": "Não autenticado"}, status=401)
+
+    vinculos = AtravessaPor.objects.filter(professor=professor).values_list(
+        "turma", "disciplina_lecionada"
+    ).distinct()
+
+    turmas = sorted(set(t for t, _ in vinculos))
+    disciplinas_por_turma = {}
+    for turma, disciplina in vinculos:
+        disciplinas_por_turma.setdefault(turma, [])
+        if disciplina not in disciplinas_por_turma[turma]:
+            disciplinas_por_turma[turma].append(disciplina)
+
+    return JsonResponse({
+        "professor": {"nome_completo": professor.nome_completo},
+        "turmas": turmas,
+        "disciplinas_por_turma": disciplinas_por_turma,
+    })
