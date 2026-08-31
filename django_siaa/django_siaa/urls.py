@@ -101,5 +101,6 @@ urlpatterns = [
     path("api/teacher/avaliacoes/<int:avaliacao_id>/pdf", app.views.avaliacao_emitir_pdf),
     path("api/teacher/avaliacoes/questoes/<int:questao_id>/imagem", app.views.avaliacao_upload_imagem),
     path("api/teacher/opcoes-avaliacao", app.views.opcoes_avaliacao),
+    path("api/coordenacao/avaliacoes", app.views.get_avaliacoes_coordenacao),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
