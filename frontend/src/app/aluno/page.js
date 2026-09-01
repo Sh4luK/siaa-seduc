@@ -22,7 +22,7 @@ export default function alunoPage() {
     useEffect(() => {
         async function verifyAuthentication() {
             try {
-                const url = "https://obscure-happiness-v67rpjq7p96vfxj4g-8000.app.github.dev/api/students/auth"
+                const url = "https://obscure-happiness-v67rpjq7p96vfxj4g-8000.app.github.devapi/students/auth"
                 const response = await fetch(url)
                 const data = await response.json()
                 console.log(data)
@@ -40,7 +40,7 @@ export default function alunoPage() {
             }
         }
         async function getStudent() {
-            const url = "https://obscure-happiness-v67rpjq7p96vfxj4g-8000.app.github.dev/api/students/auth"
+            const url = "https://obscure-happiness-v67rpjq7p96vfxj4g-8000.app.github.devapi/students/auth"
 
             fetch(url)
                 .then((res) => {

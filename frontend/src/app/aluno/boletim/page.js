@@ -5,7 +5,7 @@
 // import layoutStyles from "../page.module.css";
 // import styles from "./boletim.module.css";
 
-// const API_BASE = "https://humble-spoon-4j654556jr9vf5qp6-8000.app.github.dev";
+// const API_BASE = "https://obscure-happiness-v67rpjq7p96vfxj4g-8000.app.github.dev";
 
 // const RF_LABELS = {
 //   CUR: "Cursando", AP: "Aprovado", RE: "Reprovado", DE: "Desistente",
@@ -147,7 +147,7 @@ import { useRouter } from "next/navigation";
 import layoutStyles from "../page.module.css";
 import styles from "./boletim.module.css";
 
-const API_BASE = "https://humble-spoon-4j654556jr9vf5qp6-8000.app.github.dev";
+const API_BASE = "https://obscure-happiness-v67rpjq7p96vfxj4g-8000.app.github.dev";
 
 const RF_LABELS = {
   CUR: "Cursando", AP: "Aprovado", RE: "Reprovado", DE: "Desistente",
