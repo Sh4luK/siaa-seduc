@@ -1,0 +1,99 @@
+.headerRow {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.novoBotao {
+  background: #0b4f9e;
+  color: #ffffff;
+  padding: 0.6rem 1.2rem;
+  border-radius: 8px;
+  text-decoration: none;
+  font-size: 0.85rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.novoBotao:hover {
+  background: #0a2f5c;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1rem;
+}
+
+.card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 1.1rem;
+  box-shadow: 0 1px 3px rgba(16, 24, 40, 0.06);
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.cardLink {
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
+.cardTitulo {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #1a2942;
+  margin: 0;
+}
+
+.cardData {
+  font-size: 0.75rem;
+  color: #5b6b85;
+  white-space: nowrap;
+}
+
+.cardLinha {
+  font-size: 0.85rem;
+  color: #1a2942;
+  margin: 0;
+}
+
+.cardMeta {
+  font-size: 0.78rem;
+  color: #0b4f9e;
+  font-weight: 600;
+  margin: 0.2rem 0 0;
+}
+
+.pdfBotao {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  background: rgba(11, 79, 158, 0.08);
+  color: #0b4f9e;
+  border: 1px solid rgba(11, 79, 158, 0.22);
+  border-radius: 8px;
+  padding: 0.5rem;
+  cursor: pointer;
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.pdfBotao:hover {
+  background: rgba(11, 79, 158, 0.14);
+}
