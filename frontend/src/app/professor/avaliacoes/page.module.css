@@ -195,3 +195,18 @@
     padding: 2rem 1.25rem;
   }
 }
+
+.inicioBotao {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #5b6b85;
+  text-decoration: none;
+  margin-bottom: 1rem;
+}
+
+.inicioBotao:hover {
+  color: #0b4f9e;
+}
