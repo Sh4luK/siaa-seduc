@@ -1,4 +1,4 @@
-/* page.module.css */
+/* page.module.css
 .container { padding: 2rem; background: #f4f6f9; min-height: 100vh; }
 .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
 .novoBotao { background: #2563eb; color: white; padding: 0.6rem 1.2rem; border-radius: 8px; text-decoration: none; font-weight: 600; }
@@ -7,4 +7,191 @@
 .cardLink { text-decoration: none; color: #101828; }
 .meta { color: #667085; font-size: 0.85rem; }
 .pdfBotao { display: flex; align-items: center; gap: 0.4rem; background: #eff4ff; color: #2563eb; border: none; border-radius: 8px; padding: 0.5rem; cursor: pointer; font-weight: 600; }
-.erro { color: #dc2626; }
+.erro { color: #dc2626; } */
+
+.page {
+  min-height: 100vh;
+  background: #f5f7fa;
+  font-family: "IBM Plex Sans", "Inter", "Segoe UI", system-ui, sans-serif;
+  color: #1a2942;
+}
+
+.pageLoading {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f5f7fa;
+  font-family: "IBM Plex Sans", "Inter", "Segoe UI", system-ui, sans-serif;
+  padding: 1.5rem;
+}
+
+.cardLoading {
+  width: 100%;
+  max-width: 400px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 2.25rem 2rem;
+  box-shadow: 0 1px 3px rgba(16, 24, 40, 0.06);
+}
+
+.headerLoading {
+  text-align: center;
+  margin-bottom: 1.75rem;
+}
+
+.subtituloLoading {
+  font-size: 0.85rem;
+  color: #5b6b85;
+  margin: 0;
+}
+
+.loadingLogo {
+  width: 96px;
+  height: auto;
+  opacity: 0.92;
+}
+
+.wrapper {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 3rem 2rem;
+}
+
+.headerRow {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1a2942;
+  margin: 0 0 0.3rem;
+}
+
+.subtitle {
+  font-size: 0.9rem;
+  color: #5b6b85;
+  margin: 0;
+}
+
+.novoBotao {
+  background: #0b4f9e;
+  color: #ffffff;
+  padding: 0.6rem 1.2rem;
+  border-radius: 8px;
+  text-decoration: none;
+  font-size: 0.85rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.novoBotao:hover {
+  background: #0a2f5c;
+}
+
+.listaErros {
+  list-style: none;
+  color: #b91c1c;
+  background: rgba(220, 38, 38, 0.06);
+  border: 1px solid rgba(220, 38, 38, 0.25);
+  padding: 0.85rem 1.1rem;
+  border-radius: 8px;
+  margin-bottom: 1.25rem;
+  font-size: 0.85rem;
+}
+
+.vazio {
+  color: #5b6b85;
+  font-size: 0.9rem;
+  text-align: center;
+  padding: 2rem 0;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1rem;
+}
+
+.card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 1.1rem;
+  box-shadow: 0 1px 3px rgba(16, 24, 40, 0.06);
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.cardLink {
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
+.cardTitulo {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #1a2942;
+  margin: 0;
+}
+
+.cardData {
+  font-size: 0.75rem;
+  color: #5b6b85;
+  white-space: nowrap;
+}
+
+.cardLinha {
+  font-size: 0.85rem;
+  color: #1a2942;
+  margin: 0;
+}
+
+.cardMeta {
+  font-size: 0.78rem;
+  color: #0b4f9e;
+  font-weight: 600;
+  margin: 0.2rem 0 0;
+}
+
+.pdfBotao {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  background: rgba(11, 79, 158, 0.08);
+  color: #0b4f9e;
+  border: 1px solid rgba(11, 79, 158, 0.22);
+  border-radius: 8px;
+  padding: 0.5rem;
+  cursor: pointer;
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.pdfBotao:hover {
+  background: rgba(11, 79, 158, 0.14);
+}
+
+@media (max-width: 600px) {
+  .wrapper {
+    padding: 2rem 1.25rem;
+  }
+}
