@@ -46,6 +46,28 @@ export default function MensagensProfessorPage() {
     }
   }, []);
 
+  // mantenha carregarConversas como está
+
+  const atualizarConversasSilenciosamente = useCallback(async () => {
+    try {
+      const res = await fetch(`${API_BASE}/api/professor/mensagens`, {
+        credentials: "include",
+      });
+      if (!res.ok) return;
+      const data = await res.json();
+      setConversas(data);
+    } catch {
+      // ignora falhas de polling silenciosamente
+    }
+  }, []);
+
+  // novo useEffect — adicione junto ao init existente
+  useEffect(() => {
+    if (loading) return;
+    const intervalo = setInterval(atualizarConversasSilenciosamente, 6000);
+    return () => clearInterval(intervalo);
+  }, [loading, atualizarConversasSilenciosamente]);
+
   useEffect(() => {
     async function init() {
       try {
