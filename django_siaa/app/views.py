@@ -4265,6 +4265,13 @@ def mensagens_list_create_coordenacao(request):
     return JsonResponse({"conversa_id": conversa.id}, status=201)
 
 
+def _nome_escola(escola_str):
+    """Remove o prefixo de código, se houver: '22057498 - CETI CALISTO LOBO' -> 'CETI CALISTO LOBO'"""
+    if not escola_str:
+        return escola_str
+    return escola_str.split(" - ", 1)[-1].strip()
+
+
 @csrf_exempt
 @require_http_methods(["GET"])
 def opcoes_mensagem_coordenacao(request):
@@ -4272,8 +4279,10 @@ def opcoes_mensagem_coordenacao(request):
     if not coordenador:
         return JsonResponse({"detail": "Não autenticado."}, status=401)
 
+    nome_escola = _nome_escola(coordenador.escola)
+
     professores = Professor.objects.filter(
-        atravessapor__escola=coordenador.escola
+        atravessamentos__escola__iexact=nome_escola
     ).distinct().order_by("nome_completo")
 
     return JsonResponse({
@@ -4281,6 +4290,23 @@ def opcoes_mensagem_coordenacao(request):
             {"id": p.id, "nome_completo": p.nome_completo} for p in professores
         ]
     })
+
+# @csrf_exempt
+# @require_http_methods(["GET"])
+# def opcoes_mensagem_coordenacao(request):
+#     coordenador = _coordenador_logado()
+#     if not coordenador:
+#         return JsonResponse({"detail": "Não autenticado."}, status=401)
+
+#     professores = Professor.objects.filter(
+#         atravessamentos__escola=coordenador.escola
+#     ).distinct().order_by("nome_completo")
+
+#     return JsonResponse({
+#         "professores": [
+#             {"id": p.id, "nome_completo": p.nome_completo} for p in professores
+#         ]
+#     })
 
 
 @csrf_exempt
