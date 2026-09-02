@@ -35,15 +35,38 @@ export default function ConversaPage() {
   const [enviando, setEnviando] = useState(false);
   const fimDaListaRef = useRef(null);
 
+  // const carregarConversa = useCallback(async () => {
+  //   setErro(null);
+  //   try {
+  //     const res = await fetch(`${API_BASE}/api/coordenacao/mensagens/${conversaId}`, {
+  //       credentials: "include",
+  //     });
+  //     if (res.status === 404) {
+  //       throw new Error("Conversa não encontrada.");
+  //     }
+  //     if (!res.ok) {
+  //       const data = await res.json().catch(() => null);
+  //       throw new Error(data?.detail || "Não foi possível carregar a conversa.");
+  //     }
+  //     const data = await res.json();
+  //     setConversa(data.conversa);
+  //     setMensagens(data.mensagens);
+  //   } catch (e) {
+  //     setErro(e.message);
+  //   } finally {
+  //     setCarregando(false);
+  //   }
+  // }, [conversaId]);
+
+  // troque a função carregarConversa por estas duas:
+
   const carregarConversa = useCallback(async () => {
     setErro(null);
     try {
       const res = await fetch(`${API_BASE}/api/coordenacao/mensagens/${conversaId}`, {
         credentials: "include",
       });
-      if (res.status === 404) {
-        throw new Error("Conversa não encontrada.");
-      }
+      if (res.status === 404) throw new Error("Conversa não encontrada.");
       if (!res.ok) {
         const data = await res.json().catch(() => null);
         throw new Error(data?.detail || "Não foi possível carregar a conversa.");
@@ -57,6 +80,30 @@ export default function ConversaPage() {
       setCarregando(false);
     }
   }, [conversaId]);
+
+  // busca em segundo plano, sem mexer em loading/erro — só atualiza se algo mudou
+  const atualizarMensagensSilenciosamente = useCallback(async () => {
+    try {
+      const res = await fetch(`${API_BASE}/api/coordenacao/mensagens/${conversaId}`, {
+        credentials: "include",
+      });
+      if (!res.ok) return; // falha silenciosa no polling, não incomoda o usuário
+      const data = await res.json();
+      setMensagens((atual) =>
+        atual.length !== data.mensagens.length ? data.mensagens : atual
+      );
+    } catch {
+      // ignora falhas de polling silenciosamente
+    }
+  }, [conversaId]);
+
+  // novo useEffect — adicione junto aos outros
+  useEffect(() => {
+    if (verificandoAuth) return;
+    const intervalo = setInterval(atualizarMensagensSilenciosamente, 3000);
+    return () => clearInterval(intervalo);
+  }, [verificandoAuth, atualizarMensagensSilenciosamente]);
+
 
   useEffect(() => {
     async function verificar() {
