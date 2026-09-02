@@ -27,7 +27,7 @@
 //         setMessage("")
 
 //         try {
-//             const response = await fetch(`https://obscure-happiness-v67rpjq7p96vfxj4g-8000.app.github.dev/api/teacher/search?nome_completo=${encodeURIComponent(nomeCompleto)}`)
+//             const response = await fetch(`https://obscure-happiness-v67rpjq7p96vfxj4g-8000.app.github.devapi/teacher/search?nome_completo=${encodeURIComponent(nomeCompleto)}`)
 //             const data = await response.json()
 //             const clearName = (text) => {
 //                 if (!text) return '';
@@ -60,7 +60,7 @@
 //     }
 //     async function auth_teacher_button() {
 //         try {
-//             const url = `https://obscure-happiness-v67rpjq7p96vfxj4g-8000.app.github.dev/api/teacher/login?nome_completo=${encodeURIComponent(nomeCompleto)}&senha=${password}`
+//             const url = `https://obscure-happiness-v67rpjq7p96vfxj4g-8000.app.github.devapi/teacher/login?nome_completo=${encodeURIComponent(nomeCompleto)}&senha=${password}`
 //             const teacher_login = await fetch(url)
 //             const data = await teacher_login.json()
 //             if (data.return === true) {
@@ -76,7 +76,7 @@
 //     useEffect(() => {
 //         async function verifyAuth() {
 //             try {
-//                 const url = "https://obscure-happiness-v67rpjq7p96vfxj4g-8000.app.github.dev/api/teacher/auth"
+//                 const url = "https://obscure-happiness-v67rpjq7p96vfxj4g-8000.app.github.devapi/teacher/auth"
 //                 const response = await fetch(url)
 //                 const data = await response.json()
 
@@ -231,7 +231,7 @@ import { useRouter } from "next/navigation";
 import styles from "../page.module.css";
 import Image from "next/image";
 
-const API_BASE = "https://humble-spoon-4j654556jr9vf5qp6-8000.app.github.dev";
+const API_BASE = "https://obscure-happiness-v67rpjq7p96vfxj4g-8000.app.github.dev";
 
 export default function ProfessorLoginPage() {
   const [nomeCompleto, setNomeCompleto] = useState("");

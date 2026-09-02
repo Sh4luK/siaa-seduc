@@ -4,7 +4,7 @@
 // import Link from "next/link";
 // import styles from "./page.module.css";
 
-// const API_BASE = "https://humble-spoon-4j654556jr9vf5qp6-8000.app.github.dev";
+// const API_BASE = "https://obscure-happiness-v67rpjq7p96vfxj4g-8000.app.github.dev";
 
 // export default function AvaliacoesPage() {
 //   const [avaliacoes, setAvaliacoes] = useState([]);
@@ -99,7 +99,7 @@
 // import logo from "@/assets/logo.png";
 // import styles from "./page.module.css";
 
-// const API_BASE = "https://humble-spoon-4j654556jr9vf5qp6-8000.app.github.dev";
+// const API_BASE = "https://obscure-happiness-v67rpjq7p96vfxj4g-8000.app.github.dev";
 
 // export default function AvaliacoesPage() {
 //   const router = useRouter();
@@ -239,7 +239,7 @@ import logo from "@/assets/logo.png";
 import layoutStyles from "./page.module.css";
 import styles from "./avaliacoes.module.css";
 
-const API_BASE = "https://humble-spoon-4j654556jr9vf5qp6-8000.app.github.dev";
+const API_BASE = "https://obscure-happiness-v67rpjq7p96vfxj4g-8000.app.github.dev";
 
 export default function AvaliacoesPage() {
   const router = useRouter();

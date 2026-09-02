@@ -395,34 +395,35 @@ class Alternativa(models.Model):
         ordering = ["letra"]
 
 
-class Avaliacao(models.Model):
-    professor = models.ForeignKey(Professor, on_delete=models.CASCADE, related_name="avaliacoes")
-    turma = models.ForeignKey(AtravessaPor, on_delete=models.CASCADE, related_name="avaliacoes")
-    titulo = models.CharField(max_length=255)
-    curso = models.CharField(max_length=255, blank=True)
-    data = models.DateField(default=date.today)
+# class Avaliacao(models.Model):
+#     professor = models.ForeignKey(Professor, on_delete=models.CASCADE, related_name="avaliacoes")
+#     turma = models.ForeignKey(AtravessaPor, on_delete=models.CASCADE, related_name="avaliacoes")
+#     titulo = models.CharField(max_length=255)
+#     curso = models.CharField(max_length=255, blank=True)
+#     data = models.DateField(default=date.today)
 
-    def __str__(self):
-        return f"{self.titulo} — {self.turma.turma}"
+#     def __str__(self):
+#         return f"{self.titulo} — {self.turma.turma}"
 
-class Questao(models.Model):
-    TIPO_CHOICES = [
-        ("DISSERTATIVA", "Dissertativa"),
-        ("OBJETIVA", "Objetiva"),
-    ]
 
-    avaliacao = models.ForeignKey(Avaliacao, on_delete=models.CASCADE, related_name="questoes")
-    ordem = models.PositiveIntegerField(default=0)
-    tipo = models.CharField(max_length=20, choices=TIPO_CHOICES)
-    enunciado = models.TextField()
+# class Questao(models.Model):
+#     TIPO_CHOICES = [
+#         ("DISSERTATIVA", "Dissertativa"),
+#         ("OBJETIVA", "Objetiva"),
+#     ]
 
-    class Meta:
-        ordering = ["ordem"]
+#     avaliacao = models.ForeignKey(Avaliacao, on_delete=models.CASCADE, related_name="questoes")
+#     ordem = models.PositiveIntegerField(default=0)
+#     tipo = models.CharField(max_length=20, choices=TIPO_CHOICES)
+#     enunciado = models.TextField()
 
-class Alternativa(models.Model):
-    questao = models.ForeignKey(Questao, on_delete=models.CASCADE, related_name="alternativas")
-    ordem = models.PositiveIntegerField(default=0)
-    texto = models.CharField(max_length=500)
+#     class Meta:
+#         ordering = ["ordem"]
 
-    class Meta:
-        ordering = ["ordem"]
+# class Alternativa(models.Model):
+#     questao = models.ForeignKey(Questao, on_delete=models.CASCADE, related_name="alternativas")
+#     ordem = models.PositiveIntegerField(default=0)
+#     texto = models.CharField(max_length=500)
+
+#     class Meta:
+#         ordering = ["ordem"]
