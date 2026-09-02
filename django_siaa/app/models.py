@@ -387,7 +387,7 @@ class Questao(models.Model):
 
 class Alternativa(models.Model):
     questao = models.ForeignKey(Questao, on_delete=models.CASCADE, related_name="alternativas")
-    letra = models.CharField(max_length=1)  # A, B, C, D, E
+    letra = models.CharField(max_length=1, null=True)  # A, B, C, D, E
     texto = models.CharField(max_length=300)
     correta = models.BooleanField(default=False)
 
