@@ -4433,3 +4433,28 @@ def mensagem_conversa_detalhe_professor(request, conversa_id):
         "conteudo": mensagem.conteudo,
         "data_envio": mensagem.data_envio.isoformat(),
     }, status=201)
+
+@csrf_exempt
+@require_http_methods(["GET"])
+def opcoes_notas_coordenacao(request):
+    coordenador = _coordenador_logado()
+    if not coordenador:
+        return JsonResponse({"detail": "Não autenticado."}, status=401)
+
+    nome_escola = _nome_escola(coordenador.escola)
+
+    vinculos = AtravessaPor.objects.filter(
+        escola__iexact=nome_escola
+    ).select_related("professor").order_by("turma", "disciplina_lecionada")
+
+    return JsonResponse({
+        "vinculos": [
+            {
+                "id": v.id,
+                "turma": v.turma,
+                "disciplina_lecionada": v.disciplina_lecionada,
+                "professor_nome": v.professor.nome_completo,
+            }
+            for v in vinculos
+        ]
+    })
