@@ -441,3 +441,19 @@ class Conversa(models.Model):
     def __str__(self):
         return f"Conversa: {self.coordenador} <-> {self.professor}"
 
+
+class MensagemChat(models.Model):
+    REMETENTE_CHOICES = [
+        ('PROFESSOR', 'Professor'),
+        ('COORDENACAO', 'Coordenação'),
+    ]
+
+    conversa = models.ForeignKey(Conversa, on_delete=models.CASCADE, related_name='mensagens')
+    remetente_tipo = models.CharField(max_length=20, choices=REMETENTE_CHOICES)
+    conteudo = models.TextField()
+    data_envio = models.DateTimeField(auto_now_add=True)
+    lida_professor = models.BooleanField(default=False)
+    lida_coordenacao = models.BooleanField(default=False)
+
+    class Meta:
+        ordering = ['data_envio']
