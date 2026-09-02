@@ -427,3 +427,17 @@ class Alternativa(models.Model):
 
 #     class Meta:
 #         ordering = ["ordem"]
+
+
+class Conversa(models.Model):
+    professor = models.ForeignKey('Professor', on_delete=models.CASCADE, related_name='conversas')
+    coordenador = models.ForeignKey('Coordenador', on_delete=models.CASCADE, related_name='conversas')
+    data_criacao = models.DateTimeField(auto_now_add=True)
+    ultima_atualizacao = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        unique_together = ('professor', 'coordenador')
+
+    def __str__(self):
+        return f"Conversa: {self.coordenador} <-> {self.professor}"
+
