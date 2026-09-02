@@ -4356,3 +4356,80 @@ def mensagem_conversa_detalhe(request, conversa_id):
         "conteudo": mensagem.conteudo,
         "data_envio": mensagem.data_envio.isoformat(),
     }, status=201)
+
+
+# --- app/views.py — adicionar ---
+
+def _professor_logado():
+    ip = get_ip()
+    return Professor.objects.filter(ip=ip).first()
+
+
+@csrf_exempt
+@require_http_methods(["GET"])
+def mensagens_list_professor(request):
+    professor = _professor_logado()
+    if not professor:
+        return JsonResponse({"detail": "Não autenticado."}, status=401)
+
+    conversas = (
+        Conversa.objects.filter(professor=professor)
+        .select_related("coordenador")
+        .order_by("-ultima_atualizacao")
+    )
+    resultado = []
+    for c in conversas:
+        ultima = c.mensagens.last()
+        nao_lidas = c.mensagens.filter(
+            remetente_tipo="COORDENACAO", lida_professor=False
+        ).count()
+        resultado.append({
+            "id": c.id,
+            "ultima_mensagem": ultima.conteudo if ultima else None,
+            "ultima_atualizacao": c.ultima_atualizacao.isoformat(),
+            "nao_lidas": nao_lidas,
+        })
+    return JsonResponse(resultado, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(["GET", "POST"])
+def mensagem_conversa_detalhe_professor(request, conversa_id):
+    professor = _professor_logado()
+    if not professor:
+        return JsonResponse({"detail": "Não autenticado."}, status=401)
+
+    conversa = Conversa.objects.filter(id=conversa_id, professor=professor).first()
+    if not conversa:
+        return JsonResponse({"detail": "Conversa não encontrada."}, status=404)
+
+    if request.method == "GET":
+        conversa.mensagens.filter(remetente_tipo="COORDENACAO", lida_professor=False).update(lida_professor=True)
+        mensagens = [
+            {
+                "id": m.id,
+                "remetente_tipo": m.remetente_tipo,
+                "conteudo": m.conteudo,
+                "data_envio": m.data_envio.isoformat(),
+            }
+            for m in conversa.mensagens.all()
+        ]
+        return JsonResponse({"mensagens": mensagens})
+
+    body = json.loads(request.body or "{}")
+    conteudo = (body.get("conteudo") or "").strip()
+    if not conteudo:
+        return JsonResponse({"detail": "conteudo é obrigatório."}, status=400)
+
+    mensagem = MensagemChat.objects.create(
+        conversa=conversa, remetente_tipo="PROFESSOR", conteudo=conteudo,
+        lida_professor=True,
+    )
+    conversa.save()
+
+    return JsonResponse({
+        "id": mensagem.id,
+        "remetente_tipo": mensagem.remetente_tipo,
+        "conteudo": mensagem.conteudo,
+        "data_envio": mensagem.data_envio.isoformat(),
+    }, status=201)
