@@ -47,6 +47,30 @@ export default function MensagemListaPage() {
     }
   }, []);
 
+  // mantenha carregarConversas como está (usada no load inicial e no botão "Tentar novamente")
+
+  // nova função — atualização em segundo plano, sem mexer em loading/erro
+  const atualizarConversasSilenciosamente = useCallback(async () => {
+    try {
+      const res = await fetch(`${API_BASE}/api/coordenacao/mensagens`, {
+        credentials: "include",
+      });
+      if (!res.ok) return; // falha silenciosa no polling
+      const data = await res.json();
+      setConversas(data);
+    } catch {
+      // ignora falhas de polling silenciosamente
+    }
+  }, []);
+
+  // novo useEffect — adicione junto ao que já verifica auth
+  useEffect(() => {
+    if (verificandoAuth) return;
+    const intervalo = setInterval(atualizarConversasSilenciosamente, 6000);
+    return () => clearInterval(intervalo);
+  }, [verificandoAuth, atualizarConversasSilenciosamente]);
+
+
   useEffect(() => {
     async function verificar() {
       try {
