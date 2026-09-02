@@ -1,0 +1,187 @@
+.page {
+  min-height: 100vh;
+  background: #f5f7fa;
+  color: #1a2942;
+  font-family: "IBM Plex Sans", "Inter", "Segoe UI", system-ui, sans-serif;
+  padding: 40px 24px;
+}
+
+.wrapper {
+  max-width: 860px;
+  margin: 0 auto;
+}
+
+.voltarLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: #5b6b85;
+  text-decoration: none;
+  font-size: 14px;
+  margin-bottom: 24px;
+  transition: color 0.15s ease;
+}
+
+.voltarLink:hover {
+  color: #0b4f9e;
+}
+
+.title {
+  font-size: 26px;
+  font-weight: 700;
+  color: #1a2942;
+  margin: 0 0 4px 0;
+}
+
+.subtitle {
+  font-size: 14px;
+  color: #5b6b85;
+  margin: 0 0 24px 0;
+}
+
+.pageLoading {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f5f7fa;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  padding: 1.5rem;
+}
+
+.cardLoading {
+  width: 100%;
+  max-width: 400px;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 2.25rem 2rem;
+  box-shadow: 0 1px 3px rgba(16, 24, 40, 0.06);
+  text-align: center;
+}
+
+.subtituloLoading {
+  font-size: 0.85rem;
+  color: #5b6b85;
+  margin: 0;
+}
+
+/* ===== Card de Turma com chips de disciplinas ===== */
+.turmaCard {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  padding: 1.1rem 1.25rem;
+  box-shadow: 0 1px 3px rgba(16, 24, 40, 0.04);
+}
+
+.turmaCardHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  margin-bottom: 0.9rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.turmaIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: #eef2ff;
+  color: #2563eb;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.turmaNome {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #101828;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.turmasList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.disciplinasChips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.disciplinaChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #1e40af;
+  background: #eef2ff;
+  border: 1px solid #c7d2fe;
+  border-radius: 999px;
+  padding: 0.4rem 0.9rem;
+  text-decoration: none;
+  transition: background 0.15s ease, border-color 0.15s ease, transform 0.1s ease;
+}
+
+.disciplinaChip::after {
+  content: "→";
+  font-size: 0.7rem;
+  opacity: 0.6;
+  transition: transform 0.15s ease;
+}
+
+.disciplinaChip:hover {
+  background: #2563eb;
+  border-color: #2563eb;
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+
+.disciplinaChip:hover::after {
+  transform: translateX(2px);
+}
+
+.alunosEmpty {
+  font-size: 0.9rem;
+  color: #6b7280;
+  padding: 1rem;
+  background: #f9fafb;
+  border-radius: 10px;
+  text-align: center;
+}
+
+.listaErros {
+  list-style: none;
+  color: #b91c1c;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  padding: 0.85rem 1.1rem;
+  border-radius: 10px;
+  margin-bottom: 1.25rem;
+  font-size: 0.85rem;
+}
+
+/* ===== Responsivo ===== */
+@media (max-width: 480px) {
+  .turmaCardHeader {
+    flex-wrap: wrap;
+  }
+
+  .disciplinaChip {
+    font-size: 0.72rem;
+    padding: 0.35rem 0.75rem;
+  }
+}
