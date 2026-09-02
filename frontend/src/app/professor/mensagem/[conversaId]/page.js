@@ -39,6 +39,23 @@ export default function ConversaProfessorPage() {
   const [enviando, setEnviando] = useState(false);
   const fimDaListaRef = useRef(null);
 
+  // const carregarConversa = useCallback(async () => {
+  //   setErro(null);
+  //   try {
+  //     const res = await fetch(`${API_BASE}/api/professor/mensagens/${conversaId}`, {
+  //       credentials: "include",
+  //     });
+  //     if (res.status === 404) throw new Error("Conversa não encontrada.");
+  //     if (!res.ok) throw new Error(`Falha ao buscar conversa (status ${res.status})`);
+  //     const data = await res.json();
+  //     setMensagens(data.mensagens);
+  //   } catch (e) {
+  //     setErro(e.message);
+  //   } finally {
+  //     setCarregando(false);
+  //   }
+  // }, [conversaId]);
+
   const carregarConversa = useCallback(async () => {
     setErro(null);
     try {
@@ -55,6 +72,27 @@ export default function ConversaProfessorPage() {
       setCarregando(false);
     }
   }, [conversaId]);
+
+  const atualizarMensagensSilenciosamente = useCallback(async () => {
+    try {
+      const res = await fetch(`${API_BASE}/api/professor/mensagens/${conversaId}`, {
+        credentials: "include",
+      });
+      if (!res.ok) return;
+      const data = await res.json();
+      setMensagens((atual) =>
+        atual.length !== data.mensagens.length ? data.mensagens : atual
+      );
+    } catch {
+      // ignora falhas de polling silenciosamente
+    }
+  }, [conversaId]);
+
+  useEffect(() => {
+    if (loading) return;
+    const intervalo = setInterval(atualizarMensagensSilenciosamente, 3000);
+    return () => clearInterval(intervalo);
+  }, [loading, atualizarMensagensSilenciosamente]);
 
   useEffect(() => {
     async function init() {
