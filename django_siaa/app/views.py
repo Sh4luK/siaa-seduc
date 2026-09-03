@@ -4760,6 +4760,10 @@ def admin_turma_renomear(request):
     return JsonResponse({"alunos_atualizados": qtd_alunos, "vinculos_atualizados": qtd_vinculos})
 
 
+def _aluno_logado():
+    ip = get_ip()
+    return Estudante.objects.filter(ip=ip).first()
+
 
 @csrf_exempt
 @require_http_methods(["GET"])
