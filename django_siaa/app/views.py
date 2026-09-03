@@ -4548,3 +4548,26 @@ def admin_auth(request):
         return JsonResponse({"return": False})
     return JsonResponse({"return": True, "admin": {"id": admin.id, "nome_completo": admin.nome_completo}})
 
+
+# ---------- ESCOLAS (derivadas, sem model próprio) ----------
+
+@csrf_exempt
+@require_http_methods(["GET"])
+def admin_escolas_opcoes(request):
+    if not _admin_logado():
+        return JsonResponse({"detail": "Não autenticado."}, status=401)
+
+    valores = set()
+    for v in Coordenador.objects.values_list("escola", flat=True):
+        if v:
+            valores.add(v.strip())
+    for v in AtravessaPor.objects.values_list("escola", flat=True):
+        if v:
+            valores.add(_nome_escola(v))
+    for v in Estudante.objects.values_list("escola", flat=True):
+        if v:
+            valores.add(_nome_escola(v))
+
+    return JsonResponse({"escolas": sorted(valores)})
+
+
