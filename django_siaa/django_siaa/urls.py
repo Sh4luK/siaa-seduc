@@ -114,5 +114,8 @@ urlpatterns = [
     path('api/professor/mensagens/<int:conversa_id>', app.views.mensagem_conversa_detalhe_professor),
     path('api/coordenacao/notas/opcoes', app.views.opcoes_notas_coordenacao),
     path('api/coordenacao/notas/turma/<int:vinculo_id>', app.views.notas_turma_coordenacao),
+    path('api/admin/login', app.views.admin_login),
+    path('api/admin/auth', app.views.admin_auth),
+    path('api/admin/escolas/opcoes', app.views.admin_escolas_opcoes),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
