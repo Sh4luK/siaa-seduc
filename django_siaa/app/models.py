@@ -466,3 +466,18 @@ class Admin(models.Model):
 
     def __str__(self):
         return self.nome_completo
+
+
+class EstudoProgramado(models.Model):
+    aluno = models.ForeignKey('Estudante', on_delete=models.CASCADE, related_name='estudos_programados')
+    titulo = models.CharField(max_length=255)
+    disciplina = models.CharField(max_length=255, blank=True)
+    data = models.DateField()
+    concluido = models.BooleanField(default=False)
+    data_criacao = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['data']
+
+    def __str__(self):
+        return f"{self.titulo} — {self.aluno}"
