@@ -4698,3 +4698,20 @@ def admin_alunos(request):
     )
     return JsonResponse({"id": aluno.id}, status=201)
 
+
+@csrf_exempt
+@require_http_methods(["DELETE"])
+def admin_aluno_excluir(request, aluno_id):
+    if not _admin_logado():
+        return JsonResponse({"detail": "Não autenticado."}, status=401)
+
+    aluno = Estudante.objects.filter(id=aluno_id).first()
+    if not aluno:
+        return JsonResponse({"detail": "Aluno não encontrado."}, status=404)
+
+    if aluno.notas_lancadas.exists() if hasattr(aluno, "notas_lancadas") else False:
+        return JsonResponse({"detail": "Não é possível excluir: há notas vinculadas a este aluno."}, status=409)
+
+    aluno.delete()
+    return JsonResponse({"detail": "Excluído."})
+
