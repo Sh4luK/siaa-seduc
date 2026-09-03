@@ -36,6 +36,7 @@ from .models import HorarioAula
 from .models import Blogger
 from .models import Post
 from .models import Admin
+from .models import EstudoProgramado
 from django.core.files.storage import default_storage
 from .models import Avaliacao, Questao, Alternativa
 from .models import MensagemChat
@@ -4846,7 +4847,6 @@ def _aluno_logado():
 
 
 # ---------- CONTEÚDOS ----------
-
 @csrf_exempt
 @require_http_methods(["GET"])
 def conteudos_aluno(request):
@@ -4854,22 +4854,25 @@ def conteudos_aluno(request):
     if not aluno:
         return JsonResponse({"detail": "Não autenticado."}, status=401)
 
-    conteudos = Conteudo.objects.filter(turma=aluno.turma).select_related("disciplina", "professor").order_by("-data")
+    vinculos = AtravessaPor.objects.filter(turma=aluno.turma)
+    conteudos = Conteudo.objects.filter(turma__in=vinculos).select_related(
+        "turma", "turma__professor"
+    ).order_by("-data")
 
-    return JsonResponse({
-        "conteudos": [
-            {
-                "id": c.id,
-                "titulo": c.titulo,
-                "descricao": c.descricao,
-                "disciplina": c.disciplina.nome_disciplina if c.disciplina else None,
-                "professor_nome": c.professor.nome_completo if c.professor else None,
-                "data": c.data.isoformat() if c.data else None,
-                "arquivo": c.arquivo.url if c.arquivo else None,
-            }
-            for c in conteudos
-        ]
-    })
+    resultado = []
+    for c in conteudos:
+        disciplina = resolver_disciplina_da_turma(c.turma)
+        resultado.append({
+            "id": c.id,
+            "titulo": c.titulo,
+            "descricao": c.descricao,
+            "disciplina": disciplina.nome_disciplina if disciplina else c.turma.disciplina_lecionada,
+            "professor_nome": c.turma.professor.nome_completo if c.turma.professor else None,
+            "data": c.data.isoformat() if c.data else None,
+            "arquivo": c.arquivo.url if c.arquivo else None,
+        })
+
+    return JsonResponse({"conteudos": resultado})
 
 
 # ---------- ATIVIDADES ----------
