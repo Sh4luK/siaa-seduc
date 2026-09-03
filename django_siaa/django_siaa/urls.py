@@ -121,5 +121,9 @@ urlpatterns = [
     path('api/admin/coordenadores/<int:coordenador_id>', app.views.admin_coordenador_excluir),
     path('api/admin/professores', app.views.admin_professores),
     path('api/admin/professores/<int:professor_id>', app.views.admin_professor_excluir),
+    path('api/admin/alunos', app.views.admin_alunos),
+    path('api/admin/alunos/<int:aluno_id>', app.views.admin_aluno_excluir),
+    path('api/admin/turmas', app.views.admin_turmas),
+    path('api/admin/turmas/renomear', app.views.admin_turma_renomear),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
