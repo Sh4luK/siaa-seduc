@@ -4538,3 +4538,13 @@ def admin_login(request):
     admin.ip = get_ip()
     admin.save(update_fields=["ip"])
     return JsonResponse({"return": True, "admin": {"id": admin.id, "nome_completo": admin.nome_completo}})
+
+
+@csrf_exempt
+@require_http_methods(["GET"])
+def admin_auth(request):
+    admin = _admin_logado()
+    if not admin:
+        return JsonResponse({"return": False})
+    return JsonResponse({"return": True, "admin": {"id": admin.id, "nome_completo": admin.nome_completo}})
+
