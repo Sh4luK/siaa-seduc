@@ -4876,7 +4876,6 @@ def conteudos_aluno(request):
 
 
 # ---------- ATIVIDADES ----------
-
 @csrf_exempt
 @require_http_methods(["GET"])
 def atividades_aluno(request):
@@ -4885,10 +4884,14 @@ def atividades_aluno(request):
         return JsonResponse({"detail": "Não autenticado."}, status=401)
 
     hoje = date.today()
-    atividades = Atividade.objects.filter(turma=aluno.turma).select_related("disciplina", "professor").order_by("data_entrega")
+    vinculos = AtravessaPor.objects.filter(turma=aluno.turma)
+    atividades = Atividade.objects.filter(turma__in=vinculos).select_related(
+        "turma", "turma__professor"
+    ).order_by("data_entrega")
 
     resultado = []
     for a in atividades:
+        disciplina = resolver_disciplina_da_turma(a.turma)
         status = None
         if a.data_entrega:
             status = "atrasado" if a.data_entrega < hoje else "pendente"
@@ -4896,8 +4899,8 @@ def atividades_aluno(request):
             "id": a.id,
             "titulo": a.titulo,
             "descricao": a.descricao,
-            "disciplina": a.disciplina.nome_disciplina if a.disciplina else None,
-            "professor_nome": a.professor.nome_completo if a.professor else None,
+            "disciplina": disciplina.nome_disciplina if disciplina else a.turma.disciplina_lecionada,
+            "professor_nome": a.turma.professor.nome_completo if a.turma.professor else None,
             "data": a.data.isoformat() if a.data else None,
             "data_entrega": a.data_entrega.isoformat() if a.data_entrega else None,
             "arquivo": a.arquivo.url if a.arquivo else None,
@@ -4905,7 +4908,6 @@ def atividades_aluno(request):
         })
 
     return JsonResponse({"atividades": resultado})
-
 
 # ---------- BOLETIM ----------
 
