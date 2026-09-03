@@ -47,6 +47,7 @@ from django.templatetags.static import static
 from django.template.loader import render_to_string
 from weasyprint import HTML
 from django.views.decorators.http import require_http_methods
+from django.db.models import Avg
 import json
 
 
@@ -4757,3 +4758,77 @@ def admin_turma_renomear(request):
     qtd_vinculos = AtravessaPor.objects.filter(turma=nome_atual).update(turma=novo_nome)
 
     return JsonResponse({"alunos_atualizados": qtd_alunos, "vinculos_atualizados": qtd_vinculos})
+
+
+
+@csrf_exempt
+@require_http_methods(["GET"])
+def dashboard_aluno(request):
+    aluno = _aluno_logado()  # supondo que já existe uma função equivalente a _professor_logado()/_coordenador_logado()
+    if not aluno:
+        return JsonResponse({"detail": "Não autenticado."}, status=401)
+
+    # Média geral — usa MAF quando existe, senão MA
+    notas = Nota.objects.filter(aluno=aluno)
+    medias = [n.maf if n.maf is not None else n.ma for n in notas if (n.maf is not None or n.ma is not None)]
+    media_geral = round(sum(medias) / len(medias), 1) if medias else None
+
+    # Frequência — % de presença no total de registros
+    frequencias = Frequencia.objects.filter(aluno=aluno)
+    total_freq = frequencias.count()
+    presentes = frequencias.filter(presente=True).count()
+    frequencia_percentual = round((presentes / total_freq) * 100) if total_freq else None
+
+    # Conteúdos disponíveis pra turma do aluno
+    total_conteudos = Conteudo.objects.filter(turma=aluno.turma).count()
+
+    # Atividades da turma do aluno — pendentes/atrasadas por data (sem model de entrega ainda)
+    hoje = date.today()
+    atividades = Atividade.objects.filter(turma=aluno.turma).order_by("data_entrega")
+    pendentes = atividades.filter(data_entrega__gte=hoje)
+    atrasadas = atividades.filter(data_entrega__lt=hoje)
+    total_pendentes = pendentes.count() + atrasadas.count()
+
+    proximas_entregas = []
+    for a in list(atrasadas.order_by("-data_entrega")[:3]) + list(pendentes[:3]):
+        proximas_entregas.append({
+            "titulo": a.titulo,
+            "disciplina": a.disciplina.nome_disciplina if a.disciplina else None,
+            "data_entrega": a.data_entrega.isoformat() if a.data_entrega else None,
+            "status": "atrasado" if a.data_entrega and a.data_entrega < hoje else "pendente",
+        })
+    proximas_entregas = proximas_entregas[:3]
+
+    # Atenção necessária — médias por disciplina abaixo de 6, ou frequência por disciplina abaixo de 90%
+    atencao = []
+    notas_por_disciplina = notas.values("disciplina__nome_disciplina").annotate(media=Avg("maf"))
+    for n in notas_por_disciplina:
+        if n["media"] is not None and n["media"] < 6:
+            atencao.append({
+                "disciplina": n["disciplina__nome_disciplina"],
+                "tipo": "media",
+                "valor": round(n["media"], 1),
+            })
+
+    freq_por_disciplina = (
+        frequencias.values("disciplina__nome_disciplina")
+        .annotate(total=models.Count("id"), presentes=models.Count("id", filter=models.Q(presente=True)))
+    )
+    for f in freq_por_disciplina:
+        if f["total"]:
+            pct = round((f["presentes"] / f["total"]) * 100)
+            if pct < 90:
+                atencao.append({
+                    "disciplina": f["disciplina__nome_disciplina"],
+                    "tipo": "frequencia",
+                    "valor": pct,
+                })
+
+    return JsonResponse({
+        "total_pendentes": total_pendentes,
+        "media_geral": media_geral,
+        "frequencia_percentual": frequencia_percentual,
+        "total_conteudos": total_conteudos,
+        "atencao_necessaria": atencao[:6],
+        "proximas_entregas": proximas_entregas,
+    })
