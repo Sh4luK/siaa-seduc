@@ -4597,3 +4597,19 @@ def admin_coordenadores(request):
     coordenador = Coordenador.objects.create(nome_completo=nome, senha=senha, escola=escola)
     return JsonResponse({"id": coordenador.id}, status=201)
 
+
+@csrf_exempt
+@require_http_methods(["DELETE"])
+def admin_coordenador_excluir(request, coordenador_id):
+    if not _admin_logado():
+        return JsonResponse({"detail": "Não autenticado."}, status=401)
+
+    coordenador = Coordenador.objects.filter(id=coordenador_id).first()
+    if not coordenador:
+        return JsonResponse({"detail": "Coordenador não encontrado."}, status=404)
+
+    coordenador.delete()
+    return JsonResponse({"detail": "Excluído."})
+
+
+# ---------- PROFESSORES ----------
