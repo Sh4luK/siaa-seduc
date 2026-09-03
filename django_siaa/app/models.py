@@ -457,3 +457,12 @@ class MensagemChat(models.Model):
 
     class Meta:
         ordering = ['data_envio']
+
+    
+class Admin(models.Model):
+    nome_completo = models.CharField(max_length=255)
+    senha = models.CharField(max_length=255)
+    ip = models.CharField(max_length=45, null=True, blank=True)
+
+    def __str__(self):
+        return self.nome_completo
