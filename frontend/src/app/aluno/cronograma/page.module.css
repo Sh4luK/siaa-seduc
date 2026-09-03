@@ -1,0 +1,152 @@
+.subtitle {
+  font-size: 0.9rem;
+  color: #5b6b85;
+}
+
+.vazio {
+  font-size: 0.9rem;
+  color: #5b6b85;
+  padding: 1.5rem;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  text-align: center;
+}
+
+.erro {
+  background: rgba(220, 38, 38, 0.06);
+  border: 1px solid rgba(220, 38, 38, 0.25);
+  color: #b91c1c;
+  border-radius: 8px;
+  padding: 0.7rem 0.9rem;
+  font-size: 0.85rem;
+  margin-bottom: 1rem;
+}
+
+.form {
+  margin-bottom: 1.5rem;
+}
+
+.linhaForm {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.input {
+  flex: 1;
+  min-width: 140px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 0.6rem 0.8rem;
+  font-size: 0.88rem;
+  font-family: inherit;
+  color: #1a2942;
+  background: #fff;
+}
+
+.input:focus {
+  outline: none;
+  border-color: #0b4f9e;
+}
+
+.addBtn {
+  background: #0b4f9e;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 0.6rem 1.1rem;
+  font-size: 0.88rem;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.addBtn:hover:not(:disabled) {
+  background: #0a2f5c;
+}
+
+.addBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.lista {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 0.85rem 1rem;
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
+}
+
+.itemConcluido {
+  opacity: 0.6;
+}
+
+.itemConcluido .itemTitulo {
+  text-decoration: line-through;
+}
+
+.checkbox {
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  border: 1.5px solid #cbd5e1;
+  background: #fff;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.itemConcluido .checkbox {
+  background: #15803d;
+  border-color: #15803d;
+}
+
+.itemInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.itemTitulo {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #1a2942;
+  margin: 0;
+}
+
+.itemMeta {
+  font-size: 0.78rem;
+  color: #5b6b85;
+  margin: 0.1rem 0 0;
+}
+
+.excluirBtn {
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  color: #94a3b8;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  padding: 0.2rem;
+}
+
+.excluirBtn:hover {
+  color: #b91c1c;
+}
