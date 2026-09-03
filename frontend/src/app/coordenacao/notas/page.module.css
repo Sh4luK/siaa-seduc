@@ -66,7 +66,7 @@
   margin: 0;
 }
 
-/* ===== Card de Turma com chips de disciplinas ===== */
+
 .turmaCard {
   background: #ffffff;
   border: 1px solid #e5e7eb;
@@ -174,7 +174,7 @@
   font-size: 0.85rem;
 }
 
-/* ===== Responsivo ===== */
+
 @media (max-width: 480px) {
   .turmaCardHeader {
     flex-wrap: wrap;
@@ -184,4 +184,50 @@
     font-size: 0.72rem;
     padding: 0.35rem 0.75rem;
   }
+}
+
+.buscaWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.buscaIcone {
+  position: absolute;
+  left: 0.85rem;
+  color: #5b6b85;
+  pointer-events: none;
+}
+
+.buscaInput {
+  width: 100%;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 0.7rem 2.4rem 0.7rem 2.5rem;
+  font-size: 0.9rem;
+  font-family: inherit;
+  color: #1a2942;
+  background: #fff;
+}
+
+.buscaInput:focus {
+  outline: none;
+  border-color: #0b4f9e;
+}
+
+.limparBtn {
+  position: absolute;
+  right: 0.75rem;
+  background: none;
+  border: none;
+  color: #5b6b85;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  padding: 0.2rem;
+}
+
+.limparBtn:hover {
+  color: #b91c1c;
 }
