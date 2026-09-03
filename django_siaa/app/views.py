@@ -362,6 +362,18 @@ def _to_decimal(valor):
         return None
 
 
+def buscar_atravessapor_por_turma(nome_turma):
+    """
+    Busca vínculos AtravessaPor cujo campo 'turma' bate com o nome informado,
+    normalizando espaços e ignorando maiúsculas/minúsculas — mesmo critério
+    usado em buscar_alunos_por_turma, só que do lado do AtravessaPor.
+    """
+    nome_normalizado = (nome_turma or "").replace(" ", "").strip().lower()
+
+    return AtravessaPor.objects.annotate(
+        turma_normalizada=Replace("turma", Value(" "), Value(""))
+    ).filter(turma_normalizada__iexact=nome_normalizado)
+
 def buscar_alunos_por_turma(nome_turma):
     """
     Busca alunos no model Estudante cujo campo 'turma' bate com o nome informado,
@@ -4784,12 +4796,13 @@ def dashboard_aluno(request):
     presentes = frequencias.filter(presente=True).count()
     frequencia_percentual = round((presentes / total_freq) * 100) if total_freq else None
 
+    vinculos_aluno = AtravessaPor.objects.filter(turma=aluno.turma)
     # Conteúdos disponíveis pra turma do aluno
-    total_conteudos = Conteudo.objects.filter(turma=aluno.turma).count()
+    total_conteudos = Conteudo.objects.filter(turma__in=vinculos_aluno).count()
 
     # Atividades da turma do aluno — pendentes/atrasadas por data (sem model de entrega ainda)
     hoje = date.today()
-    atividades = Atividade.objects.filter(turma=aluno.turma).order_by("data_entrega")
+    atividades = Atividade.objects.filter(turma__in=vinculos_aluno).order_by("data_entrega")
     pendentes = atividades.filter(data_entrega__gte=hoje)
     atrasadas = atividades.filter(data_entrega__lt=hoje)
     total_pendentes = pendentes.count() + atrasadas.count()
@@ -4854,7 +4867,7 @@ def conteudos_aluno(request):
     if not aluno:
         return JsonResponse({"detail": "Não autenticado."}, status=401)
 
-    vinculos = AtravessaPor.objects.filter(turma=aluno.turma)
+    vinculos = buscar_atravessapor_por_turma(aluno.turma)
     conteudos = Conteudo.objects.filter(turma__in=vinculos).select_related(
         "turma", "turma__professor"
     ).order_by("-data")
@@ -4884,7 +4897,7 @@ def atividades_aluno(request):
         return JsonResponse({"detail": "Não autenticado."}, status=401)
 
     hoje = date.today()
-    vinculos = AtravessaPor.objects.filter(turma=aluno.turma)
+    vinculos = buscar_atravessapor_por_turma(aluno.turma)
     atividades = Atividade.objects.filter(turma__in=vinculos).select_related(
         "turma", "turma__professor"
     ).order_by("data_entrega")
@@ -4943,7 +4956,7 @@ def horarios_aluno(request):
     if not aluno:
         return JsonResponse({"detail": "Não autenticado."}, status=401)
 
-    vinculos = AtravessaPor.objects.filter(turma=aluno.turma)
+    vinculos = buscar_atravessapor_por_turma(aluno.turma)
     horarios = HorarioAula.objects.filter(turma__in=vinculos).select_related("turma", "turma__professor")
 
     resultado = []
