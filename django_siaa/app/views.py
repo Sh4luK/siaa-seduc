@@ -4715,3 +4715,28 @@ def admin_aluno_excluir(request, aluno_id):
     aluno.delete()
     return JsonResponse({"detail": "Excluído."})
 
+
+
+# ---------- TURMAS (agregado, sem model próprio) ----------
+
+@csrf_exempt
+@require_http_methods(["GET"])
+def admin_turmas(request):
+    if not _admin_logado():
+        return JsonResponse({"detail": "Não autenticado."}, status=401)
+
+    nomes = set(Estudante.objects.values_list("turma", flat=True))
+    nomes |= set(AtravessaPor.objects.values_list("turma", flat=True))
+    nomes = {n for n in nomes if n}
+
+    resultado = []
+    for nome in sorted(nomes):
+        resultado.append({
+            "turma": nome,
+            "total_alunos": Estudante.objects.filter(turma=nome).count(),
+            "total_vinculos": AtravessaPor.objects.filter(turma=nome).count(),
+        })
+
+    return JsonResponse(resultado, safe=False)
+
+
