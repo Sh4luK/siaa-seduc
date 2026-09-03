@@ -4639,3 +4639,22 @@ def admin_professores(request):
     professor = Professor.objects.create(nome_completo=nome, senha=senha)
     return JsonResponse({"id": professor.id}, status=201)
 
+
+@csrf_exempt
+@require_http_methods(["DELETE"])
+def admin_professor_excluir(request, professor_id):
+    if not _admin_logado():
+        return JsonResponse({"detail": "Não autenticado."}, status=401)
+
+    professor = Professor.objects.filter(id=professor_id).first()
+    if not professor:
+        return JsonResponse({"detail": "Professor não encontrado."}, status=404)
+
+    if professor.notas_lancadas.exists() or professor.frequencias_registradas.exists():
+        return JsonResponse(
+            {"detail": "Não é possível excluir: há notas ou frequências vinculadas a este professor."},
+            status=409,
+        )
+
+    professor.delete()
+    return JsonResponse({"detail": "Excluído."})
