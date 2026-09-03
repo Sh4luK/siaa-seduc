@@ -4571,3 +4571,29 @@ def admin_escolas_opcoes(request):
     return JsonResponse({"escolas": sorted(valores)})
 
 
+# ---------- COORDENADORES ----------
+
+@csrf_exempt
+@require_http_methods(["GET", "POST"])
+def admin_coordenadores(request):
+    if not _admin_logado():
+        return JsonResponse({"detail": "Não autenticado."}, status=401)
+
+    if request.method == "GET":
+        coordenadores = Coordenador.objects.all().order_by("nome_completo")
+        return JsonResponse([
+            {"id": c.id, "nome_completo": c.nome_completo, "escola": c.escola}
+            for c in coordenadores
+        ], safe=False)
+
+    body = json.loads(request.body or "{}")
+    nome = (body.get("nome_completo") or "").strip()
+    senha = (body.get("senha") or "").strip()
+    escola = (body.get("escola") or "").strip()
+
+    if not nome or not senha or not escola:
+        return JsonResponse({"detail": "nome_completo, senha e escola são obrigatórios."}, status=400)
+
+    coordenador = Coordenador.objects.create(nome_completo=nome, senha=senha, escola=escola)
+    return JsonResponse({"id": coordenador.id}, status=201)
+
