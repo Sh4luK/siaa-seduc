@@ -1,0 +1,107 @@
+.subtitle {
+  font-size: 0.9rem;
+  color: #5b6b85;
+}
+
+.vazio {
+  font-size: 0.9rem;
+  color: #5b6b85;
+  padding: 1.5rem;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  text-align: center;
+}
+
+.listaErros {
+  list-style: none;
+  color: #b91c1c;
+  background: rgba(220, 38, 38, 0.06);
+  border: 1px solid rgba(220, 38, 38, 0.25);
+  padding: 0.85rem 1.1rem;
+  border-radius: 8px;
+  margin-bottom: 1.25rem;
+  font-size: 0.85rem;
+}
+
+.tabelaWrapper {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  box-shadow: 0 1px 3px rgba(16, 24, 40, 0.06);
+  background: #ffffff;
+}
+
+.tabela {
+  border-collapse: separate;
+  border-spacing: 0;
+  width: 100%;
+  font-size: 0.78rem;
+}
+
+.tabela th,
+.tabela td {
+  border-bottom: 1px solid #eef0f3;
+  border-right: 1px solid #eef0f3;
+  padding: 0.55rem 0.5rem;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.tabela th:last-child,
+.tabela td:last-child {
+  border-right: none;
+}
+
+.tabela thead th {
+  background: #f8fafc;
+  color: #1a2942;
+  font-weight: 700;
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.tabela thead tr:first-child th {
+  color: #0b4f9e;
+  background: rgba(11, 79, 158, 0.06);
+}
+
+.stickyCol {
+  position: sticky;
+  left: 0;
+  background: #ffffff;
+  text-align: left !important;
+  min-width: 140px;
+  font-weight: 600;
+  color: #1a2942;
+  z-index: 1;
+}
+
+thead .stickyCol {
+  background: rgba(11, 79, 158, 0.06);
+  z-index: 2;
+}
+
+.calculadoBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 34px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #0b4f9e;
+  background: rgba(11, 79, 158, 0.08);
+  border-radius: 6px;
+  padding: 0.3rem 0.4rem;
+}
+
+.notaBaixa {
+  color: #b91c1c !important;
+}
+
+.notaAlta {
+  color: #0b4f9e !important;
+}
