@@ -35,6 +35,7 @@ from .models import Advertencia
 from .models import HorarioAula
 from .models import Blogger
 from .models import Post
+from .models import Admin
 from django.core.files.storage import default_storage
 from .models import Avaliacao, Questao, Alternativa
 from .models import MensagemChat
@@ -4507,3 +4508,33 @@ def notas_turma_coordenacao(request, vinculo_id):
         "professor_nome": vinculo.professor.nome_completo,
         "alunos": resultado,
     })
+
+
+
+def _admin_logado():
+    ip = get_ip()
+    return Admin.objects.filter(ip=ip).first()
+
+
+def _nome_escola(escola_str):
+    if not escola_str:
+        return escola_str
+    return escola_str.split(" - ", 1)[-1].strip()
+
+
+# ---------- AUTH ----------
+
+@csrf_exempt
+@require_http_methods(["POST"])
+def admin_login(request):
+    body = json.loads(request.body or "{}")
+    nome = (body.get("nome_completo") or "").strip()
+    senha = (body.get("senha") or "").strip()
+
+    admin = Admin.objects.filter(nome_completo=nome, senha=senha).first()
+    if not admin:
+        return JsonResponse({"return": False, "detail": "Credenciais inválidas."}, status=401)
+
+    admin.ip = get_ip()
+    admin.save(update_fields=["ip"])
+    return JsonResponse({"return": True, "admin": {"id": admin.id, "nome_completo": admin.nome_completo}})
