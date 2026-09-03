@@ -4928,3 +4928,95 @@ def boletim_aluno(request):
             for n in notas
         ]
     })
+
+# ---------- HORÁRIOS ----------
+
+@csrf_exempt
+@require_http_methods(["GET"])
+def horarios_aluno(request):
+    aluno = _aluno_logado()
+    if not aluno:
+        return JsonResponse({"detail": "Não autenticado."}, status=401)
+
+    vinculos = AtravessaPor.objects.filter(turma=aluno.turma)
+    horarios = HorarioAula.objects.filter(turma__in=vinculos).select_related("turma", "turma__professor")
+
+    resultado = []
+    for h in horarios:
+        disciplina = resolver_disciplina_da_turma(h.turma)
+        resultado.append({
+            "id": h.id,
+            "dia_semana": h.dia_semana,
+            "hora_inicio": h.hora_inicio.strftime("%H:%M") if h.hora_inicio else None,
+            "hora_fim": h.hora_fim.strftime("%H:%M") if h.hora_fim else None,
+            "disciplina": disciplina.nome_disciplina if disciplina else h.turma.disciplina_lecionada,
+            "professor_nome": h.turma.professor.nome_completo if h.turma.professor else None,
+        })
+
+    return JsonResponse({"horarios": resultado})
+
+
+# ---------- CRONOGRAMA (EstudoProgramado) ----------
+
+@csrf_exempt
+@require_http_methods(["GET", "POST"])
+def cronograma_aluno(request):
+    aluno = _aluno_logado()
+    if not aluno:
+        return JsonResponse({"detail": "Não autenticado."}, status=401)
+
+    if request.method == "GET":
+        estudos = EstudoProgramado.objects.filter(aluno=aluno).order_by("data")
+        return JsonResponse({
+            "estudos": [
+                {
+                    "id": e.id, "titulo": e.titulo, "disciplina": e.disciplina,
+                    "data": e.data.isoformat(), "concluido": e.concluido,
+                }
+                for e in estudos
+            ]
+        })
+
+    body = json.loads(request.body or "{}")
+    titulo = (body.get("titulo") or "").strip()
+    disciplina = (body.get("disciplina") or "").strip()
+    data_estudo = body.get("data")
+
+    if not titulo or not data_estudo:
+        return JsonResponse({"detail": "titulo e data são obrigatórios."}, status=400)
+
+    estudo = EstudoProgramado.objects.create(
+        aluno=aluno, titulo=titulo, disciplina=disciplina, data=data_estudo
+    )
+    return JsonResponse({"id": estudo.id}, status=201)
+
+
+@csrf_exempt
+@require_http_methods(["POST"])
+def cronograma_alternar_concluido(request, estudo_id):
+    aluno = _aluno_logado()
+    if not aluno:
+        return JsonResponse({"detail": "Não autenticado."}, status=401)
+
+    estudo = EstudoProgramado.objects.filter(id=estudo_id, aluno=aluno).first()
+    if not estudo:
+        return JsonResponse({"detail": "Não encontrado."}, status=404)
+
+    estudo.concluido = not estudo.concluido
+    estudo.save(update_fields=["concluido"])
+    return JsonResponse({"concluido": estudo.concluido})
+
+
+@csrf_exempt
+@require_http_methods(["DELETE"])
+def cronograma_excluir(request, estudo_id):
+    aluno = _aluno_logado()
+    if not aluno:
+        return JsonResponse({"detail": "Não autenticado."}, status=401)
+
+    estudo = EstudoProgramado.objects.filter(id=estudo_id, aluno=aluno).first()
+    if not estudo:
+        return JsonResponse({"detail": "Não encontrado."}, status=404)
+
+    estudo.delete()
+    return JsonResponse({"detail": "Excluído."})
