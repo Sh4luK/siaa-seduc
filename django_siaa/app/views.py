@@ -4458,3 +4458,52 @@ def opcoes_notas_coordenacao(request):
             for v in vinculos
         ]
     })
+
+
+@csrf_exempt
+@require_http_methods(["GET"])
+def notas_turma_coordenacao(request, vinculo_id):
+    coordenador = _coordenador_logado()
+    if not coordenador:
+        return JsonResponse({"detail": "Não autenticado."}, status=401)
+
+    vinculo = AtravessaPor.objects.filter(
+        id=vinculo_id, escola__iexact=_nome_escola(coordenador.escola)
+    ).select_related("professor").first()
+    if not vinculo:
+        return JsonResponse({"detail": "Vínculo não encontrado."}, status=404)
+
+    disciplina = resolver_disciplina_da_turma(vinculo)
+    alunos = buscar_alunos_por_turma(vinculo.turma).order_by("posicao_ordem", "nome_completo")
+
+    resultado = []
+    for aluno in alunos:
+        nota = Nota.objects.filter(
+            aluno=aluno, disciplina=disciplina, turma=vinculo, professor=vinculo.professor
+        ).first()
+        resultado.append({
+            "aluno_id": aluno.id,
+            "nome_completo": aluno.nome_completo,
+            "posicao_ordem": aluno.posicao_ordem,
+            "notas": {
+                "nm1_t1": nota.nm1_t1 if nota else None, "nm2_t1": nota.nm2_t1 if nota else None,
+                "nm3_t1": nota.nm3_t1 if nota else None, "rpt_t1": nota.rpt_t1 if nota else None,
+                "nm1_t2": nota.nm1_t2 if nota else None, "nm2_t2": nota.nm2_t2 if nota else None,
+                "nm3_t2": nota.nm3_t2 if nota else None, "rpt_t2": nota.rpt_t2 if nota else None,
+                "nm1_t3": nota.nm1_t3 if nota else None, "nm2_t3": nota.nm2_t3 if nota else None,
+                "nm3_t3": nota.nm3_t3 if nota else None, "rpt_t3": nota.rpt_t3 if nota else None,
+                "ma": nota.ma if nota else None, "pf": nota.pf if nota else None,
+                "maf": nota.maf if nota else None, "rcf": nota.rcf if nota else None,
+                "tgf": nota.tgf if nota else 0, "rf": nota.rf if nota else "ND",
+            } if nota else {c: None for c in [
+                "nm1_t1","nm2_t1","nm3_t1","rpt_t1","nm1_t2","nm2_t2","nm3_t2","rpt_t2",
+                "nm1_t3","nm2_t3","nm3_t3","rpt_t3","ma","pf","maf","rcf","tgf","rf"
+            ]},
+        })
+
+    return JsonResponse({
+        "nome_turma": vinculo.turma,
+        "disciplina": disciplina.nome_disciplina if disciplina else vinculo.disciplina_lecionada,
+        "professor_nome": vinculo.professor.nome_completo,
+        "alunos": resultado,
+    })
