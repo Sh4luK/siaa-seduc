@@ -4836,3 +4836,95 @@ def dashboard_aluno(request):
         "atencao_necessaria": atencao[:6],
         "proximas_entregas": proximas_entregas,
     })
+
+
+from datetime import date
+
+def _aluno_logado():
+    ip = get_ip()
+    return Estudante.objects.filter(ip=ip).first()
+
+
+# ---------- CONTEÚDOS ----------
+
+@csrf_exempt
+@require_http_methods(["GET"])
+def conteudos_aluno(request):
+    aluno = _aluno_logado()
+    if not aluno:
+        return JsonResponse({"detail": "Não autenticado."}, status=401)
+
+    conteudos = Conteudo.objects.filter(turma=aluno.turma).select_related("disciplina", "professor").order_by("-data")
+
+    return JsonResponse({
+        "conteudos": [
+            {
+                "id": c.id,
+                "titulo": c.titulo,
+                "descricao": c.descricao,
+                "disciplina": c.disciplina.nome_disciplina if c.disciplina else None,
+                "professor_nome": c.professor.nome_completo if c.professor else None,
+                "data": c.data.isoformat() if c.data else None,
+                "arquivo": c.arquivo.url if c.arquivo else None,
+            }
+            for c in conteudos
+        ]
+    })
+
+
+# ---------- ATIVIDADES ----------
+
+@csrf_exempt
+@require_http_methods(["GET"])
+def atividades_aluno(request):
+    aluno = _aluno_logado()
+    if not aluno:
+        return JsonResponse({"detail": "Não autenticado."}, status=401)
+
+    hoje = date.today()
+    atividades = Atividade.objects.filter(turma=aluno.turma).select_related("disciplina", "professor").order_by("data_entrega")
+
+    resultado = []
+    for a in atividades:
+        status = None
+        if a.data_entrega:
+            status = "atrasado" if a.data_entrega < hoje else "pendente"
+        resultado.append({
+            "id": a.id,
+            "titulo": a.titulo,
+            "descricao": a.descricao,
+            "disciplina": a.disciplina.nome_disciplina if a.disciplina else None,
+            "professor_nome": a.professor.nome_completo if a.professor else None,
+            "data": a.data.isoformat() if a.data else None,
+            "data_entrega": a.data_entrega.isoformat() if a.data_entrega else None,
+            "arquivo": a.arquivo.url if a.arquivo else None,
+            "status": status,
+        })
+
+    return JsonResponse({"atividades": resultado})
+
+
+# ---------- BOLETIM ----------
+
+@csrf_exempt
+@require_http_methods(["GET"])
+def boletim_aluno(request):
+    aluno = _aluno_logado()
+    if not aluno:
+        return JsonResponse({"detail": "Não autenticado."}, status=401)
+
+    notas = Nota.objects.filter(aluno=aluno).select_related("disciplina", "professor").order_by("disciplina__nome_disciplina")
+
+    return JsonResponse({
+        "boletim": [
+            {
+                "disciplina": n.disciplina.nome_disciplina if n.disciplina else None,
+                "professor_nome": n.professor.nome_completo if n.professor else None,
+                "nm1_t1": n.nm1_t1, "nm2_t1": n.nm2_t1, "nm3_t1": n.nm3_t1, "rpt_t1": n.rpt_t1, "mt_t1": n.mt_t1,
+                "nm1_t2": n.nm1_t2, "nm2_t2": n.nm2_t2, "nm3_t2": n.nm3_t2, "rpt_t2": n.rpt_t2, "mt_t2": n.mt_t2,
+                "nm1_t3": n.nm1_t3, "nm2_t3": n.nm2_t3, "nm3_t3": n.nm3_t3, "rpt_t3": n.rpt_t3, "mt_t3": n.mt_t3,
+                "ma": n.ma, "pf": n.pf, "maf": n.maf, "rcf": n.rcf, "tgf": n.tgf, "rf": n.rf,
+            }
+            for n in notas
+        ]
+    })
