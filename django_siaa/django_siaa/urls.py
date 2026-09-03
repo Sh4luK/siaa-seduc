@@ -117,5 +117,7 @@ urlpatterns = [
     path('api/admin/login', app.views.admin_login),
     path('api/admin/auth', app.views.admin_auth),
     path('api/admin/escolas/opcoes', app.views.admin_escolas_opcoes),
+    path('api/admin/coordenadores', app.views.admin_coordenadores),
+    path('api/admin/coordenadores/<int:coordenador_id>', app.views.admin_coordenador_excluir),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
