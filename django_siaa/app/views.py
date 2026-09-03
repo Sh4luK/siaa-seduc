@@ -4740,3 +4740,20 @@ def admin_turmas(request):
     return JsonResponse(resultado, safe=False)
 
 
+@csrf_exempt
+@require_http_methods(["POST"])
+def admin_turma_renomear(request):
+    if not _admin_logado():
+        return JsonResponse({"detail": "Não autenticado."}, status=401)
+
+    body = json.loads(request.body or "{}")
+    nome_atual = (body.get("nome_atual") or "").strip()
+    novo_nome = (body.get("novo_nome") or "").strip()
+
+    if not nome_atual or not novo_nome:
+        return JsonResponse({"detail": "nome_atual e novo_nome são obrigatórios."}, status=400)
+
+    qtd_alunos = Estudante.objects.filter(turma=nome_atual).update(turma=novo_nome)
+    qtd_vinculos = AtravessaPor.objects.filter(turma=nome_atual).update(turma=novo_nome)
+
+    return JsonResponse({"alunos_atualizados": qtd_alunos, "vinculos_atualizados": qtd_vinculos})
