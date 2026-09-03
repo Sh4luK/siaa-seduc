@@ -126,5 +126,12 @@ urlpatterns = [
     path('api/admin/turmas', app.views.admin_turmas),
     path('api/admin/turmas/renomear', app.views.admin_turma_renomear),
     path('api/students/dashboard', app.views.dashboard_aluno),
+    path('api/students/conteudos', app.views.conteudos_aluno),
+    path('api/students/atividades', app.views.atividades_aluno),
+    path('api/students/boletim', app.views.boletim_aluno),
+    path('api/students/horarios', app.views.horarios_aluno),
+    path('api/students/cronograma', app.views.cronograma_aluno),
+    path('api/students/cronograma/<int:estudo_id>/concluir', app.views.cronograma_alternar_concluido),
+    path('api/students/cronograma/<int:estudo_id>', app.views.cronograma_excluir),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
