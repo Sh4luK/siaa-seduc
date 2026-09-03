@@ -4658,3 +4658,43 @@ def admin_professor_excluir(request, professor_id):
 
     professor.delete()
     return JsonResponse({"detail": "Excluído."})
+
+
+
+
+# ---------- ALUNOS ----------
+
+@csrf_exempt
+@require_http_methods(["GET", "POST"])
+def admin_alunos(request):
+    if not _admin_logado():
+        return JsonResponse({"detail": "Não autenticado."}, status=401)
+
+    if request.method == "GET":
+        alunos = Estudante.objects.all().order_by("nome_completo")
+        return JsonResponse([
+            {
+                "id": a.id, "nome_completo": a.nome_completo, "escola": a.escola,
+                "turma": a.turma, "serie": a.serie, "periodo": a.periodo, "curso": a.curso,
+            }
+            for a in alunos
+        ], safe=False)
+
+    body = json.loads(request.body or "{}")
+    campos_obrigatorios = ["nome_completo", "senha", "escola", "modo_de_ensino", "serie", "periodo", "curso", "turma"]
+    faltando = [c for c in campos_obrigatorios if not (body.get(c) or "").strip()]
+    if faltando:
+        return JsonResponse({"detail": f"Campos obrigatórios faltando: {', '.join(faltando)}."}, status=400)
+
+    aluno = Estudante.objects.create(
+        nome_completo=body["nome_completo"].strip(),
+        senha=body["senha"].strip(),
+        escola=body["escola"].strip(),
+        modo_de_ensino=body["modo_de_ensino"].strip(),
+        serie=body["serie"].strip(),
+        periodo=body["periodo"].strip(),
+        curso=body["curso"].strip(),
+        turma=body["turma"].strip(),
+    )
+    return JsonResponse({"id": aluno.id}, status=201)
+
