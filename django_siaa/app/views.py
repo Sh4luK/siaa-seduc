@@ -4613,3 +4613,29 @@ def admin_coordenador_excluir(request, coordenador_id):
 
 
 # ---------- PROFESSORES ----------
+
+
+
+@csrf_exempt
+@require_http_methods(["GET", "POST"])
+def admin_professores(request):
+    if not _admin_logado():
+        return JsonResponse({"detail": "Não autenticado."}, status=401)
+
+    if request.method == "GET":
+        professores = Professor.objects.all().order_by("nome_completo")
+        return JsonResponse([
+            {"id": p.id, "nome_completo": p.nome_completo}
+            for p in professores
+        ], safe=False)
+
+    body = json.loads(request.body or "{}")
+    nome = (body.get("nome_completo") or "").strip()
+    senha = (body.get("senha") or "").strip()
+
+    if not nome or not senha:
+        return JsonResponse({"detail": "nome_completo e senha são obrigatórios."}, status=400)
+
+    professor = Professor.objects.create(nome_completo=nome, senha=senha)
+    return JsonResponse({"id": professor.id}, status=201)
+
