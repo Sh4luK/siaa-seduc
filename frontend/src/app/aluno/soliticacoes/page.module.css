@@ -1,0 +1,229 @@
+.headerRow {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.subtitle {
+  font-size: 0.9rem;
+  color: #5b6b85;
+}
+
+.vazio {
+  font-size: 0.9rem;
+  color: #5b6b85;
+  padding: 1.5rem;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  text-align: center;
+}
+
+.erro {
+  background: rgba(220, 38, 38, 0.06);
+  border: 1px solid rgba(220, 38, 38, 0.25);
+  color: #b91c1c;
+  border-radius: 8px;
+  padding: 0.7rem 0.9rem;
+  font-size: 0.85rem;
+  margin-bottom: 1.25rem;
+}
+
+.novoBotao {
+  background: #0b4f9e;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 0.6rem 1.1rem;
+  font-size: 0.88rem;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.novoBotao:hover {
+  background: #0a2f5c;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
+}
+
+.linhaDupla {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+@media (max-width: 560px) {
+  .linhaDupla {
+    grid-template-columns: 1fr;
+  }
+}
+
+.campo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.label {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #1a2942;
+}
+
+.input {
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 0.6rem 0.8rem;
+  font-size: 0.88rem;
+  font-family: inherit;
+  color: #1a2942;
+  background: #fff;
+}
+
+.input:focus {
+  outline: none;
+  border-color: #0b4f9e;
+}
+
+.dica {
+  font-size: 0.75rem;
+  color: #94a3b8;
+}
+
+.enviarBtn {
+  align-self: flex-start;
+  background: #0b4f9e;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 0.65rem 1.3rem;
+  font-size: 0.88rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.enviarBtn:hover:not(:disabled) {
+  background: #0a2f5c;
+}
+
+.enviarBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.lista {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 1rem 1.1rem;
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
+}
+
+.cardInfo {
+  min-width: 0;
+}
+
+.cardTopo {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.cardNome {
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: #1a2942;
+  margin: 0;
+}
+
+.cardMeta {
+  font-size: 0.8rem;
+  color: #5b6b85;
+  margin: 0.2rem 0 0;
+}
+
+.badgePendente,
+.badgeAprovado,
+.badgeRecusado {
+  flex-shrink: 0;
+  font-size: 0.7rem;
+  font-weight: 600;
+  border-radius: 999px;
+  padding: 0.2rem 0.6rem;
+}
+
+.badgePendente {
+  background: rgba(181, 103, 10, 0.1);
+  color: #b5670a;
+}
+
+.badgeAprovado {
+  background: rgba(21, 128, 61, 0.1);
+  color: #15803d;
+}
+
+.badgeRecusado {
+  background: rgba(220, 38, 38, 0.08);
+  color: #b91c1c;
+}
+
+.excluirBotao {
+  flex-shrink: 0;
+  background: none;
+  border: 1px solid rgba(185, 28, 28, 0.3);
+  color: #b91c1c;
+  border-radius: 8px;
+  padding: 0.4rem 0.75rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.excluirBotao:hover {
+  background: rgba(185, 28, 28, 0.08);
+}
+
+.confirmarExclusao {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+  color: #b91c1c;
+  white-space: nowrap;
+}
+
+.confirmarExclusao button {
+  border: none;
+  background: none;
+  font-weight: 700;
+  cursor: pointer;
+  color: inherit;
+  text-decoration: underline;
+}
