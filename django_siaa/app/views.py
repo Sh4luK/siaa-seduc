@@ -5137,3 +5137,28 @@ def solicitacoes_responsavel_aluno(request):
 
     return JsonResponse({"id": vinculo.id}, status=201)
 
+
+
+@csrf_exempt
+@require_http_methods(["DELETE"])
+def solicitacao_responsavel_excluir(request, vinculo_id):
+    """
+    Remove o vínculo/solicitação. Se ainda estiver PENDENTE, é um cancelamento;
+    se já estiver APROVADO, é uma revogação de acesso do responsável.
+    """
+    aluno = _aluno_logado()
+    if not aluno:
+        return JsonResponse({"detail": "Não autenticado."}, status=401)
+
+    vinculo = VinculoResponsavel.objects.filter(id=vinculo_id, aluno=aluno).select_related("responsavel").first()
+    if not vinculo:
+        return JsonResponse({"detail": "Solicitação não encontrada."}, status=404)
+
+    responsavel = vinculo.responsavel
+    vinculo.delete()
+
+    # Se esse responsável não tem mais nenhum outro vínculo, remove o registro dele também.
+    if not VinculoResponsavel.objects.filter(responsavel=responsavel).exists():
+        responsavel.delete()
+
+    return JsonResponse({"detail": "Removido."})
