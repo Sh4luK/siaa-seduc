@@ -5203,3 +5203,18 @@ def registrar_responsavel(request):
     )
 
     
+
+@csrf_exempt
+def login_responsavel(request):
+    ip = get_ip()
+    nome_completo = request.GET.get("nome_completo", "").strip().upper()
+    senha = request.GET.get("senha", "").strip()
+
+    responsavel = Responsavel.objects.filter(nome_completo=nome_completo, senha=senha).first()
+
+    if responsavel is None:
+        return JsonResponse({"return": False})
+
+    Responsavel.objects.filter(id=responsavel.id).update(ip=ip)
+    return JsonResponse({"return": True})
+
