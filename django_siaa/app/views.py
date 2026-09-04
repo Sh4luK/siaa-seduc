@@ -5856,3 +5856,20 @@ def _coordenador_da_escola_do_aluno(aluno):
             return coordenador
     return None
 
+
+@csrf_exempt
+@require_http_methods(["GET"])
+def mensagem_coordenador_status_responsavel(request, aluno_id):
+    responsavel, aluno, erro = _verificar_acesso_responsavel(request, aluno_id)
+    if erro:
+        return erro
+
+    coordenador = _coordenador_da_escola_do_aluno(aluno)
+    if not coordenador:
+        return JsonResponse({"conversa_id": None})
+
+    conversa = ConversaResponsavelCoordenador.objects.filter(
+        responsavel=responsavel, coordenador=coordenador, aluno=aluno
+    ).first()
+    return JsonResponse({"conversa_id": conversa.id if conversa else None})
+
