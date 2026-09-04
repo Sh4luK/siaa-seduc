@@ -5261,3 +5261,30 @@ def vinculos_responsavel(request):
         ]
     })
 
+
+@csrf_exempt
+@require_http_methods(["POST"])
+def solicitar_vinculo_responsavel(request):
+    responsavel = _responsavel_logado()
+    if not responsavel:
+        return JsonResponse({"detail": "Não autenticado."}, status=401)
+
+    body = json.loads(request.body or "{}")
+    aluno_nome = (body.get("aluno_nome_completo") or "").strip().upper()
+    parentesco = (body.get("parentesco") or "").strip()
+
+    if not aluno_nome or not parentesco:
+        return JsonResponse({"detail": "Informe o nome do aluno e o parentesco."}, status=400)
+
+    aluno = Estudante.objects.filter(nome_completo=aluno_nome).first()
+    if not aluno:
+        return JsonResponse({"detail": "Nenhum aluno encontrado com esse nome completo."}, status=404)
+
+    if VinculoResponsavel.objects.filter(aluno=aluno, responsavel=responsavel).exists():
+        return JsonResponse({"detail": "Você já tem uma solicitação ou vínculo com esse aluno."}, status=400)
+
+    vinculo = VinculoResponsavel.objects.create(
+        aluno=aluno, responsavel=responsavel, parentesco=parentesco, status="PENDENTE",
+    )
+
+    return JsonResponse({"id": vinculo.id}, status=201)
