@@ -134,5 +134,14 @@ urlpatterns = [
     path('api/students/cronograma/<int:estudo_id>/concluir', app.views.cronograma_alternar_concluido),
     path('api/students/cronograma/<int:estudo_id>', app.views.cronograma_excluir),
     path('api/students/frequencia', app.views.frequencia_aluno),
+    path('api/students/solicitacoes', app.views.solicitacoes_responsavel_aluno),
+    path('api/students/solicitacoes/<int:vinculo_id>', app.views.solicitacao_responsavel_excluir),
+    path('api/responsavel/registrar', app.views.registrar_responsavel),
+    path('api/responsavel/login', app.views.login_responsavel),
+    path('api/responsavel/auth', app.views.auth_responsavel),
+    path('api/responsavel/vinculos', app.views.vinculos_responsavel),
+    path('api/responsavel/vinculos/solicitar', app.views.solicitar_vinculo_responsavel),
+    path('api/responsavel/alunos/buscar', app.views.buscar_alunos_para_responsavel),
+    path('api/students/solicitacoes/<int:vinculo_id>/responder', app.views.solicitacao_responsavel_responder),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

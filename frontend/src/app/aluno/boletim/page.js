@@ -94,7 +94,7 @@ export default function BoletimAlunoPage() {
               <i className="ti ti-clipboard-list" aria-hidden="true" />
               Atividades
             </Link>
-            <Link href="/aluno/frequencia">
+            <Link href="/aluno/frequencia" className={layoutStyles.navLink}>
               <i className="ti ti-calendar-stats" aria-hidden="true" />
               Frequência
             </Link>
@@ -109,6 +109,10 @@ export default function BoletimAlunoPage() {
             <Link href="/aluno/horarios" className={layoutStyles.navLink}>
               <i className="ti ti-clock" aria-hidden="true" />
               Horários
+            </Link>
+            <Link href="/aluno/solicitacoes" className={layoutStyles.navLink}>
+              <i className="ti ti-users-group" aria-hidden="true" />
+              Responsáveis
             </Link>
           </nav>
 

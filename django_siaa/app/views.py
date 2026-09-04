@@ -1,5 +1,6 @@
 from urllib.parse import urlparse
 from urllib.parse import unquote
+from django.utils import timezone
 from datetime import date
 import unicodedata
 from django.db.models.functions import Replace
@@ -41,6 +42,8 @@ from django.core.files.storage import default_storage
 from .models import Avaliacao, Questao, Alternativa
 from .models import MensagemChat
 from .models import Conversa
+from .models import VinculoResponsavel
+from .models import Responsavel
 from django.db import models
 import json
 import string
@@ -5090,3 +5093,263 @@ def frequencia_aluno(request):
         "percentual_presenca": percentual_mes,
         "dias": dias,
     })
+
+@csrf_exempt
+@require_http_methods(["GET", "POST"])
+def solicitacoes_responsavel_aluno(request):
+    aluno = _aluno_logado()
+    if not aluno:
+        return JsonResponse({"detail": "Não autenticado."}, status=401)
+
+    if request.method == "GET":
+        vinculos = VinculoResponsavel.objects.filter(aluno=aluno).select_related("responsavel")
+        return JsonResponse({
+            "solicitacoes": [
+                {
+                    "id": v.id,
+                    "responsavel_nome": v.responsavel.nome_completo,
+                    "parentesco": v.parentesco,
+                    "telefone": v.responsavel.telefone,
+                    "status": v.status,
+                    "origem": v.origem,
+                    "data_solicitacao": v.data_solicitacao.isoformat(),
+                }
+                for v in vinculos
+            ]
+        })
+
+    body = json.loads(request.body or "{}")
+    nome_completo = (body.get("nome_completo") or "").strip()
+    parentesco = (body.get("parentesco") or "").strip()
+    cpf = (body.get("cpf") or "").strip()
+    telefone = (body.get("telefone") or "").strip()
+    senha = (body.get("senha") or "").strip()
+
+    if not nome_completo or not parentesco or not senha:
+        return JsonResponse(
+            {"detail": "nome_completo, parentesco e senha são obrigatórios."}, status=400
+        )
+
+    responsavel = Responsavel.objects.create(
+        nome_completo=nome_completo, cpf=cpf, telefone=telefone, senha=senha,
+    )
+    vinculo = VinculoResponsavel.objects.create(
+        aluno=aluno, responsavel=responsavel, parentesco=parentesco, status="PENDENTE", origem="ALUNO",
+    )
+
+    return JsonResponse({"id": vinculo.id}, status=201)
+
+
+
+@csrf_exempt
+@require_http_methods(["DELETE"])
+def solicitacao_responsavel_excluir(request, vinculo_id):
+    """
+    Remove o vínculo/solicitação. Se ainda estiver PENDENTE, é um cancelamento;
+    se já estiver APROVADO, é uma revogação de acesso do responsável.
+    """
+    aluno = _aluno_logado()
+    if not aluno:
+        return JsonResponse({"detail": "Não autenticado."}, status=401)
+
+    vinculo = VinculoResponsavel.objects.filter(id=vinculo_id, aluno=aluno).select_related("responsavel").first()
+    if not vinculo:
+        return JsonResponse({"detail": "Solicitação não encontrada."}, status=404)
+
+    responsavel = vinculo.responsavel
+    vinculo.delete()
+
+    # Se esse responsável não tem mais nenhum outro vínculo, remove o registro dele também.
+    if not VinculoResponsavel.objects.filter(responsavel=responsavel).exists():
+        responsavel.delete()
+
+    return JsonResponse({"detail": "Removido."})
+
+def _responsavel_logado():
+    ip = get_ip()
+    return Responsavel.objects.filter(ip=ip).first()
+
+
+@csrf_exempt
+@require_http_methods(["GET"])
+def buscar_alunos_para_responsavel(request):
+    """
+    Busca alunos pelo nome (parcial) para popular o select de vínculo
+    na tela de registro do responsável. Sem autenticação — o responsável
+    ainda não tem conta nesse momento do fluxo.
+    """
+    termo = request.GET.get("q", "").strip()
+
+    if len(termo) < 3:
+        return JsonResponse({"alunos": []})
+
+    alunos = Estudante.objects.filter(
+        nome_completo__icontains=termo
+    ).order_by("nome_completo")[:15]
+
+    return JsonResponse({
+        "alunos": [
+            {"id": a.id, "nome_completo": a.nome_completo, "turma": a.turma}
+            for a in alunos
+        ]
+    })
+
+@csrf_exempt
+@require_http_methods(["POST"])
+def registrar_responsavel(request):
+    try:
+        body = json.loads(request.body)
+    except json.JSONDecodeError:
+        return JsonResponse({"message": "JSON inválido."}, status=400)
+
+    nome_completo = (body.get("nome_completo") or "").strip().upper()
+    cpf = (body.get("cpf") or "").strip()
+    telefone = (body.get("telefone") or "").strip()
+    senha = (body.get("senha") or "").strip()
+    aluno_id = body.get("aluno_id")
+    parentesco = (body.get("parentesco") or "").strip()
+
+    if not nome_completo or not senha:
+        return JsonResponse({"message": "Nome completo e senha são obrigatórios."}, status=400)
+
+    if aluno_id and not parentesco:
+        return JsonResponse({"message": "Selecione o parentesco com o aluno."}, status=400)
+
+    if cpf:
+        ja_existe = Responsavel.objects.filter(cpf=cpf).exists()
+    else:
+        ja_existe = Responsavel.objects.filter(nome_completo=nome_completo).exists()
+
+    if ja_existe:
+        return JsonResponse(
+            {"message": "Já existe uma conta com esses dados. Se um aluno já te cadastrou como responsável, use a tela de login."},
+            status=400,
+        )
+
+    responsavel = Responsavel.objects.create(
+        nome_completo=nome_completo, cpf=cpf, telefone=telefone, senha=senha,
+    )
+
+    if aluno_id:
+        aluno = Estudante.objects.filter(id=aluno_id).first()
+        if aluno:
+            VinculoResponsavel.objects.create(
+                aluno=aluno, responsavel=responsavel, parentesco=parentesco,
+                status="PENDENTE", origem="RESPONSAVEL",
+            )
+
+    return JsonResponse({"message": "Conta criada com sucesso. Faça login para continuar."})
+
+
+
+@csrf_exempt
+def login_responsavel(request):
+    ip = get_ip()
+    nome_completo = request.GET.get("nome_completo", "").strip().upper()
+    senha = request.GET.get("senha", "").strip()
+
+    responsavel = Responsavel.objects.filter(nome_completo=nome_completo, senha=senha).first()
+
+    if responsavel is None:
+        return JsonResponse({"return": False})
+
+    Responsavel.objects.filter(id=responsavel.id).update(ip=ip)
+    return JsonResponse({"return": True})
+
+
+@csrf_exempt
+def auth_responsavel(request):
+    ip = get_ip()
+    responsavel = Responsavel.objects.filter(ip=ip).first()
+
+    if not responsavel:
+        return JsonResponse({"return": False})
+
+    return JsonResponse({
+        "return": True,
+        "responsavel": {
+            "id": responsavel.id,
+            "nome_completo": responsavel.nome_completo,
+            "telefone": responsavel.telefone,
+        },
+    })
+
+
+
+@csrf_exempt
+@require_http_methods(["GET"])
+def vinculos_responsavel(request):
+    responsavel = _responsavel_logado()
+    if not responsavel:
+        return JsonResponse({"detail": "Não autenticado."}, status=401)
+
+    vinculos = VinculoResponsavel.objects.filter(responsavel=responsavel).select_related("aluno")
+
+    return JsonResponse({
+        "vinculos": [
+            {
+                "id": v.id,
+                "aluno_nome": v.aluno.nome_completo,
+                "aluno_turma": v.aluno.turma,
+                "parentesco": v.parentesco,
+                "status": v.status,
+                "data_solicitacao": v.data_solicitacao.isoformat(),
+            }
+            for v in vinculos
+        ]
+    })
+
+
+@csrf_exempt
+@require_http_methods(["POST"])
+def solicitar_vinculo_responsavel(request):
+    responsavel = _responsavel_logado()
+    if not responsavel:
+        return JsonResponse({"detail": "Não autenticado."}, status=401)
+
+    body = json.loads(request.body or "{}")
+    aluno_nome = (body.get("aluno_nome_completo") or "").strip().upper()
+    parentesco = (body.get("parentesco") or "").strip()
+
+    if not aluno_nome or not parentesco:
+        return JsonResponse({"detail": "Informe o nome do aluno e o parentesco."}, status=400)
+
+    aluno = Estudante.objects.filter(nome_completo=aluno_nome).first()
+    if not aluno:
+        return JsonResponse({"detail": "Nenhum aluno encontrado com esse nome completo."}, status=404)
+
+    if VinculoResponsavel.objects.filter(aluno=aluno, responsavel=responsavel).exists():
+        return JsonResponse({"detail": "Você já tem uma solicitação ou vínculo com esse aluno."}, status=400)
+
+    vinculo = VinculoResponsavel.objects.create(
+        aluno=aluno, responsavel=responsavel, parentesco=parentesco, status="PENDENTE", origem="RESPONSAVEL",
+    )
+
+    return JsonResponse({"id": vinculo.id}, status=201)
+
+@csrf_exempt
+@require_http_methods(["POST"])
+def solicitacao_responsavel_responder(request, vinculo_id):
+    """Aluno aprova ou recusa uma solicitação de vínculo iniciada pelo responsável."""
+    aluno = _aluno_logado()
+    if not aluno:
+        return JsonResponse({"detail": "Não autenticado."}, status=401)
+
+    vinculo = VinculoResponsavel.objects.filter(id=vinculo_id, aluno=aluno).first()
+    if not vinculo:
+        return JsonResponse({"detail": "Solicitação não encontrada."}, status=404)
+
+    if vinculo.status != "PENDENTE":
+        return JsonResponse({"detail": "Essa solicitação já foi respondida."}, status=400)
+
+    body = json.loads(request.body or "{}")
+    decisao = body.get("decisao")  # "APROVADO" ou "RECUSADO"
+
+    if decisao not in ("APROVADO", "RECUSADO"):
+        return JsonResponse({"detail": "decisao deve ser 'APROVADO' ou 'RECUSADO'."}, status=400)
+
+    vinculo.status = decisao
+    vinculo.data_resposta = timezone.now()
+    vinculo.save(update_fields=["status", "data_resposta"])
+
+    return JsonResponse({"status": vinculo.status})

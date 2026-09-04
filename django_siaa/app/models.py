@@ -481,3 +481,43 @@ class EstudoProgramado(models.Model):
 
     def __str__(self):
         return f"{self.titulo} — {self.aluno}"
+
+
+class Responsavel(models.Model):
+    nome_completo = models.CharField(max_length=255)
+    cpf = models.CharField(max_length=20, blank=True, default="")
+    telefone = models.CharField(max_length=30, blank=True, default="")
+    senha = models.CharField(max_length=255, blank=True, default="")
+    ip = models.CharField(max_length=45, null=True, blank=True)
+
+    def __str__(self):
+        return self.nome_completo
+
+
+class VinculoResponsavel(models.Model):
+    STATUS_CHOICES = [
+        ("PENDENTE", "Pendente"),
+        ("APROVADO", "Aprovado"),
+        ("RECUSADO", "Recusado"),
+    ]
+
+    ORIGEM_CHOICES = [
+        ("ALUNO", "Criado pelo aluno"),
+        ("RESPONSAVEL", "Solicitado pelo responsável"),
+    ]
+
+    origem = models.CharField(max_length=15, choices=ORIGEM_CHOICES, default="ALUNO")
+
+    aluno = models.ForeignKey('Estudante', on_delete=models.CASCADE, related_name='vinculos_responsavel')
+    responsavel = models.ForeignKey(Responsavel, on_delete=models.CASCADE, related_name='vinculos_aluno')
+    parentesco = models.CharField(max_length=100, blank=True, default="")
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default="PENDENTE")
+    data_solicitacao = models.DateTimeField(auto_now_add=True)
+    data_resposta = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        unique_together = ('aluno', 'responsavel')
+        ordering = ['-data_solicitacao']
+
+    def __str__(self):
+        return f"{self.responsavel} -> {self.aluno} ({self.status})"
