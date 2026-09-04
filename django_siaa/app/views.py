@@ -5162,3 +5162,44 @@ def solicitacao_responsavel_excluir(request, vinculo_id):
         responsavel.delete()
 
     return JsonResponse({"detail": "Removido."})
+
+def _responsavel_logado():
+    ip = get_ip()
+    return Responsavel.objects.filter(ip=ip).first()
+
+
+@csrf_exempt
+def registrar_responsavel(request):
+    if request.method != "POST":
+        return JsonResponse({"message": "Método não permitido."}, status=405)
+
+    try:
+        body = json.loads(request.body)
+    except json.JSONDecodeError:
+        return JsonResponse({"message": "JSON inválido."}, status=400)
+
+    nome_completo = (body.get("nome_completo") or "").strip().upper()
+    cpf = (body.get("cpf") or "").strip()
+    telefone = (body.get("telefone") or "").strip()
+    senha = (body.get("senha") or "").strip()
+
+    if not nome_completo or not senha:
+        return JsonResponse({"message": "Nome completo e senha são obrigatórios."}, status=400)
+
+    ja_existe = False
+    if cpf:
+        ja_existe = Responsavel.objects.filter(cpf=cpf).exists()
+    else:
+        ja_existe = Responsavel.objects.filter(nome_completo=nome_completo).exists()
+
+    if ja_existe:
+        return JsonResponse(
+            {"message": "Já existe uma conta com esses dados. Se um aluno já te cadastrou como responsável, use a tela de login."},
+            status=400
+        )
+
+    Responsavel.objects.create(
+        nome_completo=nome_completo, cpf=cpf, telefone=telefone, senha=senha,
+    )
+
+    
