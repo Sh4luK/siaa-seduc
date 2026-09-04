@@ -136,5 +136,10 @@ urlpatterns = [
     path('api/students/frequencia', app.views.frequencia_aluno),
     path('api/students/solicitacoes', app.views.solicitacoes_responsavel_aluno),
     path('api/students/solicitacoes/<int:vinculo_id>', app.views.solicitacao_responsavel_excluir),
+    path('api/responsavel/registrar', app.views.registrar_responsavel),
+    path('api/responsavel/login', app.views.login_responsavel),
+    path('api/responsavel/auth', app.views.auth_responsavel),
+    path('api/responsavel/vinculos', app.views.vinculos_responsavel),
+    path('api/responsavel/vinculos/solicitar', app.views.solicitar_vinculo_responsavel),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
