@@ -94,6 +94,10 @@ export default function BoletimAlunoPage() {
               <i className="ti ti-clipboard-list" aria-hidden="true" />
               Atividades
             </Link>
+            <Link href="/aluno/frequencia">
+              <i className="ti ti-calendar-stats" aria-hidden="true" />
+              Frequência
+            </Link>
             <Link href="/aluno/boletim" className={layoutStyles.navLinkActive}>
               <i className="ti ti-report" aria-hidden="true" />
               Boletim
