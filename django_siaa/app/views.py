@@ -5605,3 +5605,29 @@ def frequencia_aluno_responsavel(request, aluno_id):
         "dias": dias,
     })
 
+
+
+@csrf_exempt
+@require_http_methods(["GET"])
+def horario_aluno_responsavel(request, aluno_id):
+    responsavel, aluno, erro = _verificar_acesso_responsavel(request, aluno_id)
+    if erro:
+        return erro
+
+    vinculos = buscar_atravessapor_por_turma(aluno.turma)
+    horarios = HorarioAula.objects.filter(turma__in=vinculos).select_related("turma", "turma__professor")
+
+    resultado = []
+    for h in horarios:
+        disciplina = resolver_disciplina_da_turma(h.turma)
+        resultado.append({
+            "id": h.id,
+            "dia_semana": h.dia_semana,
+            "hora_inicio": h.hora_inicio.strftime("%H:%M") if h.hora_inicio else None,
+            "hora_fim": h.hora_fim.strftime("%H:%M") if h.hora_fim else None,
+            "disciplina": disciplina.nome_disciplina if disciplina else h.turma.disciplina_lecionada,
+            "professor_nome": h.turma.professor.nome_completo if h.turma.professor else None,
+        })
+
+    return JsonResponse({"aluno": {"nome_completo": aluno.nome_completo, "turma": aluno.turma}, "horarios": resultado})
+
