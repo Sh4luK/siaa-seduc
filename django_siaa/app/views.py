@@ -5746,3 +5746,17 @@ def calendario_aluno_responsavel(request, aluno_id):
         })
 
     return JsonResponse({"aluno": {"nome_completo": aluno.nome_completo, "turma": aluno.turma}, "eventos": resultado})
+
+
+@csrf_exempt
+@require_http_methods(["GET"])
+def opcoes_mensagem_professor_responsavel(request, aluno_id):
+    responsavel, aluno, erro = _verificar_acesso_responsavel(request, aluno_id)
+    if erro:
+        return erro
+
+    vinculos = buscar_atravessapor_por_turma(aluno.turma).select_related("professor")
+    professores = {v.professor_id: v.professor.nome_completo for v in vinculos}
+
+    return JsonResponse({"professores": [{"id": pid, "nome_completo": nome} for pid, nome in professores.items()]})
+
