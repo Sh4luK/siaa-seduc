@@ -5276,6 +5276,30 @@ def auth_responsavel(request):
 
 
 
+# @csrf_exempt
+# @require_http_methods(["GET"])
+# def vinculos_responsavel(request):
+#     responsavel = _responsavel_logado()
+#     if not responsavel:
+#         return JsonResponse({"detail": "Não autenticado."}, status=401)
+
+#     vinculos = VinculoResponsavel.objects.filter(responsavel=responsavel).select_related("aluno")
+
+#     return JsonResponse({
+#         "vinculos": [
+#             {
+#                 "id": v.id,
+#                 "aluno_nome": v.aluno.nome_completo,
+#                 "aluno_turma": v.aluno.turma,
+#                 "parentesco": v.parentesco,
+#                 "status": v.status,
+#                 "data_solicitacao": v.data_solicitacao.isoformat(),
+#             }
+#             for v in vinculos
+#         ]
+#     })
+
+
 @csrf_exempt
 @require_http_methods(["GET"])
 def vinculos_responsavel(request):
@@ -5289,6 +5313,7 @@ def vinculos_responsavel(request):
         "vinculos": [
             {
                 "id": v.id,
+                "aluno_id": v.aluno_id,
                 "aluno_nome": v.aluno.nome_completo,
                 "aluno_turma": v.aluno.turma,
                 "parentesco": v.parentesco,
