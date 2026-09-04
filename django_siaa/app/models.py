@@ -545,3 +545,15 @@ class MensagemChatResponsavelProfessor(models.Model):
     class Meta:
         ordering = ['data_envio']
 
+
+class ConversaResponsavelCoordenador(models.Model):
+    responsavel = models.ForeignKey(Responsavel, on_delete=models.CASCADE, related_name='conversas_coordenador')
+    coordenador = models.ForeignKey(Coordenador, on_delete=models.CASCADE, related_name='conversas_responsaveis')
+    aluno = models.ForeignKey(Estudante, on_delete=models.CASCADE, related_name='conversas_responsavel_coordenador')
+    data_criacao = models.DateTimeField(auto_now_add=True)
+    ultima_atualizacao = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        unique_together = ('responsavel', 'coordenador', 'aluno')
+
+
