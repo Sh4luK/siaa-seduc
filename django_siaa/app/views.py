@@ -5689,3 +5689,26 @@ def _avaliacoes_por_turma(nome_turma):
         turma_normalizada=Replace("turma", Value(" "), Value(""))
     ).filter(turma_normalizada__iexact=nome_normalizado)
 
+
+@csrf_exempt
+@require_http_methods(["GET"])
+def avaliacoes_aluno_responsavel(request, aluno_id):
+    responsavel, aluno, erro = _verificar_acesso_responsavel(request, aluno_id)
+    if erro:
+        return erro
+
+    avaliacoes = _avaliacoes_por_turma(aluno.turma).select_related("professor", "disciplina").order_by("-data")
+
+    return JsonResponse({
+        "aluno": {"nome_completo": aluno.nome_completo, "turma": aluno.turma},
+        "avaliacoes": [
+            {
+                "id": a.id, "titulo": a.titulo,
+                "disciplina": a.disciplina.nome_disciplina if a.disciplina else None,
+                "professor": a.professor.nome_completo if a.professor else None,
+                "data": a.data.isoformat(),
+            }
+            for a in avaliacoes
+        ]
+    })
+
