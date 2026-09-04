@@ -1,0 +1,238 @@
+.subtitle {
+  font-size: 0.9rem;
+  color: #5b6b85;
+}
+
+.erro {
+  background: rgba(220, 38, 38, 0.06);
+  border: 1px solid rgba(220, 38, 38, 0.25);
+  color: #b91c1c;
+  border-radius: 8px;
+  padding: 0.7rem 0.9rem;
+  font-size: 0.85rem;
+  margin-bottom: 1.25rem;
+}
+
+.resumoRow {
+  display: flex;
+  gap: 0.9rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.5rem;
+}
+
+.resumoCard {
+  flex: 1;
+  min-width: 130px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 1rem 1.1rem;
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
+}
+
+.resumoValor {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #1a2942;
+}
+
+.resumoVerde .resumoValor {
+  color: #15803d;
+}
+
+.resumoVermelho .resumoValor {
+  color: #b91c1c;
+}
+
+.resumoLabel {
+  font-size: 0.78rem;
+  color: #5b6b85;
+}
+
+.calendarioHeader {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.navBtn {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #0b4f9e;
+  cursor: pointer;
+}
+
+.navBtn:hover {
+  border-color: #0b4f9e;
+}
+
+.mesAtual {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1a2942;
+  min-width: 160px;
+  text-align: center;
+}
+
+.calendarioWrapper {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 1.25rem;
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
+  margin-bottom: 1.25rem;
+}
+
+.diasSemanaHeader {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  margin-bottom: 0.5rem;
+}
+
+.diaSemanaLabel {
+  text-align: center;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #94a3b8;
+  text-transform: uppercase;
+}
+
+.grade {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0.35rem;
+}
+
+.celulaVazia {
+  aspect-ratio: 1;
+}
+
+.celulaDia {
+  aspect-ratio: 1;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  background: #fff;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #1a2942;
+  cursor: default;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.celulaDia:disabled {
+  color: #cbd5e1;
+  cursor: default;
+}
+
+.celulaSelecionada {
+  outline: 2px solid #0b4f9e;
+  outline-offset: 1px;
+}
+
+.diaPresente {
+  background: rgba(21, 128, 61, 0.1);
+  border-color: rgba(21, 128, 61, 0.3);
+  color: #15803d;
+  cursor: pointer;
+}
+
+.diaFaltaParcial {
+  background: rgba(181, 103, 10, 0.1);
+  border-color: rgba(181, 103, 10, 0.3);
+  color: #b5670a;
+  cursor: pointer;
+}
+
+.diaFalta {
+  background: rgba(185, 28, 28, 0.08);
+  border-color: rgba(185, 28, 28, 0.3);
+  color: #b91c1c;
+  cursor: pointer;
+}
+
+.legenda {
+  display: flex;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+  margin-top: 1rem;
+  padding-top: 0.85rem;
+  border-top: 1px solid #f1f5f9;
+}
+
+.legendaItem {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.78rem;
+  color: #5b6b85;
+}
+
+.legendaBolinha {
+  width: 12px;
+  height: 12px;
+  border-radius: 4px;
+  display: inline-block;
+}
+
+.detalheDia {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 1.1rem 1.25rem;
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
+}
+
+.detalheHeader {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #1a2942;
+  margin-bottom: 0.75rem;
+}
+
+.detalheLista {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.detalheItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  color: #1a2942;
+}
+
+.badgePresente,
+.badgeFalta {
+  font-size: 0.72rem;
+  font-weight: 600;
+  border-radius: 999px;
+  padding: 0.2rem 0.6rem;
+}
+
+.badgePresente {
+  background: rgba(21, 128, 61, 0.1);
+  color: #15803d;
+}
+
+.badgeFalta {
+  background: rgba(185, 28, 28, 0.08);
+  color: #b91c1c;
+}
