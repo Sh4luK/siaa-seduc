@@ -7,6 +7,29 @@ import styles from "./page.module.css";
 
 const API_BASE = "https://obscure-happiness-v67rpjq7p96vfxj4g-8000.app.github.dev";
 
+function TabsResponsavel({ alunoId, ativa }) {
+  const abas = [
+    { key: "painel", label: "Painel", href: `/responsavel/${alunoId}` },
+    { key: "boletim", label: "Boletim", href: `/responsavel/${alunoId}/boletim` },
+    { key: "frequencia", label: "Frequência", href: `/responsavel/${alunoId}/frequencia` },
+    { key: "horario", label: "Horário", href: `/responsavel/${alunoId}/horario` },
+    { key: "mensagem", label: "Mensagens", href: `/responsavel/${alunoId}/mensagem` },
+    { key: "comunicados", label: "Comunicados", href: `/responsavel/${alunoId}/comunicados` },
+    { key: "advertencias", label: "Advertências", href: `/responsavel/${alunoId}/advertencias` },
+    { key: "avaliacoes", label: "Avaliações", href: `/responsavel/${alunoId}/avaliacoes` },
+    { key: "calendario", label: "Calendário", href: `/responsavel/${alunoId}/calendario` },
+  ];
+  return (
+    <div className={styles.tabsRow}>
+      {abas.map((aba) => (
+        <Link key={aba.key} href={aba.href} className={ativa === aba.key ? styles.tabLinkActive : styles.tabLink}>
+          {aba.label}
+        </Link>
+      ))}
+    </div>
+  );
+}
+
 function formatarData(dataISO) {
   if (!dataISO) return "";
   const [ano, mes, dia] = dataISO.split("-");
@@ -80,6 +103,8 @@ export default function DashboardAlunoResponsavelPage() {
       <div className={styles.topBar}>
         Governo do Estado do Piauí — Secretaria de Estado da Educação
       </div>
+
+      <TabsResponsavel alunoId={alunoId} ativa="painel" />
 
       <div className={styles.wrapper}>
         <Link href="/responsavel" className={styles.voltarLink}>← Painel</Link>
