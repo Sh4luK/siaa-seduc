@@ -5937,3 +5937,30 @@ def mensagem_conversa_coordenador_responsavel(request, aluno_id, conversa_id):
         "id": mensagem.id, "remetente_tipo": mensagem.remetente_tipo,
         "conteudo": mensagem.conteudo, "data_envio": mensagem.data_envio.isoformat(),
     }, status=201)
+
+
+@csrf_exempt
+@require_http_methods(["GET"])
+def mensagens_list_professor_responsaveis(request):
+    professor = _professor_logado()
+    if not professor:
+        return JsonResponse({"detail": "Não autenticado."}, status=401)
+
+    conversas = (
+        ConversaResponsavelProfessor.objects.filter(professor=professor)
+        .select_related("responsavel", "aluno")
+        .order_by("-ultima_atualizacao")
+    )
+    resultado = []
+    for c in conversas:
+        ultima = c.mensagens.last()
+        nao_lidas = c.mensagens.filter(remetente_tipo="RESPONSAVEL", lida_professor=False).count()
+        resultado.append({
+            "id": c.id,
+            "responsavel_nome": c.responsavel.nome_completo,
+            "aluno_nome": c.aluno.nome_completo,
+            "ultima_mensagem": ultima.conteudo if ultima else None,
+            "ultima_atualizacao": c.ultima_atualizacao.isoformat(),
+            "nao_lidas": nao_lidas,
+        })
+    return JsonResponse(resultado, safe=False)
