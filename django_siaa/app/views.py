@@ -5169,6 +5169,30 @@ def _responsavel_logado():
 
 
 @csrf_exempt
+@require_http_methods(["GET"])
+def buscar_alunos_para_responsavel(request):
+    """
+    Busca alunos pelo nome (parcial) para popular o select de vínculo
+    na tela de registro do responsável. Sem autenticação — o responsável
+    ainda não tem conta nesse momento do fluxo.
+    """
+    termo = request.GET.get("q", "").strip()
+
+    if len(termo) < 3:
+        return JsonResponse({"alunos": []})
+
+    alunos = Estudante.objects.filter(
+        nome_completo__icontains=termo
+    ).order_by("nome_completo")[:15]
+
+    return JsonResponse({
+        "alunos": [
+            {"id": a.id, "nome_completo": a.nome_completo, "turma": a.turma}
+            for a in alunos
+        ]
+    })
+
+@csrf_exempt
 def registrar_responsavel(request):
     if request.method != "POST":
         return JsonResponse({"message": "Método não permitido."}, status=405)
