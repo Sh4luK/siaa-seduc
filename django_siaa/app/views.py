@@ -4781,78 +4781,74 @@ def _aluno_logado():
 @csrf_exempt
 @require_http_methods(["GET"])
 def dashboard_aluno(request):
-    aluno = _aluno_logado()  # supondo que já existe uma função equivalente a _professor_logado()/_coordenador_logado()
+    aluno = _aluno_logado()
     if not aluno:
         return JsonResponse({"detail": "Não autenticado."}, status=401)
 
-    # Média geral — usa MAF quando existe, senão MA
-    notas = Nota.objects.filter(aluno=aluno)
-    medias = [n.maf if n.maf is not None else n.ma for n in notas if (n.maf is not None or n.ma is not None)]
-    media_geral = round(sum(medias) / len(medias), 1) if medias else None
+    # --- Média geral por disciplina (a partir de Nota) ---
+    notas = Nota.objects.filter(aluno=aluno).select_related("disciplina")
 
-    # Frequência — % de presença no total de registros
+    medias_por_disciplina = []
+    for n in notas:
+        media = n.maf if n.maf is not None else n.ma
+        if media is not None:
+            medias_por_disciplina.append({
+                "disciplina": n.disciplina.nome_disciplina if n.disciplina else None,
+                "media": float(media),
+            })
+
+    media_geral = None
+    if medias_por_disciplina:
+        media_geral = round(
+            sum(m["media"] for m in medias_por_disciplina) / len(medias_por_disciplina), 1
+        )
+
+    # --- Atenção necessária: disciplinas com média (MAF/MA) abaixo de 6 ---
+    atencao_necessaria = [
+        {"disciplina": m["disciplina"], "media": m["media"]}
+        for m in medias_por_disciplina
+        if m["media"] < 6
+    ]
+
+    # --- Frequência acumulada — critério Pé-de-Meia (mínimo 80%) ---
     frequencias = Frequencia.objects.filter(aluno=aluno)
     total_freq = frequencias.count()
     presentes = frequencias.filter(presente=True).count()
-    frequencia_percentual = round((presentes / total_freq) * 100) if total_freq else None
+    frequencia_percentual = round((presentes / total_freq) * 100, 1) if total_freq else None
+    frequencia_baixa_pe_de_meia = frequencia_percentual is not None and frequencia_percentual < 80
 
-    vinculos_aluno = AtravessaPor.objects.filter(turma=aluno.turma)
-    # Conteúdos disponíveis pra turma do aluno
-    total_conteudos = Conteudo.objects.filter(turma__in=vinculos_aluno).count()
-
-    # Atividades da turma do aluno — pendentes/atrasadas por data (sem model de entrega ainda)
+    # --- Atividades da turma do aluno (via vínculo normalizado) ---
+    vinculos_aluno = buscar_atravessapor_por_turma(aluno.turma)
     hoje = date.today()
-    atividades = Atividade.objects.filter(turma__in=vinculos_aluno).order_by("data_entrega")
-    pendentes = atividades.filter(data_entrega__gte=hoje)
-    atrasadas = atividades.filter(data_entrega__lt=hoje)
-    total_pendentes = pendentes.count() + atrasadas.count()
+    atividades = Atividade.objects.filter(turma__in=vinculos_aluno).select_related("disciplina")
 
-    proximas_entregas = []
-    for a in list(atrasadas.order_by("-data_entrega")[:3]) + list(pendentes[:3]):
-        proximas_entregas.append({
+    pendentes_qs = atividades.filter(data_entrega__gte=hoje).order_by("data_entrega")
+    atrasadas_qs = atividades.filter(data_entrega__lt=hoje)
+    total_pendencias = pendentes_qs.count() + atrasadas_qs.count()
+
+    # "Próximas entregas" mostra só as pendentes de verdade (data futura), não as atrasadas
+    proximas_entregas = [
+        {
             "titulo": a.titulo,
             "disciplina": a.disciplina.nome_disciplina if a.disciplina else None,
             "data_entrega": a.data_entrega.isoformat() if a.data_entrega else None,
-            "status": "atrasado" if a.data_entrega and a.data_entrega < hoje else "pendente",
-        })
-    proximas_entregas = proximas_entregas[:3]
+        }
+        for a in pendentes_qs[:5]
+    ]
 
-    # Atenção necessária — médias por disciplina abaixo de 6, ou frequência por disciplina abaixo de 90%
-    atencao = []
-    notas_por_disciplina = notas.values("disciplina__nome_disciplina").annotate(media=Avg("maf"))
-    for n in notas_por_disciplina:
-        if n["media"] is not None and n["media"] < 6:
-            atencao.append({
-                "disciplina": n["disciplina__nome_disciplina"],
-                "tipo": "media",
-                "valor": round(n["media"], 1),
-            })
-
-    freq_por_disciplina = (
-        frequencias.values("disciplina__nome_disciplina")
-        .annotate(total=models.Count("id"), presentes=models.Count("id", filter=models.Q(presente=True)))
-    )
-    for f in freq_por_disciplina:
-        if f["total"]:
-            pct = round((f["presentes"] / f["total"]) * 100)
-            if pct < 90:
-                atencao.append({
-                    "disciplina": f["disciplina__nome_disciplina"],
-                    "tipo": "frequencia",
-                    "valor": pct,
-                })
+    # --- Total de conteúdos disponíveis pra turma ---
+    total_conteudos = Conteudo.objects.filter(turma__in=vinculos_aluno).count()
 
     return JsonResponse({
-        "total_pendentes": total_pendentes,
         "media_geral": media_geral,
+        "total_pendencias": total_pendencias,
         "frequencia_percentual": frequencia_percentual,
+        "frequencia_baixa_pe_de_meia": frequencia_baixa_pe_de_meia,
         "total_conteudos": total_conteudos,
-        "atencao_necessaria": atencao[:6],
+        "atencao_necessaria": atencao_necessaria[:6],
         "proximas_entregas": proximas_entregas,
     })
 
-
-from datetime import date
 
 def _aluno_logado():
     ip = get_ip()
@@ -5038,3 +5034,4 @@ def cronograma_excluir(request, estudo_id):
 
     estudo.delete()
     return JsonResponse({"detail": "Excluído."})
+
