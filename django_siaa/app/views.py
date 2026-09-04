@@ -1,5 +1,6 @@
 from urllib.parse import urlparse
 from urllib.parse import unquote
+from django.utils import timezone
 from datetime import date
 import unicodedata
 from django.db.models.functions import Replace
@@ -5110,6 +5111,7 @@ def solicitacoes_responsavel_aluno(request):
                     "parentesco": v.parentesco,
                     "telefone": v.responsavel.telefone,
                     "status": v.status,
+                    "origem": v.origem,
                     "data_solicitacao": v.data_solicitacao.isoformat(),
                 }
                 for v in vinculos
@@ -5132,7 +5134,7 @@ def solicitacoes_responsavel_aluno(request):
         nome_completo=nome_completo, cpf=cpf, telefone=telefone, senha=senha,
     )
     vinculo = VinculoResponsavel.objects.create(
-        aluno=aluno, responsavel=responsavel, parentesco=parentesco, status="PENDENTE",
+        aluno=aluno, responsavel=responsavel, parentesco=parentesco, status="PENDENTE", origem="ALUNO",
     )
 
     return JsonResponse({"id": vinculo.id}, status=201)
@@ -5320,7 +5322,34 @@ def solicitar_vinculo_responsavel(request):
         return JsonResponse({"detail": "Você já tem uma solicitação ou vínculo com esse aluno."}, status=400)
 
     vinculo = VinculoResponsavel.objects.create(
-        aluno=aluno, responsavel=responsavel, parentesco=parentesco, status="PENDENTE",
+        aluno=aluno, responsavel=responsavel, parentesco=parentesco, status="PENDENTE", origem="RESPONSAVEL",
     )
 
     return JsonResponse({"id": vinculo.id}, status=201)
+
+@csrf_exempt
+@require_http_methods(["POST"])
+def solicitacao_responsavel_responder(request, vinculo_id):
+    """Aluno aprova ou recusa uma solicitação de vínculo iniciada pelo responsável."""
+    aluno = _aluno_logado()
+    if not aluno:
+        return JsonResponse({"detail": "Não autenticado."}, status=401)
+
+    vinculo = VinculoResponsavel.objects.filter(id=vinculo_id, aluno=aluno).first()
+    if not vinculo:
+        return JsonResponse({"detail": "Solicitação não encontrada."}, status=404)
+
+    if vinculo.status != "PENDENTE":
+        return JsonResponse({"detail": "Essa solicitação já foi respondida."}, status=400)
+
+    body = json.loads(request.body or "{}")
+    decisao = body.get("decisao")  # "APROVADO" ou "RECUSADO"
+
+    if decisao not in ("APROVADO", "RECUSADO"):
+        return JsonResponse({"detail": "decisao deve ser 'APROVADO' ou 'RECUSADO'."}, status=400)
+
+    vinculo.status = decisao
+    vinculo.data_resposta = timezone.now()
+    vinculo.save(update_fields=["status", "data_resposta"])
+
+    return JsonResponse({"status": vinculo.status})
