@@ -5873,3 +5873,28 @@ def mensagem_coordenador_status_responsavel(request, aluno_id):
     ).first()
     return JsonResponse({"conversa_id": conversa.id if conversa else None})
 
+
+@csrf_exempt
+@require_http_methods(["POST"])
+def mensagem_coordenador_responsavel_enviar(request, aluno_id):
+    responsavel, aluno, erro = _verificar_acesso_responsavel(request, aluno_id)
+    if erro:
+        return erro
+
+    coordenador = _coordenador_da_escola_do_aluno(aluno)
+    if not coordenador:
+        return JsonResponse({"detail": "Coordenação da escola do aluno não encontrada."}, status=404)
+
+    body = json.loads(request.body or "{}")
+    conteudo = (body.get("conteudo") or "").strip()
+    if not conteudo:
+        return JsonResponse({"detail": "conteudo é obrigatório."}, status=400)
+
+    conversa, _ = ConversaResponsavelCoordenador.objects.get_or_create(responsavel=responsavel, coordenador=coordenador, aluno=aluno)
+    MensagemChatResponsavelCoordenador.objects.create(
+        conversa=conversa, remetente_tipo="RESPONSAVEL", conteudo=conteudo, lida_responsavel=True,
+    )
+    conversa.save()
+
+    return JsonResponse({"conversa_id": conversa.id}, status=201)
+
