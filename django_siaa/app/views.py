@@ -5515,3 +5515,19 @@ def dashboard_aluno_responsavel(request, aluno_id):
     }
 
     return JsonResponse(dados)
+
+
+def _verificar_acesso_responsavel(request, aluno_id):
+    """Retorna (responsavel, aluno, None) se aprovado, ou (None, None, JsonResponse_erro)."""
+    responsavel = _responsavel_logado()
+    if not responsavel:
+        return None, None, JsonResponse({"detail": "Não autenticado."}, status=401)
+
+    vinculo = VinculoResponsavel.objects.filter(
+        responsavel=responsavel, aluno_id=aluno_id, status="APROVADO"
+    ).select_related("aluno").first()
+
+    if not vinculo:
+        return None, None, JsonResponse({"detail": "Você não tem acesso aprovado a este aluno."}, status=403)
+
+    return responsavel, vinculo.aluno, None
