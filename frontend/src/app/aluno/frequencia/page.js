@@ -166,6 +166,10 @@ export default function FrequenciaAlunoPage() {
               <i className="ti ti-clock" aria-hidden="true" />
               Horários
             </Link>
+            <Link href="/aluno/solicitacoes" className={layoutStyles.navLink}>
+              <i className="ti ti-users-group" aria-hidden="true" />
+              Responsáveis
+            </Link>
           </nav>
 
           <div className={layoutStyles.sidebarFooter}>
@@ -254,9 +258,8 @@ export default function FrequenciaAlunoPage() {
                     return (
                       <button
                         key={c.dataStr}
-                        className={`${styles.celulaDia} ${classeStatus} ${
-                          diaSelecionado === c.dataStr ? styles.celulaSelecionada : ""
-                        }`}
+                        className={`${styles.celulaDia} ${classeStatus} ${diaSelecionado === c.dataStr ? styles.celulaSelecionada : ""
+                          }`}
                         onClick={() => c.info && setDiaSelecionado(c.dataStr)}
                         disabled={!c.info}
                       >
