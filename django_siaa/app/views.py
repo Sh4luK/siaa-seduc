@@ -5964,3 +5964,51 @@ def mensagens_list_professor_responsaveis(request):
             "nao_lidas": nao_lidas,
         })
     return JsonResponse(resultado, safe=False)
+
+
+
+
+@csrf_exempt
+@require_http_methods(["GET", "POST"])
+def mensagem_conversa_professor_responsavel_detalhe(request, conversa_id):
+    professor = _professor_logado()
+    if not professor:
+        return JsonResponse({"detail": "Não autenticado."}, status=401)
+
+    conversa = ConversaResponsavelProfessor.objects.filter(
+        id=conversa_id, professor=professor
+    ).select_related("responsavel", "aluno").first()
+    if not conversa:
+        return JsonResponse({"detail": "Conversa não encontrada."}, status=404)
+
+    if request.method == "GET":
+        conversa.mensagens.filter(remetente_tipo="RESPONSAVEL", lida_professor=False).update(lida_professor=True)
+        mensagens = [
+            {"id": m.id, "remetente_tipo": m.remetente_tipo, "conteudo": m.conteudo, "data_envio": m.data_envio.isoformat()}
+            for m in conversa.mensagens.all()
+        ]
+        return JsonResponse({
+            "conversa": {
+                "id": conversa.id,
+                "responsavel_nome": conversa.responsavel.nome_completo,
+                "aluno_nome": conversa.aluno.nome_completo,
+            },
+            "mensagens": mensagens,
+        })
+
+    body = json.loads(request.body or "{}")
+    conteudo = (body.get("conteudo") or "").strip()
+    if not conteudo:
+        return JsonResponse({"detail": "conteudo é obrigatório."}, status=400)
+
+    mensagem = MensagemChatResponsavelProfessor.objects.create(
+        conversa=conversa, remetente_tipo="PROFESSOR", conteudo=conteudo, lida_professor=True,
+    )
+    conversa.save()
+
+    return JsonResponse({
+        "id": mensagem.id, "remetente_tipo": mensagem.remetente_tipo,
+        "conteudo": mensagem.conteudo, "data_envio": mensagem.data_envio.isoformat(),
+    }, status=201)
+
+
