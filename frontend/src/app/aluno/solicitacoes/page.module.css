@@ -227,3 +227,44 @@
   color: inherit;
   text-decoration: underline;
 }
+
+.origemTag {
+  color: #0b4f9e;
+  font-weight: 500;
+}
+
+.acoesResposta {
+  flex-shrink: 0;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.aprovarBotao {
+  background: #15803d;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 0.4rem 0.85rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.aprovarBotao:hover {
+  background: #12692f;
+}
+
+.recusarBotao {
+  background: none;
+  border: 1px solid rgba(185, 28, 28, 0.3);
+  color: #b91c1c;
+  border-radius: 8px;
+  padding: 0.4rem 0.85rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.recusarBotao:hover {
+  background: rgba(185, 28, 28, 0.08);
+}
