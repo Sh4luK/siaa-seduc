@@ -5531,3 +5531,27 @@ def _verificar_acesso_responsavel(request, aluno_id):
         return None, None, JsonResponse({"detail": "Você não tem acesso aprovado a este aluno."}, status=403)
 
     return responsavel, vinculo.aluno, None
+
+
+@csrf_exempt
+@require_http_methods(["GET"])
+def boletim_aluno_responsavel(request, aluno_id):
+    responsavel, aluno, erro = _verificar_acesso_responsavel(request, aluno_id)
+    if erro:
+        return erro
+
+    notas = Nota.objects.filter(aluno=aluno).select_related("disciplina", "professor").order_by("disciplina__nome_disciplina")
+
+    return JsonResponse({
+        "aluno": {"nome_completo": aluno.nome_completo, "turma": aluno.turma},
+        "boletim": [
+            {
+                "disciplina": n.disciplina.nome_disciplina if n.disciplina else None,
+                "nm1_t1": n.nm1_t1, "nm2_t1": n.nm2_t1, "nm3_t1": n.nm3_t1, "mt_t1": n.mt_t1,
+                "nm1_t2": n.nm1_t2, "nm2_t2": n.nm2_t2, "nm3_t2": n.nm3_t2, "mt_t2": n.mt_t2,
+                "nm1_t3": n.nm1_t3, "nm2_t3": n.nm2_t3, "nm3_t3": n.nm3_t3, "mt_t3": n.mt_t3,
+                "ma": n.ma, "pf": n.pf, "maf": n.maf, "rf": n.rf,
+            }
+            for n in notas
+        ]
+    })
