@@ -151,13 +151,14 @@ urlpatterns = [
     path('api/responsavel/alunos/<int:aluno_id>/advertencias', app.views.advertencias_aluno_responsavel),
     path('api/responsavel/alunos/<int:aluno_id>/avaliacoes', app.views.avaliacoes_aluno_responsavel),
     path('api/responsavel/alunos/<int:aluno_id>/calendario', app.views.calendario_aluno_responsavel),
-
     path('api/responsavel/alunos/<int:aluno_id>/mensagem/professor/opcoes', app.views.opcoes_mensagem_professor_responsavel),
     path('api/responsavel/alunos/<int:aluno_id>/mensagem/professor', app.views.mensagens_professor_responsavel),
     path('api/responsavel/alunos/<int:aluno_id>/mensagem/professor/<int:conversa_id>', app.views.mensagem_conversa_professor_responsavel),
-
     path('api/responsavel/alunos/<int:aluno_id>/mensagem/coordenador/status', app.views.mensagem_coordenador_status_responsavel),
     path('api/responsavel/alunos/<int:aluno_id>/mensagem/coordenador/enviar', app.views.mensagem_coordenador_responsavel_enviar),
     path('api/responsavel/alunos/<int:aluno_id>/mensagem/coordenador/<int:conversa_id>', app.views.mensagem_conversa_coordenador_responsavel),
+    path('api/professor/mensagens/responsaveis', app.views.mensagens_list_professor_responsaveis),
+    path('api/professor/mensagens/responsaveis/<int:conversa_id>', app.views.mensagem_conversa_professor_responsavel_detalhe),
+
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
