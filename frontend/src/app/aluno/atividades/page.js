@@ -93,6 +93,10 @@ export default function AtividadesAlunoPage() {
               <i className="ti ti-clipboard-list" aria-hidden="true" />
               Atividades
             </Link>
+            <Link href="/aluno/frequencia">
+              <i className="ti ti-calendar-stats" aria-hidden="true" />
+              Frequência
+            </Link>
             <Link href="/aluno/boletim" className={layoutStyles.navLink}>
               <i className="ti ti-report" aria-hidden="true" />
               Boletim
