@@ -557,3 +557,15 @@ class ConversaResponsavelCoordenador(models.Model):
         unique_together = ('responsavel', 'coordenador', 'aluno')
 
 
+
+class MensagemChatResponsavelCoordenador(models.Model):
+    REMETENTE_CHOICES = [('RESPONSAVEL', 'Responsável'), ('COORDENACAO', 'Coordenação')]
+    conversa = models.ForeignKey(ConversaResponsavelCoordenador, on_delete=models.CASCADE, related_name='mensagens')
+    remetente_tipo = models.CharField(max_length=20, choices=REMETENTE_CHOICES)
+    conteudo = models.TextField()
+    data_envio = models.DateTimeField(auto_now_add=True)
+    lida_responsavel = models.BooleanField(default=False)
+    lida_coordenacao = models.BooleanField(default=False)
+
+    class Meta:
+        ordering = ['data_envio']
