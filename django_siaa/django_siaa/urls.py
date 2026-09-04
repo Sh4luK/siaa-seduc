@@ -141,5 +141,6 @@ urlpatterns = [
     path('api/responsavel/auth', app.views.auth_responsavel),
     path('api/responsavel/vinculos', app.views.vinculos_responsavel),
     path('api/responsavel/vinculos/solicitar', app.views.solicitar_vinculo_responsavel),
+    path('api/responsavel/alunos/buscar', app.views.buscar_alunos_para_responsavel),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
