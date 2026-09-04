@@ -489,3 +489,86 @@
   font-size: 0.82rem;
   color: #5b6b85;
 }
+
+
+.buscaWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.buscaIcone {
+  position: absolute;
+  left: 0.75rem;
+  color: #5b6b85;
+  pointer-events: none;
+}
+
+.buscaInput {
+  width: 100%;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 0.6rem 2.2rem 0.6rem 2.3rem;
+  font-size: 0.88rem;
+  font-family: inherit;
+  color: #1a2942;
+  background: #fff;
+}
+
+.buscaInput:focus {
+  outline: none;
+  border-color: #0b4f9e;
+}
+
+.limparBtn {
+  position: absolute;
+  right: 0.65rem;
+  background: none;
+  border: none;
+  color: #5b6b85;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  padding: 0.2rem;
+}
+
+.limparBtn:hover {
+  color: #b91c1c;
+}
+
+.dropdown {
+  margin-top: 0.5rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  max-height: 180px;
+  overflow-y: auto;
+  background: #f9fafb;
+}
+
+.dropdownItem {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  border-bottom: 1px solid #e2e8f0;
+  padding: 0.55rem 0.8rem;
+  font-size: 0.85rem;
+  color: #1a2942;
+  cursor: pointer;
+}
+
+.dropdownItem:last-child {
+  border-bottom: none;
+}
+
+.dropdownItem:hover {
+  background: #eaf1fb;
+  color: #0b4f9e;
+}
+
+.dropdownVazio {
+  padding: 0.6rem 0.8rem;
+  font-size: 0.82rem;
+  color: #5b6b85;
+}
