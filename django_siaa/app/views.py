@@ -41,6 +41,8 @@ from django.core.files.storage import default_storage
 from .models import Avaliacao, Questao, Alternativa
 from .models import MensagemChat
 from .models import Conversa
+from .models import VinculoResponsavel
+from .models import Responsavel
 from django.db import models
 import json
 import string
@@ -5090,3 +5092,48 @@ def frequencia_aluno(request):
         "percentual_presenca": percentual_mes,
         "dias": dias,
     })
+
+@csrf_exempt
+@require_http_methods(["GET", "POST"])
+def solicitacoes_responsavel_aluno(request):
+    aluno = _aluno_logado()
+    if not aluno:
+        return JsonResponse({"detail": "Não autenticado."}, status=401)
+
+    if request.method == "GET":
+        vinculos = VinculoResponsavel.objects.filter(aluno=aluno).select_related("responsavel")
+        return JsonResponse({
+            "solicitacoes": [
+                {
+                    "id": v.id,
+                    "responsavel_nome": v.responsavel.nome_completo,
+                    "parentesco": v.parentesco,
+                    "telefone": v.responsavel.telefone,
+                    "status": v.status,
+                    "data_solicitacao": v.data_solicitacao.isoformat(),
+                }
+                for v in vinculos
+            ]
+        })
+
+    body = json.loads(request.body or "{}")
+    nome_completo = (body.get("nome_completo") or "").strip()
+    parentesco = (body.get("parentesco") or "").strip()
+    cpf = (body.get("cpf") or "").strip()
+    telefone = (body.get("telefone") or "").strip()
+    senha = (body.get("senha") or "").strip()
+
+    if not nome_completo or not parentesco or not senha:
+        return JsonResponse(
+            {"detail": "nome_completo, parentesco e senha são obrigatórios."}, status=400
+        )
+
+    responsavel = Responsavel.objects.create(
+        nome_completo=nome_completo, cpf=cpf, telefone=telefone, senha=senha,
+    )
+    vinculo = VinculoResponsavel.objects.create(
+        aluno=aluno, responsavel=responsavel, parentesco=parentesco, status="PENDENTE",
+    )
+
+    return JsonResponse({"id": vinculo.id}, status=201)
+
