@@ -133,5 +133,6 @@ urlpatterns = [
     path('api/students/cronograma', app.views.cronograma_aluno),
     path('api/students/cronograma/<int:estudo_id>/concluir', app.views.cronograma_alternar_concluido),
     path('api/students/cronograma/<int:estudo_id>', app.views.cronograma_excluir),
+    path('api/students/frequencia', app.views.frequencia_aluno),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
