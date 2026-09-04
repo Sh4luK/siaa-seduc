@@ -5760,3 +5760,49 @@ def opcoes_mensagem_professor_responsavel(request, aluno_id):
 
     return JsonResponse({"professores": [{"id": pid, "nome_completo": nome} for pid, nome in professores.items()]})
 
+
+@csrf_exempt
+@require_http_methods(["GET", "POST"])
+def mensagens_professor_responsavel(request, aluno_id):
+    responsavel, aluno, erro = _verificar_acesso_responsavel(request, aluno_id)
+    if erro:
+        return erro
+
+    if request.method == "GET":
+        conversas = ConversaResponsavelProfessor.objects.filter(
+            responsavel=responsavel, aluno=aluno
+        ).select_related("professor").order_by("-ultima_atualizacao")
+
+        resultado = []
+        for c in conversas:
+            ultima = c.mensagens.last()
+            nao_lidas = c.mensagens.filter(remetente_tipo="PROFESSOR", lida_responsavel=False).count()
+            resultado.append({
+                "id": c.id, "professor_nome": c.professor.nome_completo,
+                "ultima_mensagem": ultima.conteudo if ultima else None,
+                "ultima_atualizacao": c.ultima_atualizacao.isoformat(), "nao_lidas": nao_lidas,
+            })
+        return JsonResponse(resultado, safe=False)
+
+    body = json.loads(request.body or "{}")
+    professor_id = body.get("professor_id")
+    conteudo = (body.get("conteudo") or "").strip()
+
+    if not professor_id or not conteudo:
+        return JsonResponse({"detail": "professor_id e conteudo são obrigatórios."}, status=400)
+
+    professor = Professor.objects.filter(id=professor_id).first()
+    if not professor:
+        return JsonResponse({"detail": "Professor não encontrado."}, status=404)
+
+    if not buscar_atravessapor_por_turma(aluno.turma).filter(professor=professor).exists():
+        return JsonResponse({"detail": "Esse professor não leciona para a turma do aluno."}, status=400)
+
+    conversa, _ = ConversaResponsavelProfessor.objects.get_or_create(responsavel=responsavel, professor=professor, aluno=aluno)
+    MensagemChatResponsavelProfessor.objects.create(
+        conversa=conversa, remetente_tipo="RESPONSAVEL", conteudo=conteudo, lida_responsavel=True,
+    )
+    conversa.save()
+
+    return JsonResponse({"conversa_id": conversa.id}, status=201)
+
