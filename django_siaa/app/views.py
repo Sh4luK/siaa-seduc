@@ -5193,10 +5193,8 @@ def buscar_alunos_para_responsavel(request):
     })
 
 @csrf_exempt
+@require_http_methods(["POST"])
 def registrar_responsavel(request):
-    if request.method != "POST":
-        return JsonResponse({"message": "Método não permitido."}, status=405)
-
     try:
         body = json.loads(request.body)
     except json.JSONDecodeError:
@@ -5206,11 +5204,15 @@ def registrar_responsavel(request):
     cpf = (body.get("cpf") or "").strip()
     telefone = (body.get("telefone") or "").strip()
     senha = (body.get("senha") or "").strip()
+    aluno_id = body.get("aluno_id")
+    parentesco = (body.get("parentesco") or "").strip()
 
     if not nome_completo or not senha:
         return JsonResponse({"message": "Nome completo e senha são obrigatórios."}, status=400)
 
-    ja_existe = False
+    if aluno_id and not parentesco:
+        return JsonResponse({"message": "Selecione o parentesco com o aluno."}, status=400)
+
     if cpf:
         ja_existe = Responsavel.objects.filter(cpf=cpf).exists()
     else:
@@ -5219,14 +5221,24 @@ def registrar_responsavel(request):
     if ja_existe:
         return JsonResponse(
             {"message": "Já existe uma conta com esses dados. Se um aluno já te cadastrou como responsável, use a tela de login."},
-            status=400
+            status=400,
         )
 
-    Responsavel.objects.create(
+    responsavel = Responsavel.objects.create(
         nome_completo=nome_completo, cpf=cpf, telefone=telefone, senha=senha,
     )
 
-    
+    if aluno_id:
+        aluno = Estudante.objects.filter(id=aluno_id).first()
+        if aluno:
+            VinculoResponsavel.objects.create(
+                aluno=aluno, responsavel=responsavel, parentesco=parentesco,
+                status="PENDENTE", origem="RESPONSAVEL",
+            )
+
+    return JsonResponse({"message": "Conta criada com sucesso. Faça login para continuar."})
+
+
 
 @csrf_exempt
 def login_responsavel(request):
