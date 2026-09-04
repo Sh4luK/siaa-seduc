@@ -104,10 +104,10 @@ export default function DashboardAlunoResponsavelPage() {
         Governo do Estado do Piauí — Secretaria de Estado da Educação
       </div>
 
-      <TabsResponsavel alunoId={alunoId} ativa="painel" />
 
       <div className={styles.wrapper}>
         <Link href="/responsavel" className={styles.voltarLink}>← Painel</Link>
+        <TabsResponsavel alunoId={alunoId} ativa="painel" />
 
         <h1 className={styles.title}>{dashboard?.aluno?.nome_completo}</h1>
         <p className={styles.subtitle}>
