@@ -1,0 +1,399 @@
+.page {
+  min-height: 100vh;
+  background: #f5f7fa;
+  color: #1a2942;
+  font-family: "IBM Plex Sans", "Inter", "Segoe UI", system-ui, sans-serif;
+}
+
+.topBar {
+  background-color: #0a2f5c;
+  color: #cfe0f5;
+  font-size: 0.75rem;
+  font-weight: 500;
+  padding: 0.5rem 1.5rem;
+  text-align: center;
+}
+
+.wrapper {
+  max-width: 780px;
+  margin: 0 auto;
+  padding: 2.5rem 1.5rem 3rem;
+}
+
+.headerRow {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.title {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #1a2942;
+  margin: 0 0 0.25rem;
+}
+
+.subtitle {
+  font-size: 0.9rem;
+  color: #5b6b85;
+  margin: 0;
+}
+
+.novoBotao {
+  background: #0b4f9e;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 0.6rem 1.1rem;
+  font-size: 0.88rem;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.novoBotao:hover {
+  background: #0a2f5c;
+}
+
+.erro {
+  background: rgba(220, 38, 38, 0.06);
+  border: 1px solid rgba(220, 38, 38, 0.25);
+  color: #b91c1c;
+  border-radius: 8px;
+  padding: 0.7rem 0.9rem;
+  font-size: 0.85rem;
+  margin-bottom: 1.25rem;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
+}
+
+.linhaDupla {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+@media (max-width: 560px) {
+  .linhaDupla {
+    grid-template-columns: 1fr;
+  }
+}
+
+.campo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.label {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #1a2942;
+}
+
+.input {
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 0.6rem 0.8rem;
+  font-size: 0.88rem;
+  font-family: inherit;
+  color: #1a2942;
+  background: #fff;
+}
+
+.input:focus {
+  outline: none;
+  border-color: #0b4f9e;
+}
+
+.enviarBtn {
+  align-self: flex-start;
+  background: #0b4f9e;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 0.65rem 1.3rem;
+  font-size: 0.88rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.enviarBtn:hover:not(:disabled) {
+  background: #0a2f5c;
+}
+
+.enviarBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.vazio {
+  font-size: 0.9rem;
+  color: #5b6b85;
+  padding: 1.5rem;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  text-align: center;
+}
+
+.lista {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 1rem 1.1rem;
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
+}
+
+.cardTopo {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.cardNome {
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: #1a2942;
+  margin: 0;
+}
+
+.cardMeta {
+  font-size: 0.8rem;
+  color: #5b6b85;
+  margin: 0.2rem 0 0;
+}
+
+.badgePendente,
+.badgeAprovado,
+.badgeRecusado {
+  flex-shrink: 0;
+  font-size: 0.7rem;
+  font-weight: 600;
+  border-radius: 999px;
+  padding: 0.2rem 0.6rem;
+}
+
+.badgePendente {
+  background: rgba(181, 103, 10, 0.1);
+  color: #b5670a;
+}
+
+.badgeAprovado {
+  background: rgba(21, 128, 61, 0.1);
+  color: #15803d;
+}
+
+.badgeRecusado {
+  background: rgba(220, 38, 38, 0.08);
+  color: #b91c1c;
+}
+
+/* ===== Login/registro (compartilhado com /responsavel/login e /responsavel/registrar) ===== */
+.centerPage {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 1.5rem;
+  background-color: #f5f7fa;
+  color: #1a2942;
+  font-family: "IBM Plex Sans", "Inter", "Segoe UI", system-ui, sans-serif;
+}
+
+.loadingWrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.loadingLogo {
+  width: 96px;
+  height: auto;
+  opacity: 0.92;
+}
+
+.loadingText {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #5b6b85;
+}
+
+.card {
+  width: 100%;
+  max-width: 380px;
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(16, 24, 40, 0.06);
+}
+
+.cardBody {
+  padding: 2rem 1.75rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.masthead {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  text-align: center;
+}
+
+.logo {
+  width: 64px;
+  height: auto;
+  margin-bottom: 0.25rem;
+}
+
+.eyebrow {
+  margin: 0;
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #0b4f9e;
+  font-weight: 600;
+}
+
+.title {
+  margin: 0;
+  font-weight: 700;
+  font-size: 1.4rem;
+  color: #1a2942;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+  background: none;
+  border: none;
+  padding: 0;
+  box-shadow: none;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.label {
+  font-size: 0.85rem;
+  color: #1a2942;
+}
+
+.required {
+  color: #dc2626;
+}
+
+.input {
+  padding: 0.55rem 0.75rem;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  background-color: #ffffff;
+  color: #1a2942;
+  font-size: 0.9rem;
+}
+
+.input:focus-visible {
+  outline: none;
+  border-color: #0b4f9e;
+  box-shadow: 0 0 0 3px rgba(11, 79, 158, 0.12);
+}
+
+.hint {
+  color: #5b6b85;
+  font-size: 0.82rem;
+}
+
+.linkInline {
+  color: #0b4f9e;
+  font-weight: 500;
+  text-decoration: underline;
+}
+
+.submitButton {
+  padding: 0.65rem 0;
+  border-radius: 8px;
+  border: none;
+  background-color: #0b4f9e;
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+}
+
+.submitButton:hover:not(:disabled) {
+  background-color: #0a2f5c;
+}
+
+.submitButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.footer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem 1.75rem;
+  border-top: 1px solid #e2e8f0;
+  color: #5b6b85;
+  font-size: 0.75rem;
+  text-align: center;
+}
+
+.pageLoading {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f5f7fa;
+  padding: 1.5rem;
+}
+
+.cardLoading {
+  width: 100%;
+  max-width: 400px;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 2.25rem 2rem;
+  text-align: center;
+  box-shadow: 0 1px 3px rgba(16, 24, 40, 0.06);
+}
+
+.subtituloLoading {
+  font-size: 0.85rem;
+  color: #5b6b85;
+  margin: 0;
+}
