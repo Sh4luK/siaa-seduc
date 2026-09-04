@@ -5035,3 +5035,58 @@ def cronograma_excluir(request, estudo_id):
     estudo.delete()
     return JsonResponse({"detail": "Excluído."})
 
+
+
+@csrf_exempt
+@require_http_methods(["GET"])
+def frequencia_aluno(request):
+    aluno = _aluno_logado()
+    if not aluno:
+        return JsonResponse({"detail": "Não autenticado."}, status=401)
+
+    mes = request.GET.get("mes")  # ex: "9"
+    ano = request.GET.get("ano")  # ex: "2026"
+
+    hoje = date.today()
+    mes = int(mes) if mes else hoje.month
+    ano = int(ano) if ano else hoje.year
+
+    registros = Frequencia.objects.filter(
+        aluno=aluno, data__year=ano, data__month=mes
+    ).select_related("disciplina").order_by("data")
+
+    # Agrupa por dia: { "2026-09-03": [{disciplina, presente}, ...], ... }
+    por_dia = {}
+    for r in registros:
+        chave = r.data.isoformat()
+        por_dia.setdefault(chave, []).append({
+            "disciplina": r.disciplina.nome_disciplina if r.disciplina else None,
+            "presente": r.presente,
+        })
+
+    dias = []
+    for data_str, aulas in sorted(por_dia.items()):
+        total = len(aulas)
+        faltas = sum(1 for a in aulas if not a["presente"])
+        dias.append({
+            "data": data_str,
+            "total_aulas": total,
+            "total_faltas": faltas,
+            "situacao": "falta_total" if faltas == total else ("falta_parcial" if faltas > 0 else "presente"),
+            "aulas": aulas,
+        })
+
+    total_registros_mes = registros.count()
+    total_presencas_mes = registros.filter(presente=True).count()
+    total_faltas_mes = total_registros_mes - total_presencas_mes
+    percentual_mes = round((total_presencas_mes / total_registros_mes) * 100, 1) if total_registros_mes else None
+
+    return JsonResponse({
+        "mes": mes,
+        "ano": ano,
+        "total_registros": total_registros_mes,
+        "total_presencas": total_presencas_mes,
+        "total_faltas": total_faltas_mes,
+        "percentual_presenca": percentual_mes,
+        "dias": dias,
+    })
