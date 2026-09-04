@@ -501,6 +501,13 @@ class VinculoResponsavel(models.Model):
         ("RECUSADO", "Recusado"),
     ]
 
+    ORIGEM_CHOICES = [
+        ("ALUNO", "Criado pelo aluno"),
+        ("RESPONSAVEL", "Solicitado pelo responsável"),
+    ]
+
+    origem = models.CharField(max_length=15, choices=ORIGEM_CHOICES, default="ALUNO")
+
     aluno = models.ForeignKey('Estudante', on_delete=models.CASCADE, related_name='vinculos_responsavel')
     responsavel = models.ForeignKey(Responsavel, on_delete=models.CASCADE, related_name='vinculos_aluno')
     parentesco = models.CharField(max_length=100, blank=True, default="")
