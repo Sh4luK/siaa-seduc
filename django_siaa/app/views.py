@@ -5454,3 +5454,39 @@ def dashboard_aluno(request):
         return JsonResponse({"detail": "Não autenticado."}, status=401)
 
     return JsonResponse(_calcular_dashboard(aluno))
+
+@csrf_exempt
+@require_http_methods(["GET"])
+def dashboard_aluno_responsavel(request, aluno_id):
+    responsavel = _responsavel_logado()
+    if not responsavel:
+        return JsonResponse({"detail": "Não autenticado."}, status=401)
+
+    vinculo = VinculoResponsavel.objects.filter(
+        responsavel=responsavel, aluno_id=aluno_id, status="APROVADO"
+    ).select_related("aluno").first()
+
+    if not vinculo:
+        return JsonResponse(
+            {"detail": "Você não tem acesso aprovado a este aluno."}, status=403
+        )
+
+    aluno = vinculo.aluno
+    dados = _calcular_dashboard(aluno)
+
+    estudos = EstudoProgramado.objects.filter(aluno=aluno).order_by("data")[:5]
+    dados["estudos_programados"] = [
+        {
+            "id": e.id, "titulo": e.titulo, "disciplina": e.disciplina,
+            "data": e.data.isoformat(), "concluido": e.concluido,
+        }
+        for e in estudos
+    ]
+
+    dados["aluno"] = {
+        "nome_completo": aluno.nome_completo,
+        "turma": aluno.turma,
+        "escola": aluno.escola,
+    }
+
+    return JsonResponse(dados)
