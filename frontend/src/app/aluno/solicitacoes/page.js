@@ -120,6 +120,24 @@ export default function SolicitacoesAlunoPage() {
     }
   }
 
+  async function responder(id, decisao) {
+    setErro(null);
+    try {
+      const res = await fetch(`${API_BASE}/api/students/solicitacoes/${id}/responder`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ decisao }),
+      });
+      if (!res.ok) {
+        const d = await res.json().catch(() => null);
+        throw new Error(d?.detail || "Não foi possível responder à solicitação.");
+      }
+      await carregar();
+    } catch (e) {
+      setErro(e.message);
+    }
+  }
+
   async function excluir(id) {
     setErro(null);
     try {
@@ -282,7 +300,7 @@ export default function SolicitacoesAlunoPage() {
               <p className={styles.vazio}>Nenhum responsável cadastrado ainda.</p>
             ) : (
               <ul className={styles.lista}>
-                {solicitacoes.map((s) => (
+                {/* {solicitacoes.map((s) => (
                   <li key={s.id} className={styles.card}>
                     <div className={styles.cardInfo}>
                       <div className={styles.cardTopo}>
@@ -306,6 +324,54 @@ export default function SolicitacoesAlunoPage() {
                     </div>
 
                     {confirmandoId === s.id ? (
+                      <div className={styles.confirmarExclusao}>
+                        {s.status === "APROVADO" ? "Revogar acesso?" : "Cancelar?"}
+                        <button onClick={() => excluir(s.id)}>Sim</button>
+                        <button onClick={() => setConfirmandoId(null)}>Não</button>
+                      </div>
+                    ) : (
+                      <button className={styles.excluirBotao} onClick={() => setConfirmandoId(s.id)}>
+                        {s.status === "APROVADO" ? "Revogar" : "Cancelar"}
+                      </button>
+                    )}
+                  </li>
+                ))} */}
+                {solicitacoes.map((s) => (
+                  <li key={s.id} className={styles.card}>
+                    <div className={styles.cardInfo}>
+                      <div className={styles.cardTopo}>
+                        <p className={styles.cardNome}>{s.responsavel_nome}</p>
+                        <span
+                          className={
+                            s.status === "APROVADO"
+                              ? styles.badgeAprovado
+                              : s.status === "RECUSADO"
+                                ? styles.badgeRecusado
+                                : styles.badgePendente
+                          }
+                        >
+                          {STATUS_LABEL[s.status]}
+                        </span>
+                      </div>
+                      <p className={styles.cardMeta}>
+                        {s.parentesco}
+                        {s.telefone ? ` · ${s.telefone}` : ""} · solicitado em {formatarData(s.data_solicitacao)}
+                        {s.origem === "RESPONSAVEL" && s.status === "PENDENTE" && (
+                          <span className={styles.origemTag}> · solicitado por ele(a)</span>
+                        )}
+                      </p>
+                    </div>
+
+                    {s.origem === "RESPONSAVEL" && s.status === "PENDENTE" ? (
+                      <div className={styles.acoesResposta}>
+                        <button className={styles.aprovarBotao} onClick={() => responder(s.id, "APROVADO")}>
+                          Aprovar
+                        </button>
+                        <button className={styles.recusarBotao} onClick={() => responder(s.id, "RECUSADO")}>
+                          Recusar
+                        </button>
+                      </div>
+                    ) : confirmandoId === s.id ? (
                       <div className={styles.confirmarExclusao}>
                         {s.status === "APROVADO" ? "Revogar acesso?" : "Cancelar?"}
                         <button onClick={() => excluir(s.id)}>Sim</button>
