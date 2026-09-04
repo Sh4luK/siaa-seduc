@@ -44,6 +44,10 @@ from .models import MensagemChat
 from .models import Conversa
 from .models import VinculoResponsavel
 from .models import Responsavel
+from .models import ConversaResponsavelProfessor
+from .models import MensagemChatResponsavelProfessor
+from .models import ConversaResponsavelCoordenador
+from .models import MensagemChatResponsavelCoordenador
 from django.db import models
 import json
 import string
