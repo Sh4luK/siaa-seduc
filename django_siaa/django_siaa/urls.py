@@ -159,6 +159,8 @@ urlpatterns = [
     path('api/responsavel/alunos/<int:aluno_id>/mensagem/coordenador/<int:conversa_id>', app.views.mensagem_conversa_coordenador_responsavel),
     path('api/professor/mensagens/responsaveis', app.views.mensagens_list_professor_responsaveis),
     path('api/professor/mensagens/responsaveis/<int:conversa_id>', app.views.mensagem_conversa_professor_responsavel_detalhe),
+    path('api/coordenacao/mensagens/responsaveis', app.views.mensagens_list_coordenacao_responsaveis),
+    path('api/coordenacao/mensagens/responsaveis/<int:conversa_id>', app.views.mensagem_conversa_coordenacao_responsavel_detalhe),
 
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
