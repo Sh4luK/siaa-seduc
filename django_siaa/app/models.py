@@ -521,3 +521,13 @@ class VinculoResponsavel(models.Model):
 
     def __str__(self):
         return f"{self.responsavel} -> {self.aluno} ({self.status})"
+
+class ConversaResponsavelProfessor(models.Model):
+    responsavel = models.ForeignKey(Responsavel, on_delete=models.CASCADE, related_name='conversas_professor')
+    professor = models.ForeignKey(Professor, on_delete=models.CASCADE, related_name='conversas_responsaveis')
+    aluno = models.ForeignKey(Estudante, on_delete=models.CASCADE, related_name='conversas_responsavel_professor')
+    data_criacao = models.DateTimeField(auto_now_add=True)
+    ultima_atualizacao = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        unique_together = ('responsavel', 'professor', 'aluno')
