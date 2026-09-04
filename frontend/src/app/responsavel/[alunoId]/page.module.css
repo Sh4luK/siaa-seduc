@@ -1,0 +1,300 @@
+.page {
+  min-height: 100vh;
+  background: #f5f7fa;
+  color: #1a2942;
+  font-family: "IBM Plex Sans", "Inter", "Segoe UI", system-ui, sans-serif;
+}
+
+.topBar {
+  background-color: #0a2f5c;
+  color: #cfe0f5;
+  font-size: 0.75rem;
+  font-weight: 500;
+  padding: 0.5rem 1.5rem;
+  text-align: center;
+}
+
+.wrapper {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 2.5rem 1.5rem 3rem;
+}
+
+.voltarLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: #5b6b85;
+  text-decoration: none;
+  font-size: 14px;
+  margin-bottom: 20px;
+}
+
+.voltarLink:hover {
+  color: #0b4f9e;
+}
+
+.title {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #1a2942;
+  margin: 0 0 0.15rem;
+}
+
+.subtitle {
+  font-size: 0.9rem;
+  color: #5b6b85;
+  margin: 0 0 1.5rem;
+}
+
+.erro {
+  background: rgba(220, 38, 38, 0.06);
+  border: 1px solid rgba(220, 38, 38, 0.25);
+  color: #b91c1c;
+  border-radius: 8px;
+  padding: 0.85rem 1.1rem;
+  font-size: 0.88rem;
+}
+
+/* ===== Estatísticas ===== */
+.statsRow {
+  display: flex;
+  gap: 0.9rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.5rem;
+}
+
+.statCard {
+  flex: 1;
+  min-width: 150px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 1.1rem 1.25rem;
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
+}
+
+.statIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+}
+
+.statIconAmbar {
+  background: rgba(181, 103, 10, 0.1);
+  color: #b5670a;
+}
+
+.statIconVerde {
+  background: rgba(21, 128, 61, 0.1);
+  color: #15803d;
+}
+
+.statIconAzul {
+  background: rgba(11, 79, 158, 0.1);
+  color: #0b4f9e;
+}
+
+.statIconRoxo {
+  background: rgba(124, 58, 237, 0.1);
+  color: #7c3aed;
+}
+
+.statValor {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1a2942;
+}
+
+.statLabel {
+  font-size: 0.8rem;
+  color: #5b6b85;
+}
+
+.avisoPeDeMeia {
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: #b91c1c;
+  margin-top: 0.1rem;
+}
+
+/* ===== Painéis ===== */
+.duasColunas {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+@media (max-width: 860px) {
+  .duasColunas {
+    grid-template-columns: 1fr;
+  }
+}
+
+.painel {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 1.25rem;
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
+}
+
+.painelHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #1a2942;
+  margin-bottom: 1rem;
+}
+
+.painelHeader svg {
+  color: #0b4f9e;
+}
+
+.painelVazio {
+  font-size: 0.85rem;
+  color: #5b6b85;
+  margin: 0;
+}
+
+/* ===== Atenção necessária ===== */
+.atencaoLista {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.atencaoItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  background: rgba(220, 38, 38, 0.05);
+  border-radius: 8px;
+  padding: 0.6rem 0.85rem;
+}
+
+.atencaoDisciplina {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  color: #1a2942;
+  font-weight: 500;
+}
+
+.bolinha {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #0b4f9e;
+  flex-shrink: 0;
+}
+
+.atencaoValor {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #b91c1c;
+  white-space: nowrap;
+}
+
+/* ===== Próximas entregas / estudos ===== */
+.entregasLista,
+.estudosLista {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.entregaItem,
+.estudoItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+}
+
+.entregaInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.entregaTitulo {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #1a2942;
+  margin: 0;
+}
+
+.entregaData {
+  font-size: 0.75rem;
+  color: #94a3b8;
+  margin: 0.1rem 0 0;
+}
+
+.badgePendente {
+  flex-shrink: 0;
+  font-size: 0.7rem;
+  font-weight: 600;
+  border-radius: 999px;
+  padding: 0.25rem 0.65rem;
+  white-space: nowrap;
+  background: rgba(181, 103, 10, 0.1);
+  color: #b5670a;
+}
+
+.estudoConcluido .entregaTitulo {
+  text-decoration: line-through;
+  color: #94a3b8;
+}
+
+.badgeConcluido {
+  flex-shrink: 0;
+  font-size: 0.7rem;
+  font-weight: 600;
+  border-radius: 999px;
+  padding: 0.25rem 0.65rem;
+  white-space: nowrap;
+  background: rgba(21, 128, 61, 0.1);
+  color: #15803d;
+}
+
+/* ===== Loading ===== */
+.pageLoading {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f5f7fa;
+  padding: 1.5rem;
+}
+
+.cardLoading {
+  width: 100%;
+  max-width: 400px;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 2.25rem 2rem;
+  text-align: center;
+  box-shadow: 0 1px 3px rgba(16, 24, 40, 0.06);
+}
+
+.subtituloLoading {
+  font-size: 0.85rem;
+  color: #5b6b85;
+  margin: 0;
+}

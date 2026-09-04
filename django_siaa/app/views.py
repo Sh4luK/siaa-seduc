@@ -5276,6 +5276,30 @@ def auth_responsavel(request):
 
 
 
+# @csrf_exempt
+# @require_http_methods(["GET"])
+# def vinculos_responsavel(request):
+#     responsavel = _responsavel_logado()
+#     if not responsavel:
+#         return JsonResponse({"detail": "Não autenticado."}, status=401)
+
+#     vinculos = VinculoResponsavel.objects.filter(responsavel=responsavel).select_related("aluno")
+
+#     return JsonResponse({
+#         "vinculos": [
+#             {
+#                 "id": v.id,
+#                 "aluno_nome": v.aluno.nome_completo,
+#                 "aluno_turma": v.aluno.turma,
+#                 "parentesco": v.parentesco,
+#                 "status": v.status,
+#                 "data_solicitacao": v.data_solicitacao.isoformat(),
+#             }
+#             for v in vinculos
+#         ]
+#     })
+
+
 @csrf_exempt
 @require_http_methods(["GET"])
 def vinculos_responsavel(request):
@@ -5289,6 +5313,7 @@ def vinculos_responsavel(request):
         "vinculos": [
             {
                 "id": v.id,
+                "aluno_id": v.aluno_id,
                 "aluno_nome": v.aluno.nome_completo,
                 "aluno_turma": v.aluno.turma,
                 "parentesco": v.parentesco,
@@ -5300,6 +5325,34 @@ def vinculos_responsavel(request):
     })
 
 
+# @csrf_exempt
+# @require_http_methods(["POST"])
+# def solicitar_vinculo_responsavel(request):
+#     responsavel = _responsavel_logado()
+#     if not responsavel:
+#         return JsonResponse({"detail": "Não autenticado."}, status=401)
+
+#     body = json.loads(request.body or "{}")
+#     aluno_nome = (body.get("aluno_nome_completo") or "").strip().upper()
+#     parentesco = (body.get("parentesco") or "").strip()
+
+#     if not aluno_nome or not parentesco:
+#         return JsonResponse({"detail": "Informe o nome do aluno e o parentesco."}, status=400)
+
+#     aluno = Estudante.objects.filter(nome_completo=aluno_nome).first()
+#     if not aluno:
+#         return JsonResponse({"detail": "Nenhum aluno encontrado com esse nome completo."}, status=404)
+
+#     if VinculoResponsavel.objects.filter(aluno=aluno, responsavel=responsavel).exists():
+#         return JsonResponse({"detail": "Você já tem uma solicitação ou vínculo com esse aluno."}, status=400)
+
+#     vinculo = VinculoResponsavel.objects.create(
+#         aluno=aluno, responsavel=responsavel, parentesco=parentesco, status="PENDENTE", origem="RESPONSAVEL",
+#     )
+
+#     return JsonResponse({"id": vinculo.id}, status=201)
+
+
 @csrf_exempt
 @require_http_methods(["POST"])
 def solicitar_vinculo_responsavel(request):
@@ -5308,24 +5361,26 @@ def solicitar_vinculo_responsavel(request):
         return JsonResponse({"detail": "Não autenticado."}, status=401)
 
     body = json.loads(request.body or "{}")
-    aluno_nome = (body.get("aluno_nome_completo") or "").strip().upper()
+    aluno_id = body.get("aluno_id")
     parentesco = (body.get("parentesco") or "").strip()
 
-    if not aluno_nome or not parentesco:
-        return JsonResponse({"detail": "Informe o nome do aluno e o parentesco."}, status=400)
+    if not aluno_id or not parentesco:
+        return JsonResponse({"detail": "Selecione o aluno e o parentesco."}, status=400)
 
-    aluno = Estudante.objects.filter(nome_completo=aluno_nome).first()
+    aluno = Estudante.objects.filter(id=aluno_id).first()
     if not aluno:
-        return JsonResponse({"detail": "Nenhum aluno encontrado com esse nome completo."}, status=404)
+        return JsonResponse({"detail": "Aluno não encontrado."}, status=404)
 
     if VinculoResponsavel.objects.filter(aluno=aluno, responsavel=responsavel).exists():
         return JsonResponse({"detail": "Você já tem uma solicitação ou vínculo com esse aluno."}, status=400)
 
     vinculo = VinculoResponsavel.objects.create(
-        aluno=aluno, responsavel=responsavel, parentesco=parentesco, status="PENDENTE", origem="RESPONSAVEL",
+        aluno=aluno, responsavel=responsavel, parentesco=parentesco,
+        status="PENDENTE", origem="RESPONSAVEL",
     )
 
     return JsonResponse({"id": vinculo.id}, status=201)
+
 
 @csrf_exempt
 @require_http_methods(["POST"])
@@ -5353,3 +5408,110 @@ def solicitacao_responsavel_responder(request, vinculo_id):
     vinculo.save(update_fields=["status", "data_resposta"])
 
     return JsonResponse({"status": vinculo.status})
+
+def _calcular_dashboard(aluno):
+    """Monta os dados do dashboard para um aluno específico — usado tanto
+    pelo próprio aluno quanto pelo responsável vinculado a ele."""
+    notas = Nota.objects.filter(aluno=aluno).select_related("disciplina")
+
+    medias_por_disciplina = []
+    for n in notas:
+        media = n.maf if n.maf is not None else n.ma
+        if media is not None:
+            medias_por_disciplina.append({
+                "disciplina": n.disciplina.nome_disciplina if n.disciplina else None,
+                "media": float(media),
+            })
+
+    media_geral = None
+    if medias_por_disciplina:
+        media_geral = round(
+            sum(m["media"] for m in medias_por_disciplina) / len(medias_por_disciplina), 1
+        )
+
+    atencao_necessaria = [
+        {"disciplina": m["disciplina"], "media": m["media"]}
+        for m in medias_por_disciplina
+        if m["media"] < 6
+    ]
+
+    frequencias = Frequencia.objects.filter(aluno=aluno)
+    total_freq = frequencias.count()
+    presentes = frequencias.filter(presente=True).count()
+    frequencia_percentual = round((presentes / total_freq) * 100, 1) if total_freq else None
+    frequencia_baixa_pe_de_meia = frequencia_percentual is not None and frequencia_percentual < 80
+
+    vinculos_aluno = buscar_atravessapor_por_turma(aluno.turma)
+    hoje = date.today()
+    atividades = Atividade.objects.filter(turma__in=vinculos_aluno).select_related("disciplina")
+
+    pendentes_qs = atividades.filter(data_entrega__gte=hoje).order_by("data_entrega")
+    atrasadas_qs = atividades.filter(data_entrega__lt=hoje)
+    total_pendencias = pendentes_qs.count() + atrasadas_qs.count()
+
+    proximas_entregas = [
+        {
+            "titulo": a.titulo,
+            "disciplina": a.disciplina.nome_disciplina if a.disciplina else None,
+            "data_entrega": a.data_entrega.isoformat() if a.data_entrega else None,
+        }
+        for a in pendentes_qs[:5]
+    ]
+
+    total_conteudos = Conteudo.objects.filter(turma__in=vinculos_aluno).count()
+
+    return {
+        "media_geral": media_geral,
+        "total_pendencias": total_pendencias,
+        "frequencia_percentual": frequencia_percentual,
+        "frequencia_baixa_pe_de_meia": frequencia_baixa_pe_de_meia,
+        "total_conteudos": total_conteudos,
+        "atencao_necessaria": atencao_necessaria[:6],
+        "proximas_entregas": proximas_entregas,
+    }
+
+
+@csrf_exempt
+@require_http_methods(["GET"])
+def dashboard_aluno(request):
+    aluno = _aluno_logado()
+    if not aluno:
+        return JsonResponse({"detail": "Não autenticado."}, status=401)
+
+    return JsonResponse(_calcular_dashboard(aluno))
+
+@csrf_exempt
+@require_http_methods(["GET"])
+def dashboard_aluno_responsavel(request, aluno_id):
+    responsavel = _responsavel_logado()
+    if not responsavel:
+        return JsonResponse({"detail": "Não autenticado."}, status=401)
+
+    vinculo = VinculoResponsavel.objects.filter(
+        responsavel=responsavel, aluno_id=aluno_id, status="APROVADO"
+    ).select_related("aluno").first()
+
+    if not vinculo:
+        return JsonResponse(
+            {"detail": "Você não tem acesso aprovado a este aluno."}, status=403
+        )
+
+    aluno = vinculo.aluno
+    dados = _calcular_dashboard(aluno)
+
+    estudos = EstudoProgramado.objects.filter(aluno=aluno).order_by("data")[:5]
+    dados["estudos_programados"] = [
+        {
+            "id": e.id, "titulo": e.titulo, "disciplina": e.disciplina,
+            "data": e.data.isoformat(), "concluido": e.concluido,
+        }
+        for e in estudos
+    ]
+
+    dados["aluno"] = {
+        "nome_completo": aluno.nome_completo,
+        "turma": aluno.turma,
+        "escola": aluno.escola,
+    }
+
+    return JsonResponse(dados)
