@@ -5848,3 +5848,11 @@ def mensagem_conversa_professor_responsavel(request, aluno_id, conversa_id):
         "conteudo": mensagem.conteudo, "data_envio": mensagem.data_envio.isoformat(),
     }, status=201)
 
+
+def _coordenador_da_escola_do_aluno(aluno):
+    nome_escola_aluno = _turma_normalizada(aluno.escola)
+    for coordenador in Coordenador.objects.all():
+        if _turma_normalizada(_nome_escola(coordenador.escola)) == nome_escola_aluno:
+            return coordenador
+    return None
+
