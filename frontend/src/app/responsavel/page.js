@@ -212,6 +212,7 @@
 import { useEffect, useState, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
 import styles from "./page.module.css";
+import Link from "next/link";
 
 const API_BASE = "https://obscure-happiness-v67rpjq7p96vfxj4g-8000.app.github.dev";
 
@@ -545,10 +546,14 @@ export default function ResponsavelPainelPage() {
                     </span>
                   </div>
                   <p className={styles.cardMeta}>
-                    {v.parentesco} · Turma: {v.aluno_turma || "—"} · solicitado em{" "}
-                    {formatarData(v.data_solicitacao)}
+                    {v.parentesco} · Turma: {v.aluno_turma || "—"} · solicitado em {formatarData(v.data_solicitacao)}
                   </p>
                 </div>
+                {v.status === "APROVADO" && (
+                  <Link href={`/responsavel/${v.aluno_id}`} className={styles.verPainelBotao}>
+                    Ver painel
+                  </Link>
+                )}
               </li>
             ))}
           </ul>
@@ -556,4 +561,4 @@ export default function ResponsavelPainelPage() {
       </div>
     </div>
   );
-}
+} 
