@@ -572,3 +572,20 @@
   font-size: 0.82rem;
   color: #5b6b85;
 }
+
+.verPainelBotao {
+  flex-shrink: 0;
+  background: #0b4f9e;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 0.4rem 0.85rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.verPainelBotao:hover {
+  background: #0a2f5c;
+}
