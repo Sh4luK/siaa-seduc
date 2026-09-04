@@ -5682,3 +5682,10 @@ def advertencias_aluno_responsavel(request, aluno_id):
         ]
     })
 
+
+def _avaliacoes_por_turma(nome_turma):
+    nome_normalizado = (nome_turma or "").replace(" ", "").strip().lower()
+    return Avaliacao.objects.annotate(
+        turma_normalizada=Replace("turma", Value(" "), Value(""))
+    ).filter(turma_normalizada__iexact=nome_normalizado)
+
