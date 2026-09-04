@@ -521,3 +521,51 @@ class VinculoResponsavel(models.Model):
 
     def __str__(self):
         return f"{self.responsavel} -> {self.aluno} ({self.status})"
+
+class ConversaResponsavelProfessor(models.Model):
+    responsavel = models.ForeignKey(Responsavel, on_delete=models.CASCADE, related_name='conversas_professor')
+    professor = models.ForeignKey(Professor, on_delete=models.CASCADE, related_name='conversas_responsaveis')
+    aluno = models.ForeignKey(Estudante, on_delete=models.CASCADE, related_name='conversas_responsavel_professor')
+    data_criacao = models.DateTimeField(auto_now_add=True)
+    ultima_atualizacao = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        unique_together = ('responsavel', 'professor', 'aluno')
+
+
+class MensagemChatResponsavelProfessor(models.Model):
+    REMETENTE_CHOICES = [('RESPONSAVEL', 'Responsável'), ('PROFESSOR', 'Professor')]
+    conversa = models.ForeignKey(ConversaResponsavelProfessor, on_delete=models.CASCADE, related_name='mensagens')
+    remetente_tipo = models.CharField(max_length=20, choices=REMETENTE_CHOICES)
+    conteudo = models.TextField()
+    data_envio = models.DateTimeField(auto_now_add=True)
+    lida_responsavel = models.BooleanField(default=False)
+    lida_professor = models.BooleanField(default=False)
+
+    class Meta:
+        ordering = ['data_envio']
+
+
+class ConversaResponsavelCoordenador(models.Model):
+    responsavel = models.ForeignKey(Responsavel, on_delete=models.CASCADE, related_name='conversas_coordenador')
+    coordenador = models.ForeignKey(Coordenador, on_delete=models.CASCADE, related_name='conversas_responsaveis')
+    aluno = models.ForeignKey(Estudante, on_delete=models.CASCADE, related_name='conversas_responsavel_coordenador')
+    data_criacao = models.DateTimeField(auto_now_add=True)
+    ultima_atualizacao = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        unique_together = ('responsavel', 'coordenador', 'aluno')
+
+
+
+class MensagemChatResponsavelCoordenador(models.Model):
+    REMETENTE_CHOICES = [('RESPONSAVEL', 'Responsável'), ('COORDENACAO', 'Coordenação')]
+    conversa = models.ForeignKey(ConversaResponsavelCoordenador, on_delete=models.CASCADE, related_name='mensagens')
+    remetente_tipo = models.CharField(max_length=20, choices=REMETENTE_CHOICES)
+    conteudo = models.TextField()
+    data_envio = models.DateTimeField(auto_now_add=True)
+    lida_responsavel = models.BooleanField(default=False)
+    lida_coordenacao = models.BooleanField(default=False)
+
+    class Meta:
+        ordering = ['data_envio']

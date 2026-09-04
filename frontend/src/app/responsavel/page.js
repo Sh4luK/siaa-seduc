@@ -549,6 +549,7 @@ export default function ResponsavelPainelPage() {
                     {v.parentesco} · Turma: {v.aluno_turma || "—"} · solicitado em {formatarData(v.data_solicitacao)}
                   </p>
                 </div>
+                <br />
                 {v.status === "APROVADO" && (
                   <Link href={`/responsavel/${v.aluno_id}`} className={styles.verPainelBotao}>
                     Ver painel

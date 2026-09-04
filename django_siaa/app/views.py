@@ -44,6 +44,10 @@ from .models import MensagemChat
 from .models import Conversa
 from .models import VinculoResponsavel
 from .models import Responsavel
+from .models import ConversaResponsavelProfessor
+from .models import MensagemChatResponsavelProfessor
+from .models import ConversaResponsavelCoordenador
+from .models import MensagemChatResponsavelCoordenador
 from django.db import models
 import json
 import string
@@ -5515,3 +5519,421 @@ def dashboard_aluno_responsavel(request, aluno_id):
     }
 
     return JsonResponse(dados)
+
+
+def _verificar_acesso_responsavel(request, aluno_id):
+    """Retorna (responsavel, aluno, None) se aprovado, ou (None, None, JsonResponse_erro)."""
+    responsavel = _responsavel_logado()
+    if not responsavel:
+        return None, None, JsonResponse({"detail": "Não autenticado."}, status=401)
+
+    vinculo = VinculoResponsavel.objects.filter(
+        responsavel=responsavel, aluno_id=aluno_id, status="APROVADO"
+    ).select_related("aluno").first()
+
+    if not vinculo:
+        return None, None, JsonResponse({"detail": "Você não tem acesso aprovado a este aluno."}, status=403)
+
+    return responsavel, vinculo.aluno, None
+
+
+@csrf_exempt
+@require_http_methods(["GET"])
+def boletim_aluno_responsavel(request, aluno_id):
+    responsavel, aluno, erro = _verificar_acesso_responsavel(request, aluno_id)
+    if erro:
+        return erro
+
+    notas = Nota.objects.filter(aluno=aluno).select_related("disciplina", "professor").order_by("disciplina__nome_disciplina")
+
+    return JsonResponse({
+        "aluno": {"nome_completo": aluno.nome_completo, "turma": aluno.turma},
+        "boletim": [
+            {
+                "disciplina": n.disciplina.nome_disciplina if n.disciplina else None,
+                "nm1_t1": n.nm1_t1, "nm2_t1": n.nm2_t1, "nm3_t1": n.nm3_t1, "mt_t1": n.mt_t1,
+                "nm1_t2": n.nm1_t2, "nm2_t2": n.nm2_t2, "nm3_t2": n.nm3_t2, "mt_t2": n.mt_t2,
+                "nm1_t3": n.nm1_t3, "nm2_t3": n.nm2_t3, "nm3_t3": n.nm3_t3, "mt_t3": n.mt_t3,
+                "ma": n.ma, "pf": n.pf, "maf": n.maf, "rf": n.rf,
+            }
+            for n in notas
+        ]
+    })
+
+
+
+
+@csrf_exempt
+@require_http_methods(["GET"])
+def frequencia_aluno_responsavel(request, aluno_id):
+    responsavel, aluno, erro = _verificar_acesso_responsavel(request, aluno_id)
+    if erro:
+        return erro
+
+    mes = request.GET.get("mes")
+    ano = request.GET.get("ano")
+    hoje = date.today()
+    mes = int(mes) if mes else hoje.month
+    ano = int(ano) if ano else hoje.year
+
+    registros = Frequencia.objects.filter(aluno=aluno, data__year=ano, data__month=mes).select_related("disciplina").order_by("data")
+
+    por_dia = {}
+    for r in registros:
+        chave = r.data.isoformat()
+        por_dia.setdefault(chave, []).append({
+            "disciplina": r.disciplina.nome_disciplina if r.disciplina else None,
+            "presente": r.presente,
+        })
+
+    dias = []
+    for data_str, aulas in sorted(por_dia.items()):
+        total = len(aulas)
+        faltas = sum(1 for a in aulas if not a["presente"])
+        dias.append({
+            "data": data_str, "total_aulas": total, "total_faltas": faltas,
+            "situacao": "falta_total" if faltas == total else ("falta_parcial" if faltas > 0 else "presente"),
+            "aulas": aulas,
+        })
+
+    total_registros_mes = registros.count()
+    total_presencas_mes = registros.filter(presente=True).count()
+
+    return JsonResponse({
+        "aluno": {"nome_completo": aluno.nome_completo, "turma": aluno.turma},
+        "mes": mes, "ano": ano,
+        "total_registros": total_registros_mes,
+        "total_presencas": total_presencas_mes,
+        "total_faltas": total_registros_mes - total_presencas_mes,
+        "percentual_presenca": round((total_presencas_mes / total_registros_mes) * 100, 1) if total_registros_mes else None,
+        "dias": dias,
+    })
+
+
+
+@csrf_exempt
+@require_http_methods(["GET"])
+def horario_aluno_responsavel(request, aluno_id):
+    responsavel, aluno, erro = _verificar_acesso_responsavel(request, aluno_id)
+    if erro:
+        return erro
+
+    vinculos = buscar_atravessapor_por_turma(aluno.turma)
+    horarios = HorarioAula.objects.filter(turma__in=vinculos).select_related("turma", "turma__professor")
+
+    resultado = []
+    for h in horarios:
+        disciplina = resolver_disciplina_da_turma(h.turma)
+        resultado.append({
+            "id": h.id,
+            "dia_semana": h.dia_semana,
+            "hora_inicio": h.hora_inicio.strftime("%H:%M") if h.hora_inicio else None,
+            "hora_fim": h.hora_fim.strftime("%H:%M") if h.hora_fim else None,
+            "disciplina": disciplina.nome_disciplina if disciplina else h.turma.disciplina_lecionada,
+            "professor_nome": h.turma.professor.nome_completo if h.turma.professor else None,
+        })
+
+    return JsonResponse({"aluno": {"nome_completo": aluno.nome_completo, "turma": aluno.turma}, "horarios": resultado})
+
+
+
+@csrf_exempt
+@require_http_methods(["GET"])
+def comunicados_aluno_responsavel(request, aluno_id):
+    responsavel, aluno, erro = _verificar_acesso_responsavel(request, aluno_id)
+    if erro:
+        return erro
+
+    turma_aluno_norm = _turma_normalizada(aluno.turma)
+    resultado = []
+    for c in Comunicado.objects.select_related("turma", "professor", "coordenador").order_by("-data"):
+        if c.turma is not None and _turma_normalizada(c.turma.turma) != turma_aluno_norm:
+            continue
+        if c.coordenador:
+            criado_por, origem = (c.coordenador.escola or "Coordenação"), "coordenacao"
+        elif c.professor:
+            criado_por, origem = c.professor.nome_completo, "professor"
+        else:
+            criado_por, origem = None, None
+        resultado.append({
+            "id": c.id, "titulo": c.titulo, "mensagem": c.mensagem, "data": c.data.isoformat(),
+            "nome_turma": c.turma.turma if c.turma else None, "criado_por": criado_por, "origem": origem,
+        })
+
+    return JsonResponse({"aluno": {"nome_completo": aluno.nome_completo, "turma": aluno.turma}, "comunicados": resultado[:50]})
+
+
+@csrf_exempt
+@require_http_methods(["GET"])
+def advertencias_aluno_responsavel(request, aluno_id):
+    responsavel, aluno, erro = _verificar_acesso_responsavel(request, aluno_id)
+    if erro:
+        return erro
+
+    advertencias = Advertencia.objects.filter(aluno=aluno, tipo="ADVERTENCIA").select_related("coordenador").order_by("-data")
+
+    return JsonResponse({
+        "aluno": {"nome_completo": aluno.nome_completo, "turma": aluno.turma},
+        "advertencias": [
+            {
+                "id": a.id, "titulo": a.titulo, "descricao": a.descricao, "data": a.data.isoformat(),
+                "emitido_por": (a.coordenador.escola or "Coordenação") if a.coordenador else None,
+                "is_suspensao": a.is_suspensao,
+                "data_inicio_suspensao": a.data_inicio_suspensao.isoformat() if a.data_inicio_suspensao else None,
+                "data_termino_suspensao": a.data_termino_suspensao.isoformat() if a.data_termino_suspensao else None,
+            }
+            for a in advertencias
+        ]
+    })
+
+
+def _avaliacoes_por_turma(nome_turma):
+    nome_normalizado = (nome_turma or "").replace(" ", "").strip().lower()
+    return Avaliacao.objects.annotate(
+        turma_normalizada=Replace("turma", Value(" "), Value(""))
+    ).filter(turma_normalizada__iexact=nome_normalizado)
+
+
+@csrf_exempt
+@require_http_methods(["GET"])
+def avaliacoes_aluno_responsavel(request, aluno_id):
+    responsavel, aluno, erro = _verificar_acesso_responsavel(request, aluno_id)
+    if erro:
+        return erro
+
+    avaliacoes = _avaliacoes_por_turma(aluno.turma).select_related("professor", "disciplina").order_by("-data")
+
+    return JsonResponse({
+        "aluno": {"nome_completo": aluno.nome_completo, "turma": aluno.turma},
+        "avaliacoes": [
+            {
+                "id": a.id, "titulo": a.titulo,
+                "disciplina": a.disciplina.nome_disciplina if a.disciplina else None,
+                "professor": a.professor.nome_completo if a.professor else None,
+                "data": a.data.isoformat(),
+            }
+            for a in avaliacoes
+        ]
+    })
+
+
+@csrf_exempt
+@require_http_methods(["GET"])
+def calendario_aluno_responsavel(request, aluno_id):
+    responsavel, aluno, erro = _verificar_acesso_responsavel(request, aluno_id)
+    if erro:
+        return erro
+
+    mes = request.GET.get("mes")
+    ano = request.GET.get("ano")
+    turma_aluno_norm = _turma_normalizada(aluno.turma)
+
+    eventos_qs = Evento.objects.select_related("turma", "professor", "coordenador").all()
+    if mes and ano:
+        eventos_qs = eventos_qs.filter(data__year=ano, data__month=mes)
+    elif ano:
+        eventos_qs = eventos_qs.filter(data__year=ano)
+
+    resultado = []
+    for e in eventos_qs.order_by("data"):
+        if e.turma is not None and _turma_normalizada(e.turma.turma) != turma_aluno_norm:
+            continue
+        if e.coordenador:
+            criado_por, origem = (e.coordenador.escola or "Coordenação"), "coordenacao"
+        elif e.professor:
+            criado_por, origem = e.professor.nome_completo, "professor"
+        else:
+            criado_por, origem = None, None
+        resultado.append({
+            "id": e.id, "titulo": e.titulo, "descricao": e.descricao, "data": e.data.isoformat(),
+            "nome_turma": e.turma.turma if e.turma else None, "criado_por": criado_por, "origem": origem,
+        })
+
+    return JsonResponse({"aluno": {"nome_completo": aluno.nome_completo, "turma": aluno.turma}, "eventos": resultado})
+
+
+@csrf_exempt
+@require_http_methods(["GET"])
+def opcoes_mensagem_professor_responsavel(request, aluno_id):
+    responsavel, aluno, erro = _verificar_acesso_responsavel(request, aluno_id)
+    if erro:
+        return erro
+
+    vinculos = buscar_atravessapor_por_turma(aluno.turma).select_related("professor")
+    professores = {v.professor_id: v.professor.nome_completo for v in vinculos}
+
+    return JsonResponse({"professores": [{"id": pid, "nome_completo": nome} for pid, nome in professores.items()]})
+
+
+@csrf_exempt
+@require_http_methods(["GET", "POST"])
+def mensagens_professor_responsavel(request, aluno_id):
+    responsavel, aluno, erro = _verificar_acesso_responsavel(request, aluno_id)
+    if erro:
+        return erro
+
+    if request.method == "GET":
+        conversas = ConversaResponsavelProfessor.objects.filter(
+            responsavel=responsavel, aluno=aluno
+        ).select_related("professor").order_by("-ultima_atualizacao")
+
+        resultado = []
+        for c in conversas:
+            ultima = c.mensagens.last()
+            nao_lidas = c.mensagens.filter(remetente_tipo="PROFESSOR", lida_responsavel=False).count()
+            resultado.append({
+                "id": c.id, "professor_nome": c.professor.nome_completo,
+                "ultima_mensagem": ultima.conteudo if ultima else None,
+                "ultima_atualizacao": c.ultima_atualizacao.isoformat(), "nao_lidas": nao_lidas,
+            })
+        return JsonResponse(resultado, safe=False)
+
+    body = json.loads(request.body or "{}")
+    professor_id = body.get("professor_id")
+    conteudo = (body.get("conteudo") or "").strip()
+
+    if not professor_id or not conteudo:
+        return JsonResponse({"detail": "professor_id e conteudo são obrigatórios."}, status=400)
+
+    professor = Professor.objects.filter(id=professor_id).first()
+    if not professor:
+        return JsonResponse({"detail": "Professor não encontrado."}, status=404)
+
+    if not buscar_atravessapor_por_turma(aluno.turma).filter(professor=professor).exists():
+        return JsonResponse({"detail": "Esse professor não leciona para a turma do aluno."}, status=400)
+
+    conversa, _ = ConversaResponsavelProfessor.objects.get_or_create(responsavel=responsavel, professor=professor, aluno=aluno)
+    MensagemChatResponsavelProfessor.objects.create(
+        conversa=conversa, remetente_tipo="RESPONSAVEL", conteudo=conteudo, lida_responsavel=True,
+    )
+    conversa.save()
+
+    return JsonResponse({"conversa_id": conversa.id}, status=201)
+
+
+
+@csrf_exempt
+@require_http_methods(["GET", "POST"])
+def mensagem_conversa_professor_responsavel(request, aluno_id, conversa_id):
+    responsavel, aluno, erro = _verificar_acesso_responsavel(request, aluno_id)
+    if erro:
+        return erro
+
+    conversa = ConversaResponsavelProfessor.objects.filter(
+        id=conversa_id, responsavel=responsavel, aluno=aluno
+    ).select_related("professor").first()
+    if not conversa:
+        return JsonResponse({"detail": "Conversa não encontrada."}, status=404)
+
+    if request.method == "GET":
+        conversa.mensagens.filter(remetente_tipo="PROFESSOR", lida_responsavel=False).update(lida_responsavel=True)
+        mensagens = [
+            {"id": m.id, "remetente_tipo": m.remetente_tipo, "conteudo": m.conteudo, "data_envio": m.data_envio.isoformat()}
+            for m in conversa.mensagens.all()
+        ]
+        return JsonResponse({"conversa": {"id": conversa.id, "professor_nome": conversa.professor.nome_completo}, "mensagens": mensagens})
+
+    body = json.loads(request.body or "{}")
+    conteudo = (body.get("conteudo") or "").strip()
+    if not conteudo:
+        return JsonResponse({"detail": "conteudo é obrigatório."}, status=400)
+
+    mensagem = MensagemChatResponsavelProfessor.objects.create(
+        conversa=conversa, remetente_tipo="RESPONSAVEL", conteudo=conteudo, lida_responsavel=True,
+    )
+    conversa.save()
+
+    return JsonResponse({
+        "id": mensagem.id, "remetente_tipo": mensagem.remetente_tipo,
+        "conteudo": mensagem.conteudo, "data_envio": mensagem.data_envio.isoformat(),
+    }, status=201)
+
+
+def _coordenador_da_escola_do_aluno(aluno):
+    nome_escola_aluno = _turma_normalizada(aluno.escola)
+    for coordenador in Coordenador.objects.all():
+        if _turma_normalizada(_nome_escola(coordenador.escola)) == nome_escola_aluno:
+            return coordenador
+    return None
+
+
+@csrf_exempt
+@require_http_methods(["GET"])
+def mensagem_coordenador_status_responsavel(request, aluno_id):
+    responsavel, aluno, erro = _verificar_acesso_responsavel(request, aluno_id)
+    if erro:
+        return erro
+
+    coordenador = _coordenador_da_escola_do_aluno(aluno)
+    if not coordenador:
+        return JsonResponse({"conversa_id": None})
+
+    conversa = ConversaResponsavelCoordenador.objects.filter(
+        responsavel=responsavel, coordenador=coordenador, aluno=aluno
+    ).first()
+    return JsonResponse({"conversa_id": conversa.id if conversa else None})
+
+
+@csrf_exempt
+@require_http_methods(["POST"])
+def mensagem_coordenador_responsavel_enviar(request, aluno_id):
+    responsavel, aluno, erro = _verificar_acesso_responsavel(request, aluno_id)
+    if erro:
+        return erro
+
+    coordenador = _coordenador_da_escola_do_aluno(aluno)
+    if not coordenador:
+        return JsonResponse({"detail": "Coordenação da escola do aluno não encontrada."}, status=404)
+
+    body = json.loads(request.body or "{}")
+    conteudo = (body.get("conteudo") or "").strip()
+    if not conteudo:
+        return JsonResponse({"detail": "conteudo é obrigatório."}, status=400)
+
+    conversa, _ = ConversaResponsavelCoordenador.objects.get_or_create(responsavel=responsavel, coordenador=coordenador, aluno=aluno)
+    MensagemChatResponsavelCoordenador.objects.create(
+        conversa=conversa, remetente_tipo="RESPONSAVEL", conteudo=conteudo, lida_responsavel=True,
+    )
+    conversa.save()
+
+    return JsonResponse({"conversa_id": conversa.id}, status=201)
+
+
+@csrf_exempt
+@require_http_methods(["GET", "POST"])
+def mensagem_conversa_coordenador_responsavel(request, aluno_id, conversa_id):
+    responsavel, aluno, erro = _verificar_acesso_responsavel(request, aluno_id)
+    if erro:
+        return erro
+
+    conversa = ConversaResponsavelCoordenador.objects.filter(
+        id=conversa_id, responsavel=responsavel, aluno=aluno
+    ).select_related("coordenador").first()
+    if not conversa:
+        return JsonResponse({"detail": "Conversa não encontrada."}, status=404)
+
+    if request.method == "GET":
+        conversa.mensagens.filter(remetente_tipo="COORDENACAO", lida_responsavel=False).update(lida_responsavel=True)
+        mensagens = [
+            {"id": m.id, "remetente_tipo": m.remetente_tipo, "conteudo": m.conteudo, "data_envio": m.data_envio.isoformat()}
+            for m in conversa.mensagens.all()
+        ]
+        return JsonResponse({
+            "conversa": {"id": conversa.id, "coordenador_nome": conversa.coordenador.escola or "Coordenação"},
+            "mensagens": mensagens,
+        })
+
+    body = json.loads(request.body or "{}")
+    conteudo = (body.get("conteudo") or "").strip()
+    if not conteudo:
+        return JsonResponse({"detail": "conteudo é obrigatório."}, status=400)
+
+    mensagem = MensagemChatResponsavelCoordenador.objects.create(
+        conversa=conversa, remetente_tipo="RESPONSAVEL", conteudo=conteudo, lida_responsavel=True,
+    )
+    conversa.save()
+
+    return JsonResponse({
+        "id": mensagem.id, "remetente_tipo": mensagem.remetente_tipo,
+        "conteudo": mensagem.conteudo, "data_envio": mensagem.data_envio.isoformat(),
+    }, status=201)
