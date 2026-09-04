@@ -142,5 +142,6 @@ urlpatterns = [
     path('api/responsavel/vinculos', app.views.vinculos_responsavel),
     path('api/responsavel/vinculos/solicitar', app.views.solicitar_vinculo_responsavel),
     path('api/responsavel/alunos/buscar', app.views.buscar_alunos_para_responsavel),
+    path('api/students/solicitacoes/<int:vinculo_id>/responder', app.views.solicitacao_responsavel_responder),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
