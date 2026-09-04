@@ -5218,3 +5218,21 @@ def login_responsavel(request):
     Responsavel.objects.filter(id=responsavel.id).update(ip=ip)
     return JsonResponse({"return": True})
 
+
+@csrf_exempt
+def auth_responsavel(request):
+    ip = get_ip()
+    responsavel = Responsavel.objects.filter(ip=ip).first()
+
+    if not responsavel:
+        return JsonResponse({"return": False})
+
+    return JsonResponse({
+        "return": True,
+        "responsavel": {
+            "id": responsavel.id,
+            "nome_completo": responsavel.nome_completo,
+            "telefone": responsavel.telefone,
+        },
+    })
+
