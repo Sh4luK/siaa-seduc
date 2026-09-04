@@ -5658,3 +5658,27 @@ def comunicados_aluno_responsavel(request, aluno_id):
 
     return JsonResponse({"aluno": {"nome_completo": aluno.nome_completo, "turma": aluno.turma}, "comunicados": resultado[:50]})
 
+
+@csrf_exempt
+@require_http_methods(["GET"])
+def advertencias_aluno_responsavel(request, aluno_id):
+    responsavel, aluno, erro = _verificar_acesso_responsavel(request, aluno_id)
+    if erro:
+        return erro
+
+    advertencias = Advertencia.objects.filter(aluno=aluno, tipo="ADVERTENCIA").select_related("coordenador").order_by("-data")
+
+    return JsonResponse({
+        "aluno": {"nome_completo": aluno.nome_completo, "turma": aluno.turma},
+        "advertencias": [
+            {
+                "id": a.id, "titulo": a.titulo, "descricao": a.descricao, "data": a.data.isoformat(),
+                "emitido_por": (a.coordenador.escola or "Coordenação") if a.coordenador else None,
+                "is_suspensao": a.is_suspensao,
+                "data_inicio_suspensao": a.data_inicio_suspensao.isoformat() if a.data_inicio_suspensao else None,
+                "data_termino_suspensao": a.data_termino_suspensao.isoformat() if a.data_termino_suspensao else None,
+            }
+            for a in advertencias
+        ]
+    })
+
