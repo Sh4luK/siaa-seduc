@@ -487,3 +487,10 @@
   height: auto;
   opacity: 0.92;
 }
+
+.avisoSuspensao {
+  font-size: 0.78rem;
+  color: #b91c1c;
+  font-weight: 600;
+  margin-top: 0.3rem;
+}
