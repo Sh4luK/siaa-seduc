@@ -5712,3 +5712,37 @@ def avaliacoes_aluno_responsavel(request, aluno_id):
         ]
     })
 
+
+@csrf_exempt
+@require_http_methods(["GET"])
+def calendario_aluno_responsavel(request, aluno_id):
+    responsavel, aluno, erro = _verificar_acesso_responsavel(request, aluno_id)
+    if erro:
+        return erro
+
+    mes = request.GET.get("mes")
+    ano = request.GET.get("ano")
+    turma_aluno_norm = _turma_normalizada(aluno.turma)
+
+    eventos_qs = Evento.objects.select_related("turma", "professor", "coordenador").all()
+    if mes and ano:
+        eventos_qs = eventos_qs.filter(data__year=ano, data__month=mes)
+    elif ano:
+        eventos_qs = eventos_qs.filter(data__year=ano)
+
+    resultado = []
+    for e in eventos_qs.order_by("data"):
+        if e.turma is not None and _turma_normalizada(e.turma.turma) != turma_aluno_norm:
+            continue
+        if e.coordenador:
+            criado_por, origem = (e.coordenador.escola or "Coordenação"), "coordenacao"
+        elif e.professor:
+            criado_por, origem = e.professor.nome_completo, "professor"
+        else:
+            criado_por, origem = None, None
+        resultado.append({
+            "id": e.id, "titulo": e.titulo, "descricao": e.descricao, "data": e.data.isoformat(),
+            "nome_turma": e.turma.turma if e.turma else None, "criado_por": criado_por, "origem": origem,
+        })
+
+    return JsonResponse({"aluno": {"nome_completo": aluno.nome_completo, "turma": aluno.turma}, "eventos": resultado})
