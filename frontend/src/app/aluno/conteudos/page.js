@@ -109,6 +109,10 @@ export default function ConteudosAlunoPage() {
               <i className="ti ti-clock" aria-hidden="true" />
               Horários
             </Link>
+            <Link href="/aluno/solicitacoes" className={layoutStyles.navLink}>
+              <i className="ti ti-users-group" aria-hidden="true" />
+              Responsáveis
+            </Link>
           </nav>
 
           <div className={layoutStyles.sidebarFooter}>
