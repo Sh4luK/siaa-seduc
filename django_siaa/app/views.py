@@ -5555,3 +5555,53 @@ def boletim_aluno_responsavel(request, aluno_id):
             for n in notas
         ]
     })
+
+
+
+
+@csrf_exempt
+@require_http_methods(["GET"])
+def frequencia_aluno_responsavel(request, aluno_id):
+    responsavel, aluno, erro = _verificar_acesso_responsavel(request, aluno_id)
+    if erro:
+        return erro
+
+    mes = request.GET.get("mes")
+    ano = request.GET.get("ano")
+    hoje = date.today()
+    mes = int(mes) if mes else hoje.month
+    ano = int(ano) if ano else hoje.year
+
+    registros = Frequencia.objects.filter(aluno=aluno, data__year=ano, data__month=mes).select_related("disciplina").order_by("data")
+
+    por_dia = {}
+    for r in registros:
+        chave = r.data.isoformat()
+        por_dia.setdefault(chave, []).append({
+            "disciplina": r.disciplina.nome_disciplina if r.disciplina else None,
+            "presente": r.presente,
+        })
+
+    dias = []
+    for data_str, aulas in sorted(por_dia.items()):
+        total = len(aulas)
+        faltas = sum(1 for a in aulas if not a["presente"])
+        dias.append({
+            "data": data_str, "total_aulas": total, "total_faltas": faltas,
+            "situacao": "falta_total" if faltas == total else ("falta_parcial" if faltas > 0 else "presente"),
+            "aulas": aulas,
+        })
+
+    total_registros_mes = registros.count()
+    total_presencas_mes = registros.filter(presente=True).count()
+
+    return JsonResponse({
+        "aluno": {"nome_completo": aluno.nome_completo, "turma": aluno.turma},
+        "mes": mes, "ano": ano,
+        "total_registros": total_registros_mes,
+        "total_presencas": total_presencas_mes,
+        "total_faltas": total_registros_mes - total_presencas_mes,
+        "percentual_presenca": round((total_presencas_mes / total_registros_mes) * 100, 1) if total_registros_mes else None,
+        "dias": dias,
+    })
+
