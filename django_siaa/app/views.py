@@ -6012,3 +6012,30 @@ def mensagem_conversa_professor_responsavel_detalhe(request, conversa_id):
     }, status=201)
 
 
+
+@csrf_exempt
+@require_http_methods(["GET"])
+def mensagens_list_coordenacao_responsaveis(request):
+    coordenador = _coordenador_logado()
+    if not coordenador:
+        return JsonResponse({"detail": "Não autenticado."}, status=401)
+
+    conversas = (
+        ConversaResponsavelCoordenador.objects.filter(coordenador=coordenador)
+        .select_related("responsavel", "aluno")
+        .order_by("-ultima_atualizacao")
+    )
+    resultado = []
+    for c in conversas:
+        ultima = c.mensagens.last()
+        nao_lidas = c.mensagens.filter(remetente_tipo="RESPONSAVEL", lida_coordenacao=False).count()
+        resultado.append({
+            "id": c.id,
+            "responsavel_nome": c.responsavel.nome_completo,
+            "aluno_nome": c.aluno.nome_completo,
+            "ultima_mensagem": ultima.conteudo if ultima else None,
+            "ultima_atualizacao": c.ultima_atualizacao.isoformat(),
+            "nao_lidas": nao_lidas,
+        })
+    return JsonResponse(resultado, safe=False)
+
