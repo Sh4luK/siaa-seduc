@@ -5631,3 +5631,30 @@ def horario_aluno_responsavel(request, aluno_id):
 
     return JsonResponse({"aluno": {"nome_completo": aluno.nome_completo, "turma": aluno.turma}, "horarios": resultado})
 
+
+
+@csrf_exempt
+@require_http_methods(["GET"])
+def comunicados_aluno_responsavel(request, aluno_id):
+    responsavel, aluno, erro = _verificar_acesso_responsavel(request, aluno_id)
+    if erro:
+        return erro
+
+    turma_aluno_norm = _turma_normalizada(aluno.turma)
+    resultado = []
+    for c in Comunicado.objects.select_related("turma", "professor", "coordenador").order_by("-data"):
+        if c.turma is not None and _turma_normalizada(c.turma.turma) != turma_aluno_norm:
+            continue
+        if c.coordenador:
+            criado_por, origem = (c.coordenador.escola or "Coordenação"), "coordenacao"
+        elif c.professor:
+            criado_por, origem = c.professor.nome_completo, "professor"
+        else:
+            criado_por, origem = None, None
+        resultado.append({
+            "id": c.id, "titulo": c.titulo, "mensagem": c.mensagem, "data": c.data.isoformat(),
+            "nome_turma": c.turma.turma if c.turma else None, "criado_por": criado_por, "origem": origem,
+        })
+
+    return JsonResponse({"aluno": {"nome_completo": aluno.nome_completo, "turma": aluno.turma}, "comunicados": resultado[:50]})
+
