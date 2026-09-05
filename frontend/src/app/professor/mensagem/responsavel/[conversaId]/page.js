@@ -47,6 +47,29 @@ export default function ConversaResponsavelProfessorPage() {
     }
   }, [conversaId]);
 
+  // mantenha carregarConversa como está
+
+  const atualizarMensagensSilenciosamente = useCallback(async () => {
+    try {
+      const res = await fetch(`${API_BASE}/api/professor/mensagens/responsaveis/${conversaId}`, {
+        credentials: "include",
+      });
+      if (!res.ok) return;
+      const data = await res.json();
+      setMensagens((atual) =>
+        atual.length !== data.mensagens.length ? data.mensagens : atual
+      );
+    } catch {
+      // ignora falhas de polling silenciosamente
+    }
+  }, [conversaId]);
+
+  useEffect(() => {
+    if (loading) return;
+    const intervalo = setInterval(atualizarMensagensSilenciosamente, 3000);
+    return () => clearInterval(intervalo);
+  }, [loading, atualizarMensagensSilenciosamente]);
+
   useEffect(() => {
     async function init() {
       try {
