@@ -206,3 +206,50 @@
 .linkSecundario:hover {
   text-decoration: underline;
 }
+
+.abasRow {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1.25rem;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.aba,
+.abaAtiva {
+  position: relative;
+  padding: 0.6rem 1rem;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: #5b6b85;
+  cursor: pointer;
+}
+
+.aba:hover {
+  color: #1a2942;
+}
+
+.abaAtiva {
+  color: #0b4f9e;
+  border-bottom-color: #0b4f9e;
+  font-weight: 600;
+}
+
+.pontoNaoLido {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #0b4f9e;
+  margin-left: 0.35rem;
+  vertical-align: middle;
+}
+
+.alunoTag {
+  display: block;
+  font-size: 0.7rem;
+  color: #94a3b8;
+  margin-bottom: 0.15rem;
+}
