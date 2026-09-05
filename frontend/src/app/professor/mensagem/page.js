@@ -317,6 +317,27 @@ export default function MensagensProfessorPage() {
     }
   }, []);
 
+  // mantenha carregarTudo como está
+
+  const atualizarTudoSilenciosamente = useCallback(async () => {
+    try {
+      const [resCoord, resResp] = await Promise.all([
+        fetch(`${API_BASE}/api/professor/mensagens`, { credentials: "include" }),
+        fetch(`${API_BASE}/api/professor/mensagens/responsaveis`, { credentials: "include" }),
+      ]);
+      if (resCoord.ok) setConversasCoordenacao(await resCoord.json());
+      if (resResp.ok) setConversasResponsaveis(await resResp.json());
+    } catch {
+      // falha silenciosa no polling
+    }
+  }, []);
+
+  useEffect(() => {
+    if (loading) return;
+    const intervalo = setInterval(atualizarTudoSilenciosamente, 6000);
+    return () => clearInterval(intervalo);
+  }, [loading, atualizarTudoSilenciosamente]);
+
   useEffect(() => {
     async function init() {
       try {
