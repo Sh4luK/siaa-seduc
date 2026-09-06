@@ -383,10 +383,6 @@ export default function ConversaProfessorPage() {
               <i className="ti ti-message" aria-hidden="true" />
               Comunicados
             </Link>
-            <Link href="/professor/mensagem" className={layoutStyles.navLinkActive}>
-              <i className="ti ti-messages" aria-hidden="true" />
-              Mensagens
-            </Link>
             <Link href="/professor/atividades" className={layoutStyles.navLink}>
               <i className="ti ti-users" aria-hidden="true" />
               Atividades
@@ -399,9 +395,9 @@ export default function ConversaProfessorPage() {
               <i className="ti ti-edit" aria-hidden="true" />
               Lançar notas
             </Link>
-            <Link href="/professor/horarios" className={layoutStyles.navLink}>
+            <Link href="/professor/mensagem" className={layoutStyles.navLink}>
               <i className="ti ti-clock" aria-hidden="true" />
-              Horários
+              Mensagens
             </Link>
           </nav>
 
