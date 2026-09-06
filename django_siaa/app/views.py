@@ -6098,3 +6098,84 @@ def mensagem_conversa_coordenacao_responsavel_detalhe(request, conversa_id):
         "id": mensagem.id, "remetente_tipo": mensagem.remetente_tipo,
         "conteudo": mensagem.conteudo, "data_envio": mensagem.data_envio.isoformat(),
     }, status=201)
+
+
+def _alunos_da_escola_coordenador(coordenador):
+    """Retorna os alunos cuja escola bate com a do coordenador (mesmo
+    mismatch de formatação já tratado em _coordenador_da_escola_do_aluno,
+    aqui invertido: coordenador -> alunos)."""
+    nome_escola_coord = _turma_normalizada(_nome_escola(coordenador.escola))
+    if not nome_escola_coord:
+        return Estudante.objects.none()
+
+    alunos_ids = []
+    for aluno in Estudante.objects.all():
+        nome_escola_aluno = _turma_normalizada(aluno.escola)
+        if not nome_escola_aluno:
+            continue
+        if (
+            nome_escola_aluno == nome_escola_coord
+            or nome_escola_aluno in nome_escola_coord
+            or nome_escola_coord in nome_escola_aluno
+        ):
+            alunos_ids.append(aluno.id)
+
+    return Estudante.objects.filter(id__in=alunos_ids)
+
+
+@csrf_exempt
+@require_http_methods(["GET"])
+def solicitacoes_responsavel_coordenacao(request):
+    coordenador = _coordenador_logado()
+    if not coordenador:
+        return JsonResponse({"detail": "Não autenticado."}, status=401)
+
+    alunos_escola = _alunos_da_escola_coordenador(coordenador)
+    vinculos = VinculoResponsavel.objects.filter(
+        aluno__in=alunos_escola
+    ).select_related("aluno", "responsavel").order_by("-data_solicitacao")
+
+    return JsonResponse({
+        "solicitacoes": [
+            {
+                "id": v.id,
+                "aluno_nome": v.aluno.nome_completo,
+                "aluno_turma": v.aluno.turma,
+                "responsavel_nome": v.responsavel.nome_completo,
+                "parentesco": v.parentesco,
+                "status": v.status,
+                "origem": v.origem,
+                "data_solicitacao": v.data_solicitacao.isoformat(),
+            }
+            for v in vinculos
+        ]
+    })
+
+
+@csrf_exempt
+@require_http_methods(["POST"])
+def solicitacao_responsavel_coordenacao_responder(request, vinculo_id):
+    """Permite à coordenação aprovar/recusar diretamente — útil se o aluno
+    demorar a responder ou estiver inacessível."""
+    coordenador = _coordenador_logado()
+    if not coordenador:
+        return JsonResponse({"detail": "Não autenticado."}, status=401)
+
+    vinculo = VinculoResponsavel.objects.filter(id=vinculo_id).select_related("aluno").first()
+    if not vinculo:
+        return JsonResponse({"detail": "Solicitação não encontrada."}, status=404)
+
+    alunos_escola_ids = set(_alunos_da_escola_coordenador(coordenador).values_list("id", flat=True))
+    if vinculo.aluno_id not in alunos_escola_ids:
+        return JsonResponse({"detail": "Esse aluno não pertence à sua escola."}, status=403)
+
+    body = json.loads(request.body or "{}")
+    decisao = body.get("decisao")
+    if decisao not in ("APROVADO", "RECUSADO"):
+        return JsonResponse({"detail": "decisao deve ser 'APROVADO' ou 'RECUSADO'."}, status=400)
+
+    vinculo.status = decisao
+    vinculo.data_resposta = timezone.now()
+    vinculo.save(update_fields=["status", "data_resposta"])
+
+    return JsonResponse({"status": vinculo.status})
