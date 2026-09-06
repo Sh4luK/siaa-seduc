@@ -163,6 +163,7 @@ urlpatterns = [
     path('api/coordenacao/mensagens/responsaveis/<int:conversa_id>', app.views.mensagem_conversa_coordenacao_responsavel_detalhe),
     path('api/coordenacao/solicitacoes', app.views.solicitacoes_responsavel_coordenacao),
     path('api/coordenacao/solicitacoes/<int:vinculo_id>/responder', app.views.solicitacao_responsavel_coordenacao_responder),
+    path('api/teacher/notas/turma/<int:turma_id>/ficha-pdf', app.views.gerar_ficha_notas_pdf),
 
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
