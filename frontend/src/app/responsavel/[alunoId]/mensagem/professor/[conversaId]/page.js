@@ -41,6 +41,25 @@ export default function ConversaProfessorResponsavelPage() {
     }
   }, [alunoId, conversaId]);
 
+  const atualizarMensagensSilenciosamente = useCallback(async () => {
+    try {
+      const res = await fetch(`${API_BASE}/api/responsavel/alunos/${alunoId}/mensagem/professor/${conversaId}`);
+      if (!res.ok) return;
+      const data = await res.json();
+      setMensagens((atual) =>
+        atual.length !== data.mensagens.length ? data.mensagens : atual
+      );
+    } catch {
+      // ignora falhas de polling silenciosamente
+    }
+  }, [alunoId, conversaId]);
+
+  useEffect(() => {
+    if (loading) return;
+    const intervalo = setInterval(atualizarMensagensSilenciosamente, 3000);
+    return () => clearInterval(intervalo);
+  }, [loading, atualizarMensagensSilenciosamente]);
+
   useEffect(() => {
     async function init() {
       const authRes = await fetch(`${API_BASE}/api/responsavel/auth`);

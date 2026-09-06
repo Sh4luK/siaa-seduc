@@ -221,6 +221,29 @@ export default function MensagemListaPage() {
     }
   }, []);
 
+  // mantenha carregarTudo como está para o load inicial e o botão "Tentar novamente"
+
+  // nova função — atualização silenciosa
+  const atualizarTudoSilenciosamente = useCallback(async () => {
+    try {
+      const [resProf, resResp] = await Promise.all([
+        fetch(`${API_BASE}/api/coordenacao/mensagens`, { credentials: "include" }),
+        fetch(`${API_BASE}/api/coordenacao/mensagens/responsaveis`, { credentials: "include" }),
+      ]);
+      if (resProf.ok) setConversasProfessores(await resProf.json());
+      if (resResp.ok) setConversasResponsaveis(await resResp.json());
+    } catch {
+      // falha silenciosa no polling
+    }
+  }, []);
+
+  // novo useEffect — adicione junto ao que já verifica auth
+  useEffect(() => {
+    if (verificandoAuth) return;
+    const intervalo = setInterval(atualizarTudoSilenciosamente, 6000);
+    return () => clearInterval(intervalo);
+  }, [verificandoAuth, atualizarTudoSilenciosamente]);
+
   useEffect(() => {
     async function verificar() {
       try {

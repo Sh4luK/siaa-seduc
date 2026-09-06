@@ -5849,11 +5849,26 @@ def mensagem_conversa_professor_responsavel(request, aluno_id, conversa_id):
     }, status=201)
 
 
+# def _coordenador_da_escola_do_aluno(aluno):
+#     nome_escola_aluno = _turma_normalizada(aluno.escola)
+#     for coordenador in Coordenador.objects.all():
+#         if _turma_normalizada(_nome_escola(coordenador.escola)) == nome_escola_aluno:
+#             return coordenador
+#     return None
+
 def _coordenador_da_escola_do_aluno(aluno):
     nome_escola_aluno = _turma_normalizada(aluno.escola)
+    if not nome_escola_aluno:
+        return None
+
     for coordenador in Coordenador.objects.all():
-        if _turma_normalizada(_nome_escola(coordenador.escola)) == nome_escola_aluno:
+        nome_escola_coord = _turma_normalizada(_nome_escola(coordenador.escola))
+        if nome_escola_coord == nome_escola_aluno:
             return coordenador
+        # fallback: um contém o outro (cobre abreviações/diferenças parciais)
+        if nome_escola_coord and (nome_escola_coord in nome_escola_aluno or nome_escola_aluno in nome_escola_coord):
+            return coordenador
+
     return None
 
 
