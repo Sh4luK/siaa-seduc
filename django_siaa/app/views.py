@@ -6179,3 +6179,77 @@ def solicitacao_responsavel_coordenacao_responder(request, vinculo_id):
     vinculo.save(update_fields=["status", "data_resposta"])
 
     return JsonResponse({"status": vinculo.status})
+
+
+def _campo_pdf(obj, nome):
+    if obj is None:
+        return "—"
+    valor = getattr(obj, nome)
+    return str(valor) if valor is not None else "—"
+
+
+@csrf_exempt
+def gerar_ficha_notas_pdf(request, turma_id):
+    """Gera a ficha de notas (todos os alunos da turma) em PDF, pronta para impressão."""
+    professor = _professor_atual(request)
+    if not professor:
+        return JsonResponse({"message": "Não autenticado"}, status=401)
+
+    ano_letivo = request.GET.get("ano_letivo", "2026")
+
+    turma_obj = AtravessaPor.objects.filter(id=turma_id, professor=professor).first()
+    if not turma_obj:
+        return JsonResponse({"message": "Turma não encontrada."}, status=404)
+
+    disciplina = resolver_disciplina_da_turma(turma_obj)
+    if not disciplina:
+        return JsonResponse(
+            {"message": "Não foi possível resolver a disciplina associada a esta turma."},
+            status=404
+        )
+
+    nome_turma = turma_obj.turma
+    alunos = buscar_alunos_por_turma(nome_turma)
+
+    linhas = []
+    for aluno in alunos:
+        nota = Nota.objects.filter(
+            aluno=aluno, turma_id=turma_id, disciplina=disciplina,
+            professor=professor, ano_letivo=ano_letivo,
+        ).first()
+
+        linhas.append({
+            "posicao_ordem": aluno.posicao_ordem or "—",
+            "nome_completo": aluno.nome_completo,
+            "nm1_t1": _campo_pdf(nota, "nm1_t1"), "nm2_t1": _campo_pdf(nota, "nm2_t1"),
+            "nm3_t1": _campo_pdf(nota, "nm3_t1"), "mt_t1": _campo_pdf(nota, "mt_t1"),
+            "nm1_t2": _campo_pdf(nota, "nm1_t2"), "nm2_t2": _campo_pdf(nota, "nm2_t2"),
+            "nm3_t2": _campo_pdf(nota, "nm3_t2"), "mt_t2": _campo_pdf(nota, "mt_t2"),
+            "nm1_t3": _campo_pdf(nota, "nm1_t3"), "nm2_t3": _campo_pdf(nota, "nm2_t3"),
+            "nm3_t3": _campo_pdf(nota, "nm3_t3"), "mt_t3": _campo_pdf(nota, "mt_t3"),
+            "ma": _campo_pdf(nota, "ma"), "pf": _campo_pdf(nota, "pf"),
+            "maf": _campo_pdf(nota, "maf"), "rcf": _campo_pdf(nota, "rcf"),
+            "tgf": nota.tgf if nota else 0,
+            "rf": nota.get_rf_display() if nota else "Não Definido",
+        })
+
+    logo_path = f"file://{os.path.join(settings.BASE_DIR, 'app', 'static', 'logo.png')}"
+
+    contexto = {
+        "nome_turma": nome_turma,
+        "disciplina": disciplina.nome_disciplina,
+        "professor": professor.nome_completo,
+        "ano_letivo": ano_letivo,
+        "linhas": linhas,
+        "logo_path": logo_path,
+        "data_emissao": date.today().strftime("%d/%m/%Y"),
+    }
+
+    html_string = render_to_string("notas/ficha_pdf.html", contexto)
+    pdf_file = HTML(string=html_string).write_pdf()
+
+    nome_arquivo = f"ficha_notas_{nome_turma}_{disciplina.nome_disciplina}.pdf".replace(" ", "_")
+
+    response = HttpResponse(pdf_file, content_type="application/pdf")
+    response["Content-Disposition"] = f'inline; filename="{nome_arquivo}"'
+    return response
