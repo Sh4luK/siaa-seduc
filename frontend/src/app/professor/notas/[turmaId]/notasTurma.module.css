@@ -734,3 +734,26 @@ thead .stickyCol {
     padding: 1.5rem 1.25rem;
   }
 }
+
+.botaoBaixarFicha {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+  padding: 0.7rem 1.4rem;
+  background: #fff;
+  color: #0b4f9e;
+  border: 1px solid rgba(11, 79, 158, 0.35);
+  border-radius: 8px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.botaoBaixarFicha:hover {
+  background: rgba(11, 79, 158, 0.06);
+  border-color: #0b4f9e;
+}
