@@ -487,9 +487,9 @@ export default function AlunosDaTurmaPage() {
               <i className="ti ti-clipboard-check" aria-hidden="true" />
               Frequência
             </Link>
-            <Link href="/professor/horarios" className={layoutStyles.navLink}>
+            <Link href="/professor/mensagem" className={layoutStyles.navLink}>
               <i className="ti ti-clock" aria-hidden="true" />
-              Horários
+              Mensagens
             </Link>
           </nav>
 
