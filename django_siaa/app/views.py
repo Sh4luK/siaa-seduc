@@ -6270,3 +6270,50 @@ def gerar_ficha_notas_pdf(request, turma_id):
     response = HttpResponse(pdf_file, content_type="application/pdf")
     response["Content-Disposition"] = f'inline; filename="{nome_arquivo}"'
     return response
+
+@csrf_exempt
+@require_http_methods(["GET"])
+def boletim_aluno_pdf(request):
+    """Gera o PDF do boletim do aluno autenticado, no mesmo padrão da ficha de notas do professor."""
+    aluno = _aluno_logado()
+    if not aluno:
+        return JsonResponse({"detail": "Não autenticado."}, status=401)
+
+    notas = Nota.objects.filter(aluno=aluno).select_related(
+        "disciplina", "professor"
+    ).order_by("disciplina__nome_disciplina")
+
+    linhas = []
+    for n in notas:
+        linhas.append({
+            "disciplina": n.disciplina.nome_disciplina if n.disciplina else "—",
+            "professor_nome": n.professor.nome_completo if n.professor else "—",
+            "nm1_t1": _campo_pdf(n, "nm1_t1"), "nm2_t1": _campo_pdf(n, "nm2_t1"),
+            "nm3_t1": _campo_pdf(n, "nm3_t1"), "mt_t1": _campo_pdf(n, "mt_t1"),
+            "nm1_t2": _campo_pdf(n, "nm1_t2"), "nm2_t2": _campo_pdf(n, "nm2_t2"),
+            "nm3_t2": _campo_pdf(n, "nm3_t2"), "mt_t2": _campo_pdf(n, "mt_t2"),
+            "nm1_t3": _campo_pdf(n, "nm1_t3"), "nm2_t3": _campo_pdf(n, "nm2_t3"),
+            "nm3_t3": _campo_pdf(n, "nm3_t3"), "mt_t3": _campo_pdf(n, "mt_t3"),
+            "ma": _campo_pdf(n, "ma"), "pf": _campo_pdf(n, "pf"),
+            "maf": _campo_pdf(n, "maf"),
+            "rf": n.get_rf_display(),
+        })
+
+    logo_path_absoluto = os.path.join(settings.BASE_DIR, 'django_siaa', 'app', 'static', 'logo.png')
+    logo_path = f"file://{logo_path_absoluto}" if os.path.exists(logo_path_absoluto) else None
+
+    contexto = {
+        "aluno": aluno,
+        "linhas": linhas,
+        "logo_path": logo_path,
+        "data_emissao": date.today().strftime("%d/%m/%Y"),
+    }
+
+    html_string = render_to_string("boletim/pdf.html", contexto)
+    pdf_file = HTML(string=html_string).write_pdf()
+
+    nome_arquivo = f"boletim_{_nome_arquivo_seguro(aluno.nome_completo)}.pdf"
+
+    response = HttpResponse(pdf_file, content_type="application/pdf")
+    response["Content-Disposition"] = f'inline; filename="{nome_arquivo}"'
+    return response
