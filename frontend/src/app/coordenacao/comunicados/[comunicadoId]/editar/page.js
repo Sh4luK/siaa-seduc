@@ -61,11 +61,6 @@ export default function EditarComunicadoPage() {
 
         if (c.turma_id) {
           setTipo("especifico");
-          // Não temos o professor_id diretamente no comunicado (só a turma_id
-          // referenciando AtravessaPor). Pré-selecionar o professor exigiria
-          // um endpoint que devolva o professor a partir do registro de turma.
-          // Por ora, deixamos o campo turma marcado via nome, e o usuário
-          // reconfirma o professor/turma caso queira alterar.
           setTurmaId(String(c.turma_id));
         }
       } catch (error) {

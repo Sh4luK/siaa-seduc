@@ -35,31 +35,6 @@ export default function ConversaPage() {
   const [enviando, setEnviando] = useState(false);
   const fimDaListaRef = useRef(null);
 
-  // const carregarConversa = useCallback(async () => {
-  //   setErro(null);
-  //   try {
-  //     const res = await fetch(`${API_BASE}/api/coordenacao/mensagens/${conversaId}`, {
-  //       credentials: "include",
-  //     });
-  //     if (res.status === 404) {
-  //       throw new Error("Conversa não encontrada.");
-  //     }
-  //     if (!res.ok) {
-  //       const data = await res.json().catch(() => null);
-  //       throw new Error(data?.detail || "Não foi possível carregar a conversa.");
-  //     }
-  //     const data = await res.json();
-  //     setConversa(data.conversa);
-  //     setMensagens(data.mensagens);
-  //   } catch (e) {
-  //     setErro(e.message);
-  //   } finally {
-  //     setCarregando(false);
-  //   }
-  // }, [conversaId]);
-
-  // troque a função carregarConversa por estas duas:
-
   const carregarConversa = useCallback(async () => {
     setErro(null);
     try {

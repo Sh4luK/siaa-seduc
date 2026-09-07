@@ -153,54 +153,71 @@ export default function BoletimAlunoPage() {
             ) : boletim.length === 0 ? (
               <p className={styles.vazio}>Nenhuma nota lançada ainda.</p>
             ) : (
-              <div className={styles.tabelaWrapper}>
-                <table className={styles.tabela}>
-                  <thead>
-                    <tr>
-                      <th className={styles.stickyCol} rowSpan={2}>Disciplina</th>
-                      <th colSpan={4}>1º Trimestre</th>
-                      <th colSpan={4}>2º Trimestre</th>
-                      <th colSpan={4}>3º Trimestre</th>
-                      <th rowSpan={2}>MA</th>
-                      <th rowSpan={2}>PF</th>
-                      <th rowSpan={2}>MAF</th>
-                      <th rowSpan={2}>RF</th>
-                    </tr>
-                    <tr>
-                      <th>NM1</th><th>NM2</th><th>NM3</th><th>MT</th>
-                      <th>NM1</th><th>NM2</th><th>NM3</th><th>MT</th>
-                      <th>NM1</th><th>NM2</th><th>NM3</th><th>MT</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {boletim.map((n, i) => (
-                      <tr key={i}>
-                        <td className={styles.stickyCol}>{n.disciplina}</td>
-                        <td className={corDaNota(n.nm1_t1)}>{n.nm1_t1 ?? "—"}</td>
-                        <td className={corDaNota(n.nm2_t1)}>{n.nm2_t1 ?? "—"}</td>
-                        <td className={corDaNota(n.nm3_t1)}>{n.nm3_t1 ?? "—"}</td>
-                        <td className={corDaNota(n.mt_t1)}>{n.mt_t1 ?? "—"}</td>
-                        <td className={corDaNota(n.nm1_t2)}>{n.nm1_t2 ?? "—"}</td>
-                        <td className={corDaNota(n.nm2_t2)}>{n.nm2_t2 ?? "—"}</td>
-                        <td className={corDaNota(n.nm3_t2)}>{n.nm3_t2 ?? "—"}</td>
-                        <td className={corDaNota(n.mt_t2)}>{n.mt_t2 ?? "—"}</td>
-                        <td className={corDaNota(n.nm1_t3)}>{n.nm1_t3 ?? "—"}</td>
-                        <td className={corDaNota(n.nm2_t3)}>{n.nm2_t3 ?? "—"}</td>
-                        <td className={corDaNota(n.nm3_t3)}>{n.nm3_t3 ?? "—"}</td>
-                        <td className={corDaNota(n.mt_t3)}>{n.mt_t3 ?? "—"}</td>
-                        <td>
-                          <span className={`${styles.calculadoBadge} ${corDaNota(n.ma)}`}>{n.ma ?? "—"}</span>
-                        </td>
-                        <td className={corDaNota(n.pf)}>{n.pf ?? "—"}</td>
-                        <td>
-                          <span className={`${styles.calculadoBadge} ${corDaNota(n.maf)}`}>{n.maf ?? "—"}</span>
-                        </td>
-                        <td>{n.rf ?? "—"}</td>
+              <>
+                <div className={styles.tabelaWrapper}>
+                  <table className={styles.tabela}>
+                    <thead>
+                      <tr>
+                        <th className={styles.stickyCol} rowSpan={2}>Disciplina</th>
+                        <th colSpan={4}>1º Trimestre</th>
+                        <th colSpan={4}>2º Trimestre</th>
+                        <th colSpan={4}>3º Trimestre</th>
+                        <th rowSpan={2}>MA</th>
+                        <th rowSpan={2}>PF</th>
+                        <th rowSpan={2}>MAF</th>
+                        <th rowSpan={2}>RF</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+                      <tr>
+                        <th>NM1</th><th>NM2</th><th>NM3</th><th>MT</th>
+                        <th>NM1</th><th>NM2</th><th>NM3</th><th>MT</th>
+                        <th>NM1</th><th>NM2</th><th>NM3</th><th>MT</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {boletim.map((n, i) => (
+                        <tr key={i}>
+                          <td className={styles.stickyCol}>{n.disciplina}</td>
+                          <td className={corDaNota(n.nm1_t1)}>{n.nm1_t1 ?? "—"}</td>
+                          <td className={corDaNota(n.nm2_t1)}>{n.nm2_t1 ?? "—"}</td>
+                          <td className={corDaNota(n.nm3_t1)}>{n.nm3_t1 ?? "—"}</td>
+                          <td className={corDaNota(n.mt_t1)}>{n.mt_t1 ?? "—"}</td>
+                          <td className={corDaNota(n.nm1_t2)}>{n.nm1_t2 ?? "—"}</td>
+                          <td className={corDaNota(n.nm2_t2)}>{n.nm2_t2 ?? "—"}</td>
+                          <td className={corDaNota(n.nm3_t2)}>{n.nm3_t2 ?? "—"}</td>
+                          <td className={corDaNota(n.mt_t2)}>{n.mt_t2 ?? "—"}</td>
+                          <td className={corDaNota(n.nm1_t3)}>{n.nm1_t3 ?? "—"}</td>
+                          <td className={corDaNota(n.nm2_t3)}>{n.nm2_t3 ?? "—"}</td>
+                          <td className={corDaNota(n.nm3_t3)}>{n.nm3_t3 ?? "—"}</td>
+                          <td className={corDaNota(n.mt_t3)}>{n.mt_t3 ?? "—"}</td>
+                          <td>
+                            <span className={`${styles.calculadoBadge} ${corDaNota(n.ma)}`}>{n.ma ?? "—"}</span>
+                          </td>
+                          <td className={corDaNota(n.pf)}>{n.pf ?? "—"}</td>
+                          <td>
+                            <span className={`${styles.calculadoBadge} ${corDaNota(n.maf)}`}>{n.maf ?? "—"}</span>
+                          </td>
+                          <td>{n.rf ?? "—"}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+
+                <a
+                  href={`${API_BASE}/api/students/boletim/pdf`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={styles.botaoBaixarBoletim}
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M14 3v4a1 1 0 0 0 1 1h4" />
+                    <path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z" />
+                    <path d="M12 17v-6" />
+                    <path d="M9.5 14.5l2.5 2.5l2.5 -2.5" />
+                  </svg>
+                  Baixar boletim (PDF)
+                </a>
+              </>
             )}
           </main>
         </div>

@@ -324,8 +324,6 @@ def get_turma(request):
         return JsonResponse({"message": "Turma não encontrada."}, status=404)
 
     turma_dict = model_to_dict(turma_obj)
-
-    # Resolve o ID da disciplina a partir do texto 'disciplina_lecionada'
     disciplina_id = None
     nome_disciplina = turma_dict.get("disciplina_lecionada", "").strip()
 
@@ -371,11 +369,6 @@ def _to_decimal(valor):
 
 
 def buscar_atravessapor_por_turma(nome_turma):
-    """
-    Busca vínculos AtravessaPor cujo campo 'turma' bate com o nome informado,
-    normalizando espaços e ignorando maiúsculas/minúsculas — mesmo critério
-    usado em buscar_alunos_por_turma, só que do lado do AtravessaPor.
-    """
     nome_normalizado = (nome_turma or "").replace(" ", "").strip().lower()
 
     return AtravessaPor.objects.annotate(
@@ -383,10 +376,6 @@ def buscar_atravessapor_por_turma(nome_turma):
     ).filter(turma_normalizada__iexact=nome_normalizado)
 
 def buscar_alunos_por_turma(nome_turma):
-    """
-    Busca alunos no model Estudante cujo campo 'turma' bate com o nome informado,
-    normalizando espaços e ignorando maiúsculas/minúsculas.
-    """
     nome_normalizado = (nome_turma or "").replace(" ", "").strip().lower()
 
     alunos = Estudante.objects.annotate(
@@ -777,11 +766,6 @@ def salvar_notas_turma(request):
 
 @csrf_exempt
 def get_boletim_aluno(request):
-    """
-    Retorna o boletim completo do aluno autenticado: todas as disciplinas
-    que ele cursa, com notas trimestrais, resultado final, faltas e situação.
-    Autenticação feita pelo IP, igual ao restante do fluxo do aluno.
-    """
     ip_aluno = get_ip()
     aluno = Estudante.objects.filter(ip=ip_aluno).first()
 
@@ -967,8 +951,6 @@ def salvar_frequencia_turma(request):
             {"message": "Não foi possível resolver a disciplina associada a esta turma."},
             status=404
         )
-
-    # Salva/atualiza o assunto do dia
     Aula.objects.update_or_create(
         turma=turma, disciplina=disciplina, professor=professor, data=data_selecionada,
         defaults={"assunto": assunto, "ano_letivo": ano_letivo},
@@ -1013,10 +995,6 @@ def salvar_frequencia_turma(request):
 
 @csrf_exempt
 def get_registros_frequencia(request):
-    """
-    Lista os registros de frequência já feitos pelo professor, agrupados
-    por turma + disciplina + data (uma linha por aula ministrada).
-    """
     professor_id = request.GET.get("professor")
     ano_letivo = request.GET.get("ano_letivo", "2026")
 
@@ -1056,10 +1034,9 @@ def get_registros_frequencia(request):
 
 @csrf_exempt
 def get_eventos(request):
-    """Lista os eventos do professor, opcionalmente filtrados por mês/ano ou turma."""
     professor_id = request.GET.get("professor")
-    mes = request.GET.get("mes")   # ex: "07"
-    ano = request.GET.get("ano")   # ex: "2026"
+    mes = request.GET.get("mes")
+    ano = request.GET.get("ano")
     turma_id = request.GET.get("turma")
 
     if not professor_id:
@@ -1095,7 +1072,6 @@ def get_eventos(request):
 
 @csrf_exempt
 def criar_evento(request):
-    """Cria um novo evento no calendário escolar."""
     if request.method != "POST":
         return JsonResponse({"message": "Método não permitido."}, status=405)
 
@@ -1155,7 +1131,6 @@ def criar_evento(request):
 
 @csrf_exempt
 def deletar_evento(request, evento_id):
-    """Remove um evento do calendário."""
     if request.method != "DELETE":
         return JsonResponse({"message": "Método não permitido."}, status=405)
 
@@ -1169,11 +1144,6 @@ def deletar_evento(request, evento_id):
 
 
 def caminho_relativo_arquivo(arquivo_field):
-    """
-    Garante que a URL do arquivo seja sempre relativa, começando com /media/,
-    independente de como o storage backend monta a URL internamente
-    (evita problemas de domínio/porta errados, como localhost em produção/túnel).
-    """
     if not arquivo_field:
         return None
 
@@ -1184,7 +1154,6 @@ def caminho_relativo_arquivo(arquivo_field):
 
 @csrf_exempt
 def get_conteudos(request):
-    """Lista os conteúdos do professor, opcionalmente filtrados por mês/ano ou turma."""
     professor_id = request.GET.get("professor")
     mes = request.GET.get("mes")
     ano = request.GET.get("ano")
@@ -1226,7 +1195,6 @@ def get_conteudos(request):
 
 @csrf_exempt
 def criar_conteudo(request):
-    """Cria um novo conteúdo. Aceita multipart/form-data por causa do arquivo opcional."""
     if request.method != "POST":
         return JsonResponse({"message": "Método não permitido."}, status=405)
 
@@ -1291,7 +1259,6 @@ def criar_conteudo(request):
 
 @csrf_exempt
 def deletar_conteudo(request, conteudo_id):
-    """Remove um conteúdo."""
     if request.method != "DELETE":
         return JsonResponse({"message": "Método não permitido."}, status=405)
 
@@ -1306,7 +1273,6 @@ def deletar_conteudo(request, conteudo_id):
 
 @csrf_exempt
 def get_atividades(request):
-    """Lista as atividades do professor, opcionalmente filtradas por mês/ano ou turma."""
     professor_id = request.GET.get("professor")
     mes = request.GET.get("mes")
     ano = request.GET.get("ano")
@@ -1349,7 +1315,6 @@ def get_atividades(request):
 
 @csrf_exempt
 def criar_atividade(request):
-    """Cria uma nova atividade. Aceita multipart/form-data por causa do arquivo opcional."""
     if request.method != "POST":
         return JsonResponse({"message": "Método não permitido."}, status=405)
 
@@ -1424,7 +1389,6 @@ def criar_atividade(request):
 
 @csrf_exempt
 def deletar_atividade(request, atividade_id):
-    """Remove uma atividade."""
     if request.method != "DELETE":
         return JsonResponse({"message": "Método não permitido."}, status=405)
 
@@ -1438,7 +1402,6 @@ def deletar_atividade(request, atividade_id):
 
 @csrf_exempt
 def get_comunicados(request):
-    """Lista os comunicados do professor."""
     professor_id = request.GET.get("professor")
 
     if not professor_id:
@@ -1466,7 +1429,6 @@ def get_comunicados(request):
 
 @csrf_exempt
 def criar_comunicado(request):
-    """Cria um novo comunicado."""
     if request.method != "POST":
         return JsonResponse({"message": "Método não permitido."}, status=405)
 
@@ -1575,11 +1537,6 @@ def auth_coordenacao(request):
 
 @csrf_exempt
 def get_professores_coordenacao(request):
-    """
-    Lista todos os professores com suas turmas e disciplinas, agrupadas.
-    Cada professor pode ter múltiplos registros em AtravessaPor (um por
-    disciplina lecionada); aqui agrupamos por professor -> turma -> disciplinas.
-    """
     professores = Professor.objects.all().order_by("nome_completo")
 
     resultado = []
@@ -1614,10 +1571,6 @@ def get_professores_coordenacao(request):
 
 @csrf_exempt
 def criar_professor(request):
-    """
-    Cadastra um novo professor e já cria seus vínculos de turma/disciplina
-    (registros em AtravessaPor), um por combinação turma+disciplina.
-    """
     if request.method != "POST":
         return JsonResponse({"message": "Método não permitido."}, status=405)
 
@@ -1629,7 +1582,7 @@ def criar_professor(request):
     nome_completo = (body.get("nome_completo") or "").strip().upper()
     senha = (body.get("senha") or "").strip()
     escola = (body.get("escola") or "").strip()
-    vinculos = body.get("vinculos", [])  # [{ turma, etapa, disciplinas: [...] }, ...]
+    vinculos = body.get("vinculos", [])
 
     if not nome_completo or not senha:
         return JsonResponse(
@@ -1689,7 +1642,6 @@ def criar_professor(request):
 
 @csrf_exempt
 def get_escola_coordenador(request):
-    """Retorna a escola vinculada ao coordenador autenticado (via IP)."""
     ip = get_ip()
     coordenador = Coordenador.objects.filter(ip=ip).first()
 
@@ -1704,7 +1656,6 @@ def get_escola_coordenador(request):
 
 @csrf_exempt
 def get_professor_detalhe(request, professor_id):
-    """Retorna os dados de um professor com seus vínculos de turma/disciplina."""
     professor = Professor.objects.filter(id=professor_id).first()
     if not professor:
         return JsonResponse({"message": "Professor não encontrado."}, status=404)
@@ -1736,10 +1687,6 @@ def get_professor_detalhe(request, professor_id):
 
 @csrf_exempt
 def editar_professor(request, professor_id):
-    """
-    Atualiza o nome/senha do professor e substitui completamente seus
-    vínculos de turma/disciplina pelos novos vínculos enviados.
-    """
     if request.method != "POST":
         return JsonResponse({"message": "Método não permitido."}, status=405)
 
@@ -1785,10 +1732,6 @@ def editar_professor(request, professor_id):
         professor.senha = senha
     professor.save()
 
-    # Substitui todos os vínculos existentes pelos novos enviados.
-    # ⚠️ Isso apaga registros de AtravessaPor antigos — se algum tiver
-    # notas/frequência vinculadas, elas seriam perdidas via cascade.
-    # Por segurança, checamos antes de apagar.
     registros_antigos = AtravessaPor.objects.filter(professor_id=professor_id)
     ids_com_dados = []
     for r in registros_antigos:
@@ -1835,11 +1778,6 @@ def editar_professor(request, professor_id):
 
 @csrf_exempt
 def get_opcoes_cadastro_professor(request):
-    """
-    Retorna as listas distintas de turmas, etapas e disciplinas já
-    existentes no sistema, para alimentar os selects do formulário de
-    cadastro/edição de professor — evita digitação livre e inconsistências.
-    """
     turmas = list(
         AtravessaPor.objects.exclude(turma="")
         .values_list("turma", flat=True)
@@ -1868,11 +1806,6 @@ def get_opcoes_cadastro_professor(request):
 
 @csrf_exempt
 def deletar_professor(request, professor_id):
-    """
-    Remove um professor do sistema. Por segurança, recusa a exclusão se
-    houver notas ou frequências lançadas em qualquer turma vinculada a ele
-    — evita apagar dados acadêmicos de alunos por engano.
-    """
     if request.method != "DELETE":
         return JsonResponse({"message": "Método não permitido."}, status=405)
 
@@ -1907,7 +1840,6 @@ def deletar_professor(request, professor_id):
 
 @csrf_exempt
 def get_alunos_coordenacao(request):
-    """Lista todos os alunos cadastrados, com os campos usados na tela da coordenação."""
     alunos = Estudante.objects.all().order_by("nome_completo")
 
     resultado = [
@@ -1932,7 +1864,6 @@ def get_alunos_coordenacao(request):
 
 @csrf_exempt
 def get_aluno_detalhe(request, aluno_id):
-    """Retorna os dados completos de um aluno específico."""
     aluno = Estudante.objects.filter(id=aluno_id).first()
     if not aluno:
         return JsonResponse({"message": "Aluno não encontrado."}, status=404)
@@ -1953,7 +1884,6 @@ def get_aluno_detalhe(request, aluno_id):
 
 @csrf_exempt
 def editar_aluno(request, aluno_id):
-    """Atualiza os dados de um aluno."""
     if request.method != "POST":
         return JsonResponse({"message": "Método não permitido."}, status=405)
 
@@ -2001,10 +1931,6 @@ def editar_aluno(request, aluno_id):
 
 @csrf_exempt
 def deletar_aluno(request, aluno_id):
-    """
-    Remove um aluno. Recusa a exclusão se houver notas ou frequências
-    lançadas para ele, evitando apagar histórico acadêmico por engano.
-    """
     if request.method != "DELETE":
         return JsonResponse({"message": "Método não permitido."}, status=405)
 
@@ -2037,7 +1963,6 @@ def deletar_aluno(request, aluno_id):
 
 @csrf_exempt
 def criar_aluno(request):
-    """Cadastra um novo aluno."""
     if request.method != "POST":
         return JsonResponse({"message": "Método não permitido."}, status=405)
 
@@ -2093,11 +2018,6 @@ def criar_aluno(request):
 
 @csrf_exempt
 def get_opcoes_cadastro_aluno(request):
-    """
-    Retorna as listas distintas de turmas, séries e cursos já existentes
-    no sistema, para alimentar os selects do formulário de cadastro/edição
-    de aluno — evita digitação livre e inconsistências.
-    """
     turmas = list(
         Estudante.objects.exclude(turma="")
         .values_list("turma", flat=True)
@@ -2144,7 +2064,6 @@ def get_aluno_visao_geral(request, aluno_id):
 
     turma_aluno_norm = _turma_normalizada(aluno.turma)
 
-    # --- Comunicados relevantes: gerais (sem turma) OU da turma do aluno ---
     comunicados_qs = Comunicado.objects.select_related("turma").order_by("-data")
     comunicados = []
     for c in comunicados_qs:
@@ -2164,7 +2083,6 @@ def get_aluno_visao_geral(request, aluno_id):
         for c in comunicados[:30]
     ]
 
-    # --- Eventos relevantes: gerais (sem turma) OU da turma do aluno ---
     eventos_qs = Evento.objects.select_related("turma").order_by("-data")
     eventos = []
     for e in eventos_qs:
@@ -2184,7 +2102,6 @@ def get_aluno_visao_geral(request, aluno_id):
         for e in eventos[:30]
     ]
 
-    # --- Advertências do aluno ---
     advertencias_qs = Advertencia.objects.filter(aluno_id=aluno_id).select_related("professor")
     advertencias_json = [
         {
@@ -2312,7 +2229,6 @@ def get_eventos_coordenacao(request):
 
 @csrf_exempt
 def get_evento_detalhe(request, evento_id):
-    """Retorna os dados completos de um evento específico, incluindo status calculado."""
     evento = Evento.objects.select_related("turma", "professor", "coordenador").filter(id=evento_id).first()
     if not evento:
         return JsonResponse({"message": "Evento não encontrado."}, status=404)
@@ -2454,7 +2370,6 @@ def editar_evento_coordenacao(request, evento_id):
 
 @csrf_exempt
 def deletar_evento_coordenacao(request, evento_id):
-    """Remove um evento."""
     if request.method != "DELETE":
         return JsonResponse({"message": "Método não permitido."}, status=405)
 
@@ -2468,7 +2383,6 @@ def deletar_evento_coordenacao(request, evento_id):
 
 @csrf_exempt
 def get_lista_professores_simples(request):
-    """Lista simples de professores (id + nome), para popular selects."""
     professores = Professor.objects.all().order_by("nome_completo")
 
     resultado = [
@@ -2481,11 +2395,6 @@ def get_lista_professores_simples(request):
 
 @csrf_exempt
 def get_turmas_do_professor(request, professor_id):
-    """
-    Retorna as turmas (agrupadas, sem repetir disciplina) que um professor
-    específico leciona — usado para popular o select de turma depois que
-    a coordenação escolhe o professor.
-    """
     professor = Professor.objects.filter(id=professor_id).first()
     if not professor:
         return JsonResponse({"message": "Professor não encontrado."}, status=404)
@@ -2498,7 +2407,7 @@ def get_turmas_do_professor(request, professor_id):
             turmas_map[r.turma] = {
                 "nome_turma": r.turma,
                 "etapa": r.etapa,
-                "registro_id": r.id,  # qualquer registro daquele grupo serve como turma_id do evento
+                "registro_id": r.id,
             }
 
     return JsonResponse({
@@ -2509,7 +2418,6 @@ def get_turmas_do_professor(request, professor_id):
 
 @csrf_exempt
 def get_comunicados_coordenacao(request):
-    """Lista todos os comunicados (de professores e da coordenação)."""
     comunicados = Comunicado.objects.select_related("turma", "professor", "coordenador").order_by("-data")
 
     resultado = []
@@ -2544,7 +2452,6 @@ def get_comunicados_coordenacao(request):
 
 @csrf_exempt
 def get_comunicado_detalhe(request, comunicado_id):
-    """Retorna os dados completos de um comunicado específico."""
     comunicado = Comunicado.objects.select_related("turma", "professor", "coordenador").filter(id=comunicado_id).first()
     if not comunicado:
         return JsonResponse({"message": "Comunicado não encontrado."}, status=404)
@@ -2576,7 +2483,6 @@ def get_comunicado_detalhe(request, comunicado_id):
 
 @csrf_exempt
 def criar_comunicado_coordenacao(request):
-    """Cria um novo comunicado emitido pela coordenação (geral ou por turma)."""
     if request.method != "POST":
         return JsonResponse({"message": "Método não permitido."}, status=405)
 
@@ -2641,7 +2547,6 @@ def criar_comunicado_coordenacao(request):
 
 @csrf_exempt
 def editar_comunicado_coordenacao(request, comunicado_id):
-    """Atualiza título, mensagem, turma e data de um comunicado."""
     if request.method != "POST":
         return JsonResponse({"message": "Método não permitido."}, status=405)
 
@@ -2690,7 +2595,6 @@ def editar_comunicado_coordenacao(request, comunicado_id):
 
 @csrf_exempt
 def deletar_comunicado_coordenacao(request, comunicado_id):
-    """Remove um comunicado."""
     if request.method != "DELETE":
         return JsonResponse({"message": "Método não permitido."}, status=405)
 
@@ -2739,7 +2643,6 @@ def get_advertencias_coordenacao(request):
 
 @csrf_exempt
 def get_advertencia_detalhe(request, advertencia_id):
-    """Retorna os dados completos de uma advertência/penalidade."""
     advertencia = Advertencia.objects.select_related("aluno", "professor", "coordenador").filter(id=advertencia_id).first()
     if not advertencia:
         return JsonResponse({"message": "Registro não encontrado."}, status=404)
@@ -2923,7 +2826,6 @@ def editar_advertencia_coordenacao(request, advertencia_id):
 
 @csrf_exempt
 def deletar_advertencia_coordenacao(request, advertencia_id):
-    """Remove uma advertência/penalidade."""
     if request.method != "DELETE":
         return JsonResponse({"message": "Método não permitido."}, status=405)
 
@@ -2937,7 +2839,6 @@ def deletar_advertencia_coordenacao(request, advertencia_id):
 
 @csrf_exempt
 def gerar_advertencia_pdf(request, advertencia_id):
-    """Gera o PDF de advertência/penalidade, pronto para impressão."""
     advertencia = Advertencia.objects.select_related("aluno", "professor", "coordenador").filter(id=advertencia_id).first()
     if not advertencia:
         return JsonResponse({"message": "Registro não encontrado."}, status=404)
@@ -2962,7 +2863,6 @@ def gerar_advertencia_pdf(request, advertencia_id):
 
 @csrf_exempt
 def get_turmas_coordenacao(request):
-    """Lista as turmas distintas (nome + etapa + escola + total de alunos), para a tela de horários."""
     registros = AtravessaPor.objects.exclude(turma="").values("turma", "etapa", "escola").distinct()
 
     turmas_map = {}
@@ -2989,7 +2889,6 @@ def get_turmas_coordenacao(request):
 
 @csrf_exempt
 def get_horarios_turma(request, nome_turma):
-    """Retorna a grade de horários (segunda a sexta) de uma turma, com disciplina e professor de cada aula."""
     nome_turma = unquote(nome_turma)
 
     registros_turma = AtravessaPor.objects.filter(turma=nome_turma).select_related("professor")
@@ -3029,7 +2928,6 @@ def get_horarios_turma(request, nome_turma):
 
 @csrf_exempt
 def get_opcoes_horario_turma(request, nome_turma):
-    """Lista as combinações disciplina+professor disponíveis para essa turma, para popular os selects da grade."""
     nome_turma = unquote(nome_turma)
 
     registros = AtravessaPor.objects.filter(turma=nome_turma).select_related("professor")
@@ -3051,11 +2949,6 @@ def get_opcoes_horario_turma(request, nome_turma):
 
 @csrf_exempt
 def salvar_horario_turma(request, nome_turma):
-    """
-    Salva a grade de horários de uma turma. Recebe a lista completa de células
-    (dia + hora_inicio + hora_fim + atravessa_por_id ou null para célula vazia)
-    e substitui os registros existentes de cada célula.
-    """
     if request.method != "POST":
         return JsonResponse({"message": "Método não permitido."}, status=405)
 
@@ -3113,7 +3006,6 @@ def salvar_horario_turma(request, nome_turma):
 
 @csrf_exempt
 def get_disciplinas_corrigir(request):
-    """Lista disciplinas cadastradas + nomes 'órfãos' usados em AtravessaPor sem Disciplina correspondente."""
     disciplinas = Disciplina.objects.all().order_by("nome_disciplina")
 
     resultado = []
@@ -3141,7 +3033,6 @@ def get_disciplinas_corrigir(request):
 
 @csrf_exempt
 def renomear_disciplina(request, disciplina_id):
-    """Renomeia uma disciplina cadastrada."""
     if request.method != "POST":
         return JsonResponse({"message": "Método não permitido."}, status=405)
 
@@ -3166,7 +3057,6 @@ def renomear_disciplina(request, disciplina_id):
 
 @csrf_exempt
 def criar_disciplina_corrigir(request):
-    """Cadastra uma nova disciplina (usado para resolver órfãos sem Disciplina correspondente)."""
     if request.method != "POST":
         return JsonResponse({"message": "Método não permitido."}, status=405)
 
@@ -3192,7 +3082,6 @@ def criar_disciplina_corrigir(request):
 
 @csrf_exempt
 def corrigir_nome_lecionado(request):
-    """Corrige em massa o texto de AtravessaPor.disciplina_lecionada, trocando um nome órfão pelo correto."""
     if request.method != "POST":
         return JsonResponse({"message": "Método não permitido."}, status=405)
 
@@ -3219,7 +3108,6 @@ def corrigir_nome_lecionado(request):
 
 @csrf_exempt
 def get_turmas_corrigir(request):
-    """Lista nomes de turma distintos usados em AtravessaPor e Estudante, mostrando divergências entre as duas."""
     turmas_atravessa = set(
         AtravessaPor.objects.exclude(turma="").values_list("turma", flat=True).distinct()
     )
@@ -3244,7 +3132,6 @@ def get_turmas_corrigir(request):
 
 @csrf_exempt
 def renomear_turma(request):
-    """Renomeia uma turma em massa, sincronizando AtravessaPor.turma e Estudante.turma (ligados por texto)."""
     if request.method != "POST":
         return JsonResponse({"message": "Método não permitido."}, status=405)
 
@@ -3271,7 +3158,6 @@ def renomear_turma(request):
 
 @csrf_exempt
 def get_alunos_corrigir(request):
-    """Lista alunos com a turma atual, para correção rápida de matrícula."""
     busca = request.GET.get("busca", "").strip()
 
     alunos = Estudante.objects.all().order_by("nome_completo")
@@ -3297,7 +3183,6 @@ def get_alunos_corrigir(request):
 
 @csrf_exempt
 def mover_aluno_turma(request, aluno_id):
-    """Atualiza rapidamente a turma de um aluno (correção de matrícula)."""
     if request.method != "POST":
         return JsonResponse({"message": "Método não permitido."}, status=405)
 
@@ -3322,11 +3207,6 @@ def mover_aluno_turma(request, aluno_id):
 
 @csrf_exempt
 def get_eventos_professor_visualizacao(request):
-    """
-    Lista eventos relevantes para o professor autenticado: eventos gerais
-    (sem turma) + eventos específicos das turmas que ele leciona.
-    Somente leitura — professor não cria/edita/apaga eventos.
-    """
     ip = get_ip()
     professor = Professor.objects.filter(ip=ip).first()
 
@@ -3385,7 +3265,6 @@ def get_eventos_professor_visualizacao(request):
 
 @csrf_exempt
 def get_disciplinas_coordenacao(request):
-    """Lista todas as disciplinas cadastradas (model Disciplina)."""
     disciplinas = Disciplina.objects.all().order_by("nome_disciplina")
 
     resultado = []
@@ -3407,7 +3286,6 @@ def get_disciplinas_coordenacao(request):
 
 @csrf_exempt
 def renomear_disciplina_coordenacao(request, disciplina_id):
-    """Renomeia uma disciplina cadastrada."""
     if request.method != "POST":
         return JsonResponse({"message": "Método não permitido."}, status=405)
 
@@ -3463,7 +3341,6 @@ def auth_blogger(request):
 
 @csrf_exempt
 def get_posts(request):
-    """Lista pública de posts do blog (qualquer visitante pode ver)."""
     posts = Post.objects.select_related("autor").all()
 
     resultado = [
@@ -3484,7 +3361,6 @@ def get_posts(request):
 
 @csrf_exempt
 def get_post_detalhe(request, post_id):
-    """Detalhe público de um post."""
     post = Post.objects.select_related("autor").filter(id=post_id).first()
     if not post:
         return JsonResponse({"message": "Post não encontrado."}, status=404)
@@ -3504,7 +3380,6 @@ def get_post_detalhe(request, post_id):
 
 @csrf_exempt
 def criar_post(request):
-    """Cria um novo post — apenas bloggers autenticados."""
     if request.method != "POST":
         return JsonResponse({"message": "Método não permitido."}, status=405)
 
@@ -3543,7 +3418,6 @@ def criar_post(request):
 
 @csrf_exempt
 def editar_post(request, post_id):
-    """Edita um post — apenas o autor pode editar."""
     if request.method != "POST":
         return JsonResponse({"message": "Método não permitido."}, status=405)
 
@@ -3579,7 +3453,6 @@ def editar_post(request, post_id):
 
 @csrf_exempt
 def deletar_post(request, post_id):
-    """Remove um post — apenas o autor pode apagar."""
     if request.method != "DELETE":
         return JsonResponse({"message": "Método não permitido."}, status=405)
 
@@ -3727,177 +3600,6 @@ def avaliacao_upload_imagem(request, questao_id):
     return JsonResponse({"message": "Nenhuma imagem enviada"}, status=400)
 
 
-# def avaliacao_emitir_pdf(request):
-#     pass  # placeholder para não duplicar import acima
-
-
-# def avaliacao_emitir_pdf(request, avaliacao_id):
-#     from reportlab.lib.pagesizes import A4
-#     from reportlab.lib.units import cm
-#     from reportlab.pdfgen import canvas
-#     from reportlab.lib.utils import ImageReader
-
-#     professor = _professor_atual(request)
-#     if not professor:
-#         return JsonResponse({"message": "Não autenticado"}, status=401)
-
-#     try:
-#         avaliacao = Avaliacao.objects.get(id=avaliacao_id, professor=professor)
-#     except Avaliacao.DoesNotExist:
-#         return JsonResponse({"message": "Avaliação não encontrada"}, status=404)
-
-#     # curso: não existe no model Avaliacao/AtravessaPor, então pega do
-#     # primeiro aluno cadastrado nessa turma (ajuste se tiver fonte melhor)
-#     aluno_da_turma = Estudante.objects.filter(turma=avaliacao.turma).first()
-#     curso = aluno_da_turma.curso if aluno_da_turma else "—"
-
-#     response = HttpResponse(content_type="application/pdf")
-#     response["Content-Disposition"] = f'attachment; filename="avaliacao_{avaliacao.id}.pdf"'
-
-#     p = canvas.Canvas(response, pagesize=A4)
-#     largura, altura = A4
-#     margem_esquerda = 2 * cm
-#     margem_direita = largura - 2 * cm
-
-#     y = altura - 2 * cm
-
-#     # --- Logo (ajuste o caminho para o arquivo real da sua logo) ---
-#     logo_path = os.path.join(settings.BASE_DIR, "app", "static", "img", "logo.png")
-#     logo_largura = 2.5 * cm
-#     logo_altura = 2.5 * cm
-#     if os.path.exists(logo_path):
-#         try:
-#             p.drawImage(
-#                 ImageReader(logo_path),
-#                 margem_esquerda, y - logo_altura,
-#                 width=logo_largura, height=logo_altura,
-#                 preserveAspectRatio=True, mask="auto",
-#             )
-#         except Exception:
-#             pass
-
-#     texto_x = margem_esquerda + logo_largura + 0.5 * cm
-
-#     # --- Nome do professor, logo abaixo da logo (à direita dela) ---
-#     p.setFont("Helvetica-Bold", 11)
-#     p.drawString(texto_x, y - 0.5 * cm, "SIAA-SEDUC")
-#     p.setFont("Helvetica", 9)
-#     p.drawString(texto_x, y - 1.1 * cm, f"Professor(a): {professor.nome_completo}")
-
-#     y -= (logo_altura + 0.6 * cm)
-
-#     # --- Linha divisória ---
-#     p.setStrokeColorRGB(0.7, 0.7, 0.7)
-#     p.line(margem_esquerda, y, margem_direita, y)
-#     y -= 0.7 * cm
-
-#     # --- Título da avaliação ---
-#     p.setFont("Helvetica-Bold", 14)
-#     p.drawString(margem_esquerda, y, avaliacao.titulo)
-#     y -= 0.9 * cm
-
-#     # --- Bloco Matéria / Curso / Turma ---
-#     p.setFont("Helvetica", 10)
-#     p.drawString(margem_esquerda, y, f"Matéria: {avaliacao.disciplina.nome_disciplina}")
-#     p.drawString(margem_esquerda + 8 * cm, y, f"Curso: {curso}")
-#     y -= 0.55 * cm
-#     p.drawString(margem_esquerda, y, f"Turma: {avaliacao.turma}")
-#     p.drawString(margem_esquerda + 8 * cm, y, f"Data: {avaliacao.data.strftime('%d/%m/%Y')}")
-#     y -= 1 * cm
-
-#     # --- Espaço para o aluno escrever o nome ---
-#     p.setFont("Helvetica", 10)
-#     p.drawString(margem_esquerda, y, "Nome do aluno:")
-#     p.line(margem_esquerda + 2.6 * cm, y - 0.05 * cm, margem_direita, y - 0.05 * cm)
-#     y -= 1.3 * cm
-
-#     p.setStrokeColorRGB(0.7, 0.7, 0.7)
-#     p.line(margem_esquerda, y, margem_direita, y)
-#     y -= 0.8 * cm
-
-#     # --- Questões (igual antes) ---
-#     for q in avaliacao.questoes.all():
-#         if y < 5 * cm:
-#             p.showPage()
-#             y = altura - 2 * cm
-
-#         p.setFont("Helvetica-Bold", 11)
-#         p.drawString(margem_esquerda, y, f"Questão {q.ordem + 1}")
-#         y -= 0.6 * cm
-
-#         p.setFont("Helvetica", 10)
-#         for linha in _quebrar_texto(q.enunciado, 90):
-#             p.drawString(margem_esquerda, y, linha)
-#             y -= 0.5 * cm
-
-#         if q.imagem:
-#             try:
-#                 img = ImageReader(q.imagem.path)
-#                 p.drawImage(img, margem_esquerda, y - 6 * cm, width=8 * cm, height=6 * cm, preserveAspectRatio=True)
-#                 y -= 6.5 * cm
-#             except Exception:
-#                 pass
-
-#         if q.tipo == "OBJETIVA":
-#             for alt in q.alternativas.all():
-#                 p.drawString(margem_esquerda + 0.5 * cm, y, f"{alt.letra}) {alt.texto}")
-#                 y -= 0.5 * cm
-#         else:
-#             p.drawString(margem_esquerda, y, "_" * 80)
-#             y -= 0.5 * cm
-#             p.drawString(margem_esquerda, y, "_" * 80)
-#             y -= 0.5 * cm
-
-#         y -= 0.6 * cm
-
-#     p.save()
-#     return response
-
-# def avaliacao_emitir_pdf(request, avaliacao_id):
-#     professor = _professor_atual(request)
-#     if not professor:
-#         return JsonResponse({"message": "Não autenticado"}, status=401)
-
-#     try:
-#         avaliacao = Avaliacao.objects.select_related("disciplina", "professor").get(
-#             id=avaliacao_id, professor=professor
-#         )
-#     except Avaliacao.DoesNotExist:
-#         return JsonResponse({"message": "Avaliação não encontrada"}, status=404)
-
-#     # curso: não existe no model Avaliacao/AtravessaPor, então pega do
-#     # primeiro aluno cadastrado nessa turma (ajuste se tiver fonte melhor)
-#     aluno_da_turma = Estudante.objects.filter(turma=avaliacao.turma).first()
-#     curso = aluno_da_turma.curso if aluno_da_turma else "—"
-
-#     logo_path = os.path.join(settings.BASE_DIR, "app", "static", "img", "logo.png")
-#     logo_url = f"file://{logo_path}"
-
-#     questoes_contexto = []
-#     for q in avaliacao.questoes.all().order_by("ordem"):
-#         questoes_contexto.append({
-#             "enunciado": q.enunciado,
-#             "tipo": q.tipo,
-#             "tipo_label": "Objetiva" if q.tipo == "OBJETIVA" else "Subjetiva",
-#             "imagem_url": f"file://{q.imagem.path}" if q.imagem else None,
-#             "alternativas": q.alternativas.all() if q.tipo == "OBJETIVA" else [],
-#         })
-
-#     contexto = {
-#         "avaliacao": avaliacao,
-#         "curso": curso,
-#         "logo_url": logo_url,
-#         "questoes": questoes_contexto,
-#     }
-
-#     html_string = render_to_string("avaliacoes/pdf.html", contexto)
-#     pdf_file = HTML(string=html_string).write_pdf()
-
-#     nome_arquivo = f"avaliacao_{avaliacao.id}.pdf"
-#     response = HttpResponse(pdf_file, content_type="application/pdf")
-#     response["Content-Disposition"] = f'inline; filename="{nome_arquivo}"'
-#     return response
-
 def avaliacao_emitir_pdf(request, avaliacao_id):
     professor = _professor_atual(request)
     if not professor:
@@ -3960,7 +3662,6 @@ def _coordenador_atual(request):
 
 @csrf_exempt
 def get_avaliacoes_coordenacao(request):
-    """Lista todas as avaliações cadastradas por qualquer professor."""
     coordenador = _coordenador_atual(request)
     if not coordenador:
         return JsonResponse({"message": "Não autenticado"}, status=401)
@@ -3996,7 +3697,6 @@ def get_avaliacoes_coordenacao(request):
     })
 
 def _gerar_pdf_avaliacao(avaliacao):
-    """Monta o PDF da avaliação (usado tanto por professor quanto coordenação)."""
     aluno_da_turma = Estudante.objects.filter(turma=avaliacao.turma).first()
     curso = aluno_da_turma.curso if aluno_da_turma else "—"
 
@@ -4025,7 +3725,6 @@ def _gerar_pdf_avaliacao(avaliacao):
 
 @csrf_exempt
 def avaliacao_detalhe_coordenacao(request, avaliacao_id):
-    """Visualização de uma avaliação específica, sem restrição de professor."""
     coordenador = _coordenador_atual(request)
     if not coordenador:
         return JsonResponse({"message": "Não autenticado"}, status=401)
@@ -4064,7 +3763,6 @@ def avaliacao_detalhe_coordenacao(request, avaliacao_id):
 
 @csrf_exempt
 def avaliacao_emitir_pdf_coordenacao(request, avaliacao_id):
-    """Mesmo PDF da avaliação, mas autenticado como coordenação (sem restrição de professor)."""
     coordenador = _coordenador_atual(request)
     if not coordenador:
         return JsonResponse({"message": "Não autenticado"}, status=401)
@@ -4082,7 +3780,6 @@ def avaliacao_emitir_pdf_coordenacao(request, avaliacao_id):
 
 @csrf_exempt
 def get_avaliacoes_professor(request):
-    """Lista as avaliações criadas pelo professor autenticado."""
     ip = get_ip()
     professor = Professor.objects.filter(ip=ip).first()
     if not professor:
@@ -4111,7 +3808,6 @@ def get_avaliacoes_professor(request):
 
 @csrf_exempt
 def criar_avaliacao(request):
-    """Cria uma avaliação com suas questões (e alternativas, se objetivas)."""
     if request.method != "POST":
         return JsonResponse({"message": "Método não permitido."}, status=405)
 
@@ -4195,7 +3891,6 @@ def criar_avaliacao(request):
 
 @csrf_exempt
 def gerar_avaliacao_pdf(request, avaliacao_id):
-    """Gera o PDF da avaliação, pronto para impressão."""
     avaliacao = Avaliacao.objects.select_related("turma").filter(id=avaliacao_id).first()
     if not avaliacao:
         return JsonResponse({"message": "Avaliação não encontrada."}, status=404)
@@ -4204,14 +3899,11 @@ def gerar_avaliacao_pdf(request, avaliacao_id):
 
     questoes = avaliacao.questoes.prefetch_related("alternativas").all()
 
-    # Anexa a letra (A, B, C...) a cada alternativa antes de renderizar no template.
     letras = string.ascii_uppercase
     for questao in questoes:
         for idx, alternativa in enumerate(questao.alternativas.all()):
             alternativa.letra = letras[idx] if idx < len(letras) else "?"
 
-    # WeasyPrint precisa de um caminho absoluto de arquivo (ou file:// URL) para
-    # imagens locais — não aceita paths relativos do template estático do Django.
     logo_path = f"file://{os.path.join(settings.BASE_DIR, 'app', 'static', 'logo.png')}"
 
     contexto = {
@@ -4289,7 +3981,6 @@ def mensagens_list_create_coordenacao(request):
 
 
 def _nome_escola(escola_str):
-    """Remove o prefixo de código, se houver: '22057498 - CETI CALISTO LOBO' -> 'CETI CALISTO LOBO'"""
     if not escola_str:
         return escola_str
     return escola_str.split(" - ", 1)[-1].strip()
@@ -4313,23 +4004,6 @@ def opcoes_mensagem_coordenacao(request):
             {"id": p.id, "nome_completo": p.nome_completo} for p in professores
         ]
     })
-
-# @csrf_exempt
-# @require_http_methods(["GET"])
-# def opcoes_mensagem_coordenacao(request):
-#     coordenador = _coordenador_logado()
-#     if not coordenador:
-#         return JsonResponse({"detail": "Não autenticado."}, status=401)
-
-#     professores = Professor.objects.filter(
-#         atravessamentos__escola=coordenador.escola
-#     ).distinct().order_by("nome_completo")
-
-#     return JsonResponse({
-#         "professores": [
-#             {"id": p.id, "nome_completo": p.nome_completo} for p in professores
-#         ]
-#     })
 
 
 @csrf_exempt
@@ -4380,8 +4054,6 @@ def mensagem_conversa_detalhe(request, conversa_id):
         "data_envio": mensagem.data_envio.isoformat(),
     }, status=201)
 
-
-# --- app/views.py — adicionar ---
 
 def _professor_logado():
     ip = get_ip()
@@ -4544,8 +4216,6 @@ def _nome_escola(escola_str):
     return escola_str.split(" - ", 1)[-1].strip()
 
 
-# ---------- AUTH ----------
-
 @csrf_exempt
 @require_http_methods(["POST"])
 def admin_login(request):
@@ -4571,8 +4241,6 @@ def admin_auth(request):
     return JsonResponse({"return": True, "admin": {"id": admin.id, "nome_completo": admin.nome_completo}})
 
 
-# ---------- ESCOLAS (derivadas, sem model próprio) ----------
-
 @csrf_exempt
 @require_http_methods(["GET"])
 def admin_escolas_opcoes(request):
@@ -4592,8 +4260,6 @@ def admin_escolas_opcoes(request):
 
     return JsonResponse({"escolas": sorted(valores)})
 
-
-# ---------- COORDENADORES ----------
 
 @csrf_exempt
 @require_http_methods(["GET", "POST"])
@@ -4632,10 +4298,6 @@ def admin_coordenador_excluir(request, coordenador_id):
 
     coordenador.delete()
     return JsonResponse({"detail": "Excluído."})
-
-
-# ---------- PROFESSORES ----------
-
 
 
 @csrf_exempt
@@ -4681,10 +4343,6 @@ def admin_professor_excluir(request, professor_id):
     professor.delete()
     return JsonResponse({"detail": "Excluído."})
 
-
-
-
-# ---------- ALUNOS ----------
 
 @csrf_exempt
 @require_http_methods(["GET", "POST"])
@@ -4738,9 +4396,6 @@ def admin_aluno_excluir(request, aluno_id):
     return JsonResponse({"detail": "Excluído."})
 
 
-
-# ---------- TURMAS (agregado, sem model próprio) ----------
-
 @csrf_exempt
 @require_http_methods(["GET"])
 def admin_turmas(request):
@@ -4793,7 +4448,6 @@ def dashboard_aluno(request):
     if not aluno:
         return JsonResponse({"detail": "Não autenticado."}, status=401)
 
-    # --- Média geral por disciplina (a partir de Nota) ---
     notas = Nota.objects.filter(aluno=aluno).select_related("disciplina")
 
     medias_por_disciplina = []
@@ -4811,21 +4465,18 @@ def dashboard_aluno(request):
             sum(m["media"] for m in medias_por_disciplina) / len(medias_por_disciplina), 1
         )
 
-    # --- Atenção necessária: disciplinas com média (MAF/MA) abaixo de 6 ---
     atencao_necessaria = [
         {"disciplina": m["disciplina"], "media": m["media"]}
         for m in medias_por_disciplina
         if m["media"] < 6
     ]
 
-    # --- Frequência acumulada — critério Pé-de-Meia (mínimo 80%) ---
     frequencias = Frequencia.objects.filter(aluno=aluno)
     total_freq = frequencias.count()
     presentes = frequencias.filter(presente=True).count()
     frequencia_percentual = round((presentes / total_freq) * 100, 1) if total_freq else None
     frequencia_baixa_pe_de_meia = frequencia_percentual is not None and frequencia_percentual < 80
 
-    # --- Atividades da turma do aluno (via vínculo normalizado) ---
     vinculos_aluno = buscar_atravessapor_por_turma(aluno.turma)
     hoje = date.today()
     atividades = Atividade.objects.filter(turma__in=vinculos_aluno).select_related("disciplina")
@@ -4834,7 +4485,6 @@ def dashboard_aluno(request):
     atrasadas_qs = atividades.filter(data_entrega__lt=hoje)
     total_pendencias = pendentes_qs.count() + atrasadas_qs.count()
 
-    # "Próximas entregas" mostra só as pendentes de verdade (data futura), não as atrasadas
     proximas_entregas = [
         {
             "titulo": a.titulo,
@@ -4844,7 +4494,6 @@ def dashboard_aluno(request):
         for a in pendentes_qs[:5]
     ]
 
-    # --- Total de conteúdos disponíveis pra turma ---
     total_conteudos = Conteudo.objects.filter(turma__in=vinculos_aluno).count()
 
     return JsonResponse({
@@ -4863,7 +4512,6 @@ def _aluno_logado():
     return Estudante.objects.filter(ip=ip).first()
 
 
-# ---------- CONTEÚDOS ----------
 @csrf_exempt
 @require_http_methods(["GET"])
 def conteudos_aluno(request):
@@ -4892,7 +4540,6 @@ def conteudos_aluno(request):
     return JsonResponse({"conteudos": resultado})
 
 
-# ---------- ATIVIDADES ----------
 @csrf_exempt
 @require_http_methods(["GET"])
 def atividades_aluno(request):
@@ -4926,7 +4573,6 @@ def atividades_aluno(request):
 
     return JsonResponse({"atividades": resultado})
 
-# ---------- BOLETIM ----------
 
 @csrf_exempt
 @require_http_methods(["GET"])
@@ -4951,7 +4597,6 @@ def boletim_aluno(request):
         ]
     })
 
-# ---------- HORÁRIOS ----------
 
 @csrf_exempt
 @require_http_methods(["GET"])
@@ -4977,8 +4622,6 @@ def horarios_aluno(request):
 
     return JsonResponse({"horarios": resultado})
 
-
-# ---------- CRONOGRAMA (EstudoProgramado) ----------
 
 @csrf_exempt
 @require_http_methods(["GET", "POST"])
@@ -5052,8 +4695,8 @@ def frequencia_aluno(request):
     if not aluno:
         return JsonResponse({"detail": "Não autenticado."}, status=401)
 
-    mes = request.GET.get("mes")  # ex: "9"
-    ano = request.GET.get("ano")  # ex: "2026"
+    mes = request.GET.get("mes")
+    ano = request.GET.get("ano")
 
     hoje = date.today()
     mes = int(mes) if mes else hoje.month
@@ -5063,7 +4706,6 @@ def frequencia_aluno(request):
         aluno=aluno, data__year=ano, data__month=mes
     ).select_related("disciplina").order_by("data")
 
-    # Agrupa por dia: { "2026-09-03": [{disciplina, presente}, ...], ... }
     por_dia = {}
     for r in registros:
         chave = r.data.isoformat()
@@ -5164,7 +4806,6 @@ def solicitacao_responsavel_excluir(request, vinculo_id):
     responsavel = vinculo.responsavel
     vinculo.delete()
 
-    # Se esse responsável não tem mais nenhum outro vínculo, remove o registro dele também.
     if not VinculoResponsavel.objects.filter(responsavel=responsavel).exists():
         responsavel.delete()
 
@@ -5280,31 +4921,6 @@ def auth_responsavel(request):
     })
 
 
-
-# @csrf_exempt
-# @require_http_methods(["GET"])
-# def vinculos_responsavel(request):
-#     responsavel = _responsavel_logado()
-#     if not responsavel:
-#         return JsonResponse({"detail": "Não autenticado."}, status=401)
-
-#     vinculos = VinculoResponsavel.objects.filter(responsavel=responsavel).select_related("aluno")
-
-#     return JsonResponse({
-#         "vinculos": [
-#             {
-#                 "id": v.id,
-#                 "aluno_nome": v.aluno.nome_completo,
-#                 "aluno_turma": v.aluno.turma,
-#                 "parentesco": v.parentesco,
-#                 "status": v.status,
-#                 "data_solicitacao": v.data_solicitacao.isoformat(),
-#             }
-#             for v in vinculos
-#         ]
-#     })
-
-
 @csrf_exempt
 @require_http_methods(["GET"])
 def vinculos_responsavel(request):
@@ -5328,34 +4944,6 @@ def vinculos_responsavel(request):
             for v in vinculos
         ]
     })
-
-
-# @csrf_exempt
-# @require_http_methods(["POST"])
-# def solicitar_vinculo_responsavel(request):
-#     responsavel = _responsavel_logado()
-#     if not responsavel:
-#         return JsonResponse({"detail": "Não autenticado."}, status=401)
-
-#     body = json.loads(request.body or "{}")
-#     aluno_nome = (body.get("aluno_nome_completo") or "").strip().upper()
-#     parentesco = (body.get("parentesco") or "").strip()
-
-#     if not aluno_nome or not parentesco:
-#         return JsonResponse({"detail": "Informe o nome do aluno e o parentesco."}, status=400)
-
-#     aluno = Estudante.objects.filter(nome_completo=aluno_nome).first()
-#     if not aluno:
-#         return JsonResponse({"detail": "Nenhum aluno encontrado com esse nome completo."}, status=404)
-
-#     if VinculoResponsavel.objects.filter(aluno=aluno, responsavel=responsavel).exists():
-#         return JsonResponse({"detail": "Você já tem uma solicitação ou vínculo com esse aluno."}, status=400)
-
-#     vinculo = VinculoResponsavel.objects.create(
-#         aluno=aluno, responsavel=responsavel, parentesco=parentesco, status="PENDENTE", origem="RESPONSAVEL",
-#     )
-
-#     return JsonResponse({"id": vinculo.id}, status=201)
 
 
 @csrf_exempt
@@ -5415,8 +5003,6 @@ def solicitacao_responsavel_responder(request, vinculo_id):
     return JsonResponse({"status": vinculo.status})
 
 def _calcular_dashboard(aluno):
-    """Monta os dados do dashboard para um aluno específico — usado tanto
-    pelo próprio aluno quanto pelo responsável vinculado a ele."""
     notas = Nota.objects.filter(aluno=aluno).select_related("disciplina")
 
     medias_por_disciplina = []
@@ -5850,13 +5436,6 @@ def mensagem_conversa_professor_responsavel(request, aluno_id, conversa_id):
     }, status=201)
 
 
-# def _coordenador_da_escola_do_aluno(aluno):
-#     nome_escola_aluno = _turma_normalizada(aluno.escola)
-#     for coordenador in Coordenador.objects.all():
-#         if _turma_normalizada(_nome_escola(coordenador.escola)) == nome_escola_aluno:
-#             return coordenador
-#     return None
-
 def _coordenador_da_escola_do_aluno(aluno):
     nome_escola_aluno = _turma_normalizada(aluno.escola)
     if not nome_escola_aluno:
@@ -5866,7 +5445,6 @@ def _coordenador_da_escola_do_aluno(aluno):
         nome_escola_coord = _turma_normalizada(_nome_escola(coordenador.escola))
         if nome_escola_coord == nome_escola_aluno:
             return coordenador
-        # fallback: um contém o outro (cobre abreviações/diferenças parciais)
         if nome_escola_coord and (nome_escola_coord in nome_escola_aluno or nome_escola_aluno in nome_escola_coord):
             return coordenador
 
@@ -6102,9 +5680,6 @@ def mensagem_conversa_coordenacao_responsavel_detalhe(request, conversa_id):
 
 
 def _alunos_da_escola_coordenador(coordenador):
-    """Retorna os alunos cuja escola bate com a do coordenador (mesmo
-    mismatch de formatação já tratado em _coordenador_da_escola_do_aluno,
-    aqui invertido: coordenador -> alunos)."""
     nome_escola_coord = _turma_normalizada(_nome_escola(coordenador.escola))
     if not nome_escola_coord:
         return Estudante.objects.none()
@@ -6242,13 +5817,6 @@ def gerar_ficha_notas_pdf(request, turma_id):
             "rf": nota.get_rf_display() if nota else "Não Definido",
         })
 
-    # logo_path = f"file://{os.path.join(settings.BASE_DIR, 'app', 'static', 'logo.png')}"
-
-    # logo_path = f"file://{os.path.join(settings.BASE_DIR, 'app', 'static', 'logo.png')}"
-
-    # if not os.path.exists(os.path.join(settings.BASE_DIR, 'app', 'static', 'logo.png')):
-    #     logo_path = None
-
     logo_path_absoluto = os.path.join(settings.BASE_DIR, 'django_siaa', 'app', 'static', 'logo.png')
     logo_path = f"file://{logo_path_absoluto}" if os.path.exists(logo_path_absoluto) else None
 
@@ -6266,6 +5834,54 @@ def gerar_ficha_notas_pdf(request, turma_id):
     pdf_file = HTML(string=html_string).write_pdf()
 
     nome_arquivo = f"ficha_notas_{_nome_arquivo_seguro(nome_turma)}_{_nome_arquivo_seguro(disciplina.nome_disciplina)}.pdf"
+
+    response = HttpResponse(pdf_file, content_type="application/pdf")
+    response["Content-Disposition"] = f'inline; filename="{nome_arquivo}"'
+    return response
+
+
+@csrf_exempt
+@require_http_methods(["GET"])
+def boletim_aluno_pdf(request):
+    """Gera o PDF do boletim do aluno autenticado, no mesmo padrão da ficha de notas do professor."""
+    aluno = _aluno_logado()
+    if not aluno:
+        return JsonResponse({"detail": "Não autenticado."}, status=401)
+
+    notas = Nota.objects.filter(aluno=aluno).select_related(
+        "disciplina", "professor"
+    ).order_by("disciplina__nome_disciplina")
+
+    linhas = []
+    for n in notas:
+        linhas.append({
+            "disciplina": n.disciplina.nome_disciplina if n.disciplina else "—",
+            "professor_nome": n.professor.nome_completo if n.professor else "—",
+            "nm1_t1": _campo_pdf(n, "nm1_t1"), "nm2_t1": _campo_pdf(n, "nm2_t1"),
+            "nm3_t1": _campo_pdf(n, "nm3_t1"), "mt_t1": _campo_pdf(n, "mt_t1"),
+            "nm1_t2": _campo_pdf(n, "nm1_t2"), "nm2_t2": _campo_pdf(n, "nm2_t2"),
+            "nm3_t2": _campo_pdf(n, "nm3_t2"), "mt_t2": _campo_pdf(n, "mt_t2"),
+            "nm1_t3": _campo_pdf(n, "nm1_t3"), "nm2_t3": _campo_pdf(n, "nm2_t3"),
+            "nm3_t3": _campo_pdf(n, "nm3_t3"), "mt_t3": _campo_pdf(n, "mt_t3"),
+            "ma": _campo_pdf(n, "ma"), "pf": _campo_pdf(n, "pf"),
+            "maf": _campo_pdf(n, "maf"),
+            "rf": n.get_rf_display(),
+        })
+
+    logo_path_absoluto = os.path.join(settings.BASE_DIR, "app", "static", "logo.png")
+    logo_path = f"file://{logo_path_absoluto}" if os.path.exists(logo_path_absoluto) else None
+
+    contexto = {
+        "aluno": aluno,
+        "linhas": linhas,
+        "logo_path": logo_path,
+        "data_emissao": date.today().strftime("%d/%m/%Y"),
+    }
+
+    html_string = render_to_string("boletim/pdf.html", contexto)
+    pdf_file = HTML(string=html_string).write_pdf()
+
+    nome_arquivo = f"boletim_{_nome_arquivo_seguro(aluno.nome_completo)}.pdf"
 
     response = HttpResponse(pdf_file, content_type="application/pdf")
     response["Content-Disposition"] = f'inline; filename="{nome_arquivo}"'
