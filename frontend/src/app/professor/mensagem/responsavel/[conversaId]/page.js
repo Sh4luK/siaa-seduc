@@ -157,11 +157,10 @@ export default function ConversaResponsavelProfessorPage() {
             <Link href="/professor/frequencia" className={layoutStyles.navLink}><i className="ti ti-users" aria-hidden="true" />Frequencia</Link>
             <Link href="/professor/conteudos" className={layoutStyles.navLink}><i className="ti ti-users" aria-hidden="true" />Conteudos</Link>
             <Link href="/professor/comunicados" className={layoutStyles.navLink}><i className="ti ti-message" aria-hidden="true" />Comunicados</Link>
-            <Link href="/professor/mensagem" className={layoutStyles.navLinkActive}><i className="ti ti-messages" aria-hidden="true" />Mensagens</Link>
             <Link href="/professor/atividades" className={layoutStyles.navLink}><i className="ti ti-users" aria-hidden="true" />Atividades</Link>
             <Link href="/professor/avaliacoes" className={layoutStyles.navLink}><i className="ti ti-users" aria-hidden="true" />Avaliações</Link>
             <Link href="/professor/notas" className={layoutStyles.navLink}><i className="ti ti-edit" aria-hidden="true" />Lançar notas</Link>
-            <Link href="/professor/horarios" className={layoutStyles.navLink}><i className="ti ti-clock" aria-hidden="true" />Horários</Link>
+            <Link href="/professor/mensagem" className={layoutStyles.navLinkActive}><i className="ti ti-messages" aria-hidden="true" />Mensagens</Link>
           </nav>
 
           <div className={layoutStyles.sidebarFooter}>

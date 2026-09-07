@@ -107,6 +107,41 @@ const CARDS = [
       </svg>
     ),
   },
+  {
+    href: "/coordenacao/notas",
+    label: "Notas",
+    description: "Consulte as notas lançadas por turma e disciplina.",
+    icon: (
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M9 12h6" /><path d="M9 16h6" />
+        <path d="M14 3v4a1 1 0 0 0 1 1h4" />
+        <path d="M5 3h9l5 5v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2z" />
+      </svg>
+    ),
+  },
+  {
+    href: "/coordenacao/disciplinas",
+    label: "Disciplinas",
+    description: "Gerencie o cadastro de disciplinas da escola.",
+    icon: (
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M3 19a9 9 0 0 1 9 0a9 9 0 0 1 9 0" />
+        <path d="M3 6a9 9 0 0 1 9 0a9 9 0 0 1 9 0" />
+        <path d="M3 6l0 13" /><path d="M12 6l0 13" /><path d="M21 6l0 13" />
+      </svg>
+    ),
+  },
+  {
+    href: "/coordenacao/solicitacoes",
+    label: "Solicitações",
+    description: "Vínculos entre responsáveis e alunos pendentes de aprovação.",
+    icon: (
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M9 6l6 6l-6 6" />
+        <circle cx="12" cy="12" r="9" />
+      </svg>
+    ),
+  },
 ];
 
 export default function CoordenacaoDashboardPage() {

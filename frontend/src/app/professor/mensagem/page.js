@@ -412,9 +412,6 @@ export default function MensagensProfessorPage() {
             <Link href="/professor/comunicados" className={layoutStyles.navLink}>
               <i className="ti ti-message" aria-hidden="true" />Comunicados
             </Link>
-            <Link href="/professor/mensagem" className={layoutStyles.navLinkActive}>
-              <i className="ti ti-messages" aria-hidden="true" />Mensagens
-            </Link>
             <Link href="/professor/atividades" className={layoutStyles.navLink}>
               <i className="ti ti-users" aria-hidden="true" />Atividades
             </Link>
@@ -424,8 +421,8 @@ export default function MensagensProfessorPage() {
             <Link href="/professor/notas" className={layoutStyles.navLink}>
               <i className="ti ti-edit" aria-hidden="true" />Lançar notas
             </Link>
-            <Link href="/professor/horarios" className={layoutStyles.navLink}>
-              <i className="ti ti-clock" aria-hidden="true" />Horários
+            <Link href="/professor/mensagem" className={layoutStyles.navLinkActive}>
+              <i className="ti ti-messages" aria-hidden="true" />Mensagens
             </Link>
           </nav>
 

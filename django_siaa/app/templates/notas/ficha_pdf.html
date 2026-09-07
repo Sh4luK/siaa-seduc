@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <style>
+    @page {
+      size: A4 landscape;
+      margin: 1.2cm;
+    }
+
+    body {
+      font-family: "Helvetica", Arial, sans-serif;
+      color: #1a2942;
+      font-size: 10px;
+    }
+
+    .cabecalho {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-bottom: 2px solid #0b4f9e;
+      padding-bottom: 10px;
+      margin-bottom: 14px;
+    }
+
+    .cabecalho img {
+      width: 48px;
+      height: 48px;
+    }
+
+    .cabecalho h1 {
+      font-size: 15px;
+      margin: 0 0 2px;
+      color: #0b4f9e;
+    }
+
+    .cabecalho p {
+      margin: 0;
+      font-size: 10px;
+      color: #5b6b85;
+    }
+
+    .info-linha {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 12px;
+      font-size: 10.5px;
+    }
+
+    .info-linha strong {
+      color: #1a2942;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th,
+    td {
+      border: 1px solid #cbd5e1;
+      padding: 4px 3px;
+      text-align: center;
+    }
+
+    thead th {
+      background-color: #eaf1fb;
+      color: #0b4f9e;
+      font-weight: 700;
+      font-size: 9px;
+      text-transform: uppercase;
+    }
+
+    td.nome {
+      text-align: left;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    tbody tr:nth-child(even) {
+      background-color: #f8fafc;
+    }
+
+    .rodape {
+      margin-top: 14px;
+      font-size: 8.5px;
+      color: #94a3b8;
+      text-align: right;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- <div class="cabecalho">
+    <img src="{{ logo_path }}" alt="Logo">
+    <div>
+      <h1>Ficha de Notas — {{ nome_turma }}</h1>
+      <p>Disciplina: {{ disciplina }} · Ano letivo: {{ ano_letivo }}</p>
+    </div>
+  </div> -->
+  <div class="cabecalho">
+    {% if logo_path %}
+    <img src="{{ logo_path }}" alt="Logo">
+    {% endif %}
+    <div>
+      <h1>Ficha de Notas — {{ nome_turma }}</h1>
+      <p>Disciplina: {{ disciplina }} · Ano letivo: {{ ano_letivo }}</p>
+    </div>
+  </div>
+
+  <div class="info-linha">
+    <span>Professor(a): <strong>{{ professor }}</strong></span>
+    <span>Emitido em: <strong>{{ data_emissao }}</strong></span>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th rowspan="2">Nº</th>
+        <th rowspan="2">Aluno</th>
+        <th colspan="4">1º Trimestre</th>
+        <th colspan="4">2º Trimestre</th>
+        <th colspan="4">3º Trimestre</th>
+        <th rowspan="2">MA</th>
+        <th rowspan="2">PF</th>
+        <th rowspan="2">MAF</th>
+        <th rowspan="2">RCF</th>
+        <th rowspan="2">TGF</th>
+        <th rowspan="2">Situação</th>
+      </tr>
+      <tr>
+        <th>NM1</th>
+        <th>NM2</th>
+        <th>NM3</th>
+        <th>MT</th>
+        <th>NM1</th>
+        <th>NM2</th>
+        <th>NM3</th>
+        <th>MT</th>
+        <th>NM1</th>
+        <th>NM2</th>
+        <th>NM3</th>
+        <th>MT</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for linha in linhas %}
+      <tr>
+        <td>{{ linha.posicao_ordem }}</td>
+        <td class="nome">{{ linha.nome_completo }}</td>
+        <td>{{ linha.nm1_t1 }}</td>
+        <td>{{ linha.nm2_t1 }}</td>
+        <td>{{ linha.nm3_t1 }}</td>
+        <td>{{ linha.mt_t1 }}</td>
+        <td>{{ linha.nm1_t2 }}</td>
+        <td>{{ linha.nm2_t2 }}</td>
+        <td>{{ linha.nm3_t2 }}</td>
+        <td>{{ linha.mt_t2 }}</td>
+        <td>{{ linha.nm1_t3 }}</td>
+        <td>{{ linha.nm2_t3 }}</td>
+        <td>{{ linha.nm3_t3 }}</td>
+        <td>{{ linha.mt_t3 }}</td>
+        <td><strong>{{ linha.ma }}</strong></td>
+        <td>{{ linha.pf }}</td>
+        <td><strong>{{ linha.maf }}</strong></td>
+        <td>{{ linha.rcf }}</td>
+        <td>{{ linha.tgf }}</td>
+        <td>{{ linha.rf }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <p class="rodape">SIAA-SEDUC — Sistema Integrado de Acompanhamento Acadêmico</p>
+
+</body>
+
+</html>

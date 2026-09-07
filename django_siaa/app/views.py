@@ -1,3 +1,4 @@
+import re
 from urllib.parse import urlparse
 from urllib.parse import unquote
 from django.utils import timezone
@@ -6098,3 +6099,174 @@ def mensagem_conversa_coordenacao_responsavel_detalhe(request, conversa_id):
         "id": mensagem.id, "remetente_tipo": mensagem.remetente_tipo,
         "conteudo": mensagem.conteudo, "data_envio": mensagem.data_envio.isoformat(),
     }, status=201)
+
+
+def _alunos_da_escola_coordenador(coordenador):
+    """Retorna os alunos cuja escola bate com a do coordenador (mesmo
+    mismatch de formatação já tratado em _coordenador_da_escola_do_aluno,
+    aqui invertido: coordenador -> alunos)."""
+    nome_escola_coord = _turma_normalizada(_nome_escola(coordenador.escola))
+    if not nome_escola_coord:
+        return Estudante.objects.none()
+
+    alunos_ids = []
+    for aluno in Estudante.objects.all():
+        nome_escola_aluno = _turma_normalizada(aluno.escola)
+        if not nome_escola_aluno:
+            continue
+        if (
+            nome_escola_aluno == nome_escola_coord
+            or nome_escola_aluno in nome_escola_coord
+            or nome_escola_coord in nome_escola_aluno
+        ):
+            alunos_ids.append(aluno.id)
+
+    return Estudante.objects.filter(id__in=alunos_ids)
+
+
+@csrf_exempt
+@require_http_methods(["GET"])
+def solicitacoes_responsavel_coordenacao(request):
+    coordenador = _coordenador_logado()
+    if not coordenador:
+        return JsonResponse({"detail": "Não autenticado."}, status=401)
+
+    alunos_escola = _alunos_da_escola_coordenador(coordenador)
+    vinculos = VinculoResponsavel.objects.filter(
+        aluno__in=alunos_escola
+    ).select_related("aluno", "responsavel").order_by("-data_solicitacao")
+
+    return JsonResponse({
+        "solicitacoes": [
+            {
+                "id": v.id,
+                "aluno_nome": v.aluno.nome_completo,
+                "aluno_turma": v.aluno.turma,
+                "responsavel_nome": v.responsavel.nome_completo,
+                "parentesco": v.parentesco,
+                "status": v.status,
+                "origem": v.origem,
+                "data_solicitacao": v.data_solicitacao.isoformat(),
+            }
+            for v in vinculos
+        ]
+    })
+
+
+@csrf_exempt
+@require_http_methods(["POST"])
+def solicitacao_responsavel_coordenacao_responder(request, vinculo_id):
+    """Permite à coordenação aprovar/recusar diretamente — útil se o aluno
+    demorar a responder ou estiver inacessível."""
+    coordenador = _coordenador_logado()
+    if not coordenador:
+        return JsonResponse({"detail": "Não autenticado."}, status=401)
+
+    vinculo = VinculoResponsavel.objects.filter(id=vinculo_id).select_related("aluno").first()
+    if not vinculo:
+        return JsonResponse({"detail": "Solicitação não encontrada."}, status=404)
+
+    alunos_escola_ids = set(_alunos_da_escola_coordenador(coordenador).values_list("id", flat=True))
+    if vinculo.aluno_id not in alunos_escola_ids:
+        return JsonResponse({"detail": "Esse aluno não pertence à sua escola."}, status=403)
+
+    body = json.loads(request.body or "{}")
+    decisao = body.get("decisao")
+    if decisao not in ("APROVADO", "RECUSADO"):
+        return JsonResponse({"detail": "decisao deve ser 'APROVADO' ou 'RECUSADO'."}, status=400)
+
+    vinculo.status = decisao
+    vinculo.data_resposta = timezone.now()
+    vinculo.save(update_fields=["status", "data_resposta"])
+
+    return JsonResponse({"status": vinculo.status})
+
+
+def _campo_pdf(obj, nome):
+    if obj is None:
+        return "—"
+    valor = getattr(obj, nome)
+    return str(valor) if valor is not None else "—"
+
+
+
+def _nome_arquivo_seguro(texto):
+    """Remove acentos e qualquer caractere fora de A-Z/0-9/_/- , pra nunca
+    quebrar o header Content-Disposition (que exige ASCII puro)."""
+    texto = unicodedata.normalize("NFKD", texto).encode("ascii", "ignore").decode("ascii")
+    texto = re.sub(r"[^A-Za-z0-9_\-]+", "_", texto)
+    return texto.strip("_")
+
+@csrf_exempt
+def gerar_ficha_notas_pdf(request, turma_id):
+    """Gera a ficha de notas (todos os alunos da turma) em PDF, pronta para impressão."""
+    professor = _professor_atual(request)
+    if not professor:
+        return JsonResponse({"message": "Não autenticado"}, status=401)
+
+    ano_letivo = request.GET.get("ano_letivo", "2026")
+
+    turma_obj = AtravessaPor.objects.filter(id=turma_id, professor=professor).first()
+    if not turma_obj:
+        return JsonResponse({"message": "Turma não encontrada."}, status=404)
+
+    disciplina = resolver_disciplina_da_turma(turma_obj)
+    if not disciplina:
+        return JsonResponse(
+            {"message": "Não foi possível resolver a disciplina associada a esta turma."},
+            status=404
+        )
+
+    nome_turma = turma_obj.turma
+    alunos = buscar_alunos_por_turma(nome_turma)
+
+    linhas = []
+    for aluno in alunos:
+        nota = Nota.objects.filter(
+            aluno=aluno, turma_id=turma_id, disciplina=disciplina,
+            professor=professor, ano_letivo=ano_letivo,
+        ).first()
+
+        linhas.append({
+            "posicao_ordem": aluno.posicao_ordem or "—",
+            "nome_completo": aluno.nome_completo,
+            "nm1_t1": _campo_pdf(nota, "nm1_t1"), "nm2_t1": _campo_pdf(nota, "nm2_t1"),
+            "nm3_t1": _campo_pdf(nota, "nm3_t1"), "mt_t1": _campo_pdf(nota, "mt_t1"),
+            "nm1_t2": _campo_pdf(nota, "nm1_t2"), "nm2_t2": _campo_pdf(nota, "nm2_t2"),
+            "nm3_t2": _campo_pdf(nota, "nm3_t2"), "mt_t2": _campo_pdf(nota, "mt_t2"),
+            "nm1_t3": _campo_pdf(nota, "nm1_t3"), "nm2_t3": _campo_pdf(nota, "nm2_t3"),
+            "nm3_t3": _campo_pdf(nota, "nm3_t3"), "mt_t3": _campo_pdf(nota, "mt_t3"),
+            "ma": _campo_pdf(nota, "ma"), "pf": _campo_pdf(nota, "pf"),
+            "maf": _campo_pdf(nota, "maf"), "rcf": _campo_pdf(nota, "rcf"),
+            "tgf": nota.tgf if nota else 0,
+            "rf": nota.get_rf_display() if nota else "Não Definido",
+        })
+
+    # logo_path = f"file://{os.path.join(settings.BASE_DIR, 'app', 'static', 'logo.png')}"
+
+    # logo_path = f"file://{os.path.join(settings.BASE_DIR, 'app', 'static', 'logo.png')}"
+
+    # if not os.path.exists(os.path.join(settings.BASE_DIR, 'app', 'static', 'logo.png')):
+    #     logo_path = None
+
+    logo_path_absoluto = os.path.join(settings.BASE_DIR, 'django_siaa', 'app', 'static', 'logo.png')
+    logo_path = f"file://{logo_path_absoluto}" if os.path.exists(logo_path_absoluto) else None
+
+    contexto = {
+        "nome_turma": nome_turma,
+        "disciplina": disciplina.nome_disciplina,
+        "professor": professor.nome_completo,
+        "ano_letivo": ano_letivo,
+        "linhas": linhas,
+        "logo_path": logo_path,
+        "data_emissao": date.today().strftime("%d/%m/%Y"),
+    }
+
+    html_string = render_to_string("notas/ficha_pdf.html", contexto)
+    pdf_file = HTML(string=html_string).write_pdf()
+
+    nome_arquivo = f"ficha_notas_{_nome_arquivo_seguro(nome_turma)}_{_nome_arquivo_seguro(disciplina.nome_disciplina)}.pdf"
+
+    response = HttpResponse(pdf_file, content_type="application/pdf")
+    response["Content-Disposition"] = f'inline; filename="{nome_arquivo}"'
+    return response
