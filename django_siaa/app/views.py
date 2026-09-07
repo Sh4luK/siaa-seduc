@@ -1,3 +1,4 @@
+import re
 from urllib.parse import urlparse
 from urllib.parse import unquote
 from django.utils import timezone
@@ -6188,6 +6189,14 @@ def _campo_pdf(obj, nome):
     return str(valor) if valor is not None else "—"
 
 
+
+def _nome_arquivo_seguro(texto):
+    """Remove acentos e qualquer caractere fora de A-Z/0-9/_/- , pra nunca
+    quebrar o header Content-Disposition (que exige ASCII puro)."""
+    texto = unicodedata.normalize("NFKD", texto).encode("ascii", "ignore").decode("ascii")
+    texto = re.sub(r"[^A-Za-z0-9_\-]+", "_", texto)
+    return texto.strip("_")
+
 @csrf_exempt
 def gerar_ficha_notas_pdf(request, turma_id):
     """Gera a ficha de notas (todos os alunos da turma) em PDF, pronta para impressão."""
@@ -6233,7 +6242,15 @@ def gerar_ficha_notas_pdf(request, turma_id):
             "rf": nota.get_rf_display() if nota else "Não Definido",
         })
 
-    logo_path = f"file://{os.path.join(settings.BASE_DIR, 'app', 'static', 'logo.png')}"
+    # logo_path = f"file://{os.path.join(settings.BASE_DIR, 'app', 'static', 'logo.png')}"
+
+    # logo_path = f"file://{os.path.join(settings.BASE_DIR, 'app', 'static', 'logo.png')}"
+
+    # if not os.path.exists(os.path.join(settings.BASE_DIR, 'app', 'static', 'logo.png')):
+    #     logo_path = None
+
+    logo_path_absoluto = os.path.join(settings.BASE_DIR, 'django_siaa', 'app', 'static', 'logo.png')
+    logo_path = f"file://{logo_path_absoluto}" if os.path.exists(logo_path_absoluto) else None
 
     contexto = {
         "nome_turma": nome_turma,
@@ -6248,7 +6265,7 @@ def gerar_ficha_notas_pdf(request, turma_id):
     html_string = render_to_string("notas/ficha_pdf.html", contexto)
     pdf_file = HTML(string=html_string).write_pdf()
 
-    nome_arquivo = f"ficha_notas_{nome_turma}_{disciplina.nome_disciplina}.pdf".replace(" ", "_")
+    nome_arquivo = f"ficha_notas_{_nome_arquivo_seguro(nome_turma)}_{_nome_arquivo_seguro(disciplina.nome_disciplina)}.pdf"
 
     response = HttpResponse(pdf_file, content_type="application/pdf")
     response["Content-Disposition"] = f'inline; filename="{nome_arquivo}"'
