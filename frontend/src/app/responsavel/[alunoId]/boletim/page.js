@@ -95,7 +95,15 @@ export default function BoletimAlunoResponsavelPage() {
         ) : (
           <>
             <h1 className={layoutStyles.title}>Boletim</h1>
-            <p className={layoutStyles.subtitle}>{aluno?.nome_completo} · {aluno?.turma}</p>
+            <div className={styles.headerAluno}>
+              <div className={styles.avatarIniciais}>
+                {aluno?.nome_completo?.trim().charAt(0) || "?"}
+              </div>
+              <div className={styles.headerTextos}>
+                <p className={styles.headerNome}>{aluno?.nome_completo}</p>
+                <p className={styles.headerTurma}>{aluno?.turma}</p>
+              </div>
+            </div>
 
             {boletim.length === 0 ? (
               <p className={styles.vazio}>Nenhuma nota lançada ainda.</p>
