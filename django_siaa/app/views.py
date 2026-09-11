@@ -212,7 +212,7 @@ def auth_student(request):
 
 @csrf_exempt
 def login_teacher(request):
-    ip = get_ip()
+    ip = get_ip(request)
     print(ip)
     nome_completo = request.GET.get("nome_completo").strip().upper()
     senha = request.GET.get("senha").strip().upper()
@@ -234,7 +234,7 @@ def login_teacher(request):
 
 @csrf_exempt
 def auth_teacher(request):
-    ip = get_ip()
+    ip = get_ip(request)
     teacher = Professor.objects.filter(ip=ip).first()
     print(teacher)
     try:
@@ -1495,7 +1495,7 @@ def deletar_comunicado(request, comunicado_id):
 
 @csrf_exempt
 def login_coordenacao(request):
-    ip = get_ip()
+    ip = get_ip(request)
     nome_completo = request.GET.get("nome_completo").strip().upper()
     senha = request.GET.get("senha").strip()
 
@@ -1514,7 +1514,7 @@ def login_coordenacao(request):
 
 @csrf_exempt
 def auth_coordenacao(request):
-    ip = get_ip()
+    ip = get_ip(request)
     coordenador = Coordenador.objects.filter(ip=ip).first()
 
     try:
@@ -1642,7 +1642,7 @@ def criar_professor(request):
 
 @csrf_exempt
 def get_escola_coordenador(request):
-    ip = get_ip()
+    ip = get_ip(request)
     coordenador = Coordenador.objects.filter(ip=ip).first()
 
     if not coordenador:
@@ -2267,7 +2267,7 @@ def criar_evento_coordenacao(request):
     if request.method != "POST":
         return JsonResponse({"message": "Método não permitido."}, status=405)
 
-    ip = get_ip()
+    ip = get_ip(request)
     coordenador = Coordenador.objects.filter(ip=ip).first()
 
     if not coordenador:
@@ -2486,7 +2486,7 @@ def criar_comunicado_coordenacao(request):
     if request.method != "POST":
         return JsonResponse({"message": "Método não permitido."}, status=405)
 
-    ip = get_ip()
+    ip = get_ip(request)
     coordenador = Coordenador.objects.filter(ip=ip).first()
 
     if not coordenador:
@@ -2672,7 +2672,7 @@ def criar_advertencia_coordenacao(request):
     if request.method != "POST":
         return JsonResponse({"message": "Método não permitido."}, status=405)
 
-    ip = get_ip()
+    ip = get_ip(request)
     coordenador = Coordenador.objects.filter(ip=ip).first()
     if not coordenador:
         return JsonResponse({"message": "Coordenador não autenticado."}, status=401)
@@ -3207,7 +3207,7 @@ def mover_aluno_turma(request, aluno_id):
 
 @csrf_exempt
 def get_eventos_professor_visualizacao(request):
-    ip = get_ip()
+    ip = get_ip(request)
     professor = Professor.objects.filter(ip=ip).first()
 
     if not professor:
@@ -3312,7 +3312,7 @@ def renomear_disciplina_coordenacao(request, disciplina_id):
 
 @csrf_exempt
 def login_blogger(request):
-    ip = get_ip()
+    ip = get_ip(request)
     nome_completo = request.GET.get("nome_completo").strip().upper()
     senha = request.GET.get("senha").strip()
 
@@ -3327,7 +3327,7 @@ def login_blogger(request):
 
 @csrf_exempt
 def auth_blogger(request):
-    ip = get_ip()
+    ip = get_ip(request)
     blogger = Blogger.objects.filter(ip=ip).first()
 
     if blogger is None:
@@ -3383,7 +3383,7 @@ def criar_post(request):
     if request.method != "POST":
         return JsonResponse({"message": "Método não permitido."}, status=405)
 
-    ip = get_ip()
+    ip = get_ip(request)
     blogger = Blogger.objects.filter(ip=ip).first()
     if not blogger:
         return JsonResponse({"message": "Você precisa estar autenticado para publicar."}, status=401)
@@ -3421,7 +3421,7 @@ def editar_post(request, post_id):
     if request.method != "POST":
         return JsonResponse({"message": "Método não permitido."}, status=405)
 
-    ip = get_ip()
+    ip = get_ip(request)
     blogger = Blogger.objects.filter(ip=ip).first()
     if not blogger:
         return JsonResponse({"message": "Você precisa estar autenticado."}, status=401)
@@ -3456,7 +3456,7 @@ def deletar_post(request, post_id):
     if request.method != "DELETE":
         return JsonResponse({"message": "Método não permitido."}, status=405)
 
-    ip = get_ip()
+    ip = get_ip(request)
     blogger = Blogger.objects.filter(ip=ip).first()
     if not blogger:
         return JsonResponse({"message": "Você precisa estar autenticado."}, status=401)
@@ -3473,7 +3473,7 @@ def deletar_post(request, post_id):
 
 
 def _professor_atual(request):
-    ip = get_ip()
+    ip = get_ip(request)
     return Professor.objects.filter(ip=ip).first()
 
 
@@ -3656,7 +3656,7 @@ def opcoes_avaliacao(request):
     })
 
 def _coordenador_atual(request):
-    ip = get_ip()
+    ip = get_ip(request)
     return Coordenador.objects.filter(ip=ip).first()
 
 
@@ -3780,7 +3780,7 @@ def avaliacao_emitir_pdf_coordenacao(request, avaliacao_id):
 
 @csrf_exempt
 def get_avaliacoes_professor(request):
-    ip = get_ip()
+    ip = get_ip(request)
     professor = Professor.objects.filter(ip=ip).first()
     if not professor:
         return JsonResponse({"message": "Professor não autenticado."}, status=401)
@@ -3811,7 +3811,7 @@ def criar_avaliacao(request):
     if request.method != "POST":
         return JsonResponse({"message": "Método não permitido."}, status=405)
 
-    ip = get_ip()
+    ip = get_ip(request)
     professor = Professor.objects.filter(ip=ip).first()
     if not professor:
         return JsonResponse({"message": "Professor não autenticado."}, status=401)
@@ -3924,15 +3924,19 @@ def gerar_avaliacao_pdf(request, avaliacao_id):
 
 
 
-def _coordenador_logado():
-    ip = get_ip()
+# def _coordenador_logado():
+#     ip = get_ip(request)
+#     return Coordenador.objects.filter(ip=ip).first()
+
+def _coordenador_logado(request):
+    ip = get_ip(request)
     return Coordenador.objects.filter(ip=ip).first()
 
 
 @csrf_exempt
 @require_http_methods(["GET", "POST"])
 def mensagens_list_create_coordenacao(request):
-    coordenador = _coordenador_logado()
+    coordenador = _coordenador_logado(request)
     if not coordenador:
         return JsonResponse({"detail": "Não autenticado."}, status=401)
 
@@ -3989,7 +3993,7 @@ def _nome_escola(escola_str):
 @csrf_exempt
 @require_http_methods(["GET"])
 def opcoes_mensagem_coordenacao(request):
-    coordenador = _coordenador_logado()
+    coordenador = _coordenador_logado(request)
     if not coordenador:
         return JsonResponse({"detail": "Não autenticado."}, status=401)
 
@@ -4009,7 +4013,7 @@ def opcoes_mensagem_coordenacao(request):
 @csrf_exempt
 @require_http_methods(["GET", "POST"])
 def mensagem_conversa_detalhe(request, conversa_id):
-    coordenador = _coordenador_logado()
+    coordenador = _coordenador_logado(request)
     if not coordenador:
         return JsonResponse({"detail": "Não autenticado."}, status=401)
 
@@ -4055,15 +4059,19 @@ def mensagem_conversa_detalhe(request, conversa_id):
     }, status=201)
 
 
-def _professor_logado():
-    ip = get_ip()
+# def _professor_logado():
+#     ip = get_ip(request)
+#     return Professor.objects.filter(ip=ip).first()
+
+def _professor_logado(request):
+    ip = get_ip(request)
     return Professor.objects.filter(ip=ip).first()
 
 
 @csrf_exempt
 @require_http_methods(["GET"])
 def mensagens_list_professor(request):
-    professor = _professor_logado()
+    professor = _professor_logado(request)
     if not professor:
         return JsonResponse({"detail": "Não autenticado."}, status=401)
 
@@ -4090,7 +4098,7 @@ def mensagens_list_professor(request):
 @csrf_exempt
 @require_http_methods(["GET", "POST"])
 def mensagem_conversa_detalhe_professor(request, conversa_id):
-    professor = _professor_logado()
+    professor = _professor_logado(request)
     if not professor:
         return JsonResponse({"detail": "Não autenticado."}, status=401)
 
@@ -4132,7 +4140,7 @@ def mensagem_conversa_detalhe_professor(request, conversa_id):
 @csrf_exempt
 @require_http_methods(["GET"])
 def opcoes_notas_coordenacao(request):
-    coordenador = _coordenador_logado()
+    coordenador = _coordenador_logado(request)
     if not coordenador:
         return JsonResponse({"detail": "Não autenticado."}, status=401)
 
@@ -4158,7 +4166,7 @@ def opcoes_notas_coordenacao(request):
 @csrf_exempt
 @require_http_methods(["GET"])
 def notas_turma_coordenacao(request, vinculo_id):
-    coordenador = _coordenador_logado()
+    coordenador = _coordenador_logado(request)
     if not coordenador:
         return JsonResponse({"detail": "Não autenticado."}, status=401)
 
@@ -4205,8 +4213,8 @@ def notas_turma_coordenacao(request, vinculo_id):
 
 
 
-def _admin_logado():
-    ip = get_ip()
+def _admin_logado(request):
+    ip = get_ip(request)
     return Admin.objects.filter(ip=ip).first()
 
 
@@ -4227,7 +4235,7 @@ def admin_login(request):
     if not admin:
         return JsonResponse({"return": False, "detail": "Credenciais inválidas."}, status=401)
 
-    admin.ip = get_ip()
+    admin.ip = get_ip(request)
     admin.save(update_fields=["ip"])
     return JsonResponse({"return": True, "admin": {"id": admin.id, "nome_completo": admin.nome_completo}})
 
@@ -4436,15 +4444,18 @@ def admin_turma_renomear(request):
     return JsonResponse({"alunos_atualizados": qtd_alunos, "vinculos_atualizados": qtd_vinculos})
 
 
-def _aluno_logado():
-    ip = get_ip()
+# def _aluno_logado():
+#     ip = get_ip(request)
+#     return Estudante.objects.filter(ip=ip).first()
+def _aluno_logado(request):
+    ip = get_ip(request)
     return Estudante.objects.filter(ip=ip).first()
 
 
 @csrf_exempt
 @require_http_methods(["GET"])
 def dashboard_aluno(request):
-    aluno = _aluno_logado()
+    aluno = _aluno_logado(request)
     if not aluno:
         return JsonResponse({"detail": "Não autenticado."}, status=401)
 
@@ -4508,14 +4519,14 @@ def dashboard_aluno(request):
 
 
 def _aluno_logado():
-    ip = get_ip()
+    ip = get_ip(request)
     return Estudante.objects.filter(ip=ip).first()
 
 
 @csrf_exempt
 @require_http_methods(["GET"])
 def conteudos_aluno(request):
-    aluno = _aluno_logado()
+    aluno = _aluno_logado(request)
     if not aluno:
         return JsonResponse({"detail": "Não autenticado."}, status=401)
 
@@ -4543,7 +4554,7 @@ def conteudos_aluno(request):
 @csrf_exempt
 @require_http_methods(["GET"])
 def atividades_aluno(request):
-    aluno = _aluno_logado()
+    aluno = _aluno_logado(request)
     if not aluno:
         return JsonResponse({"detail": "Não autenticado."}, status=401)
 
@@ -4577,7 +4588,7 @@ def atividades_aluno(request):
 @csrf_exempt
 @require_http_methods(["GET"])
 def boletim_aluno(request):
-    aluno = _aluno_logado()
+    aluno = _aluno_logado(request)
     if not aluno:
         return JsonResponse({"detail": "Não autenticado."}, status=401)
 
@@ -4601,7 +4612,7 @@ def boletim_aluno(request):
 @csrf_exempt
 @require_http_methods(["GET"])
 def horarios_aluno(request):
-    aluno = _aluno_logado()
+    aluno = _aluno_logado(request)
     if not aluno:
         return JsonResponse({"detail": "Não autenticado."}, status=401)
 
@@ -4626,7 +4637,7 @@ def horarios_aluno(request):
 @csrf_exempt
 @require_http_methods(["GET", "POST"])
 def cronograma_aluno(request):
-    aluno = _aluno_logado()
+    aluno = _aluno_logado(request)
     if not aluno:
         return JsonResponse({"detail": "Não autenticado."}, status=401)
 
@@ -4659,7 +4670,7 @@ def cronograma_aluno(request):
 @csrf_exempt
 @require_http_methods(["POST"])
 def cronograma_alternar_concluido(request, estudo_id):
-    aluno = _aluno_logado()
+    aluno = _aluno_logado(request)
     if not aluno:
         return JsonResponse({"detail": "Não autenticado."}, status=401)
 
@@ -4675,7 +4686,7 @@ def cronograma_alternar_concluido(request, estudo_id):
 @csrf_exempt
 @require_http_methods(["DELETE"])
 def cronograma_excluir(request, estudo_id):
-    aluno = _aluno_logado()
+    aluno = _aluno_logado(request)
     if not aluno:
         return JsonResponse({"detail": "Não autenticado."}, status=401)
 
@@ -4691,7 +4702,7 @@ def cronograma_excluir(request, estudo_id):
 @csrf_exempt
 @require_http_methods(["GET"])
 def frequencia_aluno(request):
-    aluno = _aluno_logado()
+    aluno = _aluno_logado(request)
     if not aluno:
         return JsonResponse({"detail": "Não autenticado."}, status=401)
 
@@ -4744,7 +4755,7 @@ def frequencia_aluno(request):
 @csrf_exempt
 @require_http_methods(["GET", "POST"])
 def solicitacoes_responsavel_aluno(request):
-    aluno = _aluno_logado()
+    aluno = _aluno_logado(request)
     if not aluno:
         return JsonResponse({"detail": "Não autenticado."}, status=401)
 
@@ -4795,7 +4806,7 @@ def solicitacao_responsavel_excluir(request, vinculo_id):
     Remove o vínculo/solicitação. Se ainda estiver PENDENTE, é um cancelamento;
     se já estiver APROVADO, é uma revogação de acesso do responsável.
     """
-    aluno = _aluno_logado()
+    aluno = _aluno_logado(request)
     if not aluno:
         return JsonResponse({"detail": "Não autenticado."}, status=401)
 
@@ -4811,10 +4822,12 @@ def solicitacao_responsavel_excluir(request, vinculo_id):
 
     return JsonResponse({"detail": "Removido."})
 
-def _responsavel_logado():
-    ip = get_ip()
+# def _responsavel_logado():
+#     ip = get_ip(request)
+#     return Responsavel.objects.filter(ip=ip).first()
+def _responsavel_logado(request):
+    ip = get_ip(request)
     return Responsavel.objects.filter(ip=ip).first()
-
 
 @csrf_exempt
 @require_http_methods(["GET"])
@@ -4890,7 +4903,7 @@ def registrar_responsavel(request):
 
 @csrf_exempt
 def login_responsavel(request):
-    ip = get_ip()
+    ip = get_ip(request)
     nome_completo = request.GET.get("nome_completo", "").strip().upper()
     senha = request.GET.get("senha", "").strip()
 
@@ -4905,7 +4918,7 @@ def login_responsavel(request):
 
 @csrf_exempt
 def auth_responsavel(request):
-    ip = get_ip()
+    ip = get_ip(request)
     responsavel = Responsavel.objects.filter(ip=ip).first()
 
     if not responsavel:
@@ -4924,7 +4937,7 @@ def auth_responsavel(request):
 @csrf_exempt
 @require_http_methods(["GET"])
 def vinculos_responsavel(request):
-    responsavel = _responsavel_logado()
+    responsavel = _responsavel_logado(request)
     if not responsavel:
         return JsonResponse({"detail": "Não autenticado."}, status=401)
 
@@ -4949,7 +4962,7 @@ def vinculos_responsavel(request):
 @csrf_exempt
 @require_http_methods(["POST"])
 def solicitar_vinculo_responsavel(request):
-    responsavel = _responsavel_logado()
+    responsavel = _responsavel_logado(request)
     if not responsavel:
         return JsonResponse({"detail": "Não autenticado."}, status=401)
 
@@ -4979,7 +4992,7 @@ def solicitar_vinculo_responsavel(request):
 @require_http_methods(["POST"])
 def solicitacao_responsavel_responder(request, vinculo_id):
     """Aluno aprova ou recusa uma solicitação de vínculo iniciada pelo responsável."""
-    aluno = _aluno_logado()
+    aluno = _aluno_logado(request)
     if not aluno:
         return JsonResponse({"detail": "Não autenticado."}, status=401)
 
@@ -5065,7 +5078,7 @@ def _calcular_dashboard(aluno):
 @csrf_exempt
 @require_http_methods(["GET"])
 def dashboard_aluno(request):
-    aluno = _aluno_logado()
+    aluno = _aluno_logado(request)
     if not aluno:
         return JsonResponse({"detail": "Não autenticado."}, status=401)
 
@@ -5074,7 +5087,7 @@ def dashboard_aluno(request):
 @csrf_exempt
 @require_http_methods(["GET"])
 def dashboard_aluno_responsavel(request, aluno_id):
-    responsavel = _responsavel_logado()
+    responsavel = _responsavel_logado(request)
     if not responsavel:
         return JsonResponse({"detail": "Não autenticado."}, status=401)
 
@@ -5110,7 +5123,7 @@ def dashboard_aluno_responsavel(request, aluno_id):
 
 def _verificar_acesso_responsavel(request, aluno_id):
     """Retorna (responsavel, aluno, None) se aprovado, ou (None, None, JsonResponse_erro)."""
-    responsavel = _responsavel_logado()
+    responsavel = _responsavel_logado(request)
     if not responsavel:
         return None, None, JsonResponse({"detail": "Não autenticado."}, status=401)
 
@@ -5536,7 +5549,7 @@ def mensagem_conversa_coordenador_responsavel(request, aluno_id, conversa_id):
 @csrf_exempt
 @require_http_methods(["GET"])
 def mensagens_list_professor_responsaveis(request):
-    professor = _professor_logado()
+    professor = _professor_logado(request)
     if not professor:
         return JsonResponse({"detail": "Não autenticado."}, status=401)
 
@@ -5565,7 +5578,7 @@ def mensagens_list_professor_responsaveis(request):
 @csrf_exempt
 @require_http_methods(["GET", "POST"])
 def mensagem_conversa_professor_responsavel_detalhe(request, conversa_id):
-    professor = _professor_logado()
+    professor = _professor_logado(request)
     if not professor:
         return JsonResponse({"detail": "Não autenticado."}, status=401)
 
@@ -5610,7 +5623,7 @@ def mensagem_conversa_professor_responsavel_detalhe(request, conversa_id):
 @csrf_exempt
 @require_http_methods(["GET"])
 def mensagens_list_coordenacao_responsaveis(request):
-    coordenador = _coordenador_logado()
+    coordenador = _coordenador_logado(request)
     if not coordenador:
         return JsonResponse({"detail": "Não autenticado."}, status=401)
 
@@ -5638,7 +5651,7 @@ def mensagens_list_coordenacao_responsaveis(request):
 @csrf_exempt
 @require_http_methods(["GET", "POST"])
 def mensagem_conversa_coordenacao_responsavel_detalhe(request, conversa_id):
-    coordenador = _coordenador_logado()
+    coordenador = _coordenador_logado(request)
     if not coordenador:
         return JsonResponse({"detail": "Não autenticado."}, status=401)
 
@@ -5702,7 +5715,7 @@ def _alunos_da_escola_coordenador(coordenador):
 @csrf_exempt
 @require_http_methods(["GET"])
 def solicitacoes_responsavel_coordenacao(request):
-    coordenador = _coordenador_logado()
+    coordenador = _coordenador_logado(request)
     if not coordenador:
         return JsonResponse({"detail": "Não autenticado."}, status=401)
 
@@ -5733,7 +5746,7 @@ def solicitacoes_responsavel_coordenacao(request):
 def solicitacao_responsavel_coordenacao_responder(request, vinculo_id):
     """Permite à coordenação aprovar/recusar diretamente — útil se o aluno
     demorar a responder ou estiver inacessível."""
-    coordenador = _coordenador_logado()
+    coordenador = _coordenador_logado(request)
     if not coordenador:
         return JsonResponse({"detail": "Não autenticado."}, status=401)
 
@@ -5844,7 +5857,7 @@ def gerar_ficha_notas_pdf(request, turma_id):
 @require_http_methods(["GET"])
 def boletim_aluno_pdf(request):
     """Gera o PDF do boletim do aluno autenticado, no mesmo padrão da ficha de notas do professor."""
-    aluno = _aluno_logado()
+    aluno = _aluno_logado(request)
     if not aluno:
         return JsonResponse({"detail": "Não autenticado."}, status=401)
 
