@@ -155,31 +155,71 @@ export default function HorariosAlunoPage() {
               <p className={styles.subtitle}>Carregando...</p>
             ) : horarios.length === 0 ? (
               <p className={styles.vazio}>Nenhum horário cadastrado para sua turma.</p>
+              // ) : (
+              //   <div className={styles.gradeSemana}>
+              //     {DIAS.map((dia) => (
+              //       <div key={dia} className={styles.diaColuna}>
+              //         <div className={styles.diaHeader}>{DIAS_LABEL[dia]}</div>
+              //         {porDia[dia].length === 0 ? (
+              //           <p className={styles.diaVazio}>—</p>
+              //         ) : (
+              //           porDia[dia].map((h) => (
+              //             <div key={h.id} className={styles.aulaCard}>
+              //               <span className={styles.aulaHorario}>{h.hora_inicio} – {h.hora_fim}</span>
+              //               <span className={styles.aulaDisciplina}>{h.disciplina}</span>
+              //               {h.professor_nome && (
+              //                 <span className={styles.aulaProfessor}>{h.professor_nome}</span>
+              //               )}
+              //             </div>
+              //           ))
+              //         )}
+              //       </div>
+              //     ))}
+              //   </div>
+              // )}
             ) : (
-              <div className={styles.gradeSemana}>
-                {DIAS.map((dia) => (
-                  <div key={dia} className={styles.diaColuna}>
-                    <div className={styles.diaHeader}>{DIAS_LABEL[dia]}</div>
-                    {porDia[dia].length === 0 ? (
-                      <p className={styles.diaVazio}>—</p>
-                    ) : (
-                      porDia[dia].map((h) => (
-                        <div key={h.id} className={styles.aulaCard}>
-                          <span className={styles.aulaHorario}>{h.hora_inicio} – {h.hora_fim}</span>
-                          <span className={styles.aulaDisciplina}>{h.disciplina}</span>
-                          {h.professor_nome && (
-                            <span className={styles.aulaProfessor}>{h.professor_nome}</span>
-                          )}
-                        </div>
-                      ))
-                    )}
-                  </div>
-                ))}
-              </div>
+              <>
+                <div className={styles.gradeSemana}>
+                  {DIAS.map((dia) => (
+                    <div key={dia} className={styles.diaColuna}>
+                      {/* ...conteúdo já existente... */}
+                      <div className={styles.diaHeader}>{DIAS_LABEL[dia]}</div>
+                      {porDia[dia].length === 0 ? (
+                        <p className={styles.diaVazio}>—</p>
+                      ) : (
+                        porDia[dia].map((h) => (
+                          <div key={h.id} className={styles.aulaCard}>
+                            <span className={styles.aulaHorario}>{h.hora_inicio} – {h.hora_fim}</span>
+                            <span className={styles.aulaDisciplina}>{h.disciplina}</span>
+                            {h.professor_nome && (
+                              <span className={styles.aulaProfessor}>{h.professor_nome}</span>
+                            )}
+                          </div>
+                        ))
+                      )}
+                    </div>
+                  ))}
+                </div>
+
+                <a
+                  href={`${API_BASE}/api/students/horarios/pdf`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={styles.botaoBaixarHorario}
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M14 3v4a1 1 0 0 0 1 1h4" />
+                    <path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z" />
+                    <path d="M12 17v-6" />
+                    <path d="M9.5 14.5l2.5 2.5l2.5 -2.5" />
+                  </svg>
+                  Baixar horário (PDF)
+                </a>
+              </>
             )}
           </main>
         </div>
       </div>
-    </div>
+    </div >
   );
 }
