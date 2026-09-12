@@ -10,8 +10,8 @@ import styles from "./page.module.css";
 
 const API_BASE = "https://obscure-happiness-v67rpjq7p96vfxj4g-8000.app.github.dev";
 
-const DIAS = ["SEGUNDA", "TERCA", "QUARTA", "QUINTA", "SEXTA"];
-const DIAS_LABEL = { SEGUNDA: "Segunda", TERCA: "Terça", QUARTA: "Quarta", QUINTA: "Quinta", SEXTA: "Sexta" };
+const DIAS = ["SEG", "TER", "QUA", "QUI", "SEX"];
+const DIAS_LABEL = { SEG: "Segunda", TER: "Terça", QUA: "Quarta", QUI: "Quinta", SEX: "Sexta" };
 
 export default function HorariosAlunoPage() {
   const [authenticated, setAuthenticated] = useState(null);
