@@ -5137,6 +5137,28 @@ def _verificar_acesso_responsavel(request, aluno_id):
     return responsavel, vinculo.aluno, None
 
 
+# @csrf_exempt
+# @require_http_methods(["GET"])
+# def boletim_aluno_responsavel(request, aluno_id):
+#     responsavel, aluno, erro = _verificar_acesso_responsavel(request, aluno_id)
+#     if erro:
+#         return erro
+
+#     notas = Nota.objects.filter(aluno=aluno).select_related("disciplina", "professor").order_by("disciplina__nome_disciplina")
+
+#     return JsonResponse({
+#         "aluno": {"nome_completo": aluno.nome_completo, "turma": aluno.turma},
+#         "boletim": [
+#             {
+#                 "disciplina": n.disciplina.nome_disciplina if n.disciplina else None,
+#                 "nm1_t1": n.nm1_t1, "nm2_t1": n.nm2_t1, "nm3_t1": n.nm3_t1, "mt_t1": n.mt_t1,
+#                 "nm1_t2": n.nm1_t2, "nm2_t2": n.nm2_t2, "nm3_t2": n.nm3_t2, "mt_t2": n.mt_t2,
+#                 "nm1_t3": n.nm1_t3, "nm2_t3": n.nm2_t3, "nm3_t3": n.nm3_t3, "mt_t3": n.mt_t3,
+#                 "ma": n.ma, "pf": n.pf, "maf": n.maf, "rf": n.rf,
+#             }
+#             for n in notas
+#         ]
+#     })
 @csrf_exempt
 @require_http_methods(["GET"])
 def boletim_aluno_responsavel(request, aluno_id):
@@ -5144,21 +5166,59 @@ def boletim_aluno_responsavel(request, aluno_id):
     if erro:
         return erro
 
-    notas = Nota.objects.filter(aluno=aluno).select_related("disciplina", "professor").order_by("disciplina__nome_disciplina")
+    ano_letivo = request.GET.get("ano_letivo", "2026")
+
+    # O boletim reflete o horário do aluno: ele só faz provas e atividades
+    # das disciplinas que estão na grade dele, então é a grade que define
+    # quais linhas aparecem — não o histórico solto de Notas no banco.
+    vinculos = buscar_atravessapor_por_turma(aluno.turma)
+    horarios = HorarioAula.objects.filter(turma__in=vinculos).select_related(
+        "turma", "turma__professor"
+    )
+
+    # Deduplica por disciplina (pode haver mais de um horário/aula pra
+    # mesma disciplina na semana).
+    disciplinas_map = {}
+    for h in horarios:
+        disciplina = resolver_disciplina_da_turma(h.turma)
+        if not disciplina or disciplina.id in disciplinas_map:
+            continue
+        disciplinas_map[disciplina.id] = {
+            "disciplina": disciplina,
+            "turma_obj": h.turma,
+            "professor": h.turma.professor,
+        }
+
+    boletim = []
+    for info in sorted(disciplinas_map.values(), key=lambda x: x["disciplina"].nome_disciplina):
+        disciplina = info["disciplina"]
+        nota = Nota.objects.filter(
+            aluno=aluno,
+            disciplina=disciplina,
+            turma=info["turma_obj"],
+            professor=info["professor"],
+            ano_letivo=ano_letivo,
+        ).first()
+
+        boletim.append({
+            "disciplina": disciplina.nome_disciplina,
+            "nm1_t1": nota.nm1_t1 if nota else None, "nm2_t1": nota.nm2_t1 if nota else None,
+            "nm3_t1": nota.nm3_t1 if nota else None, "mt_t1": nota.mt_t1 if nota else None,
+            "nm1_t2": nota.nm1_t2 if nota else None, "nm2_t2": nota.nm2_t2 if nota else None,
+            "nm3_t2": nota.nm3_t2 if nota else None, "mt_t2": nota.mt_t2 if nota else None,
+            "nm1_t3": nota.nm1_t3 if nota else None, "nm2_t3": nota.nm2_t3 if nota else None,
+            "nm3_t3": nota.nm3_t3 if nota else None, "mt_t3": nota.mt_t3 if nota else None,
+            "ma": nota.ma if nota else None,
+            "pf": nota.pf if nota else None,
+            "maf": nota.maf if nota else None,
+            "rf": nota.rf if nota else "CUR",
+        })
 
     return JsonResponse({
         "aluno": {"nome_completo": aluno.nome_completo, "turma": aluno.turma},
-        "boletim": [
-            {
-                "disciplina": n.disciplina.nome_disciplina if n.disciplina else None,
-                "nm1_t1": n.nm1_t1, "nm2_t1": n.nm2_t1, "nm3_t1": n.nm3_t1, "mt_t1": n.mt_t1,
-                "nm1_t2": n.nm1_t2, "nm2_t2": n.nm2_t2, "nm3_t2": n.nm3_t2, "mt_t2": n.mt_t2,
-                "nm1_t3": n.nm1_t3, "nm2_t3": n.nm2_t3, "nm3_t3": n.nm3_t3, "mt_t3": n.mt_t3,
-                "ma": n.ma, "pf": n.pf, "maf": n.maf, "rf": n.rf,
-            }
-            for n in notas
-        ]
+        "boletim": boletim,
     })
+
 
 
 
