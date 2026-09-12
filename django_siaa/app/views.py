@@ -5968,6 +5968,52 @@ def gerar_ficha_notas_pdf(request, turma_id):
     return response
 
 
+# @csrf_exempt
+# @require_http_methods(["GET"])
+# def boletim_aluno_pdf(request):
+#     """Gera o PDF do boletim do aluno autenticado, no mesmo padrão da ficha de notas do professor."""
+#     aluno = _aluno_logado(request)
+#     if not aluno:
+#         return JsonResponse({"detail": "Não autenticado."}, status=401)
+
+#     notas = Nota.objects.filter(aluno=aluno).select_related(
+#         "disciplina", "professor"
+#     ).order_by("disciplina__nome_disciplina")
+
+#     linhas = []
+#     for n in notas:
+#         linhas.append({
+#             "disciplina": n.disciplina.nome_disciplina if n.disciplina else "—",
+#             "professor_nome": n.professor.nome_completo if n.professor else "—",
+#             "nm1_t1": _campo_pdf(n, "nm1_t1"), "nm2_t1": _campo_pdf(n, "nm2_t1"),
+#             "nm3_t1": _campo_pdf(n, "nm3_t1"), "mt_t1": _campo_pdf(n, "mt_t1"),
+#             "nm1_t2": _campo_pdf(n, "nm1_t2"), "nm2_t2": _campo_pdf(n, "nm2_t2"),
+#             "nm3_t2": _campo_pdf(n, "nm3_t2"), "mt_t2": _campo_pdf(n, "mt_t2"),
+#             "nm1_t3": _campo_pdf(n, "nm1_t3"), "nm2_t3": _campo_pdf(n, "nm2_t3"),
+#             "nm3_t3": _campo_pdf(n, "nm3_t3"), "mt_t3": _campo_pdf(n, "mt_t3"),
+#             "ma": _campo_pdf(n, "ma"), "pf": _campo_pdf(n, "pf"),
+#             "maf": _campo_pdf(n, "maf"),
+#             "rf": n.get_rf_display(),
+#         })
+
+#     logo_path_absoluto = os.path.join(settings.BASE_DIR, "app", "static", "logo.png")
+#     logo_path = f"file://{logo_path_absoluto}" if os.path.exists(logo_path_absoluto) else None
+
+#     contexto = {
+#         "aluno": aluno,
+#         "linhas": linhas,
+#         "logo_path": logo_path,
+#         "data_emissao": date.today().strftime("%d/%m/%Y"),
+#     }
+
+#     html_string = render_to_string("boletim/pdf.html", contexto)
+#     pdf_file = HTML(string=html_string).write_pdf()
+
+#     nome_arquivo = f"boletim_{_nome_arquivo_seguro(aluno.nome_completo)}.pdf"
+
+#     response = HttpResponse(pdf_file, content_type="application/pdf")
+#     response["Content-Disposition"] = f'inline; filename="{nome_arquivo}"'
+#     return response
 @csrf_exempt
 @require_http_methods(["GET"])
 def boletim_aluno_pdf(request):
@@ -5976,27 +6022,50 @@ def boletim_aluno_pdf(request):
     if not aluno:
         return JsonResponse({"detail": "Não autenticado."}, status=401)
 
-    notas = Nota.objects.filter(aluno=aluno).select_related(
-        "disciplina", "professor"
-    ).order_by("disciplina__nome_disciplina")
+    ano_letivo = request.GET.get("ano_letivo", "2026")
+
+    vinculos = buscar_atravessapor_por_turma(aluno.turma)
+    horarios = HorarioAula.objects.filter(turma__in=vinculos).select_related(
+        "turma", "turma__professor"
+    )
+
+    disciplinas_map = {}
+    for h in horarios:
+        disciplina = resolver_disciplina_da_turma(h.turma)
+        if not disciplina or disciplina.id in disciplinas_map:
+            continue
+        disciplinas_map[disciplina.id] = {
+            "disciplina": disciplina,
+            "turma_obj": h.turma,
+            "professor": h.turma.professor,
+        }
 
     linhas = []
-    for n in notas:
+    for info in sorted(disciplinas_map.values(), key=lambda x: x["disciplina"].nome_disciplina):
+        disciplina = info["disciplina"]
+        nota = Nota.objects.filter(
+            aluno=aluno,
+            disciplina=disciplina,
+            turma=info["turma_obj"],
+            professor=info["professor"],
+            ano_letivo=ano_letivo,
+        ).first()
+
         linhas.append({
-            "disciplina": n.disciplina.nome_disciplina if n.disciplina else "—",
-            "professor_nome": n.professor.nome_completo if n.professor else "—",
-            "nm1_t1": _campo_pdf(n, "nm1_t1"), "nm2_t1": _campo_pdf(n, "nm2_t1"),
-            "nm3_t1": _campo_pdf(n, "nm3_t1"), "mt_t1": _campo_pdf(n, "mt_t1"),
-            "nm1_t2": _campo_pdf(n, "nm1_t2"), "nm2_t2": _campo_pdf(n, "nm2_t2"),
-            "nm3_t2": _campo_pdf(n, "nm3_t2"), "mt_t2": _campo_pdf(n, "mt_t2"),
-            "nm1_t3": _campo_pdf(n, "nm1_t3"), "nm2_t3": _campo_pdf(n, "nm2_t3"),
-            "nm3_t3": _campo_pdf(n, "nm3_t3"), "mt_t3": _campo_pdf(n, "mt_t3"),
-            "ma": _campo_pdf(n, "ma"), "pf": _campo_pdf(n, "pf"),
-            "maf": _campo_pdf(n, "maf"),
-            "rf": n.get_rf_display(),
+            "disciplina": disciplina.nome_disciplina,
+            "professor_nome": info["professor"].nome_completo if info["professor"] else "—",
+            "nm1_t1": _campo_pdf(nota, "nm1_t1"), "nm2_t1": _campo_pdf(nota, "nm2_t1"),
+            "nm3_t1": _campo_pdf(nota, "nm3_t1"), "mt_t1": _campo_pdf(nota, "mt_t1"),
+            "nm1_t2": _campo_pdf(nota, "nm1_t2"), "nm2_t2": _campo_pdf(nota, "nm2_t2"),
+            "nm3_t2": _campo_pdf(nota, "nm3_t2"), "mt_t2": _campo_pdf(nota, "mt_t2"),
+            "nm1_t3": _campo_pdf(nota, "nm1_t3"), "nm2_t3": _campo_pdf(nota, "nm2_t3"),
+            "nm3_t3": _campo_pdf(nota, "nm3_t3"), "mt_t3": _campo_pdf(nota, "mt_t3"),
+            "ma": _campo_pdf(nota, "ma"), "pf": _campo_pdf(nota, "pf"),
+            "maf": _campo_pdf(nota, "maf"),
+            "rf": nota.get_rf_display() if nota else "Não Definido",
         })
 
-    logo_path_absoluto = os.path.join(settings.BASE_DIR, "app", "static", "logo.png")
+    logo_path_absoluto = os.path.join(settings.BASE_DIR, "django_siaa", "app", "static", "logo.png")
     logo_path = f"file://{logo_path_absoluto}" if os.path.exists(logo_path_absoluto) else None
 
     contexto = {
@@ -6016,6 +6085,52 @@ def boletim_aluno_pdf(request):
     return response
 
 
+# @csrf_exempt
+# @require_http_methods(["GET"])
+# def boletim_aluno_pdf_responsavel(request, aluno_id):
+#     """Gera o PDF do boletim do aluno, para o responsável com acesso aprovado."""
+#     responsavel, aluno, erro = _verificar_acesso_responsavel(request, aluno_id)
+#     if erro:
+#         return erro
+
+#     notas = Nota.objects.filter(aluno=aluno).select_related(
+#         "disciplina", "professor"
+#     ).order_by("disciplina__nome_disciplina")
+
+#     linhas = []
+#     for n in notas:
+#         linhas.append({
+#             "disciplina": n.disciplina.nome_disciplina if n.disciplina else "—",
+#             "professor_nome": n.professor.nome_completo if n.professor else "—",
+#             "nm1_t1": _campo_pdf(n, "nm1_t1"), "nm2_t1": _campo_pdf(n, "nm2_t1"),
+#             "nm3_t1": _campo_pdf(n, "nm3_t1"), "mt_t1": _campo_pdf(n, "mt_t1"),
+#             "nm1_t2": _campo_pdf(n, "nm1_t2"), "nm2_t2": _campo_pdf(n, "nm2_t2"),
+#             "nm3_t2": _campo_pdf(n, "nm3_t2"), "mt_t2": _campo_pdf(n, "mt_t2"),
+#             "nm1_t3": _campo_pdf(n, "nm1_t3"), "nm2_t3": _campo_pdf(n, "nm2_t3"),
+#             "nm3_t3": _campo_pdf(n, "nm3_t3"), "mt_t3": _campo_pdf(n, "mt_t3"),
+#             "ma": _campo_pdf(n, "ma"), "pf": _campo_pdf(n, "pf"),
+#             "maf": _campo_pdf(n, "maf"),
+#             "rf": n.get_rf_display(),
+#         })
+
+#     logo_path_absoluto = os.path.join(settings.BASE_DIR, "django_siaa", "app", "static", "logo.png")
+#     logo_path = f"file://{logo_path_absoluto}" if os.path.exists(logo_path_absoluto) else None
+
+#     contexto = {
+#         "aluno": aluno,
+#         "linhas": linhas,
+#         "logo_path": logo_path,
+#         "data_emissao": date.today().strftime("%d/%m/%Y"),
+#     }
+
+#     html_string = render_to_string("boletim/pdf.html", contexto)
+#     pdf_file = HTML(string=html_string).write_pdf()
+
+#     nome_arquivo = f"boletim_{_nome_arquivo_seguro(aluno.nome_completo)}.pdf"
+
+#     response = HttpResponse(pdf_file, content_type="application/pdf")
+#     response["Content-Disposition"] = f'inline; filename="{nome_arquivo}"'
+#     return response
 @csrf_exempt
 @require_http_methods(["GET"])
 def boletim_aluno_pdf_responsavel(request, aluno_id):
@@ -6024,24 +6139,47 @@ def boletim_aluno_pdf_responsavel(request, aluno_id):
     if erro:
         return erro
 
-    notas = Nota.objects.filter(aluno=aluno).select_related(
-        "disciplina", "professor"
-    ).order_by("disciplina__nome_disciplina")
+    ano_letivo = request.GET.get("ano_letivo", "2026")
+
+    vinculos = buscar_atravessapor_por_turma(aluno.turma)
+    horarios = HorarioAula.objects.filter(turma__in=vinculos).select_related(
+        "turma", "turma__professor"
+    )
+
+    disciplinas_map = {}
+    for h in horarios:
+        disciplina = resolver_disciplina_da_turma(h.turma)
+        if not disciplina or disciplina.id in disciplinas_map:
+            continue
+        disciplinas_map[disciplina.id] = {
+            "disciplina": disciplina,
+            "turma_obj": h.turma,
+            "professor": h.turma.professor,
+        }
 
     linhas = []
-    for n in notas:
+    for info in sorted(disciplinas_map.values(), key=lambda x: x["disciplina"].nome_disciplina):
+        disciplina = info["disciplina"]
+        nota = Nota.objects.filter(
+            aluno=aluno,
+            disciplina=disciplina,
+            turma=info["turma_obj"],
+            professor=info["professor"],
+            ano_letivo=ano_letivo,
+        ).first()
+
         linhas.append({
-            "disciplina": n.disciplina.nome_disciplina if n.disciplina else "—",
-            "professor_nome": n.professor.nome_completo if n.professor else "—",
-            "nm1_t1": _campo_pdf(n, "nm1_t1"), "nm2_t1": _campo_pdf(n, "nm2_t1"),
-            "nm3_t1": _campo_pdf(n, "nm3_t1"), "mt_t1": _campo_pdf(n, "mt_t1"),
-            "nm1_t2": _campo_pdf(n, "nm1_t2"), "nm2_t2": _campo_pdf(n, "nm2_t2"),
-            "nm3_t2": _campo_pdf(n, "nm3_t2"), "mt_t2": _campo_pdf(n, "mt_t2"),
-            "nm1_t3": _campo_pdf(n, "nm1_t3"), "nm2_t3": _campo_pdf(n, "nm2_t3"),
-            "nm3_t3": _campo_pdf(n, "nm3_t3"), "mt_t3": _campo_pdf(n, "mt_t3"),
-            "ma": _campo_pdf(n, "ma"), "pf": _campo_pdf(n, "pf"),
-            "maf": _campo_pdf(n, "maf"),
-            "rf": n.get_rf_display(),
+            "disciplina": disciplina.nome_disciplina,
+            "professor_nome": info["professor"].nome_completo if info["professor"] else "—",
+            "nm1_t1": _campo_pdf(nota, "nm1_t1"), "nm2_t1": _campo_pdf(nota, "nm2_t1"),
+            "nm3_t1": _campo_pdf(nota, "nm3_t1"), "mt_t1": _campo_pdf(nota, "mt_t1"),
+            "nm1_t2": _campo_pdf(nota, "nm1_t2"), "nm2_t2": _campo_pdf(nota, "nm2_t2"),
+            "nm3_t2": _campo_pdf(nota, "nm3_t2"), "mt_t2": _campo_pdf(nota, "mt_t2"),
+            "nm1_t3": _campo_pdf(nota, "nm1_t3"), "nm2_t3": _campo_pdf(nota, "nm2_t3"),
+            "nm3_t3": _campo_pdf(nota, "nm3_t3"), "mt_t3": _campo_pdf(nota, "mt_t3"),
+            "ma": _campo_pdf(nota, "ma"), "pf": _campo_pdf(nota, "pf"),
+            "maf": _campo_pdf(nota, "maf"),
+            "rf": nota.get_rf_display() if nota else "Não Definido",
         })
 
     logo_path_absoluto = os.path.join(settings.BASE_DIR, "django_siaa", "app", "static", "logo.png")
