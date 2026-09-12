@@ -4585,6 +4585,28 @@ def atividades_aluno(request):
     return JsonResponse({"atividades": resultado})
 
 
+# @csrf_exempt
+# @require_http_methods(["GET"])
+# def boletim_aluno(request):
+#     aluno = _aluno_logado(request)
+#     if not aluno:
+#         return JsonResponse({"detail": "Não autenticado."}, status=401)
+
+#     notas = Nota.objects.filter(aluno=aluno).select_related("disciplina", "professor").order_by("disciplina__nome_disciplina")
+
+#     return JsonResponse({
+#         "boletim": [
+#             {
+#                 "disciplina": n.disciplina.nome_disciplina if n.disciplina else None,
+#                 "professor_nome": n.professor.nome_completo if n.professor else None,
+#                 "nm1_t1": n.nm1_t1, "nm2_t1": n.nm2_t1, "nm3_t1": n.nm3_t1, "rpt_t1": n.rpt_t1, "mt_t1": n.mt_t1,
+#                 "nm1_t2": n.nm1_t2, "nm2_t2": n.nm2_t2, "nm3_t2": n.nm3_t2, "rpt_t2": n.rpt_t2, "mt_t2": n.mt_t2,
+#                 "nm1_t3": n.nm1_t3, "nm2_t3": n.nm2_t3, "nm3_t3": n.nm3_t3, "rpt_t3": n.rpt_t3, "mt_t3": n.mt_t3,
+#                 "ma": n.ma, "pf": n.pf, "maf": n.maf, "rcf": n.rcf, "tgf": n.tgf, "rf": n.rf,
+#             }
+#             for n in notas
+#         ]
+#     })
 @csrf_exempt
 @require_http_methods(["GET"])
 def boletim_aluno(request):
@@ -4592,21 +4614,54 @@ def boletim_aluno(request):
     if not aluno:
         return JsonResponse({"detail": "Não autenticado."}, status=401)
 
-    notas = Nota.objects.filter(aluno=aluno).select_related("disciplina", "professor").order_by("disciplina__nome_disciplina")
+    ano_letivo = request.GET.get("ano_letivo", "2026")
 
-    return JsonResponse({
-        "boletim": [
-            {
-                "disciplina": n.disciplina.nome_disciplina if n.disciplina else None,
-                "professor_nome": n.professor.nome_completo if n.professor else None,
-                "nm1_t1": n.nm1_t1, "nm2_t1": n.nm2_t1, "nm3_t1": n.nm3_t1, "rpt_t1": n.rpt_t1, "mt_t1": n.mt_t1,
-                "nm1_t2": n.nm1_t2, "nm2_t2": n.nm2_t2, "nm3_t2": n.nm3_t2, "rpt_t2": n.rpt_t2, "mt_t2": n.mt_t2,
-                "nm1_t3": n.nm1_t3, "nm2_t3": n.nm2_t3, "nm3_t3": n.nm3_t3, "rpt_t3": n.rpt_t3, "mt_t3": n.mt_t3,
-                "ma": n.ma, "pf": n.pf, "maf": n.maf, "rcf": n.rcf, "tgf": n.tgf, "rf": n.rf,
-            }
-            for n in notas
-        ]
-    })
+    vinculos = buscar_atravessapor_por_turma(aluno.turma)
+    horarios = HorarioAula.objects.filter(turma__in=vinculos).select_related(
+        "turma", "turma__professor"
+    )
+
+    disciplinas_map = {}
+    for h in horarios:
+        disciplina = resolver_disciplina_da_turma(h.turma)
+        if not disciplina or disciplina.id in disciplinas_map:
+            continue
+        disciplinas_map[disciplina.id] = {
+            "disciplina": disciplina,
+            "turma_obj": h.turma,
+            "professor": h.turma.professor,
+        }
+
+    boletim = []
+    for info in sorted(disciplinas_map.values(), key=lambda x: x["disciplina"].nome_disciplina):
+        disciplina = info["disciplina"]
+        nota = Nota.objects.filter(
+            aluno=aluno,
+            disciplina=disciplina,
+            turma=info["turma_obj"],
+            professor=info["professor"],
+            ano_letivo=ano_letivo,
+        ).select_related("professor").first()
+
+        boletim.append({
+            "disciplina": disciplina.nome_disciplina,
+            "professor_nome": info["professor"].nome_completo if info["professor"] else None,
+            "nm1_t1": nota.nm1_t1 if nota else None, "nm2_t1": nota.nm2_t1 if nota else None,
+            "nm3_t1": nota.nm3_t1 if nota else None, "rpt_t1": nota.rpt_t1 if nota else None,
+            "mt_t1": nota.mt_t1 if nota else None,
+            "nm1_t2": nota.nm1_t2 if nota else None, "nm2_t2": nota.nm2_t2 if nota else None,
+            "nm3_t2": nota.nm3_t2 if nota else None, "rpt_t2": nota.rpt_t2 if nota else None,
+            "mt_t2": nota.mt_t2 if nota else None,
+            "nm1_t3": nota.nm1_t3 if nota else None, "nm2_t3": nota.nm2_t3 if nota else None,
+            "nm3_t3": nota.nm3_t3 if nota else None, "rpt_t3": nota.rpt_t3 if nota else None,
+            "mt_t3": nota.mt_t3 if nota else None,
+            "ma": nota.ma if nota else None, "pf": nota.pf if nota else None,
+            "maf": nota.maf if nota else None, "rcf": nota.rcf if nota else None,
+            "tgf": nota.tgf if nota else 0,
+            "rf": nota.rf if nota else "CUR",
+        })
+
+    return JsonResponse({"boletim": boletim})
 
 
 @csrf_exempt
