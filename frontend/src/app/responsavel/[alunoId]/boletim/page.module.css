@@ -330,3 +330,184 @@
   color: #0b4f9e;
   font-weight: 600;
 }
+
+.vazio {
+  font-size: 0.9rem;
+  color: #5b6b85;
+  padding: 1.5rem;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  text-align: center;
+}
+
+/* ===== Cabeçalho do aluno ===== */
+.headerAluno {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 1.1rem 1.3rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
+}
+
+.avatarIniciais {
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  background: rgba(11, 79, 158, 0.1);
+  color: #0b4f9e;
+  font-weight: 700;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.headerTextos {
+  min-width: 0;
+}
+
+.headerNome {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #1a2942;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.headerTurma {
+  font-size: 0.82rem;
+  color: #5b6b85;
+  margin: 0.15rem 0 0;
+}
+
+/* ===== Tabela ===== */
+.tabelaWrapper {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  box-shadow: 0 1px 3px rgba(16, 24, 40, 0.06);
+  background: #ffffff;
+}
+
+.tabela {
+  border-collapse: separate;
+  border-spacing: 0;
+  width: 100%;
+  min-width: 780px;
+  font-size: 0.76rem;
+}
+
+.tabela th,
+.tabela td {
+  border-bottom: 1px solid #eef0f3;
+  border-right: 1px solid #eef0f3;
+  padding: 0.55rem 0.5rem;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.tabela th:last-child,
+.tabela td:last-child {
+  border-right: none;
+}
+
+.tabela thead th {
+  background: #f8fafc;
+  color: #1a2942;
+  font-weight: 700;
+  font-size: 0.66rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.tabela thead tr:first-child th {
+  color: #0b4f9e;
+  background: rgba(11, 79, 158, 0.06);
+}
+
+.tabela tbody tr:hover td {
+  background: #f8fafc;
+}
+
+.tabela tbody tr:nth-child(even) td {
+  background: #fbfcfe;
+}
+
+.tabela tbody tr:nth-child(even):hover td {
+  background: #f8fafc;
+}
+
+.stickyCol {
+  position: sticky;
+  left: 0;
+  background: inherit;
+  text-align: left !important;
+  min-width: 170px;
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-weight: 600;
+  color: #1a2942;
+  z-index: 1;
+}
+
+thead .stickyCol {
+  background: rgba(11, 79, 158, 0.06);
+  z-index: 2;
+}
+
+.calculadoBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 34px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #0b4f9e;
+  background: rgba(11, 79, 158, 0.08);
+  border-radius: 6px;
+  padding: 0.3rem 0.4rem;
+}
+
+/* ===== Cores condicionais ===== */
+.notaBaixa {
+  color: #b91c1c !important;
+  font-weight: 600;
+}
+
+.notaAlta {
+  color: #0b4f9e !important;
+  font-weight: 600;
+}
+.botaoEmitirBoletim {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.9rem;
+  padding: 0.7rem 1.4rem;
+  background: #fff;
+  color: #0b4f9e;
+  border: 1px solid rgba(11, 79, 158, 0.35);
+  border-radius: 8px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.botaoEmitirBoletim:hover {
+  background: rgba(11, 79, 158, 0.06);
+  border-color: #0b4f9e;
+}

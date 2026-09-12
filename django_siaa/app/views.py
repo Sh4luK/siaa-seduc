@@ -163,7 +163,7 @@ def search_student(request):
 
 @csrf_exempt
 def login_student(request):
-    ip_student = get_ip()
+    ip_student = get_ip(request)
     print(ip_student)
     fullName = request.GET.get("fullname").strip().upper()
     password = request.GET.get("password").strip().lower()
@@ -188,7 +188,7 @@ def login_student(request):
     
 @csrf_exempt
 def auth_student(request):
-    ip_student = get_ip()
+    ip_student = get_ip(request)
     print(ip_student)
     student = Estudante.objects.filter(ip=ip_student).first()
     try:
@@ -212,7 +212,7 @@ def auth_student(request):
 
 @csrf_exempt
 def login_teacher(request):
-    ip = get_ip()
+    ip = get_ip(request)
     print(ip)
     nome_completo = request.GET.get("nome_completo").strip().upper()
     senha = request.GET.get("senha").strip().upper()
@@ -234,7 +234,7 @@ def login_teacher(request):
 
 @csrf_exempt
 def auth_teacher(request):
-    ip = get_ip()
+    ip = get_ip(request)
     teacher = Professor.objects.filter(ip=ip).first()
     print(teacher)
     try:
@@ -1495,7 +1495,7 @@ def deletar_comunicado(request, comunicado_id):
 
 @csrf_exempt
 def login_coordenacao(request):
-    ip = get_ip()
+    ip = get_ip(request)
     nome_completo = request.GET.get("nome_completo").strip().upper()
     senha = request.GET.get("senha").strip()
 
@@ -1514,7 +1514,7 @@ def login_coordenacao(request):
 
 @csrf_exempt
 def auth_coordenacao(request):
-    ip = get_ip()
+    ip = get_ip(request)
     coordenador = Coordenador.objects.filter(ip=ip).first()
 
     try:
@@ -1642,7 +1642,7 @@ def criar_professor(request):
 
 @csrf_exempt
 def get_escola_coordenador(request):
-    ip = get_ip()
+    ip = get_ip(request)
     coordenador = Coordenador.objects.filter(ip=ip).first()
 
     if not coordenador:
@@ -2267,7 +2267,7 @@ def criar_evento_coordenacao(request):
     if request.method != "POST":
         return JsonResponse({"message": "Método não permitido."}, status=405)
 
-    ip = get_ip()
+    ip = get_ip(request)
     coordenador = Coordenador.objects.filter(ip=ip).first()
 
     if not coordenador:
@@ -2486,7 +2486,7 @@ def criar_comunicado_coordenacao(request):
     if request.method != "POST":
         return JsonResponse({"message": "Método não permitido."}, status=405)
 
-    ip = get_ip()
+    ip = get_ip(request)
     coordenador = Coordenador.objects.filter(ip=ip).first()
 
     if not coordenador:
@@ -2672,7 +2672,7 @@ def criar_advertencia_coordenacao(request):
     if request.method != "POST":
         return JsonResponse({"message": "Método não permitido."}, status=405)
 
-    ip = get_ip()
+    ip = get_ip(request)
     coordenador = Coordenador.objects.filter(ip=ip).first()
     if not coordenador:
         return JsonResponse({"message": "Coordenador não autenticado."}, status=401)
@@ -3207,7 +3207,7 @@ def mover_aluno_turma(request, aluno_id):
 
 @csrf_exempt
 def get_eventos_professor_visualizacao(request):
-    ip = get_ip()
+    ip = get_ip(request)
     professor = Professor.objects.filter(ip=ip).first()
 
     if not professor:
@@ -3312,7 +3312,7 @@ def renomear_disciplina_coordenacao(request, disciplina_id):
 
 @csrf_exempt
 def login_blogger(request):
-    ip = get_ip()
+    ip = get_ip(request)
     nome_completo = request.GET.get("nome_completo").strip().upper()
     senha = request.GET.get("senha").strip()
 
@@ -3327,7 +3327,7 @@ def login_blogger(request):
 
 @csrf_exempt
 def auth_blogger(request):
-    ip = get_ip()
+    ip = get_ip(request)
     blogger = Blogger.objects.filter(ip=ip).first()
 
     if blogger is None:
@@ -3383,7 +3383,7 @@ def criar_post(request):
     if request.method != "POST":
         return JsonResponse({"message": "Método não permitido."}, status=405)
 
-    ip = get_ip()
+    ip = get_ip(request)
     blogger = Blogger.objects.filter(ip=ip).first()
     if not blogger:
         return JsonResponse({"message": "Você precisa estar autenticado para publicar."}, status=401)
@@ -3421,7 +3421,7 @@ def editar_post(request, post_id):
     if request.method != "POST":
         return JsonResponse({"message": "Método não permitido."}, status=405)
 
-    ip = get_ip()
+    ip = get_ip(request)
     blogger = Blogger.objects.filter(ip=ip).first()
     if not blogger:
         return JsonResponse({"message": "Você precisa estar autenticado."}, status=401)
@@ -3456,7 +3456,7 @@ def deletar_post(request, post_id):
     if request.method != "DELETE":
         return JsonResponse({"message": "Método não permitido."}, status=405)
 
-    ip = get_ip()
+    ip = get_ip(request)
     blogger = Blogger.objects.filter(ip=ip).first()
     if not blogger:
         return JsonResponse({"message": "Você precisa estar autenticado."}, status=401)
@@ -3473,7 +3473,7 @@ def deletar_post(request, post_id):
 
 
 def _professor_atual(request):
-    ip = get_ip()
+    ip = get_ip(request)
     return Professor.objects.filter(ip=ip).first()
 
 
@@ -3656,7 +3656,7 @@ def opcoes_avaliacao(request):
     })
 
 def _coordenador_atual(request):
-    ip = get_ip()
+    ip = get_ip(request)
     return Coordenador.objects.filter(ip=ip).first()
 
 
@@ -3780,7 +3780,7 @@ def avaliacao_emitir_pdf_coordenacao(request, avaliacao_id):
 
 @csrf_exempt
 def get_avaliacoes_professor(request):
-    ip = get_ip()
+    ip = get_ip(request)
     professor = Professor.objects.filter(ip=ip).first()
     if not professor:
         return JsonResponse({"message": "Professor não autenticado."}, status=401)
@@ -3811,7 +3811,7 @@ def criar_avaliacao(request):
     if request.method != "POST":
         return JsonResponse({"message": "Método não permitido."}, status=405)
 
-    ip = get_ip()
+    ip = get_ip(request)
     professor = Professor.objects.filter(ip=ip).first()
     if not professor:
         return JsonResponse({"message": "Professor não autenticado."}, status=401)
@@ -3924,15 +3924,19 @@ def gerar_avaliacao_pdf(request, avaliacao_id):
 
 
 
-def _coordenador_logado():
-    ip = get_ip()
+# def _coordenador_logado():
+#     ip = get_ip(request)
+#     return Coordenador.objects.filter(ip=ip).first()
+
+def _coordenador_logado(request):
+    ip = get_ip(request)
     return Coordenador.objects.filter(ip=ip).first()
 
 
 @csrf_exempt
 @require_http_methods(["GET", "POST"])
 def mensagens_list_create_coordenacao(request):
-    coordenador = _coordenador_logado()
+    coordenador = _coordenador_logado(request)
     if not coordenador:
         return JsonResponse({"detail": "Não autenticado."}, status=401)
 
@@ -3989,7 +3993,7 @@ def _nome_escola(escola_str):
 @csrf_exempt
 @require_http_methods(["GET"])
 def opcoes_mensagem_coordenacao(request):
-    coordenador = _coordenador_logado()
+    coordenador = _coordenador_logado(request)
     if not coordenador:
         return JsonResponse({"detail": "Não autenticado."}, status=401)
 
@@ -4009,7 +4013,7 @@ def opcoes_mensagem_coordenacao(request):
 @csrf_exempt
 @require_http_methods(["GET", "POST"])
 def mensagem_conversa_detalhe(request, conversa_id):
-    coordenador = _coordenador_logado()
+    coordenador = _coordenador_logado(request)
     if not coordenador:
         return JsonResponse({"detail": "Não autenticado."}, status=401)
 
@@ -4055,15 +4059,19 @@ def mensagem_conversa_detalhe(request, conversa_id):
     }, status=201)
 
 
-def _professor_logado():
-    ip = get_ip()
+# def _professor_logado():
+#     ip = get_ip(request)
+#     return Professor.objects.filter(ip=ip).first()
+
+def _professor_logado(request):
+    ip = get_ip(request)
     return Professor.objects.filter(ip=ip).first()
 
 
 @csrf_exempt
 @require_http_methods(["GET"])
 def mensagens_list_professor(request):
-    professor = _professor_logado()
+    professor = _professor_logado(request)
     if not professor:
         return JsonResponse({"detail": "Não autenticado."}, status=401)
 
@@ -4090,7 +4098,7 @@ def mensagens_list_professor(request):
 @csrf_exempt
 @require_http_methods(["GET", "POST"])
 def mensagem_conversa_detalhe_professor(request, conversa_id):
-    professor = _professor_logado()
+    professor = _professor_logado(request)
     if not professor:
         return JsonResponse({"detail": "Não autenticado."}, status=401)
 
@@ -4132,7 +4140,7 @@ def mensagem_conversa_detalhe_professor(request, conversa_id):
 @csrf_exempt
 @require_http_methods(["GET"])
 def opcoes_notas_coordenacao(request):
-    coordenador = _coordenador_logado()
+    coordenador = _coordenador_logado(request)
     if not coordenador:
         return JsonResponse({"detail": "Não autenticado."}, status=401)
 
@@ -4158,7 +4166,7 @@ def opcoes_notas_coordenacao(request):
 @csrf_exempt
 @require_http_methods(["GET"])
 def notas_turma_coordenacao(request, vinculo_id):
-    coordenador = _coordenador_logado()
+    coordenador = _coordenador_logado(request)
     if not coordenador:
         return JsonResponse({"detail": "Não autenticado."}, status=401)
 
@@ -4205,8 +4213,8 @@ def notas_turma_coordenacao(request, vinculo_id):
 
 
 
-def _admin_logado():
-    ip = get_ip()
+def _admin_logado(request):
+    ip = get_ip(request)
     return Admin.objects.filter(ip=ip).first()
 
 
@@ -4227,7 +4235,7 @@ def admin_login(request):
     if not admin:
         return JsonResponse({"return": False, "detail": "Credenciais inválidas."}, status=401)
 
-    admin.ip = get_ip()
+    admin.ip = get_ip(request)
     admin.save(update_fields=["ip"])
     return JsonResponse({"return": True, "admin": {"id": admin.id, "nome_completo": admin.nome_completo}})
 
@@ -4436,15 +4444,16 @@ def admin_turma_renomear(request):
     return JsonResponse({"alunos_atualizados": qtd_alunos, "vinculos_atualizados": qtd_vinculos})
 
 
-def _aluno_logado():
-    ip = get_ip()
+
+def _aluno_logado(request):
+    ip = get_ip(request)
     return Estudante.objects.filter(ip=ip).first()
 
 
 @csrf_exempt
 @require_http_methods(["GET"])
 def dashboard_aluno(request):
-    aluno = _aluno_logado()
+    aluno = _aluno_logado(request)
     if not aluno:
         return JsonResponse({"detail": "Não autenticado."}, status=401)
 
@@ -4507,15 +4516,15 @@ def dashboard_aluno(request):
     })
 
 
-def _aluno_logado():
-    ip = get_ip()
-    return Estudante.objects.filter(ip=ip).first()
+# def _aluno_logado():
+#     ip = get_ip(request)
+#     return Estudante.objects.filter(ip=ip).first()
 
 
 @csrf_exempt
 @require_http_methods(["GET"])
 def conteudos_aluno(request):
-    aluno = _aluno_logado()
+    aluno = _aluno_logado(request)
     if not aluno:
         return JsonResponse({"detail": "Não autenticado."}, status=401)
 
@@ -4543,7 +4552,7 @@ def conteudos_aluno(request):
 @csrf_exempt
 @require_http_methods(["GET"])
 def atividades_aluno(request):
-    aluno = _aluno_logado()
+    aluno = _aluno_logado(request)
     if not aluno:
         return JsonResponse({"detail": "Não autenticado."}, status=401)
 
@@ -4574,34 +4583,89 @@ def atividades_aluno(request):
     return JsonResponse({"atividades": resultado})
 
 
+# @csrf_exempt
+# @require_http_methods(["GET"])
+# def boletim_aluno(request):
+#     aluno = _aluno_logado(request)
+#     if not aluno:
+#         return JsonResponse({"detail": "Não autenticado."}, status=401)
+
+#     notas = Nota.objects.filter(aluno=aluno).select_related("disciplina", "professor").order_by("disciplina__nome_disciplina")
+
+#     return JsonResponse({
+#         "boletim": [
+#             {
+#                 "disciplina": n.disciplina.nome_disciplina if n.disciplina else None,
+#                 "professor_nome": n.professor.nome_completo if n.professor else None,
+#                 "nm1_t1": n.nm1_t1, "nm2_t1": n.nm2_t1, "nm3_t1": n.nm3_t1, "rpt_t1": n.rpt_t1, "mt_t1": n.mt_t1,
+#                 "nm1_t2": n.nm1_t2, "nm2_t2": n.nm2_t2, "nm3_t2": n.nm3_t2, "rpt_t2": n.rpt_t2, "mt_t2": n.mt_t2,
+#                 "nm1_t3": n.nm1_t3, "nm2_t3": n.nm2_t3, "nm3_t3": n.nm3_t3, "rpt_t3": n.rpt_t3, "mt_t3": n.mt_t3,
+#                 "ma": n.ma, "pf": n.pf, "maf": n.maf, "rcf": n.rcf, "tgf": n.tgf, "rf": n.rf,
+#             }
+#             for n in notas
+#         ]
+#     })
 @csrf_exempt
 @require_http_methods(["GET"])
 def boletim_aluno(request):
-    aluno = _aluno_logado()
+    aluno = _aluno_logado(request)
     if not aluno:
         return JsonResponse({"detail": "Não autenticado."}, status=401)
 
-    notas = Nota.objects.filter(aluno=aluno).select_related("disciplina", "professor").order_by("disciplina__nome_disciplina")
+    ano_letivo = request.GET.get("ano_letivo", "2026")
 
-    return JsonResponse({
-        "boletim": [
-            {
-                "disciplina": n.disciplina.nome_disciplina if n.disciplina else None,
-                "professor_nome": n.professor.nome_completo if n.professor else None,
-                "nm1_t1": n.nm1_t1, "nm2_t1": n.nm2_t1, "nm3_t1": n.nm3_t1, "rpt_t1": n.rpt_t1, "mt_t1": n.mt_t1,
-                "nm1_t2": n.nm1_t2, "nm2_t2": n.nm2_t2, "nm3_t2": n.nm3_t2, "rpt_t2": n.rpt_t2, "mt_t2": n.mt_t2,
-                "nm1_t3": n.nm1_t3, "nm2_t3": n.nm2_t3, "nm3_t3": n.nm3_t3, "rpt_t3": n.rpt_t3, "mt_t3": n.mt_t3,
-                "ma": n.ma, "pf": n.pf, "maf": n.maf, "rcf": n.rcf, "tgf": n.tgf, "rf": n.rf,
-            }
-            for n in notas
-        ]
-    })
+    vinculos = buscar_atravessapor_por_turma(aluno.turma)
+    horarios = HorarioAula.objects.filter(turma__in=vinculos).select_related(
+        "turma", "turma__professor"
+    )
+
+    disciplinas_map = {}
+    for h in horarios:
+        disciplina = resolver_disciplina_da_turma(h.turma)
+        if not disciplina or disciplina.id in disciplinas_map:
+            continue
+        disciplinas_map[disciplina.id] = {
+            "disciplina": disciplina,
+            "turma_obj": h.turma,
+            "professor": h.turma.professor,
+        }
+
+    boletim = []
+    for info in sorted(disciplinas_map.values(), key=lambda x: x["disciplina"].nome_disciplina):
+        disciplina = info["disciplina"]
+        nota = Nota.objects.filter(
+            aluno=aluno,
+            disciplina=disciplina,
+            turma=info["turma_obj"],
+            professor=info["professor"],
+            ano_letivo=ano_letivo,
+        ).select_related("professor").first()
+
+        boletim.append({
+            "disciplina": disciplina.nome_disciplina,
+            "professor_nome": info["professor"].nome_completo if info["professor"] else None,
+            "nm1_t1": nota.nm1_t1 if nota else None, "nm2_t1": nota.nm2_t1 if nota else None,
+            "nm3_t1": nota.nm3_t1 if nota else None, "rpt_t1": nota.rpt_t1 if nota else None,
+            "mt_t1": nota.mt_t1 if nota else None,
+            "nm1_t2": nota.nm1_t2 if nota else None, "nm2_t2": nota.nm2_t2 if nota else None,
+            "nm3_t2": nota.nm3_t2 if nota else None, "rpt_t2": nota.rpt_t2 if nota else None,
+            "mt_t2": nota.mt_t2 if nota else None,
+            "nm1_t3": nota.nm1_t3 if nota else None, "nm2_t3": nota.nm2_t3 if nota else None,
+            "nm3_t3": nota.nm3_t3 if nota else None, "rpt_t3": nota.rpt_t3 if nota else None,
+            "mt_t3": nota.mt_t3 if nota else None,
+            "ma": nota.ma if nota else None, "pf": nota.pf if nota else None,
+            "maf": nota.maf if nota else None, "rcf": nota.rcf if nota else None,
+            "tgf": nota.tgf if nota else 0,
+            "rf": nota.rf if nota else "CUR",
+        })
+
+    return JsonResponse({"boletim": boletim})
 
 
 @csrf_exempt
 @require_http_methods(["GET"])
 def horarios_aluno(request):
-    aluno = _aluno_logado()
+    aluno = _aluno_logado(request)
     if not aluno:
         return JsonResponse({"detail": "Não autenticado."}, status=401)
 
@@ -4626,7 +4690,7 @@ def horarios_aluno(request):
 @csrf_exempt
 @require_http_methods(["GET", "POST"])
 def cronograma_aluno(request):
-    aluno = _aluno_logado()
+    aluno = _aluno_logado(request)
     if not aluno:
         return JsonResponse({"detail": "Não autenticado."}, status=401)
 
@@ -4659,7 +4723,7 @@ def cronograma_aluno(request):
 @csrf_exempt
 @require_http_methods(["POST"])
 def cronograma_alternar_concluido(request, estudo_id):
-    aluno = _aluno_logado()
+    aluno = _aluno_logado(request)
     if not aluno:
         return JsonResponse({"detail": "Não autenticado."}, status=401)
 
@@ -4675,7 +4739,7 @@ def cronograma_alternar_concluido(request, estudo_id):
 @csrf_exempt
 @require_http_methods(["DELETE"])
 def cronograma_excluir(request, estudo_id):
-    aluno = _aluno_logado()
+    aluno = _aluno_logado(request)
     if not aluno:
         return JsonResponse({"detail": "Não autenticado."}, status=401)
 
@@ -4691,7 +4755,7 @@ def cronograma_excluir(request, estudo_id):
 @csrf_exempt
 @require_http_methods(["GET"])
 def frequencia_aluno(request):
-    aluno = _aluno_logado()
+    aluno = _aluno_logado(request)
     if not aluno:
         return JsonResponse({"detail": "Não autenticado."}, status=401)
 
@@ -4744,7 +4808,7 @@ def frequencia_aluno(request):
 @csrf_exempt
 @require_http_methods(["GET", "POST"])
 def solicitacoes_responsavel_aluno(request):
-    aluno = _aluno_logado()
+    aluno = _aluno_logado(request)
     if not aluno:
         return JsonResponse({"detail": "Não autenticado."}, status=401)
 
@@ -4795,7 +4859,7 @@ def solicitacao_responsavel_excluir(request, vinculo_id):
     Remove o vínculo/solicitação. Se ainda estiver PENDENTE, é um cancelamento;
     se já estiver APROVADO, é uma revogação de acesso do responsável.
     """
-    aluno = _aluno_logado()
+    aluno = _aluno_logado(request)
     if not aluno:
         return JsonResponse({"detail": "Não autenticado."}, status=401)
 
@@ -4811,10 +4875,12 @@ def solicitacao_responsavel_excluir(request, vinculo_id):
 
     return JsonResponse({"detail": "Removido."})
 
-def _responsavel_logado():
-    ip = get_ip()
+# def _responsavel_logado():
+#     ip = get_ip(request)
+#     return Responsavel.objects.filter(ip=ip).first()
+def _responsavel_logado(request):
+    ip = get_ip(request)
     return Responsavel.objects.filter(ip=ip).first()
-
 
 @csrf_exempt
 @require_http_methods(["GET"])
@@ -4890,7 +4956,7 @@ def registrar_responsavel(request):
 
 @csrf_exempt
 def login_responsavel(request):
-    ip = get_ip()
+    ip = get_ip(request)
     nome_completo = request.GET.get("nome_completo", "").strip().upper()
     senha = request.GET.get("senha", "").strip()
 
@@ -4905,7 +4971,7 @@ def login_responsavel(request):
 
 @csrf_exempt
 def auth_responsavel(request):
-    ip = get_ip()
+    ip = get_ip(request)
     responsavel = Responsavel.objects.filter(ip=ip).first()
 
     if not responsavel:
@@ -4924,7 +4990,7 @@ def auth_responsavel(request):
 @csrf_exempt
 @require_http_methods(["GET"])
 def vinculos_responsavel(request):
-    responsavel = _responsavel_logado()
+    responsavel = _responsavel_logado(request)
     if not responsavel:
         return JsonResponse({"detail": "Não autenticado."}, status=401)
 
@@ -4949,7 +5015,7 @@ def vinculos_responsavel(request):
 @csrf_exempt
 @require_http_methods(["POST"])
 def solicitar_vinculo_responsavel(request):
-    responsavel = _responsavel_logado()
+    responsavel = _responsavel_logado(request)
     if not responsavel:
         return JsonResponse({"detail": "Não autenticado."}, status=401)
 
@@ -4979,7 +5045,7 @@ def solicitar_vinculo_responsavel(request):
 @require_http_methods(["POST"])
 def solicitacao_responsavel_responder(request, vinculo_id):
     """Aluno aprova ou recusa uma solicitação de vínculo iniciada pelo responsável."""
-    aluno = _aluno_logado()
+    aluno = _aluno_logado(request)
     if not aluno:
         return JsonResponse({"detail": "Não autenticado."}, status=401)
 
@@ -5065,7 +5131,7 @@ def _calcular_dashboard(aluno):
 @csrf_exempt
 @require_http_methods(["GET"])
 def dashboard_aluno(request):
-    aluno = _aluno_logado()
+    aluno = _aluno_logado(request)
     if not aluno:
         return JsonResponse({"detail": "Não autenticado."}, status=401)
 
@@ -5074,7 +5140,7 @@ def dashboard_aluno(request):
 @csrf_exempt
 @require_http_methods(["GET"])
 def dashboard_aluno_responsavel(request, aluno_id):
-    responsavel = _responsavel_logado()
+    responsavel = _responsavel_logado(request)
     if not responsavel:
         return JsonResponse({"detail": "Não autenticado."}, status=401)
 
@@ -5110,7 +5176,7 @@ def dashboard_aluno_responsavel(request, aluno_id):
 
 def _verificar_acesso_responsavel(request, aluno_id):
     """Retorna (responsavel, aluno, None) se aprovado, ou (None, None, JsonResponse_erro)."""
-    responsavel = _responsavel_logado()
+    responsavel = _responsavel_logado(request)
     if not responsavel:
         return None, None, JsonResponse({"detail": "Não autenticado."}, status=401)
 
@@ -5124,6 +5190,28 @@ def _verificar_acesso_responsavel(request, aluno_id):
     return responsavel, vinculo.aluno, None
 
 
+# @csrf_exempt
+# @require_http_methods(["GET"])
+# def boletim_aluno_responsavel(request, aluno_id):
+#     responsavel, aluno, erro = _verificar_acesso_responsavel(request, aluno_id)
+#     if erro:
+#         return erro
+
+#     notas = Nota.objects.filter(aluno=aluno).select_related("disciplina", "professor").order_by("disciplina__nome_disciplina")
+
+#     return JsonResponse({
+#         "aluno": {"nome_completo": aluno.nome_completo, "turma": aluno.turma},
+#         "boletim": [
+#             {
+#                 "disciplina": n.disciplina.nome_disciplina if n.disciplina else None,
+#                 "nm1_t1": n.nm1_t1, "nm2_t1": n.nm2_t1, "nm3_t1": n.nm3_t1, "mt_t1": n.mt_t1,
+#                 "nm1_t2": n.nm1_t2, "nm2_t2": n.nm2_t2, "nm3_t2": n.nm3_t2, "mt_t2": n.mt_t2,
+#                 "nm1_t3": n.nm1_t3, "nm2_t3": n.nm2_t3, "nm3_t3": n.nm3_t3, "mt_t3": n.mt_t3,
+#                 "ma": n.ma, "pf": n.pf, "maf": n.maf, "rf": n.rf,
+#             }
+#             for n in notas
+#         ]
+#     })
 @csrf_exempt
 @require_http_methods(["GET"])
 def boletim_aluno_responsavel(request, aluno_id):
@@ -5131,21 +5219,59 @@ def boletim_aluno_responsavel(request, aluno_id):
     if erro:
         return erro
 
-    notas = Nota.objects.filter(aluno=aluno).select_related("disciplina", "professor").order_by("disciplina__nome_disciplina")
+    ano_letivo = request.GET.get("ano_letivo", "2026")
+
+    # O boletim reflete o horário do aluno: ele só faz provas e atividades
+    # das disciplinas que estão na grade dele, então é a grade que define
+    # quais linhas aparecem — não o histórico solto de Notas no banco.
+    vinculos = buscar_atravessapor_por_turma(aluno.turma)
+    horarios = HorarioAula.objects.filter(turma__in=vinculos).select_related(
+        "turma", "turma__professor"
+    )
+
+    # Deduplica por disciplina (pode haver mais de um horário/aula pra
+    # mesma disciplina na semana).
+    disciplinas_map = {}
+    for h in horarios:
+        disciplina = resolver_disciplina_da_turma(h.turma)
+        if not disciplina or disciplina.id in disciplinas_map:
+            continue
+        disciplinas_map[disciplina.id] = {
+            "disciplina": disciplina,
+            "turma_obj": h.turma,
+            "professor": h.turma.professor,
+        }
+
+    boletim = []
+    for info in sorted(disciplinas_map.values(), key=lambda x: x["disciplina"].nome_disciplina):
+        disciplina = info["disciplina"]
+        nota = Nota.objects.filter(
+            aluno=aluno,
+            disciplina=disciplina,
+            turma=info["turma_obj"],
+            professor=info["professor"],
+            ano_letivo=ano_letivo,
+        ).first()
+
+        boletim.append({
+            "disciplina": disciplina.nome_disciplina,
+            "nm1_t1": nota.nm1_t1 if nota else None, "nm2_t1": nota.nm2_t1 if nota else None,
+            "nm3_t1": nota.nm3_t1 if nota else None, "mt_t1": nota.mt_t1 if nota else None,
+            "nm1_t2": nota.nm1_t2 if nota else None, "nm2_t2": nota.nm2_t2 if nota else None,
+            "nm3_t2": nota.nm3_t2 if nota else None, "mt_t2": nota.mt_t2 if nota else None,
+            "nm1_t3": nota.nm1_t3 if nota else None, "nm2_t3": nota.nm2_t3 if nota else None,
+            "nm3_t3": nota.nm3_t3 if nota else None, "mt_t3": nota.mt_t3 if nota else None,
+            "ma": nota.ma if nota else None,
+            "pf": nota.pf if nota else None,
+            "maf": nota.maf if nota else None,
+            "rf": nota.rf if nota else "CUR",
+        })
 
     return JsonResponse({
         "aluno": {"nome_completo": aluno.nome_completo, "turma": aluno.turma},
-        "boletim": [
-            {
-                "disciplina": n.disciplina.nome_disciplina if n.disciplina else None,
-                "nm1_t1": n.nm1_t1, "nm2_t1": n.nm2_t1, "nm3_t1": n.nm3_t1, "mt_t1": n.mt_t1,
-                "nm1_t2": n.nm1_t2, "nm2_t2": n.nm2_t2, "nm3_t2": n.nm3_t2, "mt_t2": n.mt_t2,
-                "nm1_t3": n.nm1_t3, "nm2_t3": n.nm2_t3, "nm3_t3": n.nm3_t3, "mt_t3": n.mt_t3,
-                "ma": n.ma, "pf": n.pf, "maf": n.maf, "rf": n.rf,
-            }
-            for n in notas
-        ]
+        "boletim": boletim,
     })
+
 
 
 
@@ -5536,7 +5662,7 @@ def mensagem_conversa_coordenador_responsavel(request, aluno_id, conversa_id):
 @csrf_exempt
 @require_http_methods(["GET"])
 def mensagens_list_professor_responsaveis(request):
-    professor = _professor_logado()
+    professor = _professor_logado(request)
     if not professor:
         return JsonResponse({"detail": "Não autenticado."}, status=401)
 
@@ -5565,7 +5691,7 @@ def mensagens_list_professor_responsaveis(request):
 @csrf_exempt
 @require_http_methods(["GET", "POST"])
 def mensagem_conversa_professor_responsavel_detalhe(request, conversa_id):
-    professor = _professor_logado()
+    professor = _professor_logado(request)
     if not professor:
         return JsonResponse({"detail": "Não autenticado."}, status=401)
 
@@ -5610,7 +5736,7 @@ def mensagem_conversa_professor_responsavel_detalhe(request, conversa_id):
 @csrf_exempt
 @require_http_methods(["GET"])
 def mensagens_list_coordenacao_responsaveis(request):
-    coordenador = _coordenador_logado()
+    coordenador = _coordenador_logado(request)
     if not coordenador:
         return JsonResponse({"detail": "Não autenticado."}, status=401)
 
@@ -5638,7 +5764,7 @@ def mensagens_list_coordenacao_responsaveis(request):
 @csrf_exempt
 @require_http_methods(["GET", "POST"])
 def mensagem_conversa_coordenacao_responsavel_detalhe(request, conversa_id):
-    coordenador = _coordenador_logado()
+    coordenador = _coordenador_logado(request)
     if not coordenador:
         return JsonResponse({"detail": "Não autenticado."}, status=401)
 
@@ -5702,7 +5828,7 @@ def _alunos_da_escola_coordenador(coordenador):
 @csrf_exempt
 @require_http_methods(["GET"])
 def solicitacoes_responsavel_coordenacao(request):
-    coordenador = _coordenador_logado()
+    coordenador = _coordenador_logado(request)
     if not coordenador:
         return JsonResponse({"detail": "Não autenticado."}, status=401)
 
@@ -5733,7 +5859,7 @@ def solicitacoes_responsavel_coordenacao(request):
 def solicitacao_responsavel_coordenacao_responder(request, vinculo_id):
     """Permite à coordenação aprovar/recusar diretamente — útil se o aluno
     demorar a responder ou estiver inacessível."""
-    coordenador = _coordenador_logado()
+    coordenador = _coordenador_logado(request)
     if not coordenador:
         return JsonResponse({"detail": "Não autenticado."}, status=401)
 
@@ -5840,35 +5966,221 @@ def gerar_ficha_notas_pdf(request, turma_id):
     return response
 
 
+# @csrf_exempt
+# @require_http_methods(["GET"])
+# def boletim_aluno_pdf(request):
+#     """Gera o PDF do boletim do aluno autenticado, no mesmo padrão da ficha de notas do professor."""
+#     aluno = _aluno_logado(request)
+#     if not aluno:
+#         return JsonResponse({"detail": "Não autenticado."}, status=401)
+
+#     notas = Nota.objects.filter(aluno=aluno).select_related(
+#         "disciplina", "professor"
+#     ).order_by("disciplina__nome_disciplina")
+
+#     linhas = []
+#     for n in notas:
+#         linhas.append({
+#             "disciplina": n.disciplina.nome_disciplina if n.disciplina else "—",
+#             "professor_nome": n.professor.nome_completo if n.professor else "—",
+#             "nm1_t1": _campo_pdf(n, "nm1_t1"), "nm2_t1": _campo_pdf(n, "nm2_t1"),
+#             "nm3_t1": _campo_pdf(n, "nm3_t1"), "mt_t1": _campo_pdf(n, "mt_t1"),
+#             "nm1_t2": _campo_pdf(n, "nm1_t2"), "nm2_t2": _campo_pdf(n, "nm2_t2"),
+#             "nm3_t2": _campo_pdf(n, "nm3_t2"), "mt_t2": _campo_pdf(n, "mt_t2"),
+#             "nm1_t3": _campo_pdf(n, "nm1_t3"), "nm2_t3": _campo_pdf(n, "nm2_t3"),
+#             "nm3_t3": _campo_pdf(n, "nm3_t3"), "mt_t3": _campo_pdf(n, "mt_t3"),
+#             "ma": _campo_pdf(n, "ma"), "pf": _campo_pdf(n, "pf"),
+#             "maf": _campo_pdf(n, "maf"),
+#             "rf": n.get_rf_display(),
+#         })
+
+#     logo_path_absoluto = os.path.join(settings.BASE_DIR, "app", "static", "logo.png")
+#     logo_path = f"file://{logo_path_absoluto}" if os.path.exists(logo_path_absoluto) else None
+
+#     contexto = {
+#         "aluno": aluno,
+#         "linhas": linhas,
+#         "logo_path": logo_path,
+#         "data_emissao": date.today().strftime("%d/%m/%Y"),
+#     }
+
+#     html_string = render_to_string("boletim/pdf.html", contexto)
+#     pdf_file = HTML(string=html_string).write_pdf()
+
+#     nome_arquivo = f"boletim_{_nome_arquivo_seguro(aluno.nome_completo)}.pdf"
+
+#     response = HttpResponse(pdf_file, content_type="application/pdf")
+#     response["Content-Disposition"] = f'inline; filename="{nome_arquivo}"'
+#     return response
 @csrf_exempt
 @require_http_methods(["GET"])
 def boletim_aluno_pdf(request):
     """Gera o PDF do boletim do aluno autenticado, no mesmo padrão da ficha de notas do professor."""
-    aluno = _aluno_logado()
+    aluno = _aluno_logado(request)
     if not aluno:
         return JsonResponse({"detail": "Não autenticado."}, status=401)
 
-    notas = Nota.objects.filter(aluno=aluno).select_related(
-        "disciplina", "professor"
-    ).order_by("disciplina__nome_disciplina")
+    ano_letivo = request.GET.get("ano_letivo", "2026")
+
+    vinculos = buscar_atravessapor_por_turma(aluno.turma)
+    horarios = HorarioAula.objects.filter(turma__in=vinculos).select_related(
+        "turma", "turma__professor"
+    )
+
+    disciplinas_map = {}
+    for h in horarios:
+        disciplina = resolver_disciplina_da_turma(h.turma)
+        if not disciplina or disciplina.id in disciplinas_map:
+            continue
+        disciplinas_map[disciplina.id] = {
+            "disciplina": disciplina,
+            "turma_obj": h.turma,
+            "professor": h.turma.professor,
+        }
 
     linhas = []
-    for n in notas:
+    for info in sorted(disciplinas_map.values(), key=lambda x: x["disciplina"].nome_disciplina):
+        disciplina = info["disciplina"]
+        nota = Nota.objects.filter(
+            aluno=aluno,
+            disciplina=disciplina,
+            turma=info["turma_obj"],
+            professor=info["professor"],
+            ano_letivo=ano_letivo,
+        ).first()
+
         linhas.append({
-            "disciplina": n.disciplina.nome_disciplina if n.disciplina else "—",
-            "professor_nome": n.professor.nome_completo if n.professor else "—",
-            "nm1_t1": _campo_pdf(n, "nm1_t1"), "nm2_t1": _campo_pdf(n, "nm2_t1"),
-            "nm3_t1": _campo_pdf(n, "nm3_t1"), "mt_t1": _campo_pdf(n, "mt_t1"),
-            "nm1_t2": _campo_pdf(n, "nm1_t2"), "nm2_t2": _campo_pdf(n, "nm2_t2"),
-            "nm3_t2": _campo_pdf(n, "nm3_t2"), "mt_t2": _campo_pdf(n, "mt_t2"),
-            "nm1_t3": _campo_pdf(n, "nm1_t3"), "nm2_t3": _campo_pdf(n, "nm2_t3"),
-            "nm3_t3": _campo_pdf(n, "nm3_t3"), "mt_t3": _campo_pdf(n, "mt_t3"),
-            "ma": _campo_pdf(n, "ma"), "pf": _campo_pdf(n, "pf"),
-            "maf": _campo_pdf(n, "maf"),
-            "rf": n.get_rf_display(),
+            "disciplina": disciplina.nome_disciplina,
+            "professor_nome": info["professor"].nome_completo if info["professor"] else "—",
+            "nm1_t1": _campo_pdf(nota, "nm1_t1"), "nm2_t1": _campo_pdf(nota, "nm2_t1"),
+            "nm3_t1": _campo_pdf(nota, "nm3_t1"), "mt_t1": _campo_pdf(nota, "mt_t1"),
+            "nm1_t2": _campo_pdf(nota, "nm1_t2"), "nm2_t2": _campo_pdf(nota, "nm2_t2"),
+            "nm3_t2": _campo_pdf(nota, "nm3_t2"), "mt_t2": _campo_pdf(nota, "mt_t2"),
+            "nm1_t3": _campo_pdf(nota, "nm1_t3"), "nm2_t3": _campo_pdf(nota, "nm2_t3"),
+            "nm3_t3": _campo_pdf(nota, "nm3_t3"), "mt_t3": _campo_pdf(nota, "mt_t3"),
+            "ma": _campo_pdf(nota, "ma"), "pf": _campo_pdf(nota, "pf"),
+            "maf": _campo_pdf(nota, "maf"),
+            "rf": nota.get_rf_display() if nota else "Não Definido",
         })
 
-    logo_path_absoluto = os.path.join(settings.BASE_DIR, "app", "static", "logo.png")
+    logo_path_absoluto = os.path.join(settings.BASE_DIR, "django_siaa", "app", "static", "logo.png")
+    logo_path = f"file://{logo_path_absoluto}" if os.path.exists(logo_path_absoluto) else None
+
+    contexto = {
+        "aluno": aluno,
+        "linhas": linhas,
+        "logo_path": logo_path,
+        "data_emissao": date.today().strftime("%d/%m/%Y"),
+    }
+
+    html_string = render_to_string("boletim/pdf.html", contexto)
+    pdf_file = HTML(string=html_string).write_pdf()
+
+    nome_arquivo = f"boletim_{_nome_arquivo_seguro(aluno.nome_completo)}.pdf"
+
+    response = HttpResponse(pdf_file, content_type="application/pdf")
+    response["Content-Disposition"] = f'inline; filename="{nome_arquivo}"'
+    return response
+
+
+# @csrf_exempt
+# @require_http_methods(["GET"])
+# def boletim_aluno_pdf_responsavel(request, aluno_id):
+#     """Gera o PDF do boletim do aluno, para o responsável com acesso aprovado."""
+#     responsavel, aluno, erro = _verificar_acesso_responsavel(request, aluno_id)
+#     if erro:
+#         return erro
+
+#     notas = Nota.objects.filter(aluno=aluno).select_related(
+#         "disciplina", "professor"
+#     ).order_by("disciplina__nome_disciplina")
+
+#     linhas = []
+#     for n in notas:
+#         linhas.append({
+#             "disciplina": n.disciplina.nome_disciplina if n.disciplina else "—",
+#             "professor_nome": n.professor.nome_completo if n.professor else "—",
+#             "nm1_t1": _campo_pdf(n, "nm1_t1"), "nm2_t1": _campo_pdf(n, "nm2_t1"),
+#             "nm3_t1": _campo_pdf(n, "nm3_t1"), "mt_t1": _campo_pdf(n, "mt_t1"),
+#             "nm1_t2": _campo_pdf(n, "nm1_t2"), "nm2_t2": _campo_pdf(n, "nm2_t2"),
+#             "nm3_t2": _campo_pdf(n, "nm3_t2"), "mt_t2": _campo_pdf(n, "mt_t2"),
+#             "nm1_t3": _campo_pdf(n, "nm1_t3"), "nm2_t3": _campo_pdf(n, "nm2_t3"),
+#             "nm3_t3": _campo_pdf(n, "nm3_t3"), "mt_t3": _campo_pdf(n, "mt_t3"),
+#             "ma": _campo_pdf(n, "ma"), "pf": _campo_pdf(n, "pf"),
+#             "maf": _campo_pdf(n, "maf"),
+#             "rf": n.get_rf_display(),
+#         })
+
+#     logo_path_absoluto = os.path.join(settings.BASE_DIR, "django_siaa", "app", "static", "logo.png")
+#     logo_path = f"file://{logo_path_absoluto}" if os.path.exists(logo_path_absoluto) else None
+
+#     contexto = {
+#         "aluno": aluno,
+#         "linhas": linhas,
+#         "logo_path": logo_path,
+#         "data_emissao": date.today().strftime("%d/%m/%Y"),
+#     }
+
+#     html_string = render_to_string("boletim/pdf.html", contexto)
+#     pdf_file = HTML(string=html_string).write_pdf()
+
+#     nome_arquivo = f"boletim_{_nome_arquivo_seguro(aluno.nome_completo)}.pdf"
+
+#     response = HttpResponse(pdf_file, content_type="application/pdf")
+#     response["Content-Disposition"] = f'inline; filename="{nome_arquivo}"'
+#     return response
+@csrf_exempt
+@require_http_methods(["GET"])
+def boletim_aluno_pdf_responsavel(request, aluno_id):
+    """Gera o PDF do boletim do aluno, para o responsável com acesso aprovado."""
+    responsavel, aluno, erro = _verificar_acesso_responsavel(request, aluno_id)
+    if erro:
+        return erro
+
+    ano_letivo = request.GET.get("ano_letivo", "2026")
+
+    vinculos = buscar_atravessapor_por_turma(aluno.turma)
+    horarios = HorarioAula.objects.filter(turma__in=vinculos).select_related(
+        "turma", "turma__professor"
+    )
+
+    disciplinas_map = {}
+    for h in horarios:
+        disciplina = resolver_disciplina_da_turma(h.turma)
+        if not disciplina or disciplina.id in disciplinas_map:
+            continue
+        disciplinas_map[disciplina.id] = {
+            "disciplina": disciplina,
+            "turma_obj": h.turma,
+            "professor": h.turma.professor,
+        }
+
+    linhas = []
+    for info in sorted(disciplinas_map.values(), key=lambda x: x["disciplina"].nome_disciplina):
+        disciplina = info["disciplina"]
+        nota = Nota.objects.filter(
+            aluno=aluno,
+            disciplina=disciplina,
+            turma=info["turma_obj"],
+            professor=info["professor"],
+            ano_letivo=ano_letivo,
+        ).first()
+
+        linhas.append({
+            "disciplina": disciplina.nome_disciplina,
+            "professor_nome": info["professor"].nome_completo if info["professor"] else "—",
+            "nm1_t1": _campo_pdf(nota, "nm1_t1"), "nm2_t1": _campo_pdf(nota, "nm2_t1"),
+            "nm3_t1": _campo_pdf(nota, "nm3_t1"), "mt_t1": _campo_pdf(nota, "mt_t1"),
+            "nm1_t2": _campo_pdf(nota, "nm1_t2"), "nm2_t2": _campo_pdf(nota, "nm2_t2"),
+            "nm3_t2": _campo_pdf(nota, "nm3_t2"), "mt_t2": _campo_pdf(nota, "mt_t2"),
+            "nm1_t3": _campo_pdf(nota, "nm1_t3"), "nm2_t3": _campo_pdf(nota, "nm2_t3"),
+            "nm3_t3": _campo_pdf(nota, "nm3_t3"), "mt_t3": _campo_pdf(nota, "mt_t3"),
+            "ma": _campo_pdf(nota, "ma"), "pf": _campo_pdf(nota, "pf"),
+            "maf": _campo_pdf(nota, "maf"),
+            "rf": nota.get_rf_display() if nota else "Não Definido",
+        })
+
+    logo_path_absoluto = os.path.join(settings.BASE_DIR, "django_siaa", "app", "static", "logo.png")
     logo_path = f"file://{logo_path_absoluto}" if os.path.exists(logo_path_absoluto) else None
 
     contexto = {
