@@ -163,7 +163,7 @@ def search_student(request):
 
 @csrf_exempt
 def login_student(request):
-    ip_student = get_ip()
+    ip_student = get_ip(request)
     print(ip_student)
     fullName = request.GET.get("fullname").strip().upper()
     password = request.GET.get("password").strip().lower()
@@ -188,7 +188,7 @@ def login_student(request):
     
 @csrf_exempt
 def auth_student(request):
-    ip_student = get_ip()
+    ip_student = get_ip(request)
     print(ip_student)
     student = Estudante.objects.filter(ip=ip_student).first()
     try:
@@ -4444,9 +4444,7 @@ def admin_turma_renomear(request):
     return JsonResponse({"alunos_atualizados": qtd_alunos, "vinculos_atualizados": qtd_vinculos})
 
 
-# def _aluno_logado():
-#     ip = get_ip(request)
-#     return Estudante.objects.filter(ip=ip).first()
+
 def _aluno_logado(request):
     ip = get_ip(request)
     return Estudante.objects.filter(ip=ip).first()
@@ -4518,9 +4516,9 @@ def dashboard_aluno(request):
     })
 
 
-def _aluno_logado():
-    ip = get_ip(request)
-    return Estudante.objects.filter(ip=ip).first()
+# def _aluno_logado():
+#     ip = get_ip(request)
+#     return Estudante.objects.filter(ip=ip).first()
 
 
 @csrf_exempt
