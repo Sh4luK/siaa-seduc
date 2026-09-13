@@ -3566,6 +3566,33 @@ def curtir_post(request, post_id):
 
 
 
+@csrf_exempt
+@require_http_methods(["POST"])
+def comentar_post(request, post_id):
+    sessao = _sessao_blog_atual(request)
+    if not sessao:
+        return JsonResponse({"message": "Você precisa estar autenticado para comentar."}, status=401)
+
+    post = Post.objects.filter(id=post_id).first()
+    if not post:
+        return JsonResponse({"message": "Post não encontrado."}, status=404)
+
+    body = json.loads(request.body or "{}")
+    conteudo = (body.get("conteudo") or "").strip()
+    if not conteudo:
+        return JsonResponse({"message": "O comentário não pode ficar vazio."}, status=400)
+
+    comentario = Comentario.objects.create(
+        post=post, autor_tipo=sessao.tipo, autor_id=sessao.referencia_id,
+        autor_nome=sessao.nome_completo, conteudo=conteudo,
+    )
+
+    return JsonResponse({
+        "id": comentario.id, "autor_nome": comentario.autor_nome,
+        "conteudo": comentario.conteudo, "data_criacao": comentario.data_criacao.isoformat(),
+    }, status=201)
+
+
 
 
 def _professor_atual(request):
