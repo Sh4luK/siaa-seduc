@@ -327,33 +327,33 @@ class Blogger(models.Model):
     def __str__(self):
         return self.nome_completo
 
-class Post(models.Model):
-    autor = models.ForeignKey(Blogger, on_delete=models.CASCADE, related_name="posts")
-    titulo = models.CharField(max_length=255)
-    conteudo = models.TextField()
-    tempo_leitura = models.PositiveIntegerField(default=1)  # em minutos
+# class Post(models.Model):
+#     autor = models.ForeignKey(Blogger, on_delete=models.CASCADE, related_name="posts")
+#     titulo = models.CharField(max_length=255)
+#     conteudo = models.TextField()
+#     tempo_leitura = models.PositiveIntegerField(default=1)  # em minutos
 
-    data_criacao = models.DateTimeField(auto_now_add=True)
-    atualizado_em = models.DateTimeField(auto_now=True)
+#     data_criacao = models.DateTimeField(auto_now_add=True)
+#     atualizado_em = models.DateTimeField(auto_now=True)
 
-    class Meta:
-        ordering = ["-data_criacao"]
+#     class Meta:
+#         ordering = ["-data_criacao"]
 
-    def calcular_tempo_leitura(self):
-        """Estima o tempo de leitura com base na contagem de palavras (~200 palavras/min)."""
-        palavras = re.findall(r"\w+", self.conteudo or "")
-        total_palavras = len(palavras)
-        minutos = math.ceil(total_palavras / 200) if total_palavras > 0 else 1
-        return max(minutos, 1)
+#     def calcular_tempo_leitura(self):
+#         """Estima o tempo de leitura com base na contagem de palavras (~200 palavras/min)."""
+#         palavras = re.findall(r"\w+", self.conteudo or "")
+#         total_palavras = len(palavras)
+#         minutos = math.ceil(total_palavras / 200) if total_palavras > 0 else 1
+#         return max(minutos, 1)
 
-    def save(self, *args, **kwargs):
-        self.tempo_leitura = self.calcular_tempo_leitura()
-        super().save(*args, **kwargs)
+#     def save(self, *args, **kwargs):
+#         self.tempo_leitura = self.calcular_tempo_leitura()
+#         super().save(*args, **kwargs)
 
-    def __str__(self):
-        return f"{self.titulo} - {self.autor}"
+#     def __str__(self):
+#         return f"{self.titulo} - {self.autor}"
 
-# app/models.py — adicionar
+
 
 class Avaliacao(models.Model):
     professor = models.ForeignKey(Professor, on_delete=models.CASCADE, related_name="avaliacoes")
@@ -535,3 +535,21 @@ class MensagemChatResponsavelCoordenador(models.Model):
 
     class Meta:
         ordering = ['data_envio']
+
+
+
+class SessaoBlog(models.Model):
+    TIPO_CHOICES = [
+        ("ALUNO", "Aluno"),
+        ("PROFESSOR", "Professor"),
+        ("RESPONSAVEL", "Responsável"),
+        ("COORDENADOR", "Coordenador"),
+    ]
+    tipo = models.CharField(max_length=20, choices=TIPO_CHOICES)
+    referencia_id = models.PositiveIntegerField()
+    nome_completo = models.CharField(max_length=255)
+    ip = models.CharField(max_length=45, unique=True)
+    atualizado_em = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.nome_completo} ({self.tipo})"
