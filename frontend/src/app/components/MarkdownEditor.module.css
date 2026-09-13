@@ -1,0 +1,75 @@
+.wrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+.tabs {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  margin-bottom: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.tab,
+.tabAtiva {
+  padding: 0.35rem 0.8rem;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  border: 1px solid transparent;
+  background: none;
+  cursor: pointer;
+  color: #5b6b85;
+}
+
+.tab:hover {
+  background: #f1f5f9;
+}
+
+.tabAtiva {
+  background: rgba(11, 79, 158, 0.08);
+  color: #0b4f9e;
+  border-color: rgba(11, 79, 158, 0.2);
+}
+
+.ajudaMarkdown {
+  margin-left: auto;
+  font-size: 0.72rem;
+  color: #94a3b8;
+}
+
+.textarea {
+  width: 100%;
+  padding: 0.7rem 0.9rem;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  color: #1a2942;
+  background: #ffffff;
+  box-sizing: border-box;
+  font-family: "Courier New", monospace;
+  line-height: 1.6;
+  resize: vertical;
+}
+
+.textarea:focus {
+  outline: none;
+  border-color: #0b4f9e;
+  box-shadow: 0 0 0 3px rgba(11, 79, 158, 0.12);
+}
+
+.previewBox {
+  padding: 0.9rem 1rem;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 10px;
+  background: #fbfcfe;
+  overflow-y: auto;
+}
+
+.previewVazio {
+  color: #94a3b8;
+  font-size: 0.85rem;
+  font-style: italic;
+  margin: 0;
+}
