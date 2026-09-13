@@ -148,10 +148,10 @@ export default function BlogPage() {
       prev.map((p) =>
         p.id === postId
           ? {
-              ...p,
-              curtido_por_mim: !p.curtido_por_mim,
-              total_curtidas: p.curtido_por_mim ? p.total_curtidas - 1 : p.total_curtidas + 1,
-            }
+            ...p,
+            curtido_por_mim: !p.curtido_por_mim,
+            total_curtidas: p.curtido_por_mim ? p.total_curtidas - 1 : p.total_curtidas + 1,
+          }
           : p
       )
     );
@@ -211,11 +211,15 @@ export default function BlogPage() {
               </div>
 
               <Link href={`/blog/${post.id}`} className={styles.postLink}>
+                {post.imagem_url && (
+                  <img src={`${API_BASE}${post.imagem_url}`} alt={post.titulo} className={styles.postImagem} />
+                )}
                 <h2 className={styles.postTitulo}>{post.titulo}</h2>
                 <p className={styles.postResumo}>{post.resumo}</p>
               </Link>
 
               <div className={styles.postAcoes}>
+                {/* ...continua igual... */}
                 <button
                   className={`${styles.acaoBotao} ${post.curtido_por_mim ? styles.acaoBotaoAtivo : ""}`}
                   onClick={() => handleCurtir(post.id)}
@@ -238,6 +242,48 @@ export default function BlogPage() {
                 </Link>
               </div>
             </article>
+            // <article key={post.id} className={styles.postCard}>
+            //   <div className={styles.postHeader}>
+            //     <span className={styles.avatarIniciais}>
+            //       {post.autor_nome?.trim().charAt(0) || "?"}
+            //     </span>
+            //     <div className={styles.postHeaderTextos}>
+            //       <span className={styles.postAutor}>{post.autor_nome}</span>
+            //       <span className={styles.postMeta}>
+            //         {TIPO_LABEL[post.autor_tipo] || post.autor_tipo} · {formatarData(post.data_criacao)} · {post.tempo_leitura} min de leitura
+            //       </span>
+            //     </div>
+            //   </div>
+
+            //   <Link href={`/blog/${post.id}`} className={styles.postLink}>
+            //     <h2 className={styles.postTitulo}>{post.titulo}</h2>
+            //     <p className={styles.postResumo}>{post.resumo}</p>
+            //   </Link>
+
+            //   <div className={styles.postAcoes}>
+                // <button
+                //   className={`${styles.acaoBotao} ${post.curtido_por_mim ? styles.acaoBotaoAtivo : ""}`}
+                //   onClick={() => handleCurtir(post.id)}
+                //   disabled={!usuario}
+                //   title={usuario ? "Curtir" : "Entre para curtir"}
+                // >
+                //   <svg width="17" height="17" viewBox="0 0 24 24" fill={post.curtido_por_mim ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                //     <path d="M19.5 12.572l-7.5 7.428l-7.5 -7.428a5 5 0 1 1 7.5 -6.566a5 5 0 1 1 7.5 6.572" />
+                //   </svg>
+                //   {post.total_curtidas}
+                // </button>
+
+                // <Link href={`/blog/${post.id}`} className={styles.acaoBotao}>
+                //   <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                //     <path d="M8 9h8" />
+                //     <path d="M8 13h6" />
+                //     <path d="M18 4a3 3 0 0 1 3 3v8a3 3 0 0 1 -3 3h-5l-5 3v-3h-2a3 3 0 0 1 -3 -3v-8a3 3 0 0 1 3 -3h12z" />
+                //   </svg>
+                //   {post.total_comentarios}
+                // </Link>
+            //   </div>
+            // </article>
+
           ))
         )}
       </main>
