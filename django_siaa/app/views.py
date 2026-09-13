@@ -3543,6 +3543,31 @@ def deletar_post(request, post_id):
 
 
 
+@csrf_exempt
+@require_http_methods(["POST"])
+def curtir_post(request, post_id):
+    sessao = _sessao_blog_atual(request)
+    if not sessao:
+        return JsonResponse({"message": "Você precisa estar autenticado para curtir."}, status=401)
+
+    post = Post.objects.filter(id=post_id).first()
+    if not post:
+        return JsonResponse({"message": "Post não encontrado."}, status=404)
+
+    curtida = Curtida.objects.filter(post=post, autor_tipo=sessao.tipo, autor_id=sessao.referencia_id).first()
+    if curtida:
+        curtida.delete()
+        curtido = False
+    else:
+        Curtida.objects.create(post=post, autor_tipo=sessao.tipo, autor_id=sessao.referencia_id)
+        curtido = True
+
+    return JsonResponse({"curtido": curtido, "total_curtidas": post.curtidas.count()})
+
+
+
+
+
 def _professor_atual(request):
     ip = get_ip(request)
     return Professor.objects.filter(ip=ip).first()
