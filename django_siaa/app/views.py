@@ -37,6 +37,7 @@ from .models import Advertencia
 from .models import HorarioAula
 from .models import Blogger
 from .models import SessaoBlog
+from .models import Curtida
 from .models import Post
 from .models import Admin
 from .models import EstudoProgramado
@@ -3466,20 +3467,13 @@ def get_post_detalhe(request, post_id):
 
 
 @csrf_exempt
+@require_http_methods(["POST"])
 def criar_post(request):
-    if request.method != "POST":
-        return JsonResponse({"message": "Método não permitido."}, status=405)
-
-    ip = get_ip(request)
-    blogger = Blogger.objects.filter(ip=ip).first()
-    if not blogger:
+    sessao = _sessao_blog_atual(request)
+    if not sessao:
         return JsonResponse({"message": "Você precisa estar autenticado para publicar."}, status=401)
 
-    try:
-        body = json.loads(request.body)
-    except json.JSONDecodeError:
-        return JsonResponse({"message": "JSON inválido."}, status=400)
-
+    body = json.loads(request.body or "{}")
     titulo = (body.get("titulo") or "").strip()
     conteudo = (body.get("conteudo") or "").strip()
 
@@ -3487,20 +3481,18 @@ def criar_post(request):
         return JsonResponse({"message": "Campos 'titulo' e 'conteudo' são obrigatórios."}, status=400)
 
     post = Post.objects.create(
-        autor=blogger,
+        autor_tipo=sessao.tipo,
+        autor_id=sessao.referencia_id,
+        autor_nome=sessao.nome_completo,
         titulo=titulo,
         conteudo=conteudo,
     )
 
     return JsonResponse({
         "message": "Post publicado com sucesso.",
-        "post": {
-            "id": post.id,
-            "titulo": post.titulo,
-            "tempo_leitura": post.tempo_leitura,
-            "data_criacao": post.data_criacao.isoformat(),
-        }
+        "post": {"id": post.id, "titulo": post.titulo, "tempo_leitura": post.tempo_leitura, "data_criacao": post.data_criacao.isoformat()},
     })
+
 
 
 @csrf_exempt
