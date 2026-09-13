@@ -163,6 +163,7 @@ urlpatterns = [
     path('api/coordenacao/solicitacoes/<int:vinculo_id>/responder', app.views.solicitacao_responsavel_coordenacao_responder),
     path('api/teacher/notas/turma/<int:turma_id>/ficha-pdf', app.views.gerar_ficha_notas_pdf),
     path('api/responsavel/alunos/<int:aluno_id>/boletim/pdf', app.views.boletim_aluno_pdf_responsavel),
+    path('api/students/horarios/pdf', app.views.horarios_aluno_pdf),
 
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

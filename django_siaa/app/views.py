@@ -4688,6 +4688,57 @@ def horarios_aluno(request):
 
 
 @csrf_exempt
+@require_http_methods(["GET"])
+def horarios_aluno_pdf(request):
+    """Gera o PDF da grade de horários do aluno autenticado."""
+    aluno = _aluno_logado(request)
+    if not aluno:
+        return JsonResponse({"detail": "Não autenticado."}, status=401)
+
+    vinculos = buscar_atravessapor_por_turma(aluno.turma)
+    horarios = HorarioAula.objects.filter(turma__in=vinculos).select_related(
+        "turma", "turma__professor"
+    ).order_by("dia_semana", "hora_inicio")
+
+    DIAS_ORDEM = ["SEG", "TER", "QUA", "QUI", "SEX"]
+    DIAS_LABEL = {"SEG": "Segunda", "TER": "Terça", "QUA": "Quarta", "QUI": "Quinta", "SEX": "Sexta"}
+
+    por_dia = {dia: [] for dia in DIAS_ORDEM}
+    for h in horarios:
+        disciplina = resolver_disciplina_da_turma(h.turma)
+        por_dia.setdefault(h.dia_semana, []).append({
+            "hora_inicio": h.hora_inicio.strftime("%H:%M") if h.hora_inicio else "—",
+            "hora_fim": h.hora_fim.strftime("%H:%M") if h.hora_fim else "—",
+            "disciplina": disciplina.nome_disciplina if disciplina else h.turma.disciplina_lecionada,
+            "professor_nome": h.turma.professor.nome_completo if h.turma.professor else "—",
+        })
+
+    dias_contexto = [
+        {"label": DIAS_LABEL[dia], "aulas": por_dia.get(dia, [])}
+        for dia in DIAS_ORDEM
+    ]
+
+    logo_path_absoluto = os.path.join(settings.BASE_DIR, "django_siaa", "app", "static", "logo.png")
+    logo_path = f"file://{logo_path_absoluto}" if os.path.exists(logo_path_absoluto) else None
+
+    contexto = {
+        "aluno": aluno,
+        "dias": dias_contexto,
+        "logo_path": logo_path,
+        "data_emissao": date.today().strftime("%d/%m/%Y"),
+    }
+
+    html_string = render_to_string("horarios/pdf.html", contexto)
+    pdf_file = HTML(string=html_string).write_pdf()
+
+    nome_arquivo = f"horario_{_nome_arquivo_seguro(aluno.nome_completo)}.pdf"
+
+    response = HttpResponse(pdf_file, content_type="application/pdf")
+    response["Content-Disposition"] = f'inline; filename="{nome_arquivo}"'
+    return response
+
+
+@csrf_exempt
 @require_http_methods(["GET", "POST"])
 def cronograma_aluno(request):
     aluno = _aluno_logado(request)

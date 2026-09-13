@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<style>
+  @page { size: A4 landscape; margin: 1.5cm; }
+  body { font-family: 'IBM Plex Sans', Inter, 'Segoe UI', sans-serif; color: #1a2942; }
+
+  .cabecalho { display: flex; align-items: center; gap: 0.8cm; margin-bottom: 0.6cm; border-bottom: 2px solid #0b4f9e; padding-bottom: 0.4cm; }
+  .cabecalho img { height: 1.8cm; }
+  .cabecalho h1 { font-size: 16pt; margin: 0; color: #0b4f9e; }
+  .cabecalho p { font-size: 9pt; margin: 2px 0 0; color: #5b6b85; }
+
+  .info-aluno { display: flex; justify-content: space-between; font-size: 9.5pt; margin-bottom: 0.6cm; color: #1a2942; }
+
+  .grade { display: flex; gap: 0.4cm; }
+  .dia-coluna { flex: 1; }
+  .dia-header {
+    font-size: 9pt; font-weight: 700; text-transform: uppercase; letter-spacing: 0.03em;
+    color: #0b4f9e; background: rgba(11, 79, 158, 0.08); padding: 0.25cm 0.3cm;
+    border-radius: 4px; margin-bottom: 0.3cm; text-align: center;
+  }
+  .aula-card {
+    border: 1px solid #e2e8f0; border-radius: 6px; padding: 0.3cm; margin-bottom: 0.25cm;
+    font-size: 8pt;
+  }
+  .aula-horario { display: block; font-weight: 700; color: #0b4f9e; margin-bottom: 2px; }
+  .aula-disciplina { display: block; font-weight: 600; color: #1a2942; }
+  .aula-professor { display: block; color: #5b6b85; margin-top: 2px; }
+  .dia-vazio { font-size: 8pt; color: #94a3b8; text-align: center; padding: 0.3cm 0; }
+
+  .rodape { margin-top: 0.8cm; font-size: 8pt; color: #5b6b85; text-align: right; }
+</style>
+</head>
+<body>
+
+  <div class="cabecalho">
+    {% if logo_path %}<img src="{{ logo_path }}">{% endif %}
+    <div>
+      <h1>Grade de Horários</h1>
+      <p>Governo do Estado do Piauí — Secretaria de Estado da Educação</p>
+    </div>
+  </div>
+
+  <div class="info-aluno">
+    <span><strong>Aluno:</strong> {{ aluno.nome_completo }}</span>
+    <span><strong>Turma:</strong> {{ aluno.turma }}</span>
+    <span><strong>Escola:</strong> {{ aluno.escola }}</span>
+  </div>
+
+  <div class="grade">
+    {% for dia in dias %}
+    <div class="dia-coluna">
+      <div class="dia-header">{{ dia.label }}</div>
+      {% if dia.aulas %}
+        {% for aula in dia.aulas %}
+        <div class="aula-card">
+          <span class="aula-horario">{{ aula.hora_inicio }} – {{ aula.hora_fim }}</span>
+          <span class="aula-disciplina">{{ aula.disciplina }}</span>
+          <span class="aula-professor">{{ aula.professor_nome }}</span>
+        </div>
+        {% endfor %}
+      {% else %}
+        <div class="dia-vazio">—</div>
+      {% endif %}
+    </div>
+    {% endfor %}
+  </div>
+
+  <div class="rodape">Emitido em {{ data_emissao }}</div>
+
+</body>
+</html>
