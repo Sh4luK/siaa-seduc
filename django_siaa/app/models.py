@@ -553,3 +553,32 @@ class SessaoBlog(models.Model):
 
     def __str__(self):
         return f"{self.nome_completo} ({self.tipo})"
+
+
+class Post(models.Model):
+    autor_tipo = models.CharField(max_length=20, choices=SessaoBlog.TIPO_CHOICES, default="ALUNO")
+    autor_id = models.PositiveIntegerField(default=0)
+    autor_nome = models.CharField(max_length=255, default="")
+    titulo = models.CharField(max_length=255)
+    conteudo = models.TextField()
+    tempo_leitura = models.PositiveIntegerField(default=1)
+
+    data_criacao = models.DateTimeField(auto_now_add=True)
+    atualizado_em = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["-data_criacao"]
+
+    def calcular_tempo_leitura(self):
+        palavras = re.findall(r"\w+", self.conteudo or "")
+        total_palavras = len(palavras)
+        minutos = math.ceil(total_palavras / 200) if total_palavras > 0 else 1
+        return max(minutos, 1)
+
+    def save(self, *args, **kwargs):
+        self.tempo_leitura = self.calcular_tempo_leitura()
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"{self.titulo} - {self.autor_nome}"
+
