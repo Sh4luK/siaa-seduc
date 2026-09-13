@@ -3525,24 +3525,22 @@ def editar_post(request, post_id):
 
 
 @csrf_exempt
+@require_http_methods(["DELETE"])
 def deletar_post(request, post_id):
-    if request.method != "DELETE":
-        return JsonResponse({"message": "Método não permitido."}, status=405)
-
-    ip = get_ip(request)
-    blogger = Blogger.objects.filter(ip=ip).first()
-    if not blogger:
+    sessao = _sessao_blog_atual(request)
+    if not sessao:
         return JsonResponse({"message": "Você precisa estar autenticado."}, status=401)
 
     post = Post.objects.filter(id=post_id).first()
     if not post:
         return JsonResponse({"message": "Post não encontrado."}, status=404)
 
-    if post.autor_id != blogger.id:
+    if post.autor_tipo != sessao.tipo or post.autor_id != sessao.referencia_id:
         return JsonResponse({"message": "Você não tem permissão para apagar este post."}, status=403)
 
     post.delete()
     return JsonResponse({"message": "Post removido com sucesso."})
+
 
 
 def _professor_atual(request):
