@@ -3494,29 +3494,21 @@ def criar_post(request):
     })
 
 
-
 @csrf_exempt
+@require_http_methods(["POST"])
 def editar_post(request, post_id):
-    if request.method != "POST":
-        return JsonResponse({"message": "Método não permitido."}, status=405)
-
-    ip = get_ip(request)
-    blogger = Blogger.objects.filter(ip=ip).first()
-    if not blogger:
+    sessao = _sessao_blog_atual(request)
+    if not sessao:
         return JsonResponse({"message": "Você precisa estar autenticado."}, status=401)
 
     post = Post.objects.filter(id=post_id).first()
     if not post:
         return JsonResponse({"message": "Post não encontrado."}, status=404)
 
-    if post.autor_id != blogger.id:
+    if post.autor_tipo != sessao.tipo or post.autor_id != sessao.referencia_id:
         return JsonResponse({"message": "Você não tem permissão para editar este post."}, status=403)
 
-    try:
-        body = json.loads(request.body)
-    except json.JSONDecodeError:
-        return JsonResponse({"message": "JSON inválido."}, status=400)
-
+    body = json.loads(request.body or "{}")
     titulo = (body.get("titulo") or "").strip()
     conteudo = (body.get("conteudo") or "").strip()
 
@@ -3528,6 +3520,8 @@ def editar_post(request, post_id):
     post.save()
 
     return JsonResponse({"message": "Post atualizado com sucesso."})
+
+
 
 
 @csrf_exempt
