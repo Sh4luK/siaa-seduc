@@ -205,3 +205,73 @@
   background: #f4f6f9;
   color: #6b7280;
 }
+
+.opcional {
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+.inputArquivoOculto {
+  display: none;
+}
+
+.dropzone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  padding: 1.75rem 1rem;
+  border: 1.5px dashed #cbd5e1;
+  border-radius: 10px;
+  color: #5b6b85;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
+  text-align: center;
+}
+
+.dropzone:hover {
+  border-color: #2563eb;
+  background: #f8fafc;
+}
+
+.dropzoneAjuda {
+  font-size: 0.72rem;
+  color: #94a3b8;
+  font-weight: 400;
+}
+
+.previewWrapper {
+  position: relative;
+  display: inline-block;
+  max-width: 100%;
+}
+
+.previewImagem {
+  display: block;
+  max-width: 100%;
+  max-height: 320px;
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
+  object-fit: cover;
+}
+
+.removerImagemBotao {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  margin-top: 0.5rem;
+  background: none;
+  border: none;
+  color: #b91c1c;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+}
+
+.removerImagemBotao:hover {
+  text-decoration: underline;
+}
