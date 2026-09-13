@@ -1,4 +1,4 @@
-.page {
+/* .page {
   min-height: 100vh;
   background: #f4f6f9;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -138,4 +138,200 @@
   font-size: 0.78rem;
   color: #9ca3af;
   font-weight: 500;
+} */
+
+
+.page {
+  min-height: 100vh;
+  background: #f5f7fa;
+  color: #1a2942;
+  font-family: "IBM Plex Sans", "Inter", "Segoe UI", system-ui, sans-serif;
+}
+
+.topbar {
+  background: #ffffff;
+  border-bottom: 1px solid #e2e8f0;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.topbarInner {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 0.9rem 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.brandLogo {
+  width: 28px;
+  height: auto;
+}
+
+.brandText {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #1a2942;
+}
+
+.userArea {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.userNome {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #5b6b85;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 140px;
+}
+
+.botaoNovoPost,
+.botaoEntrar {
+  padding: 0.45rem 0.9rem;
+  background: #0b4f9e;
+  color: #fff;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background 0.15s ease;
+}
+
+.botaoNovoPost:hover,
+.botaoEntrar:hover {
+  background: #0a2f5c;
+}
+
+.feed {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 1.5rem 1.25rem 3rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.vazio {
+  text-align: center;
+  color: #5b6b85;
+  font-size: 0.9rem;
+  padding: 2rem;
+}
+
+.postCard {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 1.25rem;
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
+}
+
+.postHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  margin-bottom: 0.85rem;
+}
+
+.avatarIniciais {
+  flex-shrink: 0;
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: rgba(11, 79, 158, 0.1);
+  color: #0b4f9e;
+  font-weight: 700;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.postHeaderTextos {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.postAutor {
+  font-size: 0.86rem;
+  font-weight: 700;
+  color: #1a2942;
+}
+
+.postMeta {
+  font-size: 0.72rem;
+  color: #94a3b8;
+}
+
+.postLink {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+}
+
+.postTitulo {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #1a2942;
+  margin: 0 0 0.4rem;
+}
+
+.postResumo {
+  font-size: 0.88rem;
+  color: #5b6b85;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.postAcoes {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+  padding-top: 0.85rem;
+  border-top: 1px solid #eef0f3;
+}
+
+.acaoBotao {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: none;
+  border: none;
+  color: #5b6b85;
+  font-size: 0.82rem;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  padding: 0.2rem 0.4rem;
+  border-radius: 6px;
+  transition: color 0.15s ease, background 0.15s ease;
+}
+
+.acaoBotao:hover {
+  background: #f1f5f9;
+  color: #1a2942;
+}
+
+.acaoBotao:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.acaoBotaoAtivo {
+  color: #b91c1c;
 }
