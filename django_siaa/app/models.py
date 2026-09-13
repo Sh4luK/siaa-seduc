@@ -582,3 +582,23 @@ class Post(models.Model):
     def __str__(self):
         return f"{self.titulo} - {self.autor_nome}"
 
+class Comentario(models.Model):
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name="comentarios")
+    autor_tipo = models.CharField(max_length=20, choices=SessaoBlog.TIPO_CHOICES)
+    autor_id = models.PositiveIntegerField()
+    autor_nome = models.CharField(max_length=255)
+    conteudo = models.TextField()
+    data_criacao = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["data_criacao"]
+
+
+class Curtida(models.Model):
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name="curtidas")
+    autor_tipo = models.CharField(max_length=20, choices=SessaoBlog.TIPO_CHOICES)
+    autor_id = models.PositiveIntegerField()
+    data_criacao = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ("post", "autor_tipo", "autor_id")
