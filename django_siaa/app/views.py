@@ -3419,6 +3419,7 @@ def get_posts(request):
             "total_curtidas": p.curtidas.count(),
             "total_comentarios": p.comentarios.count(),
             "curtido_por_mim": curtido_por_mim,
+            "imagem_url": caminho_relativo_arquivo(p.imagem) if p.imagem else None,
         })
 
     return JsonResponse({"total_posts": len(resultado), "posts": resultado})
@@ -3461,6 +3462,7 @@ def get_post_detalhe(request, post_id):
             "autor_tipo": post.autor_tipo,
             "total_curtidas": post.curtidas.count(),
             "curtido_por_mim": curtido_por_mim,
+            "imagem_url": caminho_relativo_arquivo(post.imagem) if post.imagem else None,
         },
         "comentarios": comentarios,
     })
@@ -3474,9 +3476,9 @@ def criar_post(request):
     if not sessao:
         return JsonResponse({"message": "Você precisa estar autenticado para publicar."}, status=401)
 
-    body = json.loads(request.body or "{}")
-    titulo = (body.get("titulo") or "").strip()
-    conteudo = (body.get("conteudo") or "").strip()
+    titulo = (request.POST.get("titulo") or "").strip()
+    conteudo = (request.POST.get("conteudo") or "").strip()
+    imagem = request.FILES.get("imagem")
 
     if not titulo or not conteudo:
         return JsonResponse({"message": "Campos 'titulo' e 'conteudo' são obrigatórios."}, status=400)
@@ -3487,13 +3489,48 @@ def criar_post(request):
         autor_nome=sessao.nome_completo,
         titulo=titulo,
         conteudo=conteudo,
+        imagem=imagem,
     )
 
     return JsonResponse({
         "message": "Post publicado com sucesso.",
-        "post": {"id": post.id, "titulo": post.titulo, "tempo_leitura": post.tempo_leitura, "data_criacao": post.data_criacao.isoformat()},
+        "post": {
+            "id": post.id,
+            "titulo": post.titulo,
+            "tempo_leitura": post.tempo_leitura,
+            "data_criacao": post.data_criacao.isoformat(),
+            "imagem_url": caminho_relativo_arquivo(post.imagem) if post.imagem else None,
+        },
     })
 
+
+
+# @csrf_exempt
+# @require_http_methods(["POST"])
+# def editar_post(request, post_id):
+#     sessao = _sessao_blog_atual(request)
+#     if not sessao:
+#         return JsonResponse({"message": "Você precisa estar autenticado."}, status=401)
+
+#     post = Post.objects.filter(id=post_id).first()
+#     if not post:
+#         return JsonResponse({"message": "Post não encontrado."}, status=404)
+
+#     if post.autor_tipo != sessao.tipo or post.autor_id != sessao.referencia_id:
+#         return JsonResponse({"message": "Você não tem permissão para editar este post."}, status=403)
+
+#     body = json.loads(request.body or "{}")
+#     titulo = (body.get("titulo") or "").strip()
+#     conteudo = (body.get("conteudo") or "").strip()
+
+#     if not titulo or not conteudo:
+#         return JsonResponse({"message": "Campos 'titulo' e 'conteudo' são obrigatórios."}, status=400)
+
+#     post.titulo = titulo
+#     post.conteudo = conteudo
+#     post.save()
+
+#     return JsonResponse({"message": "Post atualizado com sucesso."})
 
 @csrf_exempt
 @require_http_methods(["POST"])
@@ -3509,20 +3546,25 @@ def editar_post(request, post_id):
     if post.autor_tipo != sessao.tipo or post.autor_id != sessao.referencia_id:
         return JsonResponse({"message": "Você não tem permissão para editar este post."}, status=403)
 
-    body = json.loads(request.body or "{}")
-    titulo = (body.get("titulo") or "").strip()
-    conteudo = (body.get("conteudo") or "").strip()
+    titulo = (request.POST.get("titulo") or "").strip()
+    conteudo = (request.POST.get("conteudo") or "").strip()
+    remover_imagem = request.POST.get("remover_imagem") == "true"
+    nova_imagem = request.FILES.get("imagem")
 
     if not titulo or not conteudo:
         return JsonResponse({"message": "Campos 'titulo' e 'conteudo' são obrigatórios."}, status=400)
 
     post.titulo = titulo
-    post.conteudo = conteudo
+    post.conteudo = conteudo  # markdown puro — nenhuma conversão acontece no backend
+
+    if nova_imagem:
+        post.imagem = nova_imagem
+    elif remover_imagem:
+        post.imagem = None
+
     post.save()
 
     return JsonResponse({"message": "Post atualizado com sucesso."})
-
-
 
 
 @csrf_exempt
