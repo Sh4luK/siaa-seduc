@@ -38,6 +38,7 @@ from .models import HorarioAula
 from .models import Blogger
 from .models import SessaoBlog
 from .models import Curtida
+from .models import Comentario
 from .models import Post
 from .models import Admin
 from .models import EstudoProgramado
@@ -3593,6 +3594,23 @@ def comentar_post(request, post_id):
     }, status=201)
 
 
+
+@csrf_exempt
+@require_http_methods(["DELETE"])
+def deletar_comentario(request, comentario_id):
+    sessao = _sessao_blog_atual(request)
+    if not sessao:
+        return JsonResponse({"message": "Não autenticado."}, status=401)
+
+    comentario = Comentario.objects.filter(id=comentario_id).first()
+    if not comentario:
+        return JsonResponse({"message": "Comentário não encontrado."}, status=404)
+
+    if comentario.autor_tipo != sessao.tipo or comentario.autor_id != sessao.referencia_id:
+        return JsonResponse({"message": "Você só pode apagar seus próprios comentários."}, status=403)
+
+    comentario.delete()
+    return JsonResponse({"message": "Comentário removido."})
 
 
 def _professor_atual(request):
