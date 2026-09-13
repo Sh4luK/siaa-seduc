@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import MarkdownEditor from "@/app/components/MarkdownEditor";
+import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import styles from "./page.module.css";
 
@@ -8,11 +9,14 @@ const API_BASE = "https://obscure-happiness-v67rpjq7p96vfxj4g-8000.app.github.de
 
 export default function NovoPostPage() {
   const router = useRouter();
+  const inputImagemRef = useRef(null);
 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [titulo, setTitulo] = useState("");
   const [conteudo, setConteudo] = useState("");
+  const [imagemFile, setImagemFile] = useState(null);
+  const [imagemPreview, setImagemPreview] = useState(null);
   const [erros, setErros] = useState([]);
   const [mensagem, setMensagem] = useState(null);
 
@@ -35,8 +39,37 @@ export default function NovoPostPage() {
     init();
   }, [router]);
 
+  // Libera a URL temporária da preview quando o componente desmontar ou a imagem trocar.
+  useEffect(() => {
+    return () => {
+      if (imagemPreview) URL.revokeObjectURL(imagemPreview);
+    };
+  }, [imagemPreview]);
+
   const palavras = conteudo.trim() ? conteudo.trim().split(/\s+/).length : 0;
   const tempoEstimado = Math.max(Math.ceil(palavras / 200), 1);
+
+  function handleSelecionarImagem(e) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      setErros(["O arquivo selecionado precisa ser uma imagem."]);
+      return;
+    }
+
+    if (imagemPreview) URL.revokeObjectURL(imagemPreview);
+    setImagemFile(file);
+    setImagemPreview(URL.createObjectURL(file));
+    setErros([]);
+  }
+
+  function handleRemoverImagem() {
+    if (imagemPreview) URL.revokeObjectURL(imagemPreview);
+    setImagemFile(null);
+    setImagemPreview(null);
+    if (inputImagemRef.current) inputImagemRef.current.value = "";
+  }
 
   async function handleSalvar(e) {
     e.preventDefault();
@@ -51,10 +84,14 @@ export default function NovoPostPage() {
     }
 
     try {
+      const formData = new FormData();
+      formData.append("titulo", titulo.trim());
+      formData.append("conteudo", conteudo.trim());
+      if (imagemFile) formData.append("imagem", imagemFile);
+
       const res = await fetch(`${API_BASE}/api/blog/posts/criar`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ titulo: titulo.trim(), conteudo: conteudo.trim() }),
+        body: formData,
       });
 
       if (!res.ok) {
@@ -63,7 +100,7 @@ export default function NovoPostPage() {
         try {
           const json = JSON.parse(corpoErro);
           if (json.message) msg = json.message;
-        } catch {}
+        } catch { }
         throw new Error(msg);
       }
 
@@ -111,6 +148,45 @@ export default function NovoPostPage() {
 
         <form className={styles.form} onSubmit={handleSalvar}>
           <div className={styles.campo}>
+            <label className={styles.label}>
+              Imagem <span className={styles.opcional}>(opcional)</span>
+            </label>
+
+            {imagemPreview ? (
+              <div className={styles.previewWrapper}>
+                <img src={imagemPreview} alt="Pré-visualização da imagem" className={styles.previewImagem} />
+                <button type="button" className={styles.removerImagemBotao} onClick={handleRemoverImagem}>
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M18 6l-12 12" />
+                    <path d="M6 6l12 12" />
+                  </svg>
+                  Remover imagem
+                </button>
+              </div>
+            ) : (
+              <label htmlFor="imagem" className={styles.dropzone}>
+                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M15 8h.01" />
+                  <path d="M3 6a3 3 0 0 1 3 -3h12a3 3 0 0 1 3 3v12a3 3 0 0 1 -3 3h-12a3 3 0 0 1 -3 -3v-12z" />
+                  <path d="M3 16l5 -5c.928 -.893 2.072 -.893 3 0l5 5" />
+                  <path d="M14 14l1 -1c.928 -.893 2.072 -.893 3 0l3 3" />
+                </svg>
+                <span>Clique para adicionar uma imagem</span>
+                <span className={styles.dropzoneAjuda}>PNG, JPG ou WEBP</span>
+              </label>
+            )}
+
+            <input
+              id="imagem"
+              ref={inputImagemRef}
+              type="file"
+              accept="image/*"
+              onChange={handleSelecionarImagem}
+              className={styles.inputArquivoOculto}
+            />
+          </div>
+
+          <div className={styles.campo}>
             <label className={styles.label} htmlFor="titulo">
               Título <span className={styles.obrigatorio}>*</span>
             </label>
@@ -132,14 +208,12 @@ export default function NovoPostPage() {
               </label>
               <span className={styles.tempoEstimado}>~{tempoEstimado} min de leitura</span>
             </div>
-            <textarea
+            <MarkdownEditor
               id="conteudo"
-              className={styles.textarea}
-              placeholder="Escreva o conteúdo do post..."
-              rows={14}
               value={conteudo}
-              onChange={(e) => setConteudo(e.target.value)}
-              required
+              onChange={setConteudo}
+              placeholder="Escreva o conteúdo do post... (suporta markdown)"
+              rows={14}
             />
           </div>
 
