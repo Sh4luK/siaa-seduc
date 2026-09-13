@@ -3426,9 +3426,27 @@ def get_posts(request):
 
 @csrf_exempt
 def get_post_detalhe(request, post_id):
-    post = Post.objects.select_related("autor").filter(id=post_id).first()
+    sessao = _sessao_blog_atual(request)
+    post = Post.objects.filter(id=post_id).first()
     if not post:
         return JsonResponse({"message": "Post não encontrado."}, status=404)
+
+    curtido_por_mim = False
+    if sessao:
+        curtido_por_mim = Curtida.objects.filter(
+            post=post, autor_tipo=sessao.tipo, autor_id=sessao.referencia_id
+        ).exists()
+
+    comentarios = [
+        {
+            "id": c.id,
+            "autor_nome": c.autor_nome,
+            "autor_tipo": c.autor_tipo,
+            "conteudo": c.conteudo,
+            "data_criacao": c.data_criacao.isoformat(),
+        }
+        for c in post.comentarios.all()
+    ]
 
     return JsonResponse({
         "post": {
@@ -3437,10 +3455,14 @@ def get_post_detalhe(request, post_id):
             "conteudo": post.conteudo,
             "tempo_leitura": post.tempo_leitura,
             "data_criacao": post.data_criacao.isoformat(),
-            "autor": post.autor.nome_completo,
-            "autor_id": post.autor_id,
-        }
+            "autor_nome": post.autor_nome,
+            "autor_tipo": post.autor_tipo,
+            "total_curtidas": post.curtidas.count(),
+            "curtido_por_mim": curtido_por_mim,
+        },
+        "comentarios": comentarios,
     })
+
 
 
 @csrf_exempt
