@@ -335,3 +335,11 @@
 .acaoBotaoAtivo {
   color: #b91c1c;
 }
+.postImagem {
+  display: block;
+  width: 100%;
+  max-height: 320px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-bottom: 0.85rem;
+}
