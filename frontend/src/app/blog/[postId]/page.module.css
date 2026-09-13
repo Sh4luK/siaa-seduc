@@ -163,10 +163,15 @@
   color: #1a2942;
 }
 
-.wrapper {
+/* .wrapper {
   max-width: 720px;
   margin: 0 auto;
   padding: 2.5rem 1.5rem 4rem;
+} */
+.wrapper {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem 4rem;
 }
 
 .voltarLink {
@@ -544,4 +549,82 @@ button.acaoBotao:hover {
   color: #1a2942;
   line-height: 1.5;
   margin: 0;
+}
+
+.topbar {
+  background: #ffffff;
+  border-bottom: 1px solid #e2e8f0;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.topbarInner {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 0.9rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-decoration: none;
+}
+
+.brandLogo {
+  width: 28px;
+  height: auto;
+}
+
+.brandText {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #1a2942;
+}
+
+.userArea {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.userNome {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #5b6b85;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 140px;
+}
+
+.botaoNovoPost,
+.botaoEntrar {
+  padding: 0.45rem 0.9rem;
+  background: #0b4f9e;
+  color: #fff;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background 0.15s ease;
+}
+
+.botaoNovoPost:hover,
+.botaoEntrar:hover {
+  background: #0a2f5c;
+}
+
+.postImagem {
+  display: block;
+  width: 100%;
+  max-height: 420px;
+  object-fit: cover;
+  border-radius: 10px;
+  margin-bottom: 1.5rem;
 }
