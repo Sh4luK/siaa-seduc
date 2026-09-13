@@ -3379,6 +3379,20 @@ def blog_login(request):
     return JsonResponse({"return": True, "usuario": {"nome_completo": usuario.nome_completo, "tipo": tipo}})
 
 
+@csrf_exempt
+@require_http_methods(["GET"])
+def blog_auth(request):
+    sessao = _sessao_blog_atual(request)
+    if not sessao:
+        return JsonResponse({"return": False})
+    return JsonResponse({
+        "return": True,
+        "usuario": {
+            "nome_completo": sessao.nome_completo,
+            "tipo": sessao.tipo,
+            "referencia_id": sessao.referencia_id,
+        },
+    })
 
 
 
