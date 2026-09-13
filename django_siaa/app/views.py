@@ -36,6 +36,7 @@ from .models import Coordenador
 from .models import Advertencia
 from .models import HorarioAula
 from .models import Blogger
+from .models import SessaoBlog
 from .models import Post
 from .models import Admin
 from .models import EstudoProgramado
@@ -3310,33 +3311,75 @@ def renomear_disciplina_coordenacao(request, disciplina_id):
 
     return JsonResponse({"message": "Disciplina renomeada com sucesso."})
 
-@csrf_exempt
-def login_blogger(request):
+# @csrf_exempt
+# def login_blogger(request):
+#     ip = get_ip(request)
+#     nome_completo = request.GET.get("nome_completo").strip().upper()
+#     senha = request.GET.get("senha").strip()
+
+#     blogger = Blogger.objects.filter(nome_completo=nome_completo, senha=senha).first()
+
+#     if blogger is None:
+#         return JsonResponse({"return": False})
+
+#     Blogger.objects.filter(nome_completo=nome_completo, senha=senha).update(ip=ip)
+#     return JsonResponse({"return": True})
+
+
+# @csrf_exempt
+# def auth_blogger(request):
+#     ip = get_ip(request)
+#     blogger = Blogger.objects.filter(ip=ip).first()
+
+#     if blogger is None:
+#         return JsonResponse({"return": False})
+
+#     return JsonResponse({
+#         "return": True,
+#         "blogger": {"id": blogger.id, "nome_completo": blogger.nome_completo}
+#     })
+
+
+MODELOS_POR_TIPO_BLOG = {
+    "ALUNO": Estudante,
+    "PROFESSOR": Professor,
+    "RESPONSAVEL": Responsavel,
+    "COORDENADOR": Coordenador,
+}
+
+
+def _sessao_blog_atual(request):
     ip = get_ip(request)
-    nome_completo = request.GET.get("nome_completo").strip().upper()
-    senha = request.GET.get("senha").strip()
+    return SessaoBlog.objects.filter(ip=ip).first()
 
-    blogger = Blogger.objects.filter(nome_completo=nome_completo, senha=senha).first()
-
-    if blogger is None:
-        return JsonResponse({"return": False})
-
-    Blogger.objects.filter(nome_completo=nome_completo, senha=senha).update(ip=ip)
-    return JsonResponse({"return": True})
 
 
 @csrf_exempt
-def auth_blogger(request):
+@require_http_methods(["POST"])
+def blog_login(request):
+    body = json.loads(request.body or "{}")
+    nome_completo = (body.get("nome_completo") or "").strip().upper()
+    senha = (body.get("senha") or "").strip()
+    tipo = (body.get("tipo") or "").strip().upper()
+
+    modelo = MODELOS_POR_TIPO_BLOG.get(tipo)
+    if not modelo:
+        return JsonResponse({"return": False, "detail": "Tipo inválido."}, status=400)
+
+    usuario = modelo.objects.filter(nome_completo=nome_completo, senha=senha).first()
+    if not usuario:
+        return JsonResponse({"return": False, "detail": "Nome ou senha inválidos."}, status=401)
+
     ip = get_ip(request)
-    blogger = Blogger.objects.filter(ip=ip).first()
+    SessaoBlog.objects.update_or_create(
+        ip=ip,
+        defaults={"tipo": tipo, "referencia_id": usuario.id, "nome_completo": usuario.nome_completo},
+    )
 
-    if blogger is None:
-        return JsonResponse({"return": False})
+    return JsonResponse({"return": True, "usuario": {"nome_completo": usuario.nome_completo, "tipo": tipo}})
 
-    return JsonResponse({
-        "return": True,
-        "blogger": {"id": blogger.id, "nome_completo": blogger.nome_completo}
-    })
+
+
 
 
 @csrf_exempt
