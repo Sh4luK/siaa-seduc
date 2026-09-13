@@ -3395,25 +3395,33 @@ def blog_auth(request):
     })
 
 
-
 @csrf_exempt
 def get_posts(request):
-    posts = Post.objects.select_related("autor").all()
+    sessao = _sessao_blog_atual(request)
 
-    resultado = [
-        {
+    resultado = []
+    for p in Post.objects.all():
+        curtido_por_mim = False
+        if sessao:
+            curtido_por_mim = Curtida.objects.filter(
+                post=p, autor_tipo=sessao.tipo, autor_id=sessao.referencia_id
+            ).exists()
+        resultado.append({
             "id": p.id,
             "titulo": p.titulo,
             "resumo": (p.conteudo[:220] + "…") if len(p.conteudo) > 220 else p.conteudo,
             "tempo_leitura": p.tempo_leitura,
             "data_criacao": p.data_criacao.isoformat(),
-            "autor": p.autor.nome_completo,
-            "autor_id": p.autor_id,
-        }
-        for p in posts
-    ]
+            "autor_nome": p.autor_nome,
+            "autor_tipo": p.autor_tipo,
+            "total_curtidas": p.curtidas.count(),
+            "total_comentarios": p.comentarios.count(),
+            "curtido_por_mim": curtido_por_mim,
+        })
 
     return JsonResponse({"total_posts": len(resultado), "posts": resultado})
+
+
 
 
 @csrf_exempt
