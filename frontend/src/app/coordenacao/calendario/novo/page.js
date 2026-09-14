@@ -40,7 +40,7 @@ export default function NovoEventoCoordenacaoPage() {
   useEffect(() => {
     async function init() {
       try {
-        const authRes = await fetch(`${API_BASE}/api/coordenacao/auth`);
+        const authRes = await fetch(`${API_BASE}/api/coordenacao/auth`, { credentials: "include" });
         const authData = await authRes.json();
 
         if (!authData.return) {
@@ -48,7 +48,7 @@ export default function NovoEventoCoordenacaoPage() {
           return;
         }
 
-        const res = await fetch(`${API_BASE}/api/coordenacao/professores-simples`);
+        const res = await fetch(`${API_BASE}/api/coordenacao/professores-simples`, { credentials: "include" });
         if (res.ok) {
           const data = await res.json();
           setProfessores(data.professores || []);
@@ -72,7 +72,7 @@ export default function NovoEventoCoordenacaoPage() {
 
     setCarregandoTurmas(true);
     try {
-      const res = await fetch(`${API_BASE}/api/coordenacao/professores/${professorId}/turmas`);
+      const res = await fetch(`${API_BASE}/api/coordenacao/professores/${professorId}/turmas`, { credentials: "include" });
       if (!res.ok) throw new Error(`Falha ao buscar turmas (status ${res.status})`);
       const data = await res.json();
       setTurmasDoProfessor(data.turmas || []);
@@ -121,6 +121,7 @@ export default function NovoEventoCoordenacaoPage() {
     try {
       const res = await fetch(`${API_BASE}/api/coordenacao/calendario/eventos/criar`, {
         method: "POST",
+        credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           titulo: form.titulo.trim(),
