@@ -21,7 +21,7 @@ export default function AdvertenciasCoordenacaoPage() {
   useEffect(() => {
     async function init() {
       try {
-        const authRes = await fetch(`${API_BASE}/api/coordenacao/auth`);
+        const authRes = await fetch(`${API_BASE}/api/coordenacao/auth`, { credentials: "include" });
         const authData = await authRes.json();
 
         if (!authData.return) {
@@ -51,7 +51,7 @@ export default function AdvertenciasCoordenacaoPage() {
           filtro === "TODOS"
             ? `${API_BASE}/api/coordenacao/advertencias`
             : `${API_BASE}/api/coordenacao/advertencias?tipo=${filtro}`;
-        const res = await fetch(url);
+        const res = await fetch(url, { credentials: "include" });
         if (!res.ok) throw new Error(`Falha ao buscar registros (status ${res.status})`);
         const data = await res.json();
         setAdvertencias(data.advertencias || []);
