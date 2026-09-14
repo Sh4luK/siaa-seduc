@@ -22,7 +22,7 @@ export default function DisciplinasCoordenacaoPage() {
   const router = useRouter();
 
   async function carregar() {
-    const res = await fetch(`${API_BASE}/api/coordenacao/disciplinas`);
+    const res = await fetch(`${API_BASE}/api/coordenacao/disciplinas`, { credentials: "include" });
     if (!res.ok) throw new Error(`Falha ao buscar disciplinas (status ${res.status})`);
     const data = await res.json();
     setDisciplinas(data.disciplinas || []);
@@ -31,7 +31,7 @@ export default function DisciplinasCoordenacaoPage() {
   useEffect(() => {
     async function init() {
       try {
-        const authRes = await fetch(`${API_BASE}/api/coordenacao/auth`);
+        const authRes = await fetch(`${API_BASE}/api/coordenacao/auth`, { credentials: "include" });
         const authData = await authRes.json();
         if (!authData.return) {
           router.push("/coordenacao/login");
@@ -69,6 +69,7 @@ export default function DisciplinasCoordenacaoPage() {
         `${API_BASE}/api/coordenacao/disciplinas/${disciplinaId}/renomear`,
         {
           method: "POST",
+          credentials: "include",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ nome_disciplina: nome }),
         }
