@@ -23,7 +23,7 @@ export default function NovoPostPage() {
   useEffect(() => {
     async function init() {
       try {
-        const res = await fetch(`${API_BASE}/api/blog/auth`);
+        const res = await fetch(`${API_BASE}/api/blog/auth`, { credentials: "include" });
         const data = await res.json();
         if (!data.return) {
           router.push("/blog/login");
@@ -90,6 +90,7 @@ export default function NovoPostPage() {
       if (imagemFile) formData.append("imagem", imagemFile);
 
       const res = await fetch(`${API_BASE}/api/blog/posts/criar`, {
+        credentials: "include",
         method: "POST",
         body: formData,
       });
