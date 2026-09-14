@@ -43,7 +43,7 @@ export default function ResponsavelRegistrarPage() {
     debounceRef.current = setTimeout(async () => {
       setBuscando(true);
       try {
-        const res = await fetch(`${API_BASE}/api/responsavel/alunos/buscar?q=${encodeURIComponent(buscaAluno)}`);
+        const res = await fetch(`${API_BASE}/api/responsavel/alunos/buscar?q=${encodeURIComponent(buscaAluno)}`, { credentials: "include" });
         if (res.ok) {
           const data = await res.json();
           setAlunosEncontrados(data.alunos || []);
@@ -102,6 +102,7 @@ export default function ResponsavelRegistrarPage() {
     try {
       const res = await fetch(`${API_BASE}/api/responsavel/registrar`, {
         method: "POST",
+        credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           nome_completo: nomeCompleto.trim(),
