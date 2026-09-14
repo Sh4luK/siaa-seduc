@@ -34,14 +34,14 @@ export default function NotasTurmaCoordenacaoPage() {
   useEffect(() => {
     async function init() {
       try {
-        const authRes = await fetch(`${API_BASE}/api/coordenacao/auth`);
+        const authRes = await fetch(`${API_BASE}/api/coordenacao/auth`, { credentials: "include" });
         const authData = await authRes.json();
         if (!authData.return) {
           router.push("/coordenacao/login");
           return;
         }
 
-        const res = await fetch(`${API_BASE}/api/coordenacao/notas/turma/${turmaId}`);
+        const res = await fetch(`${API_BASE}/api/coordenacao/notas/turma/${turmaId}`, { credentials: "include" });
         if (res.status === 404) throw new Error("Turma/disciplina não encontrada.");
         if (!res.ok) throw new Error(`Falha ao buscar notas (status ${res.status})`);
         const data = await res.json();
