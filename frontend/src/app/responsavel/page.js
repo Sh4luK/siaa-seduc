@@ -45,7 +45,7 @@ export default function ResponsavelPainelPage() {
   const carregarVinculos = useCallback(async () => {
     setCarregando(true);
     try {
-      const res = await fetch(`${API_BASE}/api/responsavel/vinculos`);
+      const res = await fetch(`${API_BASE}/api/responsavel/vinculos`, { credentials: "include" });
       if (!res.ok) throw new Error(`Falha ao buscar vínculos (status ${res.status})`);
       const data = await res.json();
       setVinculos(data.vinculos || []);
@@ -59,7 +59,7 @@ export default function ResponsavelPainelPage() {
   useEffect(() => {
     async function init() {
       try {
-        const authRes = await fetch(`${API_BASE}/api/responsavel/auth`);
+        const authRes = await fetch(`${API_BASE}/api/responsavel/auth`, { credentials: "include" });
         const authData = await authRes.json();
 
         if (!authData.return) {
@@ -91,7 +91,7 @@ export default function ResponsavelPainelPage() {
       setBuscando(true);
       try {
         const res = await fetch(
-          `${API_BASE}/api/responsavel/alunos/buscar?q=${encodeURIComponent(buscaAluno)}`
+          `${API_BASE}/api/responsavel/alunos/buscar?q=${encodeURIComponent(buscaAluno)}`, { credentials: "include" }
         );
         if (res.ok) {
           const data = await res.json();
@@ -142,6 +142,7 @@ export default function ResponsavelPainelPage() {
     try {
       const res = await fetch(`${API_BASE}/api/responsavel/vinculos/solicitar`, {
         method: "POST",
+        credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           aluno_id: alunoSelecionado.id,
