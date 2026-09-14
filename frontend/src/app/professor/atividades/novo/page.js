@@ -41,7 +41,7 @@ export default function NovaAtividadePage() {
   useEffect(() => {
     async function init() {
       try {
-        const authRes = await fetch(`${API_BASE}/api/teacher/auth`);
+        const authRes = await fetch(`${API_BASE}/api/teacher/auth`, { credentials: "include" });
         const authData = await authRes.json();
 
         if (!authData.return) {
@@ -52,7 +52,8 @@ export default function NovaAtividadePage() {
         setNomeCompleto(authData.teacher.nome_completo);
 
         const turmasRes = await fetch(
-          `${API_BASE}/api/teacher/search/turmas?nome_completo=${encodeURIComponent(authData.teacher.nome_completo)}`
+          `${API_BASE}/api/teacher/search/turmas?nome_completo=${encodeURIComponent(authData.teacher.nome_completo)}`,
+          { credentials: "include" }
         );
         if (turmasRes.ok) {
           const turmasData = await turmasRes.json();
@@ -138,6 +139,7 @@ export default function NovaAtividadePage() {
 
       const res = await fetch(`${API_BASE}/api/teacher/atividades/criar`, {
         method: "POST",
+        credentials: "include",
         body: formData,
       });
 
