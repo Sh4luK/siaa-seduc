@@ -21,7 +21,7 @@ export default function VisualizarAvaliacaoPage() {
   useEffect(() => {
     async function init() {
       try {
-        const authRes = await fetch(`${API_BASE}/api/teacher/auth`);
+        const authRes = await fetch(`${API_BASE}/api/teacher/auth`, { credentials: "include" });
         const authData = await authRes.json();
 
         if (!authData.return) {
@@ -29,7 +29,7 @@ export default function VisualizarAvaliacaoPage() {
           return;
         }
 
-        const res = await fetch(`${API_BASE}/api/teacher/avaliacoes/${avaliacaoId}`);
+        const res = await fetch(`${API_BASE}/api/teacher/avaliacoes/${avaliacaoId}`, { credentials: "include" });
         if (!res.ok) {
           const corpoErro = await res.text();
           let msg = `Falha ao carregar avaliação (status ${res.status})`;
@@ -56,6 +56,7 @@ export default function VisualizarAvaliacaoPage() {
     try {
       const res = await fetch(`${API_BASE}/api/teacher/avaliacoes/${avaliacaoId}`, {
         method: "DELETE",
+        credentials: "include",
       });
       if (!res.ok) throw new Error(`Falha ao excluir (status ${res.status})`);
       router.push("/professor/avaliacoes");
@@ -65,22 +66,6 @@ export default function VisualizarAvaliacaoPage() {
       setConfirmandoExclusao(false);
     }
   }
-
-  // async function emitirPdf() {
-  //   try {
-  //     const res = await fetch(`${API_BASE}/api/teacher/avaliacoes/${avaliacaoId}/pdf`);
-  //     if (!res.ok) throw new Error(`Falha ao gerar PDF (status ${res.status})`);
-  //     const blob = await res.blob();
-  //     const url = window.URL.createObjectURL(blob);
-  //     const a = document.createElement("a");
-  //     a.href = url;
-  //     a.download = `${avaliacao.titulo}.pdf`;
-  //     a.click();
-  //     window.URL.revokeObjectURL(url);
-  //   } catch (error) {
-  //     setErros([`Erro ao emitir PDF: ${error.message}`]);
-  //   }
-  // }
 
   function emitirPdf(id) {
     window.open(`${API_BASE}/api/teacher/avaliacoes/${id}/pdf`, "_blank");
