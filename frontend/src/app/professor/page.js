@@ -23,7 +23,7 @@ export default function Professor() {
     async function verifyAuthentication() {
       try {
         const url = `${API_BASE}/api/teacher/auth`;
-        const response = await fetch(url);
+        const response = await fetch(url, { credentials: "include" });
         const data = await response.json();
 
         if (data.return === true) {
@@ -43,7 +43,7 @@ export default function Professor() {
     async function getData() {
       try {
         const urlAuth = `${API_BASE}/api/teacher/auth`;
-        const authResponse = await fetch(urlAuth);
+        const authResponse = await fetch(urlAuth, { credentials: "include" });
         if (!authResponse.ok) {
           throw new Error();
         }
@@ -66,8 +66,8 @@ export default function Professor() {
       try {
         const urlTurmas = `${API_BASE}/api/teacher/search/turmas?nome_completo=${encodeURIComponent(nomeCompleto)}`;
         const urlDisciplinas = `${API_BASE}/api/teacher/search/disciplinas?nome_completo=${encodeURIComponent(nomeCompleto)}`;
-        const response1 = await fetch(urlTurmas);
-        const response2 = await fetch(urlDisciplinas);
+        const response1 = await fetch(urlTurmas, { credentials: "include" });
+        const response2 = await fetch(urlDisciplinas, { credentials: "include" });
 
         if (!response1.ok && !response2.ok) {
           throw new Error();
