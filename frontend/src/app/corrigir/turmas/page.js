@@ -21,7 +21,7 @@ export default function CorrigirTurmasPage() {
   const router = useRouter();
 
   async function carregar() {
-    const res = await fetch(`${API_BASE}/api/corrigir/turmas`);
+    const res = await fetch(`${API_BASE}/api/corrigir/turmas`, { credentials: "include" });
     if (!res.ok) throw new Error(`Falha ao buscar turmas (status ${res.status})`);
     const data = await res.json();
     setTurmas(data.turmas || []);
@@ -30,7 +30,7 @@ export default function CorrigirTurmasPage() {
   useEffect(() => {
     async function init() {
       try {
-        const authRes = await fetch(`${API_BASE}/api/coordenacao/auth`);
+        const authRes = await fetch(`${API_BASE}/api/coordenacao/auth`, { credentials: "include" });
         const authData = await authRes.json();
         if (!authData.return) {
           router.push("/coordenacao/login");
@@ -54,6 +54,7 @@ export default function CorrigirTurmasPage() {
     try {
       const res = await fetch(`${API_BASE}/api/corrigir/turmas/renomear`, {
         method: "POST",
+        credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ turma_antiga: turmaAntiga, turma_nova: novoNome.trim() }),
       });
