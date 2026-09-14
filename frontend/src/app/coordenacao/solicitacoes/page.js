@@ -23,7 +23,7 @@ export default function SolicitacoesCoordenacaoPage() {
 
   const carregar = useCallback(async () => {
     try {
-      const res = await fetch(`${API_BASE}/api/coordenacao/solicitacoes`);
+      const res = await fetch(`${API_BASE}/api/coordenacao/solicitacoes`, { credentials: "include" });
       if (!res.ok) throw new Error(`Falha ao buscar solicitações (status ${res.status})`);
       const data = await res.json();
       setSolicitacoes(data.solicitacoes || []);
@@ -35,7 +35,7 @@ export default function SolicitacoesCoordenacaoPage() {
   useEffect(() => {
     async function init() {
       try {
-        const authRes = await fetch(`${API_BASE}/api/coordenacao/auth`);
+        const authRes = await fetch(`${API_BASE}/api/coordenacao/auth`, { credentials: "include" });
         const authData = await authRes.json();
         if (!authData.return) {
           router.push("/coordenacao/login");
@@ -56,6 +56,7 @@ export default function SolicitacoesCoordenacaoPage() {
     setErro(null);
     try {
       const res = await fetch(`${API_BASE}/api/coordenacao/solicitacoes/${id}/responder`, {
+        credentials: "include",
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ decisao }),
