@@ -44,13 +44,13 @@ export default function HorarioAlunoResponsavelPage() {
   useEffect(() => {
     async function init() {
       try {
-        const authRes = await fetch(`${API_BASE}/api/responsavel/auth`);
+        const authRes = await fetch(`${API_BASE}/api/responsavel/auth`, { credentials: "include" });
         const authData = await authRes.json();
         if (!authData.return) {
           router.push("/responsavel/login");
           return;
         }
-        const res = await fetch(`${API_BASE}/api/responsavel/alunos/${alunoId}/horario`);
+        const res = await fetch(`${API_BASE}/api/responsavel/alunos/${alunoId}/horario`, { credentials: "include" });
         if (res.status === 403) throw new Error("Você não tem acesso aprovado a este aluno.");
         if (!res.ok) throw new Error(`Falha ao buscar horários (status ${res.status})`);
         const data = await res.json();
