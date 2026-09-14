@@ -26,7 +26,7 @@ export default function AlunosDaTurmaPage() {
   useEffect(() => {
     async function verifyAuthentication() {
       try {
-        const response = await fetch(`${API_BASE}/api/teacher/auth`);
+        const response = await fetch(`${API_BASE}/api/teacher/auth`, { credentials: "include" });
         const data = await response.json();
         if (data.return === true) {
           setAuthenticated(true);
@@ -42,7 +42,7 @@ export default function AlunosDaTurmaPage() {
 
     async function getData() {
       try {
-        const authResponse = await fetch(`${API_BASE}/api/teacher/auth`);
+        const authResponse = await fetch(`${API_BASE}/api/teacher/auth`, { credentials: "include" });
         if (!authResponse.ok) throw new Error();
         const data = await authResponse.json();
         setNomeCompleto(data["teacher"]["nome_completo"] || "Não encontrado.");
@@ -53,7 +53,7 @@ export default function AlunosDaTurmaPage() {
 
     async function getAlunosDaTurma() {
       try {
-        const turmaRes = await fetch(`${API_BASE}/api/teacher/search/turma?turma=${turmaId}`)
+        const turmaRes = await fetch(`${API_BASE}/api/teacher/search/turma?turma=${turmaId}`, { credentials: "include" })
         if (!turmaRes.ok) throw new Error(`Falha ao buscar turma (status ${turmaRes.status})`)
         const turmaData = await turmaRes.json()
         const nome = turmaData.turma?.turma
@@ -61,7 +61,8 @@ export default function AlunosDaTurmaPage() {
         setNomeTurma(nome)
 
         const alunosRes = await fetch(
-          `${API_BASE}/api/teacher/get/alunos?turma=${encodeURIComponent(nome)}`
+          `${API_BASE}/api/teacher/get/alunos?turma=${encodeURIComponent(nome)}`,
+          { credentials: "include" }
         )
         if (!alunosRes.ok) throw new Error(`Falha ao buscar alunos (status ${alunosRes.status})`)
         const alunosData = await alunosRes.json()
