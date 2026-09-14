@@ -35,7 +35,7 @@ export default function NovoEventoPage() {
   useEffect(() => {
     async function init() {
       try {
-        const authRes = await fetch(`${API_BASE}/api/teacher/auth`);
+        const authRes = await fetch(`${API_BASE}/api/teacher/auth`, { credentials: "include" });
         const authData = await authRes.json();
 
         if (!authData.return) {
@@ -46,7 +46,8 @@ export default function NovoEventoPage() {
         setNomeCompleto(authData.teacher.nome_completo);
 
         const turmasRes = await fetch(
-          `${API_BASE}/api/teacher/search/turmas?nome_completo=${encodeURIComponent(authData.teacher.nome_completo)}`
+          `${API_BASE}/api/teacher/search/turmas?nome_completo=${encodeURIComponent(authData.teacher.nome_completo)}`,
+          { credentials: "include" }
         );
         if (turmasRes.ok) {
           const turmasData = await turmasRes.json();
@@ -97,6 +98,7 @@ export default function NovoEventoPage() {
     try {
       const res = await fetch(`${API_BASE}/api/teacher/calendario/eventos/criar`, {
         method: "POST",
+        credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           professor: professorId,
