@@ -32,7 +32,7 @@ export default function VisaoGeralAlunoPage() {
   useEffect(() => {
     async function init() {
       try {
-        const authRes = await fetch(`${API_BASE}/api/coordenacao/auth`);
+        const authRes = await fetch(`${API_BASE}/api/coordenacao/auth`, { credentials: "include" });
         const authData = await authRes.json();
 
         if (!authData.return) {
@@ -40,7 +40,7 @@ export default function VisaoGeralAlunoPage() {
           return;
         }
 
-        const res = await fetch(`${API_BASE}/api/coordenacao/alunos/${alunoId}/visao-geral`);
+        const res = await fetch(`${API_BASE}/api/coordenacao/alunos/${alunoId}/visao-geral`, { credentials: "include" });
         if (!res.ok) throw new Error(`Falha ao buscar dados (status ${res.status})`);
         const data = await res.json();
 
@@ -77,6 +77,7 @@ export default function VisaoGeralAlunoPage() {
     try {
       const res = await fetch(`${API_BASE}/api/coordenacao/alunos/${alunoId}/advertencias/criar`, {
         method: "POST",
+        credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           titulo: form.titulo.trim(),
@@ -103,7 +104,7 @@ export default function VisaoGeralAlunoPage() {
     try {
       const res = await fetch(
         `${API_BASE}/api/coordenacao/advertencias/${advertenciaId}/deletar`,
-        { method: "DELETE" }
+        { method: "DELETE", credentials: "include" }
       );
       if (!res.ok) throw new Error(`Falha ao remover (status ${res.status})`);
 
