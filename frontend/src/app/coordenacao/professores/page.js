@@ -25,7 +25,7 @@ export default function ProfessoresCoordenacaoPage() {
   useEffect(() => {
     async function init() {
       try {
-        const authRes = await fetch(`${API_BASE}/api/coordenacao/auth`);
+        const authRes = await fetch(`${API_BASE}/api/coordenacao/auth`, { credentials: "include" });
         const authData = await authRes.json();
 
         if (!authData.return) {
@@ -35,7 +35,7 @@ export default function ProfessoresCoordenacaoPage() {
         }
         setAuthenticated(true);
 
-        const res = await fetch(`${API_BASE}/api/coordenacao/professores`);
+        const res = await fetch(`${API_BASE}/api/coordenacao/professores`, { credentials: "include" });
         if (!res.ok) throw new Error(`Falha ao buscar professores (status ${res.status})`);
         const data = await res.json();
         setProfessores(data.professores || []);
@@ -58,7 +58,7 @@ export default function ProfessoresCoordenacaoPage() {
     try {
       const res = await fetch(
         `${API_BASE}/api/coordenacao/professores/${professorId}/deletar`,
-        { method: "DELETE" }
+        { method: "DELETE", credentials: "include" }
       );
 
       if (!res.ok) {
