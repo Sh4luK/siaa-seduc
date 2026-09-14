@@ -33,7 +33,7 @@ export default function EditarAdvertenciaPage() {
   useEffect(() => {
     async function init() {
       try {
-        const authRes = await fetch(`${API_BASE}/api/coordenacao/auth`);
+        const authRes = await fetch(`${API_BASE}/api/coordenacao/auth`, { credentials: "include" });
         const authData = await authRes.json();
 
         if (!authData.return) {
@@ -43,7 +43,7 @@ export default function EditarAdvertenciaPage() {
         }
         setAuthenticated(true);
 
-        const res = await fetch(`${API_BASE}/api/coordenacao/advertencias/${advertenciaId}`);
+        const res = await fetch(`${API_BASE}/api/coordenacao/advertencias/${advertenciaId}`, { credentials: "include" });
         if (!res.ok) throw new Error("Registro não encontrado.");
         const responseData = await res.json();
         const a = responseData.advertencia;
@@ -86,6 +86,7 @@ export default function EditarAdvertenciaPage() {
         `${API_BASE}/api/coordenacao/advertencias/${advertenciaId}/editar`,
         {
           method: "POST",
+          credentials: "include",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             titulo: titulo.trim(),
