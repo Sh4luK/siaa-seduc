@@ -46,7 +46,7 @@ export default function NotasTurmaPage() {
   useEffect(() => {
     async function init() {
       try {
-        const authRes = await fetch(`${API_BASE}/api/teacher/auth`);
+        const authRes = await fetch(`${API_BASE}/api/teacher/auth`, { credentials: "include" });
         const authData = await authRes.json();
         if (!authData.return) {
           router.push("/professor/login");
@@ -56,7 +56,8 @@ export default function NotasTurmaPage() {
         setProfessorId(profId);
 
         const discRes = await fetch(
-          `${API_BASE}/api/teacher/turma/disciplinas?turma=${turmaId}&professor=${profId}`
+          `${API_BASE}/api/teacher/turma/disciplinas?turma=${turmaId}&professor=${profId}`,
+          { credentials: "include" }
         );
         if (!discRes.ok) throw new Error(`Falha ao buscar disciplinas (status ${discRes.status})`);
         const discData = await discRes.json();
@@ -86,7 +87,8 @@ export default function NotasTurmaPage() {
 
       try {
         const listaRes = await fetch(
-          `${API_BASE}/api/teacher/notas/turma/get?turma=${disciplinaEscolhida.turma_id}&professor=${professorId}`
+          `${API_BASE}/api/teacher/notas/turma/get?turma=${disciplinaEscolhida.turma_id}&professor=${professorId}`,
+          { credentials: "include" }
         );
         if (!listaRes.ok) throw new Error(`Falha ao buscar notas da turma (status ${listaRes.status})`);
         const listaData = await listaRes.json();
@@ -131,6 +133,7 @@ export default function NotasTurmaPage() {
     try {
       const res = await fetch(`${API_BASE}/api/teacher/notas/turma/salvar`, {
         method: "POST",
+        credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           turma: disciplinaEscolhida.turma_id,
