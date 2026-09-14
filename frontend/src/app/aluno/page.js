@@ -33,7 +33,7 @@ export default function AlunoPage() {
   useEffect(() => {
     async function init() {
       try {
-        const authRes = await fetch(`${API_BASE}/api/students/auth`);
+        const authRes = await fetch(`${API_BASE}/api/students/auth`, { credentials: "include" });
         const authData = await authRes.json();
 
         if (!authData.return) {
@@ -47,8 +47,8 @@ export default function AlunoPage() {
         setLoading(false);
 
         const [dashRes, cronogramaRes] = await Promise.all([
-          fetch(`${API_BASE}/api/students/dashboard`),
-          fetch(`${API_BASE}/api/students/cronograma`),
+          fetch(`${API_BASE}/api/students/dashboard`, { credentials: "include" }),
+          fetch(`${API_BASE}/api/students/cronograma`, { credentials: "include" }),
         ]);
 
         if (!dashRes.ok) throw new Error(`Falha ao buscar dashboard (status ${dashRes.status})`);
