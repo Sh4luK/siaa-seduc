@@ -35,7 +35,7 @@ export default function ComunicadoDetalhePage() {
   useEffect(() => {
     async function init() {
       try {
-        const authRes = await fetch(`${API_BASE}/api/coordenacao/auth`);
+        const authRes = await fetch(`${API_BASE}/api/coordenacao/auth`, { credentials: "include" });
         const authData = await authRes.json();
 
         if (!authData.return) {
@@ -45,7 +45,7 @@ export default function ComunicadoDetalhePage() {
         }
         setAuthenticated(true);
 
-        const res = await fetch(`${API_BASE}/api/coordenacao/comunicados/${comunicadoId}`);
+        const res = await fetch(`${API_BASE}/api/coordenacao/comunicados/${comunicadoId}`, { credentials: "include" });
         if (!res.ok) {
           const corpoErro = await res.text();
           let mensagem = "Não foi possível carregar o comunicado.";
@@ -73,7 +73,7 @@ export default function ComunicadoDetalhePage() {
     try {
       const res = await fetch(
         `${API_BASE}/api/coordenacao/comunicados/${comunicadoId}/deletar`,
-        { method: "DELETE" }
+        { method: "DELETE", credentials: "include" }
       );
 
       if (!res.ok) {
