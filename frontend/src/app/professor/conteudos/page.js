@@ -42,7 +42,7 @@ export default function ConteudosPage() {
   useEffect(() => {
     async function init() {
       try {
-        const authRes = await fetch(`${API_BASE}/api/teacher/auth`);
+        const authRes = await fetch(`${API_BASE}/api/teacher/auth`, { credentials: "include" });
         const authData = await authRes.json();
 
         if (!authData.return) {
@@ -73,7 +73,7 @@ export default function ConteudosPage() {
       try {
         const mesFormatado = String(mesAtual).padStart(2, "0");
         const url = `${API_BASE}/api/teacher/conteudos?professor=${professorId}&mes=${mesFormatado}&ano=${anoAtual}`;
-        const res = await fetch(url);
+        const res = await fetch(url, { credentials: "include" });
         if (!res.ok) throw new Error(`Falha ao buscar conteúdos (status ${res.status})`);
         const data = await res.json();
 
@@ -93,7 +93,7 @@ export default function ConteudosPage() {
     try {
       const res = await fetch(
         `${API_BASE}/api/teacher/conteudos/${conteudoId}/deletar`,
-        { method: "DELETE" }
+        { method: "DELETE", credentials: "include" }
       );
       if (!res.ok) throw new Error(`Falha ao remover (status ${res.status})`);
 
