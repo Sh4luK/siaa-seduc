@@ -28,7 +28,7 @@ export default function ComunicadosCoordenacaoPage() {
   useEffect(() => {
     async function init() {
       try {
-        const authRes = await fetch(`${API_BASE}/api/coordenacao/auth`);
+        const authRes = await fetch(`${API_BASE}/api/coordenacao/auth`, { credentials: "include" });
         const authData = await authRes.json();
 
         if (!authData.return) {
@@ -55,7 +55,7 @@ export default function ComunicadosCoordenacaoPage() {
       setErros([]);
 
       try {
-        const res = await fetch(`${API_BASE}/api/coordenacao/comunicados`);
+        const res = await fetch(`${API_BASE}/api/coordenacao/comunicados`, { credentials: "include" });
         if (!res.ok) throw new Error(`Falha ao buscar comunicados (status ${res.status})`);
         const data = await res.json();
         setComunicados(data.comunicados || []);
@@ -77,7 +77,7 @@ export default function ComunicadosCoordenacaoPage() {
     try {
       const res = await fetch(
         `${API_BASE}/api/coordenacao/comunicados/${comunicadoId}/deletar`,
-        { method: "DELETE" }
+        { method: "DELETE", credentials: "include" }
       );
       if (!res.ok) throw new Error(`Falha ao remover (status ${res.status})`);
 
