@@ -139,6 +139,10 @@ export default function MinhasTurmasPage() {
               <i className="ti ti-edit" aria-hidden="true" />
               Lançar notas
             </Link>
+            <Link href="/professor/horarios" className={layoutStyles.navLink}>
+              <i className="ti ti-clock" aria-hidden="true" />
+              Horários
+            </Link>
             <Link href="/professor/mensagem" className={layoutStyles.navLink}>
               <i className="ti ti-clock" aria-hidden="true" />
               Mensagens
