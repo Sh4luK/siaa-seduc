@@ -19,7 +19,7 @@ export default function AvaliacoesCoordenacaoPage() {
   useEffect(() => {
     async function init() {
       try {
-        const authRes = await fetch(`${API_BASE}/api/coordenacao/auth`);
+        const authRes = await fetch(`${API_BASE}/api/coordenacao/auth`, { credentials: "include" });
         const authData = await authRes.json();
 
         if (!authData.return) {
@@ -43,7 +43,7 @@ export default function AvaliacoesCoordenacaoPage() {
       const url = new URL(`${API_BASE}/api/coordenacao/avaliacoes`);
       if (turma) url.searchParams.set("turma", turma);
 
-      const res = await fetch(url);
+      const res = await fetch(url, { credentials: "include" });
       if (!res.ok) throw new Error(`Falha ao buscar avaliações (status ${res.status})`);
 
       const data = await res.json();
