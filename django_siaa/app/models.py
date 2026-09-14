@@ -2,6 +2,7 @@ from django.db import models
 from decimal import Decimal
 from django.db import models
 from datetime import date
+import secrets
 import re
 import math
 
@@ -510,53 +511,29 @@ class MensagemChatResponsavelCoordenador(models.Model):
         ordering = ['data_envio']
 
 
+def gerar_token_sessao():
+    return secrets.token_hex(16)
 
-class SessaoBlog(models.Model):
+class Sessao(models.Model):
     TIPO_CHOICES = [
         ("ALUNO", "Aluno"),
         ("PROFESSOR", "Professor"),
         ("RESPONSAVEL", "Responsável"),
         ("COORDENADOR", "Coordenador"),
+        ("ADMIN", "Admin"),
     ]
     tipo = models.CharField(max_length=20, choices=TIPO_CHOICES)
     referencia_id = models.PositiveIntegerField()
     nome_completo = models.CharField(max_length=255)
-    ip = models.CharField(max_length=45, unique=True)
-    atualizado_em = models.DateTimeField(auto_now=True)
+    # token = models.CharField(max_length=64, unique=True, default=lambda: secrets.token_hex(32))
+    token = models.CharField(max_length=64, unique=True, default=gerar_token_sessao)
+    criado_em = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f"{self.nome_completo} ({self.tipo})"
 
-
-# class Post(models.Model):
-#     autor_tipo = models.CharField(max_length=20, choices=SessaoBlog.TIPO_CHOICES, default="ALUNO")
-#     autor_id = models.PositiveIntegerField(default=0)
-#     autor_nome = models.CharField(max_length=255, default="")
-#     titulo = models.CharField(max_length=255)
-#     conteudo = models.TextField()
-#     tempo_leitura = models.PositiveIntegerField(default=1)
-
-#     data_criacao = models.DateTimeField(auto_now_add=True)
-#     atualizado_em = models.DateTimeField(auto_now=True)
-
-#     class Meta:
-#         ordering = ["-data_criacao"]
-
-#     def calcular_tempo_leitura(self):
-#         palavras = re.findall(r"\w+", self.conteudo or "")
-#         total_palavras = len(palavras)
-#         minutos = math.ceil(total_palavras / 200) if total_palavras > 0 else 1
-#         return max(minutos, 1)
-
-#     def save(self, *args, **kwargs):
-#         self.tempo_leitura = self.calcular_tempo_leitura()
-#         super().save(*args, **kwargs)
-
-#     def __str__(self):
-#         return f"{self.titulo} - {self.autor_nome}"
-
 class Post(models.Model):
-    autor_tipo = models.CharField(max_length=20, choices=SessaoBlog.TIPO_CHOICES, default="ALUNO")
+    autor_tipo = models.CharField(max_length=20, choices=Sessao.TIPO_CHOICES, default="ALUNO")
     autor_id = models.PositiveIntegerField(default=0)
     autor_nome = models.CharField(max_length=255, default="")
     titulo = models.CharField(max_length=255)
@@ -586,7 +563,7 @@ class Post(models.Model):
 
 class Comentario(models.Model):
     post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name="comentarios")
-    autor_tipo = models.CharField(max_length=20, choices=SessaoBlog.TIPO_CHOICES)
+    autor_tipo = models.CharField(max_length=20, choices=Sessao.TIPO_CHOICES)
     autor_id = models.PositiveIntegerField()
     autor_nome = models.CharField(max_length=255)
     conteudo = models.TextField()
@@ -598,7 +575,7 @@ class Comentario(models.Model):
 
 class Curtida(models.Model):
     post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name="curtidas")
-    autor_tipo = models.CharField(max_length=20, choices=SessaoBlog.TIPO_CHOICES)
+    autor_tipo = models.CharField(max_length=20, choices=Sessao.TIPO_CHOICES)
     autor_id = models.PositiveIntegerField()
     data_criacao = models.DateTimeField(auto_now_add=True)
 
