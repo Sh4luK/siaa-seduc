@@ -31,7 +31,7 @@ export default function NovoAlunoPage() {
   useEffect(() => {
     async function init() {
       try {
-        const authRes = await fetch(`${API_BASE}/api/coordenacao/auth`);
+        const authRes = await fetch(`${API_BASE}/api/coordenacao/auth`, { credentials: "include" });
         const authData = await authRes.json();
 
         if (!authData.return) {
@@ -40,8 +40,8 @@ export default function NovoAlunoPage() {
         }
 
         const [escolaRes, opcoesRes] = await Promise.all([
-          fetch(`${API_BASE}/api/coordenacao/escola`),
-          fetch(`${API_BASE}/api/coordenacao/opcoes-cadastro-aluno`),
+          fetch(`${API_BASE}/api/coordenacao/escola`, { credentials: "include" }),
+          fetch(`${API_BASE}/api/coordenacao/opcoes-cadastro-aluno`, { credentials: "include" }),
         ]);
 
         if (escolaRes.ok) {
@@ -84,6 +84,7 @@ export default function NovoAlunoPage() {
     try {
       const res = await fetch(`${API_BASE}/api/coordenacao/alunos/criar`, {
         method: "POST",
+        credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),
       });
