@@ -27,8 +27,8 @@ export default function EditarPostPage() {
     async function init() {
       try {
         const [authRes, postRes] = await Promise.all([
-          fetch(`${API_BASE}/api/blog/auth`),
-          fetch(`${API_BASE}/api/blog/posts/${postId}`),
+          fetch(`${API_BASE}/api/blog/auth`, { credentials: "include" }),
+          fetch(`${API_BASE}/api/blog/posts/${postId}`, { credentials: "include" }),
         ]);
 
         const authData = await authRes.json();
@@ -115,6 +115,7 @@ export default function EditarPostPage() {
       if (removerImagem) formData.append("remover_imagem", "true");
 
       const res = await fetch(`${API_BASE}/api/blog/posts/${postId}/editar`, {
+        credentials: "include",
         method: "POST",
         body: formData,
       });
