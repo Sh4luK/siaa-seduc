@@ -25,7 +25,7 @@ export default function CorrigirAlunosPage() {
     const url = termoBusca
       ? `${API_BASE}/api/corrigir/alunos?busca=${encodeURIComponent(termoBusca)}`
       : `${API_BASE}/api/corrigir/alunos`;
-    const res = await fetch(url);
+    const res = await fetch(url, { credentials: "include" });
     if (!res.ok) throw new Error(`Falha ao buscar alunos (status ${res.status})`);
     const data = await res.json();
     setAlunos(data.alunos || []);
@@ -35,7 +35,7 @@ export default function CorrigirAlunosPage() {
   useEffect(() => {
     async function init() {
       try {
-        const authRes = await fetch(`${API_BASE}/api/coordenacao/auth`);
+        const authRes = await fetch(`${API_BASE}/api/coordenacao/auth`, { credentials: "include" });
         const authData = await authRes.json();
         if (!authData.return) {
           router.push("/coordenacao/login");
@@ -71,6 +71,7 @@ export default function CorrigirAlunosPage() {
     try {
       const res = await fetch(`${API_BASE}/api/corrigir/alunos/${alunoId}/mover-turma`, {
         method: "POST",
+        credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ turma: novaTurma }),
       });
