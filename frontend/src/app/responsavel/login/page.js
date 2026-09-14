@@ -21,7 +21,7 @@ export default function ResponsavelLoginPage() {
   useEffect(() => {
     async function verificar() {
       try {
-        const res = await fetch(`${API_BASE}/api/responsavel/auth`);
+        const res = await fetch(`${API_BASE}/api/responsavel/auth`, { credentials: "include" });
         const data = await res.json();
         if (data.return) {
           setAuthenticated(true);
@@ -50,7 +50,7 @@ export default function ResponsavelLoginPage() {
     setEnviando(true);
     try {
       const url = `${API_BASE}/api/responsavel/login?nome_completo=${encodeURIComponent(nomeCompleto)}&senha=${encodeURIComponent(senha)}`;
-      const res = await fetch(url);
+      const res = await fetch(url, { credentials: "include" });
       const data = await res.json();
       if (!data.return) {
         setErro("Nome completo ou senha incorretos.");
