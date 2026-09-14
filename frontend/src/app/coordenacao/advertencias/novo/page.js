@@ -37,7 +37,7 @@ export default function NovaAdvertenciaPage() {
   useEffect(() => {
     async function init() {
       try {
-        const authRes = await fetch(`${API_BASE}/api/coordenacao/auth`);
+        const authRes = await fetch(`${API_BASE}/api/coordenacao/auth`, { credentials: "include" });
         const authData = await authRes.json();
 
         if (!authData.return) {
@@ -48,8 +48,8 @@ export default function NovaAdvertenciaPage() {
         setAuthenticated(true);
 
         const [alunosRes, profRes] = await Promise.all([
-          fetch(`${API_BASE}/api/coordenacao/alunos`),
-          fetch(`${API_BASE}/api/coordenacao/professores-simples`),
+          fetch(`${API_BASE}/api/coordenacao/alunos`, { credentials: "include" }),
+          fetch(`${API_BASE}/api/coordenacao/professores-simples`, { credentials: "include" }),
         ]);
 
         const alunosData = await alunosRes.json();
@@ -99,6 +99,7 @@ export default function NovaAdvertenciaPage() {
     try {
       const res = await fetch(`${API_BASE}/api/coordenacao/advertencias/criar`, {
         method: "POST",
+        credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           tipo,
