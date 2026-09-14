@@ -46,7 +46,7 @@ export default function SolicitacoesAlunoPage() {
   const carregar = useCallback(async () => {
     setCarregando(true);
     try {
-      const res = await fetch(`${API_BASE}/api/students/solicitacoes`);
+      const res = await fetch(`${API_BASE}/api/students/solicitacoes`, { credentials: "include" });
       if (!res.ok) throw new Error(`Falha ao buscar solicitações (status ${res.status})`);
       const data = await res.json();
       setSolicitacoes(data.solicitacoes || []);
@@ -60,7 +60,7 @@ export default function SolicitacoesAlunoPage() {
   useEffect(() => {
     async function init() {
       try {
-        const authRes = await fetch(`${API_BASE}/api/students/auth`);
+        const authRes = await fetch(`${API_BASE}/api/students/auth`, { credentials: "include" });
         const authData = await authRes.json();
 
         if (!authData.return) {
@@ -92,6 +92,7 @@ export default function SolicitacoesAlunoPage() {
     setEnviando(true);
     try {
       const res = await fetch(`${API_BASE}/api/students/solicitacoes`, {
+        credentials: "include",
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -124,6 +125,7 @@ export default function SolicitacoesAlunoPage() {
     setErro(null);
     try {
       const res = await fetch(`${API_BASE}/api/students/solicitacoes/${id}/responder`, {
+        credentials: "include",
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ decisao }),
@@ -141,7 +143,7 @@ export default function SolicitacoesAlunoPage() {
   async function excluir(id) {
     setErro(null);
     try {
-      const res = await fetch(`${API_BASE}/api/students/solicitacoes/${id}`, { method: "DELETE" });
+      const res = await fetch(`${API_BASE}/api/students/solicitacoes/${id}`, { method: "DELETE", credentials: "include" });
       if (!res.ok) throw new Error("Não foi possível remover.");
       setSolicitacoes((atual) => atual.filter((s) => s.id !== id));
     } catch (e) {
