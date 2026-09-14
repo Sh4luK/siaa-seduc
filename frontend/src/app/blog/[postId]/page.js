@@ -37,8 +37,8 @@ export default function PostDetalhePage() {
     async function init() {
       try {
         const [postRes, authRes] = await Promise.all([
-          fetch(`${API_BASE}/api/blog/posts/${postId}`),
-          fetch(`${API_BASE}/api/blog/auth`),
+          fetch(`${API_BASE}/api/blog/posts/${postId}`, { credentials: "include" }),
+          fetch(`${API_BASE}/api/blog/auth`, { credentials: "include" }),
         ]);
 
         if (!postRes.ok) throw new Error(`Falha ao buscar post (status ${postRes.status})`);
@@ -71,7 +71,7 @@ export default function PostDetalhePage() {
     }));
 
     try {
-      const res = await fetch(`${API_BASE}/api/blog/posts/${postId}/curtir`, { method: "POST" });
+      const res = await fetch(`${API_BASE}/api/blog/posts/${postId}/curtir`, { method: "POST", credentials: "include" });
       const data = await res.json();
       setPost((prev) => ({ ...prev, curtido_por_mim: data.curtido, total_curtidas: data.total_curtidas }));
     } catch (error) {
@@ -92,6 +92,7 @@ export default function PostDetalhePage() {
     setEnviandoComentario(true);
     try {
       const res = await fetch(`${API_BASE}/api/blog/posts/${postId}/comentarios`, {
+        credentials: "include",
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ conteudo: novoComentario.trim() }),
@@ -109,7 +110,7 @@ export default function PostDetalhePage() {
 
   async function handleApagarComentario(comentarioId) {
     try {
-      await fetch(`${API_BASE}/api/blog/comentarios/${comentarioId}`, { method: "DELETE" });
+      await fetch(`${API_BASE}/api/blog/comentarios/${comentarioId}`, { method: "DELETE", credentials: "include" });
       setComentarios((prev) => prev.filter((c) => c.id !== comentarioId));
     } catch (error) {
       setErros(["Erro ao apagar comentário."]);
@@ -120,6 +121,7 @@ export default function PostDetalhePage() {
     setDeletando(true);
     try {
       const res = await fetch(`${API_BASE}/api/blog/posts/${postId}/deletar`, {
+        credentials: "include",
         method: "DELETE",
       });
       if (!res.ok) {
