@@ -34,7 +34,7 @@ export default function CalendarioPage() {
   useEffect(() => {
     async function init() {
       try {
-        const authRes = await fetch(`${API_BASE}/api/teacher/auth`);
+        const authRes = await fetch(`${API_BASE}/api/teacher/auth`, { credentials: "include" });
         const authData = await authRes.json();
 
         if (!authData.return) {
@@ -64,7 +64,7 @@ export default function CalendarioPage() {
       try {
         const mesFormatado = String(mesAtual).padStart(2, "0");
         const url = `${API_BASE}/api/teacher/calendario/visualizar?mes=${mesFormatado}&ano=${anoAtual}`;
-        const res = await fetch(url);
+        const res = await fetch(url, { credentials: "include" });
         if (!res.ok) throw new Error(`Falha ao buscar eventos (status ${res.status})`);
         const data = await res.json();
 
