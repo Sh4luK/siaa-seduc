@@ -26,7 +26,7 @@ export default function NotasCoordenacaoPage() {
   useEffect(() => {
     async function init() {
       try {
-        const authRes = await fetch(`${API_BASE}/api/coordenacao/auth`);
+        const authRes = await fetch(`${API_BASE}/api/coordenacao/auth`, { credentials: "include" });
         const authData = await authRes.json();
 
         if (!authData.return) {
@@ -36,7 +36,7 @@ export default function NotasCoordenacaoPage() {
         }
         setAuthenticated(true);
 
-        const res = await fetch(`${API_BASE}/api/coordenacao/notas/opcoes`);
+        const res = await fetch(`${API_BASE}/api/coordenacao/notas/opcoes`, { credentials: "include" });
         if (!res.ok) throw new Error(`Falha ao buscar turmas (status ${res.status})`);
         const data = await res.json();
         const vinculos = data.vinculos || [];
