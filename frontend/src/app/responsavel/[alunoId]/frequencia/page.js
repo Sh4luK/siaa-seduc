@@ -50,7 +50,7 @@ export default function FrequenciaAlunoResponsavelPage() {
     setCarregando(true);
     setErro(null);
     try {
-      const res = await fetch(`${API_BASE}/api/responsavel/alunos/${alunoId}/frequencia?mes=${m}&ano=${a}`);
+      const res = await fetch(`${API_BASE}/api/responsavel/alunos/${alunoId}/frequencia?mes=${m}&ano=${a}`, { credentials: "include" });
       if (res.status === 403) throw new Error("Você não tem acesso aprovado a este aluno.");
       if (!res.ok) throw new Error(`Falha ao buscar frequência (status ${res.status})`);
       setDados(await res.json());
@@ -64,7 +64,7 @@ export default function FrequenciaAlunoResponsavelPage() {
 
   useEffect(() => {
     async function init() {
-      const authRes = await fetch(`${API_BASE}/api/responsavel/auth`);
+      const authRes = await fetch(`${API_BASE}/api/responsavel/auth`, { credentials: "include" });
       const authData = await authRes.json();
       if (!authData.return) {
         router.push("/responsavel/login");
