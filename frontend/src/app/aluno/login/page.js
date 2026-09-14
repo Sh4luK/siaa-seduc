@@ -29,7 +29,8 @@ export default function AlunoLoginPage() {
 
     try {
       const response = await fetch(
-        `${API_BASE}/api/students/search?fullname=${encodeURIComponent(fullName)}`
+        `${API_BASE}/api/students/search?fullname=${encodeURIComponent(fullName)}`,
+        { credentials: "include" }
       );
       const data = await response.json();
 
@@ -67,7 +68,7 @@ export default function AlunoLoginPage() {
   async function auth_student_button() {
     try {
       const url = `${API_BASE}/api/students/login?fullname=${encodeURIComponent(fullName)}&password=${password}`;
-      const student_login = await fetch(url);
+      const student_login = await fetch(url, { credentials: "include" });
       const data = await student_login.json();
       if (data.return === true) {
         router.push("/aluno");
@@ -82,7 +83,7 @@ export default function AlunoLoginPage() {
   useEffect(() => {
     async function verifyAuthentication() {
       try {
-        const response = await fetch(`${API_BASE}/api/students/auth`);
+        const response = await fetch(`${API_BASE}/api/students/auth`, { credentials: "include" });
         const data = await response.json();
 
         if (data.return === true) {
