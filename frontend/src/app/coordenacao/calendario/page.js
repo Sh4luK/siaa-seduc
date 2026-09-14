@@ -34,7 +34,7 @@ export default function CalendarioCoordenacaoPage() {
   useEffect(() => {
     async function init() {
       try {
-        const authRes = await fetch(`${API_BASE}/api/coordenacao/auth`);
+        const authRes = await fetch(`${API_BASE}/api/coordenacao/auth`, { credentials: "include" });
         const authData = await authRes.json();
 
         if (!authData.return) {
@@ -63,7 +63,7 @@ export default function CalendarioCoordenacaoPage() {
       try {
         const mesFormatado = String(mesAtual).padStart(2, "0");
         const url = `${API_BASE}/api/coordenacao/calendario/eventos?mes=${mesFormatado}&ano=${anoAtual}`;
-        const res = await fetch(url);
+        const res = await fetch(url, { credentials: "include" });
         if (!res.ok) throw new Error(`Falha ao buscar eventos (status ${res.status})`);
         const data = await res.json();
 
@@ -104,7 +104,7 @@ export default function CalendarioCoordenacaoPage() {
     try {
       const res = await fetch(
         `${API_BASE}/api/coordenacao/calendario/eventos/${eventoId}/deletar`,
-        { method: "DELETE" }
+        { method: "DELETE", credentials: "include" }
       );
       if (!res.ok) throw new Error(`Falha ao remover (status ${res.status})`);
 
