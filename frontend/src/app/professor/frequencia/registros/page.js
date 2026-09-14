@@ -40,7 +40,7 @@ export default function RegistrosFrequenciaPage() {
         setNomeCompleto(authData.teacher.nome_completo);
 
         const registrosRes = await fetch(
-          `${API_BASE}/api/teacher/frequencia/registros?professor=${authData.teacher.id}`, 
+          `${API_BASE}/api/teacher/frequencia/registros?professor=${authData.teacher.id}`,
           { credentials: "include" }
         );
         if (!registrosRes.ok) throw new Error(`Falha ao buscar registros (status ${registrosRes.status})`);
@@ -139,6 +139,10 @@ export default function RegistrosFrequenciaPage() {
             <Link href="/professor/notas" className={layoutStyles.navLink}>
               <i className="ti ti-edit" aria-hidden="true" />
               Lançar notas
+            </Link>
+            <Link href="/professor/horarios" className={layoutStyles.navLink}>
+              <i className="ti ti-clock" aria-hidden="true" />
+              Horários
             </Link>
             <Link href="/professor/mensagem" className={layoutStyles.navLink}>
               <i className="ti ti-clock" aria-hidden="true" />
