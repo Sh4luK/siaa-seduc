@@ -39,7 +39,7 @@ export default function MensagemHubPage() {
 
   useEffect(() => {
     async function init() {
-      const authRes = await fetch(`${API_BASE}/api/responsavel/auth`);
+      const authRes = await fetch(`${API_BASE}/api/responsavel/auth`, { credentials: "include" });
       const authData = await authRes.json();
       if (!authData.return) {
         router.push("/responsavel/login");
@@ -53,7 +53,7 @@ export default function MensagemHubPage() {
   async function abrirCoordenacao() {
     setIndoParaCoordenacao(true);
     try {
-      const res = await fetch(`${API_BASE}/api/responsavel/alunos/${alunoId}/mensagem/coordenador/status`);
+      const res = await fetch(`${API_BASE}/api/responsavel/alunos/${alunoId}/mensagem/coordenador/status`, { credentials: "include" });
       const data = await res.json();
       if (data.conversa_id) {
         router.push(`/responsavel/${alunoId}/mensagem/coordenador/${data.conversa_id}`);
