@@ -167,6 +167,10 @@ urlpatterns = [
     path('api/teacher/notas/turma/<int:turma_id>/ficha-pdf', app.views.gerar_ficha_notas_pdf),
     path('api/responsavel/alunos/<int:aluno_id>/boletim/pdf', app.views.boletim_aluno_pdf_responsavel),
     path('api/students/horarios/pdf', app.views.horarios_aluno_pdf),
+    path('api/teacher/horarios', app.views.horarios_professor),
+    path('api/coordenacao/professores/<int:professor_id>/horarios', app.views.get_horarios_professor_coordenacao),
+    path('api/coordenacao/professores/<int:professor_id>/horarios/opcoes', app.views.get_opcoes_horario_professor),
+    path('api/coordenacao/professores/<int:professor_id>/horarios/salvar', app.views.salvar_horario_professor),
 
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
