@@ -28,7 +28,7 @@ export default function ConversaProfessorResponsavelPage() {
   const carregarConversa = useCallback(async () => {
     setErro(null);
     try {
-      const res = await fetch(`${API_BASE}/api/responsavel/alunos/${alunoId}/mensagem/professor/${conversaId}`);
+      const res = await fetch(`${API_BASE}/api/responsavel/alunos/${alunoId}/mensagem/professor/${conversaId}`, { credentials: "include" });
       if (res.status === 404) throw new Error("Conversa não encontrada.");
       if (!res.ok) throw new Error(`Falha ao carregar conversa (status ${res.status})`);
       const data = await res.json();
@@ -43,7 +43,7 @@ export default function ConversaProfessorResponsavelPage() {
 
   const atualizarMensagensSilenciosamente = useCallback(async () => {
     try {
-      const res = await fetch(`${API_BASE}/api/responsavel/alunos/${alunoId}/mensagem/professor/${conversaId}`);
+      const res = await fetch(`${API_BASE}/api/responsavel/alunos/${alunoId}/mensagem/professor/${conversaId}`, { credentials: "include" });
       if (!res.ok) return;
       const data = await res.json();
       setMensagens((atual) =>
@@ -62,7 +62,7 @@ export default function ConversaProfessorResponsavelPage() {
 
   useEffect(() => {
     async function init() {
-      const authRes = await fetch(`${API_BASE}/api/responsavel/auth`);
+      const authRes = await fetch(`${API_BASE}/api/responsavel/auth`, { credentials: "include" });
       const authData = await authRes.json();
       if (!authData.return) {
         router.push("/responsavel/login");
@@ -82,6 +82,7 @@ export default function ConversaProfessorResponsavelPage() {
     try {
       const res = await fetch(`${API_BASE}/api/responsavel/alunos/${alunoId}/mensagem/professor/${conversaId}`, {
         method: "POST",
+        credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ conteudo: novaMensagem.trim() }),
       });
