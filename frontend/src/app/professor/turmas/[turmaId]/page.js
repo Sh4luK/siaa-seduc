@@ -24,7 +24,7 @@ export default function TurmaPage() {
   useEffect(() => {
     async function verifyAuthentication() {
       try {
-        const response = await fetch(`${API_BASE}/api/teacher/auth`);
+        const response = await fetch(`${API_BASE}/api/teacher/auth`, { credentials: "include" });
         const data = await response.json();
         if (data.return === true) {
           setAuthenticated(true);
@@ -42,7 +42,7 @@ export default function TurmaPage() {
 
     async function getData() {
       try {
-        const authResponse = await fetch(`${API_BASE}/api/teacher/auth`);
+        const authResponse = await fetch(`${API_BASE}/api/teacher/auth`, { credentials: "include" });
         if (!authResponse.ok) throw new Error();
         const data = await authResponse.json();
         const nome = data["teacher"]["nome_completo"] || "Não encontrado.";
@@ -56,7 +56,7 @@ export default function TurmaPage() {
 
     async function getTurma() {
       try {
-        const response = await fetch(`${API_BASE}/api/teacher/search/turma?turma=${turmaId}`)
+        const response = await fetch(`${API_BASE}/api/teacher/search/turma?turma=${turmaId}`, { credentials: "include" })
         if (!response.ok) throw new Error()
         const data = await response.json()
         setTurma(data["turma"])
@@ -67,14 +67,15 @@ export default function TurmaPage() {
 
     async function getTotalAlunos() {
       try {
-        const turmaRes = await fetch(`${API_BASE}/api/teacher/search/turma?turma=${turmaId}`)
+        const turmaRes = await fetch(`${API_BASE}/api/teacher/search/turma?turma=${turmaId}`, { credentials: "include" })
         if (!turmaRes.ok) throw new Error()
         const turmaData = await turmaRes.json()
         const nomeTurma = turmaData.turma?.turma
         if (!nomeTurma) throw new Error()
 
         const alunosRes = await fetch(
-          `${API_BASE}/api/teacher/get/alunos?turma=${encodeURIComponent(nomeTurma)}`
+          `${API_BASE}/api/teacher/get/alunos?turma=${encodeURIComponent(nomeTurma)}`,
+          { credentials: "include" }
         )
         if (!alunosRes.ok) throw new Error()
         const alunosData = await alunosRes.json()
