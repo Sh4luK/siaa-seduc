@@ -24,7 +24,7 @@ export default function AlunosCoordenacaoPage() {
   useEffect(() => {
     async function init() {
       try {
-        const authRes = await fetch(`${API_BASE}/api/coordenacao/auth`);
+        const authRes = await fetch(`${API_BASE}/api/coordenacao/auth`, { credentials: "include" });
         const authData = await authRes.json();
 
         if (!authData.return) {
@@ -34,7 +34,7 @@ export default function AlunosCoordenacaoPage() {
         }
         setAuthenticated(true);
 
-        const res = await fetch(`${API_BASE}/api/coordenacao/alunos`);
+        const res = await fetch(`${API_BASE}/api/coordenacao/alunos`, { credentials: "include" });
         if (!res.ok) throw new Error(`Falha ao buscar alunos (status ${res.status})`);
         const data = await res.json();
         setAlunos(data.alunos || []);
@@ -57,7 +57,7 @@ export default function AlunosCoordenacaoPage() {
     try {
       const res = await fetch(
         `${API_BASE}/api/coordenacao/alunos/${alunoId}/deletar`,
-        { method: "DELETE" }
+        { method: "DELETE", credentials: "include" }
       );
 
       if (!res.ok) {
