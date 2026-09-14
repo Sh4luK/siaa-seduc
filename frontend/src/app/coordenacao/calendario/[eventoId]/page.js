@@ -38,7 +38,8 @@ export default function EventoDetalhePage() {
       setErro("");
       try {
         const res = await fetch(
-          `${API_BASE}/api/coordenacao/calendario/eventos/${eventoId}`
+          `${API_BASE}/api/coordenacao/calendario/eventos/${eventoId}`,
+          { credentials: "include" }
         );
 
         if (!res.ok) {
@@ -69,7 +70,7 @@ export default function EventoDetalhePage() {
     try {
       const res = await fetch(
         `${API_BASE}/api/coordenacao/calendario/eventos/${eventoId}/deletar`,
-        { method: "DELETE" }
+        { method: "DELETE", credentials: "include" }
       );
 
       if (!res.ok) {
