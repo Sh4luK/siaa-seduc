@@ -31,7 +31,7 @@ export default function NovoProfessorPage() {
   useEffect(() => {
     async function init() {
       try {
-        const authRes = await fetch(`${API_BASE}/api/coordenacao/auth`);
+        const authRes = await fetch(`${API_BASE}/api/coordenacao/auth`, { credentials: "include" });
         const authData = await authRes.json();
 
         if (!authData.return) {
@@ -39,13 +39,13 @@ export default function NovoProfessorPage() {
           return;
         }
 
-        const escolaRes = await fetch(`${API_BASE}/api/coordenacao/escola`);
+        const escolaRes = await fetch(`${API_BASE}/api/coordenacao/escola`, { credentials: "include" });
         if (escolaRes.ok) {
           const escolaData = await escolaRes.json();
           setEscola(escolaData.escola || "");
         }
 
-        const opcoesRes = await fetch(`${API_BASE}/api/coordenacao/opcoes-cadastro-professor`);
+        const opcoesRes = await fetch(`${API_BASE}/api/coordenacao/opcoes-cadastro-professor`, { credentials: "include" });
         if (!opcoesRes.ok) throw new Error(`Falha ao buscar opções (status ${opcoesRes.status})`);
         const opcoesData = await opcoesRes.json();
 
@@ -127,6 +127,7 @@ export default function NovoProfessorPage() {
 
     try {
       const res = await fetch(`${API_BASE}/api/coordenacao/professores/criar`, {
+        credentials: "include",
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
