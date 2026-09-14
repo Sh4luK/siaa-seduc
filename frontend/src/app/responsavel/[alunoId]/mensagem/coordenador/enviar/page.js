@@ -20,7 +20,7 @@ export default function EnviarMensagemCoordenadorPage() {
 
   useEffect(() => {
     async function init() {
-      const authRes = await fetch(`${API_BASE}/api/responsavel/auth`);
+      const authRes = await fetch(`${API_BASE}/api/responsavel/auth`, { credentials: "include" });
       const authData = await authRes.json();
       if (!authData.return) {
         router.push("/responsavel/login");
@@ -40,6 +40,7 @@ export default function EnviarMensagemCoordenadorPage() {
     try {
       const res = await fetch(`${API_BASE}/api/responsavel/alunos/${alunoId}/mensagem/coordenador/enviar`, {
         method: "POST",
+        credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ conteudo: conteudo.trim() }),
       });
