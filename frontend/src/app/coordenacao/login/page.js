@@ -21,7 +21,7 @@ export default function CoordenacaoLoginPage() {
   useEffect(() => {
     async function verificarSessao() {
       try {
-        const res = await fetch(`${API_BASE}/api/coordenacao/auth`);
+        const res = await fetch(`${API_BASE}/api/coordenacao/auth`, { credentials: "include" });
         const data = await res.json();
 
         if (data.return === true) {
@@ -51,7 +51,7 @@ export default function CoordenacaoLoginPage() {
 
     try {
       const url = `${API_BASE}/api/coordenacao/login?nome_completo=${encodeURIComponent(nomeCompleto.trim())}&senha=${encodeURIComponent(senha.trim())}`;
-      const res = await fetch(url);
+      const res = await fetch(url, { credentials: "include" });
       if (!res.ok) throw new Error(`Falha ao autenticar (status ${res.status})`);
       const data = await res.json();
 
