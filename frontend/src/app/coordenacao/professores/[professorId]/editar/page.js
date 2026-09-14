@@ -45,7 +45,7 @@ export default function EditarProfessorPage() {
   useEffect(() => {
     async function init() {
       try {
-        const authRes = await fetch(`${API_BASE}/api/coordenacao/auth`);
+        const authRes = await fetch(`${API_BASE}/api/coordenacao/auth`, { credentials: "include" });
         const authData = await authRes.json();
 
         if (!authData.return) {
@@ -54,9 +54,9 @@ export default function EditarProfessorPage() {
         }
 
         const [escolaRes, opcoesRes, detalheRes] = await Promise.all([
-          fetch(`${API_BASE}/api/coordenacao/escola`),
-          fetch(`${API_BASE}/api/coordenacao/opcoes-cadastro-professor`),
-          fetch(`${API_BASE}/api/coordenacao/professores/${professorId}`),
+          fetch(`${API_BASE}/api/coordenacao/escola`, { credentials: "include" }),
+          fetch(`${API_BASE}/api/coordenacao/opcoes-cadastro-professor`, { credentials: "include" }),
+          fetch(`${API_BASE}/api/coordenacao/professores/${professorId}`, { credentials: "include" }),
         ]);
 
         if (escolaRes.ok) {
@@ -146,6 +146,7 @@ export default function EditarProfessorPage() {
 
     try {
       const res = await fetch(`${API_BASE}/api/coordenacao/professores/${professorId}/editar`, {
+        credentials: "include",
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
