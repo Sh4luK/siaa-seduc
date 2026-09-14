@@ -44,7 +44,7 @@ export default function FrequenciaAlunoPage() {
     setCarregando(true);
     setErro(null);
     try {
-      const res = await fetch(`${API_BASE}/api/students/frequencia?mes=${m}&ano=${a}`);
+      const res = await fetch(`${API_BASE}/api/students/frequencia?mes=${m}&ano=${a}`, { credentials: "include" });
       if (!res.ok) throw new Error(`Falha ao buscar frequência (status ${res.status})`);
       const data = await res.json();
       setDados(data);
@@ -59,7 +59,7 @@ export default function FrequenciaAlunoPage() {
   useEffect(() => {
     async function init() {
       try {
-        const authRes = await fetch(`${API_BASE}/api/students/auth`);
+        const authRes = await fetch(`${API_BASE}/api/students/auth`, { credentials: "include" });
         const authData = await authRes.json();
 
         if (!authData.return) {
