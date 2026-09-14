@@ -31,7 +31,7 @@ export default function BoletimAlunoPage() {
   useEffect(() => {
     async function init() {
       try {
-        const authRes = await fetch(`${API_BASE}/api/students/auth`);
+        const authRes = await fetch(`${API_BASE}/api/students/auth`, { credentials: "include" });
         const authData = await authRes.json();
 
         if (!authData.return) {
@@ -42,7 +42,7 @@ export default function BoletimAlunoPage() {
         setNomeCompleto(authData.student?.nome_completo || "");
         setTurma(authData.student?.turma || "");
 
-        const res = await fetch(`${API_BASE}/api/students/boletim`);
+        const res = await fetch(`${API_BASE}/api/students/boletim`, { credentials: "include" });
         if (!res.ok) throw new Error(`Falha ao buscar boletim (status ${res.status})`);
         const data = await res.json();
         setBoletim(data.boletim || []);
