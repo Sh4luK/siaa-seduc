@@ -31,7 +31,7 @@ export default function EditarAlunoPage() {
   useEffect(() => {
     async function init() {
       try {
-        const authRes = await fetch(`${API_BASE}/api/coordenacao/auth`);
+        const authRes = await fetch(`${API_BASE}/api/coordenacao/auth`, { credentials: "include" });
         const authData = await authRes.json();
 
         if (!authData.return) {
@@ -40,9 +40,9 @@ export default function EditarAlunoPage() {
         }
 
         const [escolaRes, opcoesRes, alunoRes] = await Promise.all([
-          fetch(`${API_BASE}/api/coordenacao/escola`),
-          fetch(`${API_BASE}/api/coordenacao/opcoes-cadastro-aluno`),
-          fetch(`${API_BASE}/api/coordenacao/alunos/${alunoId}`),
+          fetch(`${API_BASE}/api/coordenacao/escola`, { credentials: "include" }),
+          fetch(`${API_BASE}/api/coordenacao/opcoes-cadastro-aluno`, { credentials: "include" }),
+          fetch(`${API_BASE}/api/coordenacao/alunos/${alunoId}`, { credentials: "include" }),
         ]);
 
         if (!opcoesRes.ok) throw new Error(`Falha ao buscar opções (status ${opcoesRes.status})`);
@@ -99,6 +99,7 @@ export default function EditarAlunoPage() {
     try {
       const res = await fetch(`${API_BASE}/api/coordenacao/alunos/${alunoId}/editar`, {
         method: "POST",
+        credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),
       });
