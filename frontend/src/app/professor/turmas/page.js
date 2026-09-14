@@ -23,7 +23,7 @@ export default function MinhasTurmasPage() {
   useEffect(() => {
     async function init() {
       try {
-        const authRes = await fetch(`${API_BASE}/api/teacher/auth`);
+        const authRes = await fetch(`${API_BASE}/api/teacher/auth`, { credentials: "include" });
         const authData = await authRes.json();
 
         if (!authData.return) {
@@ -37,7 +37,8 @@ export default function MinhasTurmasPage() {
         setNomeCompleto(nome);
 
         const turmasRes = await fetch(
-          `${API_BASE}/api/teacher/search/turmas?nome_completo=${encodeURIComponent(nome)}`
+          `${API_BASE}/api/teacher/search/turmas?nome_completo=${encodeURIComponent(nome)}`,
+          { credentials: "include" }
         );
         if (!turmasRes.ok) throw new Error(`Falha ao buscar turmas (status ${turmasRes.status})`);
         const turmasData = await turmasRes.json();
