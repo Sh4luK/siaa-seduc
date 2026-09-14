@@ -23,6 +23,7 @@ export default function BlogLoginPage() {
 
     try {
       const res = await fetch(`${API_BASE}/api/blog/login`, {
+        credentials: "include",
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ nome_completo: nomeCompleto, senha, tipo }),
