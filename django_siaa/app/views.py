@@ -3408,18 +3408,32 @@ def get_posts(request):
             curtido_por_mim = Curtida.objects.filter(
                 post=p, autor_tipo=sessao.tipo, autor_id=sessao.referencia_id
             ).exists()
+        # resultado.append({
+        #     "id": p.id,
+        #     "titulo": p.titulo,
+        #     "resumo": (p.conteudo[:220] + "…") if len(p.conteudo) > 220 else p.conteudo,
+        #     "tempo_leitura": p.tempo_leitura,
+        #     "data_criacao": p.data_criacao.isoformat(),
+        #     "autor_nome": p.autor_nome,
+        #     "autor_tipo": p.autor_tipo,
+        #     "total_curtidas": p.curtidas.count(),
+        #     "total_comentarios": p.comentarios.count(),
+        #     "curtido_por_mim": curtido_por_mim,
+        #     "imagem_url": caminho_relativo_arquivo(p.imagem) if p.imagem else None,
+        # })
         resultado.append({
             "id": p.id,
             "titulo": p.titulo,
             "resumo": (p.conteudo[:220] + "…") if len(p.conteudo) > 220 else p.conteudo,
+            "imagem_url": caminho_relativo_arquivo(p.imagem) if p.imagem else None,
             "tempo_leitura": p.tempo_leitura,
             "data_criacao": p.data_criacao.isoformat(),
             "autor_nome": p.autor_nome,
             "autor_tipo": p.autor_tipo,
+            "autor_id": p.autor_id,          # <- linha que faltava
             "total_curtidas": p.curtidas.count(),
             "total_comentarios": p.comentarios.count(),
             "curtido_por_mim": curtido_por_mim,
-            "imagem_url": caminho_relativo_arquivo(p.imagem) if p.imagem else None,
         })
 
     return JsonResponse({"total_posts": len(resultado), "posts": resultado})
@@ -3451,22 +3465,37 @@ def get_post_detalhe(request, post_id):
         for c in post.comentarios.all()
     ]
 
+    # return JsonResponse({
+    #     "post": {
+    #         "id": post.id,
+    #         "titulo": post.titulo,
+    #         "conteudo": post.conteudo,
+    #         "tempo_leitura": post.tempo_leitura,
+    #         "data_criacao": post.data_criacao.isoformat(),
+    #         "autor_nome": post.autor_nome,
+    #         "autor_tipo": post.autor_tipo,
+    #         "total_curtidas": post.curtidas.count(),
+    #         "curtido_por_mim": curtido_por_mim,
+    #         "imagem_url": caminho_relativo_arquivo(post.imagem) if post.imagem else None,
+    #     },
+    #     "comentarios": comentarios,
+    # })
     return JsonResponse({
         "post": {
             "id": post.id,
             "titulo": post.titulo,
             "conteudo": post.conteudo,
+            "imagem_url": caminho_relativo_arquivo(post.imagem) if post.imagem else None,
             "tempo_leitura": post.tempo_leitura,
             "data_criacao": post.data_criacao.isoformat(),
             "autor_nome": post.autor_nome,
             "autor_tipo": post.autor_tipo,
+            "autor_id": post.autor_id,          # <- linha que faltava
             "total_curtidas": post.curtidas.count(),
             "curtido_por_mim": curtido_por_mim,
-            "imagem_url": caminho_relativo_arquivo(post.imagem) if post.imagem else None,
         },
         "comentarios": comentarios,
     })
-
 
 
 @csrf_exempt
