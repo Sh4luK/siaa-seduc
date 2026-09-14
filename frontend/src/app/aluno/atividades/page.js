@@ -30,7 +30,7 @@ export default function AtividadesAlunoPage() {
   useEffect(() => {
     async function init() {
       try {
-        const authRes = await fetch(`${API_BASE}/api/students/auth`);
+        const authRes = await fetch(`${API_BASE}/api/students/auth`, { credentials: "include" });
         const authData = await authRes.json();
 
         if (!authData.return) {
@@ -41,7 +41,7 @@ export default function AtividadesAlunoPage() {
         setNomeCompleto(authData.student?.nome_completo || "");
         setTurma(authData.student?.turma || "");
 
-        const res = await fetch(`${API_BASE}/api/students/atividades`);
+        const res = await fetch(`${API_BASE}/api/students/atividades`, { credentials: "include" });
         if (!res.ok) throw new Error(`Falha ao buscar atividades (status ${res.status})`);
         const data = await res.json();
         setAtividades(data.atividades || []);
