@@ -136,7 +136,7 @@ export default function HorarioTurmaPage() {
   useEffect(() => {
     async function init() {
       try {
-        const authRes = await fetch(`${API_BASE}/api/coordenacao/auth`);
+        const authRes = await fetch(`${API_BASE}/api/coordenacao/auth`, { credentials: "include" });
         const authData = await authRes.json();
 
         if (!authData.return) {
@@ -147,7 +147,8 @@ export default function HorarioTurmaPage() {
         setAuthenticated(true);
 
         const res = await fetch(
-          `${API_BASE}/api/coordenacao/turmas/${encodeURIComponent(nomeTurma)}/horarios`
+          `${API_BASE}/api/coordenacao/turmas/${encodeURIComponent(nomeTurma)}/horarios`,
+          { credentials: "include" }
         );
 
         if (!res.ok) {
