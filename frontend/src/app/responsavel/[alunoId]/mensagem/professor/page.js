@@ -55,7 +55,7 @@ export default function MensagemProfessorListaPage() {
 
   const carregarConversas = useCallback(async () => {
     try {
-      const res = await fetch(`${API_BASE}/api/responsavel/alunos/${alunoId}/mensagem/professor`);
+      const res = await fetch(`${API_BASE}/api/responsavel/alunos/${alunoId}/mensagem/professor`, { credentials: "include" });
       if (!res.ok) throw new Error(`Falha ao carregar conversas (status ${res.status})`);
       setConversas(await res.json());
     } catch (error) {
@@ -66,7 +66,7 @@ export default function MensagemProfessorListaPage() {
   // busca em segundo plano, sem mexer em loading/erro
   const atualizarConversasSilenciosamente = useCallback(async () => {
     try {
-      const res = await fetch(`${API_BASE}/api/responsavel/alunos/${alunoId}/mensagem/professor`);
+      const res = await fetch(`${API_BASE}/api/responsavel/alunos/${alunoId}/mensagem/professor`, { credentials: "include" });
       if (!res.ok) return;
       setConversas(await res.json());
     } catch {
@@ -77,7 +77,7 @@ export default function MensagemProfessorListaPage() {
   useEffect(() => {
     async function init() {
       try {
-        const authRes = await fetch(`${API_BASE}/api/responsavel/auth`);
+        const authRes = await fetch(`${API_BASE}/api/responsavel/auth`, { credentials: "include" });
         const authData = await authRes.json();
         if (!authData.return) {
           router.push("/responsavel/login");
