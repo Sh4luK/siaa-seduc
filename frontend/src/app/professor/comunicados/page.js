@@ -28,7 +28,7 @@ export default function ComunicadosPage() {
   useEffect(() => {
     async function init() {
       try {
-        const authRes = await fetch(`${API_BASE}/api/teacher/auth`);
+        const authRes = await fetch(`${API_BASE}/api/teacher/auth`, { credentials: "include" });
         const authData = await authRes.json();
 
         if (!authData.return) {
@@ -41,7 +41,7 @@ export default function ComunicadosPage() {
 
         // Reaproveita o mesmo endpoint usado pela coordenação para listar
         // comunicados, filtrando aqui só os emitidos pela coordenação.
-        const comunicadosRes = await fetch(`${API_BASE}/api/coordenacao/comunicados`);
+        const comunicadosRes = await fetch(`${API_BASE}/api/coordenacao/comunicados`, { credentials: "include" });
         if (!comunicadosRes.ok) throw new Error(`Falha ao buscar comunicados (status ${comunicadosRes.status})`);
         const comunicadosData = await comunicadosRes.json();
 
