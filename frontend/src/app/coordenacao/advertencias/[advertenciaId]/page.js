@@ -32,7 +32,7 @@ export default function AdvertenciaDetalhePage() {
   useEffect(() => {
     async function init() {
       try {
-        const authRes = await fetch(`${API_BASE}/api/coordenacao/auth`);
+        const authRes = await fetch(`${API_BASE}/api/coordenacao/auth`, { credentials: "include" });
         const authData = await authRes.json();
 
         if (!authData.return) {
@@ -42,7 +42,7 @@ export default function AdvertenciaDetalhePage() {
         }
         setAuthenticated(true);
 
-        const res = await fetch(`${API_BASE}/api/coordenacao/advertencias/${advertenciaId}`);
+        const res = await fetch(`${API_BASE}/api/coordenacao/advertencias/${advertenciaId}`, { credentials: "include" });
         if (!res.ok) {
           const corpoErro = await res.text();
           let mensagem = "Não foi possível carregar o registro.";
