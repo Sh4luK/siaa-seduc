@@ -6174,3 +6174,173 @@ def boletim_aluno_pdf_responsavel(request, aluno_id):
     response = HttpResponse(pdf_file, content_type="application/pdf")
     response["Content-Disposition"] = f'inline; filename="{nome_arquivo}"'
     return response
+
+
+@csrf_exempt
+@require_http_methods(["GET"])
+def horarios_professor(request):
+    """Grade de horários do professor autenticado, com turma + disciplina em cada aula
+    (diferente do horário de uma turma específica, aqui o professor pode ter
+    turmas diferentes em cada slot da semana)."""
+    professor = _professor_logado(request)
+    if not professor:
+        return JsonResponse({"detail": "Não autenticado."}, status=401)
+
+    vinculos = AtravessaPor.objects.filter(professor=professor)
+    horarios = HorarioAula.objects.filter(turma__in=vinculos).select_related("turma").order_by(
+        "dia_semana", "hora_inicio"
+    )
+
+    resultado = []
+    for h in horarios:
+        disciplina = resolver_disciplina_da_turma(h.turma)
+        resultado.append({
+            "id": h.id,
+            "dia_semana": h.dia_semana,
+            "hora_inicio": h.hora_inicio.strftime("%H:%M") if h.hora_inicio else None,
+            "hora_fim": h.hora_fim.strftime("%H:%M") if h.hora_fim else None,
+            "turma": h.turma.turma,
+            "disciplina": disciplina.nome_disciplina if disciplina else h.turma.disciplina_lecionada,
+        })
+
+    return JsonResponse({"horarios": resultado})
+
+
+# ---------- Coordenação: edição do horário de um professor específico ----------
+
+@csrf_exempt
+@require_http_methods(["GET"])
+def get_horarios_professor_coordenacao(request, professor_id):
+    """Retorna a grade atual do professor, já com a atravessa_por_id de cada
+    célula preenchida (necessário pro frontend saber o que já está selecionado)."""
+    professor = Professor.objects.filter(id=professor_id).first()
+    if not professor:
+        return JsonResponse({"message": "Professor não encontrado."}, status=404)
+
+    vinculos = AtravessaPor.objects.filter(professor=professor)
+    horarios = HorarioAula.objects.filter(turma__in=vinculos).select_related("turma").order_by(
+        "dia_semana", "hora_inicio"
+    )
+
+    resultado = []
+    for h in horarios:
+        disciplina = resolver_disciplina_da_turma(h.turma)
+        resultado.append({
+            "id": h.id,
+            "atravessa_por_id": h.turma_id,
+            "dia_semana": h.dia_semana,
+            "hora_inicio": h.hora_inicio.strftime("%H:%M"),
+            "hora_fim": h.hora_fim.strftime("%H:%M"),
+            "turma": h.turma.turma,
+            "disciplina": disciplina.nome_disciplina if disciplina else h.turma.disciplina_lecionada,
+        })
+
+    return JsonResponse({
+        "professor": {"id": professor.id, "nome_completo": professor.nome_completo},
+        "total_horarios": len(resultado),
+        "horarios": resultado,
+    })
+
+
+@csrf_exempt
+@require_http_methods(["GET"])
+def get_opcoes_horario_professor(request, professor_id):
+    """Lista as combinações turma+disciplina que esse professor leciona —
+    equivalente ao get_opcoes_horario_turma, só que o eixo é o professor,
+    não a turma: cada opção já traz QUAL turma e QUAL disciplina, porque
+    um mesmo professor pode lecionar em turmas diferentes."""
+    professor = Professor.objects.filter(id=professor_id).first()
+    if not professor:
+        return JsonResponse({"message": "Professor não encontrado."}, status=404)
+
+    registros = AtravessaPor.objects.filter(professor=professor)
+    if not registros.exists():
+        return JsonResponse(
+            {"message": "Este professor não possui turmas/disciplinas vinculadas."},
+            status=404
+        )
+
+    resultado = []
+    for r in registros:
+        disciplina = resolver_disciplina_da_turma(r)
+        resultado.append({
+            "atravessa_por_id": r.id,
+            "turma": r.turma,
+            "disciplina": disciplina.nome_disciplina if disciplina else r.disciplina_lecionada,
+        })
+
+    return JsonResponse({"opcoes": resultado})
+
+
+@csrf_exempt
+def salvar_horario_professor(request, professor_id):
+    """
+    Salva a grade de horários de UM professor. Diferente de salvar_horario_turma
+    (que limpa e recria por turma+dia+hora), aqui a limpeza é por
+    PROFESSOR+dia+hora — isso garante, por construção, que o mesmo professor
+    nunca fica com duas turmas atribuídas no mesmo horário: ao salvar uma
+    célula, qualquer atribuição anterior desse professor naquele slot (esteja
+    ela em qual turma for) é removida antes de criar a nova.
+    """
+    if request.method != "POST":
+        return JsonResponse({"message": "Método não permitido."}, status=405)
+
+    professor = Professor.objects.filter(id=professor_id).first()
+    if not professor:
+        return JsonResponse({"message": "Professor não encontrado."}, status=404)
+
+    try:
+        body = json.loads(request.body)
+    except json.JSONDecodeError:
+        return JsonResponse({"message": "JSON inválido."}, status=400)
+
+    atribuicoes = body.get("atribuicoes", [])
+    if not atribuicoes:
+        return JsonResponse({"message": "Nenhuma atribuição enviada."}, status=400)
+
+    dias_validos = dict(HorarioAula.DIA_CHOICES).keys()
+    vinculos_professor_ids = set(
+        AtravessaPor.objects.filter(professor=professor).values_list("id", flat=True)
+    )
+
+    erros = []
+    total_salvos = 0
+    total_removidos = 0
+
+    for item in atribuicoes:
+        dia = item.get("dia_semana")
+        hora_inicio_str = item.get("hora_inicio")
+        hora_fim_str = item.get("hora_fim")
+        atravessa_por_id = item.get("atravessa_por_id")
+
+        if dia not in dias_validos or not hora_inicio_str or not hora_fim_str:
+            erros.append(f"Célula inválida ignorada: {item}")
+            continue
+
+        # Remove qualquer aula já atribuída a ESTE professor nessa célula,
+        # independente de qual turma estava associada antes.
+        HorarioAula.objects.filter(
+            turma__professor=professor, dia_semana=dia, hora_inicio=hora_inicio_str
+        ).delete()
+        total_removidos += 1
+
+        if atravessa_por_id:
+            if atravessa_por_id not in vinculos_professor_ids:
+                erros.append(f"Vínculo {atravessa_por_id} não pertence a este professor — ignorado.")
+                continue
+
+            atravessa_por = AtravessaPor.objects.get(id=atravessa_por_id)
+
+            HorarioAula.objects.create(
+                turma=atravessa_por,
+                dia_semana=dia,
+                hora_inicio=hora_inicio_str,
+                hora_fim=hora_fim_str,
+            )
+            total_salvos += 1
+
+    return JsonResponse({
+        "message": "Grade de horários do professor salva com sucesso.",
+        "total_salvos": total_salvos,
+        "erros": erros,
+    })
