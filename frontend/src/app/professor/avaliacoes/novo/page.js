@@ -45,7 +45,7 @@ export default function NovaAvaliacaoPage() {
   useEffect(() => {
     async function init() {
       try {
-        const authRes = await fetch(`${API_BASE}/api/teacher/auth`);
+        const authRes = await fetch(`${API_BASE}/api/teacher/auth`, { credentials: "include" });
         const authData = await authRes.json();
 
         if (!authData.return) {
@@ -53,7 +53,7 @@ export default function NovaAvaliacaoPage() {
           return;
         }
 
-        const opcoesRes = await fetch(`${API_BASE}/api/teacher/opcoes-avaliacao`);
+        const opcoesRes = await fetch(`${API_BASE}/api/teacher/opcoes-avaliacao`, { credentials: "include" });
         if (!opcoesRes.ok) throw new Error(`Falha ao buscar opções (status ${opcoesRes.status})`);
         const opcoesData = await opcoesRes.json();
 
@@ -148,6 +148,7 @@ export default function NovaAvaliacaoPage() {
     try {
       const res = await fetch(`${API_BASE}/api/teacher/avaliacoes`, {
         method: "POST",
+        credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           titulo: titulo.trim(),
