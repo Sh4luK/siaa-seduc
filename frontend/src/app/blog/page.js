@@ -23,11 +23,11 @@ export default function BlogPage() {
   useEffect(() => {
     async function init() {
       try {
-        const authRes = await fetch(`${API_BASE}/api/blog/auth`);
+        const authRes = await fetch(`${API_BASE}/api/blog/auth`, { credentials: "include" });
         const authData = await authRes.json();
         setUsuario(authData.return ? authData.usuario : null);
 
-        const res = await fetch(`${API_BASE}/api/blog/posts`);
+        const res = await fetch(`${API_BASE}/api/blog/posts`, { credentials: "include" });
         const data = await res.json();
         setPosts(data.posts || []);
       } finally {
@@ -54,10 +54,10 @@ export default function BlogPage() {
     );
 
     try {
-      await fetch(`${API_BASE}/api/blog/posts/${postId}/curtir`, { method: "POST" });
+      await fetch(`${API_BASE}/api/blog/posts/${postId}/curtir`, { method: "POST", credentials: "include" });
     } catch (error) {
       // Se falhar, recarrega a lista pra corrigir o estado otimista.
-      const res = await fetch(`${API_BASE}/api/blog/posts`);
+      const res = await fetch(`${API_BASE}/api/blog/posts`, { credentials: "include" });
       const data = await res.json();
       setPosts(data.posts || []);
     }
