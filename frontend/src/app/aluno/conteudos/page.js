@@ -30,7 +30,7 @@ export default function ConteudosAlunoPage() {
   useEffect(() => {
     async function init() {
       try {
-        const authRes = await fetch(`${API_BASE}/api/students/auth`);
+        const authRes = await fetch(`${API_BASE}/api/students/auth`, { credentials: "include" });
         const authData = await authRes.json();
 
         if (!authData.return) {
@@ -41,7 +41,7 @@ export default function ConteudosAlunoPage() {
         setNomeCompleto(authData.student?.nome_completo || "");
         setTurma(authData.student?.turma || "");
 
-        const res = await fetch(`${API_BASE}/api/students/conteudos`);
+        const res = await fetch(`${API_BASE}/api/students/conteudos`, { credentials: "include" });
         if (!res.ok) throw new Error(`Falha ao buscar conteúdos (status ${res.status})`);
         const data = await res.json();
         setConteudos(data.conteudos || []);
