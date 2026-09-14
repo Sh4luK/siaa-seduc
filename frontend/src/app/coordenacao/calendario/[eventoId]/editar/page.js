@@ -28,7 +28,7 @@ export default function EditarEventoPage() {
   useEffect(() => {
     async function init() {
       try {
-        const authRes = await fetch(`${API_BASE}/api/coordenacao/auth`);
+        const authRes = await fetch(`${API_BASE}/api/coordenacao/auth`, { credentials: "include" });
         const authData = await authRes.json();
 
         if (!authData.return) {
@@ -37,8 +37,8 @@ export default function EditarEventoPage() {
         }
 
         const [turmasRes, eventoRes] = await Promise.all([
-          fetch(`${API_BASE}/api/coordenacao/professores`),
-          fetch(`${API_BASE}/api/coordenacao/calendario/eventos/${eventoId}`),
+          fetch(`${API_BASE}/api/coordenacao/professores`, { credentials: "include" }),
+          fetch(`${API_BASE}/api/coordenacao/calendario/eventos/${eventoId}`, { credentials: "include" }),
         ]);
 
         if (turmasRes.ok) {
@@ -98,6 +98,7 @@ export default function EditarEventoPage() {
     try {
       const res = await fetch(`${API_BASE}/api/coordenacao/calendario/eventos/${eventoId}/editar`, {
         method: "POST",
+        credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           titulo: form.titulo.trim(),
