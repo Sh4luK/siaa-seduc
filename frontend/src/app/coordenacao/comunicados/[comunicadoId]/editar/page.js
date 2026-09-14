@@ -33,7 +33,7 @@ export default function EditarComunicadoPage() {
   useEffect(() => {
     async function init() {
       try {
-        const authRes = await fetch(`${API_BASE}/api/coordenacao/auth`);
+        const authRes = await fetch(`${API_BASE}/api/coordenacao/auth`, { credentials: "include" });
         const authData = await authRes.json();
 
         if (!authData.return) {
@@ -44,8 +44,8 @@ export default function EditarComunicadoPage() {
         setAuthenticated(true);
 
         const [profRes, comunicadoRes] = await Promise.all([
-          fetch(`${API_BASE}/api/coordenacao/professores-simples`),
-          fetch(`${API_BASE}/api/coordenacao/comunicados/${comunicadoId}`),
+          fetch(`${API_BASE}/api/coordenacao/professores-simples`, { credentials: "include" }),
+          fetch(`${API_BASE}/api/coordenacao/comunicados/${comunicadoId}`, { credentials: "include" }),
         ]);
 
         const profData = await profRes.json();
@@ -83,7 +83,8 @@ export default function EditarComunicadoPage() {
       setCarregandoTurmas(true);
       try {
         const res = await fetch(
-          `${API_BASE}/api/coordenacao/professores/${professorId}/turmas`
+          `${API_BASE}/api/coordenacao/professores/${professorId}/turmas`,
+          { credentials: "include" }
         );
         const data = await res.json();
         setTurmas(data.turmas || []);
@@ -117,6 +118,7 @@ export default function EditarComunicadoPage() {
         `${API_BASE}/api/coordenacao/comunicados/${comunicadoId}/editar`,
         {
           method: "POST",
+          credentials: "include",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             titulo: titulo.trim(),
