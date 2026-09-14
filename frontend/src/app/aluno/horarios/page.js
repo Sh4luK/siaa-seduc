@@ -27,7 +27,7 @@ export default function HorariosAlunoPage() {
   useEffect(() => {
     async function init() {
       try {
-        const authRes = await fetch(`${API_BASE}/api/students/auth`);
+        const authRes = await fetch(`${API_BASE}/api/students/auth`, { credentials: "include" });
         const authData = await authRes.json();
 
         if (!authData.return) {
@@ -38,7 +38,7 @@ export default function HorariosAlunoPage() {
         setNomeCompleto(authData.student?.nome_completo || "");
         setTurma(authData.student?.turma || "");
 
-        const res = await fetch(`${API_BASE}/api/students/horarios`);
+        const res = await fetch(`${API_BASE}/api/students/horarios`, { credentials: "include" });
         if (!res.ok) throw new Error(`Falha ao buscar horários (status ${res.status})`);
         const data = await res.json();
         setHorarios(data.horarios || []);
