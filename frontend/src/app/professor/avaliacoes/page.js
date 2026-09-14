@@ -42,7 +42,7 @@ export default function AvaliacoesPage() {
           try {
             const json = JSON.parse(corpoErro);
             if (json.message) msg = json.message;
-          } catch {}
+          } catch { }
           throw new Error(msg);
         }
 
@@ -137,6 +137,10 @@ export default function AvaliacoesPage() {
             <Link href="/professor/notas" className={layoutStyles.navLink}>
               <i className="ti ti-edit" aria-hidden="true" />
               Lançar notas
+            </Link>
+            <Link href="/professor/horarios" className={layoutStyles.navLink}>
+              <i className="ti ti-clock" aria-hidden="true" />
+              Horários
             </Link>
             <Link href="/professor/mensagem" className={layoutStyles.navLink}>
               <i className="ti ti-clock" aria-hidden="true" />
