@@ -22,7 +22,7 @@ export default function DeletarAdvertenciaPage() {
   useEffect(() => {
     async function init() {
       try {
-        const authRes = await fetch(`${API_BASE}/api/coordenacao/auth`);
+        const authRes = await fetch(`${API_BASE}/api/coordenacao/auth`, { credentials: "include" });
         const authData = await authRes.json();
 
         if (!authData.return) {
@@ -32,7 +32,7 @@ export default function DeletarAdvertenciaPage() {
         }
         setAuthenticated(true);
 
-        const res = await fetch(`${API_BASE}/api/coordenacao/advertencias/${advertenciaId}`);
+        const res = await fetch(`${API_BASE}/api/coordenacao/advertencias/${advertenciaId}`, { credentials: "include" });
         if (!res.ok) throw new Error("Registro não encontrado.");
         const data = await res.json();
         setAdvertencia(data.advertencia);
@@ -52,7 +52,7 @@ export default function DeletarAdvertenciaPage() {
     try {
       const res = await fetch(
         `${API_BASE}/api/coordenacao/advertencias/${advertenciaId}/deletar`,
-        { method: "DELETE" }
+        { method: "DELETE", credentials: "include" }
       );
 
       if (!res.ok) {
