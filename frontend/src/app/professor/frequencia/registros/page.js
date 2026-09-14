@@ -28,7 +28,7 @@ export default function RegistrosFrequenciaPage() {
   useEffect(() => {
     async function init() {
       try {
-        const authRes = await fetch(`${API_BASE}/api/teacher/auth`);
+        const authRes = await fetch(`${API_BASE}/api/teacher/auth`, { credentials: "include" });
         const authData = await authRes.json();
 
         if (!authData.return) {
@@ -40,7 +40,8 @@ export default function RegistrosFrequenciaPage() {
         setNomeCompleto(authData.teacher.nome_completo);
 
         const registrosRes = await fetch(
-          `${API_BASE}/api/teacher/frequencia/registros?professor=${authData.teacher.id}`
+          `${API_BASE}/api/teacher/frequencia/registros?professor=${authData.teacher.id}`, 
+          { credentials: "include" }
         );
         if (!registrosRes.ok) throw new Error(`Falha ao buscar registros (status ${registrosRes.status})`);
         const registrosData = await registrosRes.json();
