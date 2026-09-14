@@ -139,7 +139,7 @@ export default function EditarHorarioTurmaPage() {
   useEffect(() => {
     async function init() {
       try {
-        const authRes = await fetch(`${API_BASE}/api/coordenacao/auth`);
+        const authRes = await fetch(`${API_BASE}/api/coordenacao/auth`, { credentials: "include" });
         const authData = await authRes.json();
 
         if (!authData.return) {
@@ -150,8 +150,8 @@ export default function EditarHorarioTurmaPage() {
         setAuthenticated(true);
 
         const [horariosRes, opcoesRes] = await Promise.all([
-          fetch(`${API_BASE}/api/coordenacao/turmas/${encodeURIComponent(nomeTurma)}/horarios`),
-          fetch(`${API_BASE}/api/coordenacao/turmas/${encodeURIComponent(nomeTurma)}/horarios/opcoes`),
+          fetch(`${API_BASE}/api/coordenacao/turmas/${encodeURIComponent(nomeTurma)}/horarios`, { credentials: "include" }),
+          fetch(`${API_BASE}/api/coordenacao/turmas/${encodeURIComponent(nomeTurma)}/horarios/opcoes`, { credentials: "include" }),
         ]);
 
         if (!horariosRes.ok) throw new Error("Não foi possível carregar os horários.");
@@ -212,6 +212,7 @@ export default function EditarHorarioTurmaPage() {
         `${API_BASE}/api/coordenacao/turmas/${encodeURIComponent(nomeTurma)}/horarios/salvar`,
         {
           method: "POST",
+          credentials: "include",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ atribuicoes }),
         }
