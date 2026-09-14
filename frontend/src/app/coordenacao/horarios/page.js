@@ -21,7 +21,7 @@ export default function HorariosCoordenacaoPage() {
   useEffect(() => {
     async function init() {
       try {
-        const authRes = await fetch(`${API_BASE}/api/coordenacao/auth`);
+        const authRes = await fetch(`${API_BASE}/api/coordenacao/auth`, { credentials: "include" });
         const authData = await authRes.json();
 
         if (!authData.return) {
@@ -31,7 +31,7 @@ export default function HorariosCoordenacaoPage() {
         }
         setAuthenticated(true);
 
-        const res = await fetch(`${API_BASE}/api/coordenacao/turmas`);
+        const res = await fetch(`${API_BASE}/api/coordenacao/turmas`, { credentials: "include" });
         if (!res.ok) throw new Error(`Falha ao buscar turmas (status ${res.status})`);
         const data = await res.json();
         setTurmas(data.turmas || []);
