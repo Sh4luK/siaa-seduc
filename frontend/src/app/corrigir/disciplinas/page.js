@@ -24,7 +24,7 @@ export default function CorrigirDisciplinasPage() {
 
   async function carregar() {
     try {
-      const res = await fetch(`${API_BASE}/api/corrigir/disciplinas`);
+      const res = await fetch(`${API_BASE}/api/corrigir/disciplinas`, { credentials: "include" });
       if (!res.ok) throw new Error(`Falha ao buscar (status ${res.status})`);
       const data = await res.json();
       setDisciplinas(data.disciplinas || []);
@@ -37,7 +37,7 @@ export default function CorrigirDisciplinasPage() {
   useEffect(() => {
     async function init() {
       try {
-        const authRes = await fetch(`${API_BASE}/api/coordenacao/auth`);
+        const authRes = await fetch(`${API_BASE}/api/coordenacao/auth`, { credentials: "include" });
         const authData = await authRes.json();
         if (!authData.return) {
           router.push("/coordenacao/login");
@@ -60,6 +60,7 @@ export default function CorrigirDisciplinasPage() {
     try {
       const res = await fetch(`${API_BASE}/api/corrigir/disciplinas/${disciplinaId}/renomear`, {
         method: "POST",
+        credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ nome_disciplina: nomeEdicao.trim() }),
       });
@@ -87,6 +88,7 @@ export default function CorrigirDisciplinasPage() {
       if (disciplinaEscolhida === "__nova__") {
         const resCriar = await fetch(`${API_BASE}/api/corrigir/disciplinas/criar`, {
           method: "POST",
+          credentials: "include",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ nome_disciplina: nomeLecionado }),
         });
@@ -103,6 +105,7 @@ export default function CorrigirDisciplinasPage() {
 
         const res = await fetch(`${API_BASE}/api/corrigir/disciplinas/corrigir-nome-lecionado`, {
           method: "POST",
+          credentials: "include",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ nome_atual: nomeLecionado, nome_correto: disciplina.nome_disciplina }),
         });
