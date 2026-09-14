@@ -36,7 +36,7 @@ from .models import Coordenador
 from .models import Advertencia
 from .models import HorarioAula
 from .models import Blogger
-from .models import SessaoBlog
+from .models import Sessao
 from .models import Curtida
 from .models import Comentario
 from .models import Post
@@ -67,6 +67,92 @@ import json
 load_dotenv()
 
 api = os.getenv("IP_API")
+
+
+# ============================================================
+# AUTENTICAÇÃO POR SESSÃO/COOKIE (substitui a autenticação por IP)
+# ============================================================
+# Cada perfil (aluno, professor, coordenação, responsável, admin) tem seu
+# próprio cookie de sessão, para que um mesmo navegador possa manter mais
+# de um perfil logado ao mesmo tempo sem um sobrescrever o outro.
+# O blog usa seu próprio cookie separado (blog_session), pois quem loga
+# no blog pode ser qualquer um dos quatro tipos de usuário acima.
+
+COOKIE_POR_TIPO = {
+    "ALUNO": "aluno_session",
+    "PROFESSOR": "professor_session",
+    "RESPONSAVEL": "responsavel_session",
+    "COORDENADOR": "coordenacao_session",
+    "ADMIN": "admin_session",
+}
+
+
+def _obter_sessao(request, tipo):
+    """Lê o cookie do tipo pedido e retorna a Sessao correspondente, ou None."""
+    cookie_name = COOKIE_POR_TIPO[tipo]
+    token = request.COOKIES.get(cookie_name)
+    if not token:
+        return None
+    return Sessao.objects.filter(token=token, tipo=tipo).first()
+
+
+def _criar_sessao_e_setar_cookie(response, tipo, referencia_id, nome_completo):
+    """Cria uma nova Sessao e grava o cookie correspondente na resposta."""
+    sessao = Sessao.objects.create(tipo=tipo, referencia_id=referencia_id, nome_completo=nome_completo)
+    response.set_cookie(
+        COOKIE_POR_TIPO[tipo], sessao.token,
+        max_age=60 * 60 * 24 * 30,  # 30 dias
+        httponly=True,
+        samesite="None",
+        secure=True,  # obrigatório com samesite=None sobre HTTPS (Codespaces já é HTTPS)
+    )
+    return sessao
+
+
+def _aluno_logado(request):
+    sessao = _obter_sessao(request, "ALUNO")
+    if not sessao:
+        return None
+    return Estudante.objects.filter(id=sessao.referencia_id).first()
+
+
+def _professor_logado(request):
+    sessao = _obter_sessao(request, "PROFESSOR")
+    if not sessao:
+        return None
+    return Professor.objects.filter(id=sessao.referencia_id).first()
+
+
+def _professor_atual(request):
+    # Mesmo conceito de _professor_logado — mantido como alias para não
+    # quebrar as views que já chamavam essa função pelo nome antigo.
+    return _professor_logado(request)
+
+
+def _coordenador_logado(request):
+    sessao = _obter_sessao(request, "COORDENADOR")
+    if not sessao:
+        return None
+    return Coordenador.objects.filter(id=sessao.referencia_id).first()
+
+
+def _coordenador_atual(request):
+    return _coordenador_logado(request)
+
+
+def _responsavel_logado(request):
+    sessao = _obter_sessao(request, "RESPONSAVEL")
+    if not sessao:
+        return None
+    return Responsavel.objects.filter(id=sessao.referencia_id).first()
+
+
+def _admin_logado(request):
+    sessao = _obter_sessao(request, "ADMIN")
+    if not sessao:
+        return None
+    return Admin.objects.filter(id=sessao.referencia_id).first()
+
 
 @csrf_exempt
 def index(request):
@@ -166,45 +252,35 @@ def search_student(request):
 
 @csrf_exempt
 def login_student(request):
-    ip_student = get_ip(request)
-    print(ip_student)
     fullName = request.GET.get("fullname").strip().upper()
     password = request.GET.get("password").strip().lower()
-    
+
     student = Estudante.objects.filter(nome_completo=fullName, senha=password).first()
-    print({
-        fullName,
-        password
-    })
-    print(student)
-    print(ip_student)
+
     if student is None:
         return JsonResponse({
             "return": False
         })
-    else:
-        update = Estudante.objects.filter(nome_completo=fullName, senha=password).update(ip=ip_student)
-        return JsonResponse({
-            "return": True
-        })
+
+    response = JsonResponse({
+        "return": True
+    })
+    _criar_sessao_e_setar_cookie(response, "ALUNO", student.id, student.nome_completo)
+    return response
     
     
 @csrf_exempt
 def auth_student(request):
-    ip_student = get_ip(request)
-    print(ip_student)
-    student = Estudante.objects.filter(ip=ip_student).first()
+    student = _aluno_logado(request)
+    if student is None:
+        return JsonResponse({
+            "return": False
+        })
     try:
-        student = model_to_dict(student)
-        if student is None:
-            return JsonResponse({
-                "return": False
-            })
-        else:
-            return JsonResponse({
-                "student": student,
-                "return": True
-            })
+        return JsonResponse({
+            "student": model_to_dict(student),
+            "return": True
+        })
     except:
         return JsonResponse({
             "message": "Usuario nao encontrado.",
@@ -215,43 +291,34 @@ def auth_student(request):
 
 @csrf_exempt
 def login_teacher(request):
-    ip = get_ip(request)
-    print(ip)
     nome_completo = request.GET.get("nome_completo").strip().upper()
     senha = request.GET.get("senha").strip().upper()
 
-
     getProfessor = Professor.objects.filter(nome_completo=nome_completo, senha=senha).first()
-
-    print(getProfessor)
 
     if getProfessor is None:
         return JsonResponse({
             "return": False
         })
-    else:
-        updateProfessor = Professor.objects.filter(nome_completo=nome_completo, senha=senha).update(ip=ip)
-        return JsonResponse({
-            "return": True
-        })
+
+    response = JsonResponse({
+        "return": True
+    })
+    _criar_sessao_e_setar_cookie(response, "PROFESSOR", getProfessor.id, getProfessor.nome_completo)
+    return response
 
 @csrf_exempt
 def auth_teacher(request):
-    ip = get_ip(request)
-    teacher = Professor.objects.filter(ip=ip).first()
-    print(teacher)
+    teacher = _professor_logado(request)
+    if teacher is None:
+        return JsonResponse({
+            "return": False
+        })
     try:
-        teacher = model_to_dict(teacher)
-        print(teacher)
-        if teacher is None:
-            return JsonResponse({
-                "return": False
-            })
-        else:
-            return JsonResponse({
-                "return": True,
-                "teacher": teacher
-            })
+        return JsonResponse({
+            "return": True,
+            "teacher": model_to_dict(teacher)
+        })
     except:
         return JsonResponse({
             "return": None,
@@ -769,8 +836,7 @@ def salvar_notas_turma(request):
 
 @csrf_exempt
 def get_boletim_aluno(request):
-    ip_aluno = get_ip()
-    aluno = Estudante.objects.filter(ip=ip_aluno).first()
+    aluno = _aluno_logado(request)
 
     if not aluno:
         return JsonResponse({"message": "Aluno não autenticado."}, status=401)
@@ -1498,7 +1564,6 @@ def deletar_comunicado(request, comunicado_id):
 
 @csrf_exempt
 def login_coordenacao(request):
-    ip = get_ip(request)
     nome_completo = request.GET.get("nome_completo").strip().upper()
     senha = request.GET.get("senha").strip()
 
@@ -1508,20 +1573,19 @@ def login_coordenacao(request):
         return JsonResponse({
             "return": False
         })
-    else:
-        Coordenador.objects.filter(nome_completo=nome_completo, senha=senha).update(ip=ip)
-        return JsonResponse({
-            "return": True
-        })
+
+    response = JsonResponse({
+        "return": True
+    })
+    _criar_sessao_e_setar_cookie(response, "COORDENADOR", coordenador.id, coordenador.nome_completo)
+    return response
 
 
 @csrf_exempt
 def auth_coordenacao(request):
-    ip = get_ip(request)
-    coordenador = Coordenador.objects.filter(ip=ip).first()
+    coordenador = _coordenador_logado(request)
 
     try:
-        coordenador_dict = model_to_dict(coordenador)
         if coordenador is None:
             return JsonResponse({
                 "return": False
@@ -1529,7 +1593,7 @@ def auth_coordenacao(request):
         else:
             return JsonResponse({
                 "return": True,
-                "coordenador": coordenador_dict
+                "coordenador": model_to_dict(coordenador)
             })
     except:
         return JsonResponse({
@@ -1645,8 +1709,7 @@ def criar_professor(request):
 
 @csrf_exempt
 def get_escola_coordenador(request):
-    ip = get_ip(request)
-    coordenador = Coordenador.objects.filter(ip=ip).first()
+    coordenador = _coordenador_logado(request)
 
     if not coordenador:
         return JsonResponse({"return": False}, status=401)
@@ -2270,8 +2333,7 @@ def criar_evento_coordenacao(request):
     if request.method != "POST":
         return JsonResponse({"message": "Método não permitido."}, status=405)
 
-    ip = get_ip(request)
-    coordenador = Coordenador.objects.filter(ip=ip).first()
+    coordenador = _coordenador_logado(request)
 
     if not coordenador:
         return JsonResponse({"message": "Coordenador não autenticado."}, status=401)
@@ -2489,8 +2551,7 @@ def criar_comunicado_coordenacao(request):
     if request.method != "POST":
         return JsonResponse({"message": "Método não permitido."}, status=405)
 
-    ip = get_ip(request)
-    coordenador = Coordenador.objects.filter(ip=ip).first()
+    coordenador = _coordenador_logado(request)
 
     if not coordenador:
         return JsonResponse({"message": "Coordenador não autenticado."}, status=401)
@@ -2675,8 +2736,7 @@ def criar_advertencia_coordenacao(request):
     if request.method != "POST":
         return JsonResponse({"message": "Método não permitido."}, status=405)
 
-    ip = get_ip(request)
-    coordenador = Coordenador.objects.filter(ip=ip).first()
+    coordenador = _coordenador_logado(request)
     if not coordenador:
         return JsonResponse({"message": "Coordenador não autenticado."}, status=401)
 
@@ -3210,8 +3270,7 @@ def mover_aluno_turma(request, aluno_id):
 
 @csrf_exempt
 def get_eventos_professor_visualizacao(request):
-    ip = get_ip(request)
-    professor = Professor.objects.filter(ip=ip).first()
+    professor = _professor_logado(request)
 
     if not professor:
         return JsonResponse({"message": "Professor não autenticado."}, status=401)
@@ -3313,34 +3372,6 @@ def renomear_disciplina_coordenacao(request, disciplina_id):
 
     return JsonResponse({"message": "Disciplina renomeada com sucesso."})
 
-# @csrf_exempt
-# def login_blogger(request):
-#     ip = get_ip(request)
-#     nome_completo = request.GET.get("nome_completo").strip().upper()
-#     senha = request.GET.get("senha").strip()
-
-#     blogger = Blogger.objects.filter(nome_completo=nome_completo, senha=senha).first()
-
-#     if blogger is None:
-#         return JsonResponse({"return": False})
-
-#     Blogger.objects.filter(nome_completo=nome_completo, senha=senha).update(ip=ip)
-#     return JsonResponse({"return": True})
-
-
-# @csrf_exempt
-# def auth_blogger(request):
-#     ip = get_ip(request)
-#     blogger = Blogger.objects.filter(ip=ip).first()
-
-#     if blogger is None:
-#         return JsonResponse({"return": False})
-
-#     return JsonResponse({
-#         "return": True,
-#         "blogger": {"id": blogger.id, "nome_completo": blogger.nome_completo}
-#     })
-
 
 MODELOS_POR_TIPO_BLOG = {
     "ALUNO": Estudante,
@@ -3351,9 +3382,10 @@ MODELOS_POR_TIPO_BLOG = {
 
 
 def _sessao_blog_atual(request):
-    ip = get_ip(request)
-    return SessaoBlog.objects.filter(ip=ip).first()
-
+    token = request.COOKIES.get("blog_session")
+    if not token:
+        return None
+    return Sessao.objects.filter(token=token).first()
 
 
 @csrf_exempt
@@ -3372,13 +3404,17 @@ def blog_login(request):
     if not usuario:
         return JsonResponse({"return": False, "detail": "Nome ou senha inválidos."}, status=401)
 
-    ip = get_ip(request)
-    SessaoBlog.objects.update_or_create(
-        ip=ip,
-        defaults={"tipo": tipo, "referencia_id": usuario.id, "nome_completo": usuario.nome_completo},
-    )
+    sessao = Sessao.objects.create(tipo=tipo, referencia_id=usuario.id, nome_completo=usuario.nome_completo)
 
-    return JsonResponse({"return": True, "usuario": {"nome_completo": usuario.nome_completo, "tipo": tipo}})
+    response = JsonResponse({"return": True, "usuario": {"nome_completo": usuario.nome_completo, "tipo": tipo}})
+    response.set_cookie(
+        "blog_session", sessao.token,
+        max_age=60 * 60 * 24 * 30,
+        httponly=True,
+        samesite="None",
+        secure=True,
+    )
+    return response
 
 
 @csrf_exempt
@@ -3408,19 +3444,7 @@ def get_posts(request):
             curtido_por_mim = Curtida.objects.filter(
                 post=p, autor_tipo=sessao.tipo, autor_id=sessao.referencia_id
             ).exists()
-        # resultado.append({
-        #     "id": p.id,
-        #     "titulo": p.titulo,
-        #     "resumo": (p.conteudo[:220] + "…") if len(p.conteudo) > 220 else p.conteudo,
-        #     "tempo_leitura": p.tempo_leitura,
-        #     "data_criacao": p.data_criacao.isoformat(),
-        #     "autor_nome": p.autor_nome,
-        #     "autor_tipo": p.autor_tipo,
-        #     "total_curtidas": p.curtidas.count(),
-        #     "total_comentarios": p.comentarios.count(),
-        #     "curtido_por_mim": curtido_por_mim,
-        #     "imagem_url": caminho_relativo_arquivo(p.imagem) if p.imagem else None,
-        # })
+
         resultado.append({
             "id": p.id,
             "titulo": p.titulo,
@@ -3430,15 +3454,13 @@ def get_posts(request):
             "data_criacao": p.data_criacao.isoformat(),
             "autor_nome": p.autor_nome,
             "autor_tipo": p.autor_tipo,
-            "autor_id": p.autor_id,          # <- linha que faltava
+            "autor_id": p.autor_id,
             "total_curtidas": p.curtidas.count(),
             "total_comentarios": p.comentarios.count(),
             "curtido_por_mim": curtido_por_mim,
         })
 
     return JsonResponse({"total_posts": len(resultado), "posts": resultado})
-
-
 
 
 @csrf_exempt
@@ -3465,21 +3487,6 @@ def get_post_detalhe(request, post_id):
         for c in post.comentarios.all()
     ]
 
-    # return JsonResponse({
-    #     "post": {
-    #         "id": post.id,
-    #         "titulo": post.titulo,
-    #         "conteudo": post.conteudo,
-    #         "tempo_leitura": post.tempo_leitura,
-    #         "data_criacao": post.data_criacao.isoformat(),
-    #         "autor_nome": post.autor_nome,
-    #         "autor_tipo": post.autor_tipo,
-    #         "total_curtidas": post.curtidas.count(),
-    #         "curtido_por_mim": curtido_por_mim,
-    #         "imagem_url": caminho_relativo_arquivo(post.imagem) if post.imagem else None,
-    #     },
-    #     "comentarios": comentarios,
-    # })
     return JsonResponse({
         "post": {
             "id": post.id,
@@ -3490,7 +3497,7 @@ def get_post_detalhe(request, post_id):
             "data_criacao": post.data_criacao.isoformat(),
             "autor_nome": post.autor_nome,
             "autor_tipo": post.autor_tipo,
-            "autor_id": post.autor_id,          # <- linha que faltava
+            "autor_id": post.autor_id,
             "total_curtidas": post.curtidas.count(),
             "curtido_por_mim": curtido_por_mim,
         },
@@ -3533,34 +3540,6 @@ def criar_post(request):
     })
 
 
-
-# @csrf_exempt
-# @require_http_methods(["POST"])
-# def editar_post(request, post_id):
-#     sessao = _sessao_blog_atual(request)
-#     if not sessao:
-#         return JsonResponse({"message": "Você precisa estar autenticado."}, status=401)
-
-#     post = Post.objects.filter(id=post_id).first()
-#     if not post:
-#         return JsonResponse({"message": "Post não encontrado."}, status=404)
-
-#     if post.autor_tipo != sessao.tipo or post.autor_id != sessao.referencia_id:
-#         return JsonResponse({"message": "Você não tem permissão para editar este post."}, status=403)
-
-#     body = json.loads(request.body or "{}")
-#     titulo = (body.get("titulo") or "").strip()
-#     conteudo = (body.get("conteudo") or "").strip()
-
-#     if not titulo or not conteudo:
-#         return JsonResponse({"message": "Campos 'titulo' e 'conteudo' são obrigatórios."}, status=400)
-
-#     post.titulo = titulo
-#     post.conteudo = conteudo
-#     post.save()
-
-#     return JsonResponse({"message": "Post atualizado com sucesso."})
-
 @csrf_exempt
 @require_http_methods(["POST"])
 def editar_post(request, post_id):
@@ -3584,7 +3563,7 @@ def editar_post(request, post_id):
         return JsonResponse({"message": "Campos 'titulo' e 'conteudo' são obrigatórios."}, status=400)
 
     post.titulo = titulo
-    post.conteudo = conteudo  # markdown puro — nenhuma conversão acontece no backend
+    post.conteudo = conteudo
 
     if nova_imagem:
         post.imagem = nova_imagem
@@ -3614,7 +3593,6 @@ def deletar_post(request, post_id):
     return JsonResponse({"message": "Post removido com sucesso."})
 
 
-
 @csrf_exempt
 @require_http_methods(["POST"])
 def curtir_post(request, post_id):
@@ -3635,7 +3613,6 @@ def curtir_post(request, post_id):
         curtido = True
 
     return JsonResponse({"curtido": curtido, "total_curtidas": post.curtidas.count()})
-
 
 
 @csrf_exempt
@@ -3665,7 +3642,6 @@ def comentar_post(request, post_id):
     }, status=201)
 
 
-
 @csrf_exempt
 @require_http_methods(["DELETE"])
 def deletar_comentario(request, comentario_id):
@@ -3682,11 +3658,6 @@ def deletar_comentario(request, comentario_id):
 
     comentario.delete()
     return JsonResponse({"message": "Comentário removido."})
-
-
-def _professor_atual(request):
-    ip = get_ip(request)
-    return Professor.objects.filter(ip=ip).first()
 
 
 @csrf_exempt
@@ -3867,10 +3838,6 @@ def opcoes_avaliacao(request):
         "disciplinas_por_turma": disciplinas_por_turma,
     })
 
-def _coordenador_atual(request):
-    ip = get_ip(request)
-    return Coordenador.objects.filter(ip=ip).first()
-
 
 @csrf_exempt
 def get_avaliacoes_coordenacao(request):
@@ -3992,8 +3959,7 @@ def avaliacao_emitir_pdf_coordenacao(request, avaliacao_id):
 
 @csrf_exempt
 def get_avaliacoes_professor(request):
-    ip = get_ip(request)
-    professor = Professor.objects.filter(ip=ip).first()
+    professor = _professor_logado(request)
     if not professor:
         return JsonResponse({"message": "Professor não autenticado."}, status=401)
 
@@ -4023,8 +3989,7 @@ def criar_avaliacao(request):
     if request.method != "POST":
         return JsonResponse({"message": "Método não permitido."}, status=405)
 
-    ip = get_ip(request)
-    professor = Professor.objects.filter(ip=ip).first()
+    professor = _professor_logado(request)
     if not professor:
         return JsonResponse({"message": "Professor não autenticado."}, status=401)
 
@@ -4132,17 +4097,6 @@ def gerar_avaliacao_pdf(request, avaliacao_id):
     response = HttpResponse(pdf_file, content_type="application/pdf")
     response["Content-Disposition"] = f'inline; filename="{nome_arquivo}"'
     return response
-
-
-
-
-# def _coordenador_logado():
-#     ip = get_ip(request)
-#     return Coordenador.objects.filter(ip=ip).first()
-
-def _coordenador_logado(request):
-    ip = get_ip(request)
-    return Coordenador.objects.filter(ip=ip).first()
 
 
 @csrf_exempt
@@ -4269,15 +4223,6 @@ def mensagem_conversa_detalhe(request, conversa_id):
         "conteudo": mensagem.conteudo,
         "data_envio": mensagem.data_envio.isoformat(),
     }, status=201)
-
-
-# def _professor_logado():
-#     ip = get_ip(request)
-#     return Professor.objects.filter(ip=ip).first()
-
-def _professor_logado(request):
-    ip = get_ip(request)
-    return Professor.objects.filter(ip=ip).first()
 
 
 @csrf_exempt
@@ -4424,12 +4369,6 @@ def notas_turma_coordenacao(request, vinculo_id):
     })
 
 
-
-def _admin_logado(request):
-    ip = get_ip(request)
-    return Admin.objects.filter(ip=ip).first()
-
-
 def _nome_escola(escola_str):
     if not escola_str:
         return escola_str
@@ -4447,15 +4386,15 @@ def admin_login(request):
     if not admin:
         return JsonResponse({"return": False, "detail": "Credenciais inválidas."}, status=401)
 
-    admin.ip = get_ip(request)
-    admin.save(update_fields=["ip"])
-    return JsonResponse({"return": True, "admin": {"id": admin.id, "nome_completo": admin.nome_completo}})
+    response = JsonResponse({"return": True, "admin": {"id": admin.id, "nome_completo": admin.nome_completo}})
+    _criar_sessao_e_setar_cookie(response, "ADMIN", admin.id, admin.nome_completo)
+    return response
 
 
 @csrf_exempt
 @require_http_methods(["GET"])
 def admin_auth(request):
-    admin = _admin_logado()
+    admin = _admin_logado(request)
     if not admin:
         return JsonResponse({"return": False})
     return JsonResponse({"return": True, "admin": {"id": admin.id, "nome_completo": admin.nome_completo}})
@@ -4464,7 +4403,7 @@ def admin_auth(request):
 @csrf_exempt
 @require_http_methods(["GET"])
 def admin_escolas_opcoes(request):
-    if not _admin_logado():
+    if not _admin_logado(request):
         return JsonResponse({"detail": "Não autenticado."}, status=401)
 
     valores = set()
@@ -4484,7 +4423,7 @@ def admin_escolas_opcoes(request):
 @csrf_exempt
 @require_http_methods(["GET", "POST"])
 def admin_coordenadores(request):
-    if not _admin_logado():
+    if not _admin_logado(request):
         return JsonResponse({"detail": "Não autenticado."}, status=401)
 
     if request.method == "GET":
@@ -4509,7 +4448,7 @@ def admin_coordenadores(request):
 @csrf_exempt
 @require_http_methods(["DELETE"])
 def admin_coordenador_excluir(request, coordenador_id):
-    if not _admin_logado():
+    if not _admin_logado(request):
         return JsonResponse({"detail": "Não autenticado."}, status=401)
 
     coordenador = Coordenador.objects.filter(id=coordenador_id).first()
@@ -4523,7 +4462,7 @@ def admin_coordenador_excluir(request, coordenador_id):
 @csrf_exempt
 @require_http_methods(["GET", "POST"])
 def admin_professores(request):
-    if not _admin_logado():
+    if not _admin_logado(request):
         return JsonResponse({"detail": "Não autenticado."}, status=401)
 
     if request.method == "GET":
@@ -4547,7 +4486,7 @@ def admin_professores(request):
 @csrf_exempt
 @require_http_methods(["DELETE"])
 def admin_professor_excluir(request, professor_id):
-    if not _admin_logado():
+    if not _admin_logado(request):
         return JsonResponse({"detail": "Não autenticado."}, status=401)
 
     professor = Professor.objects.filter(id=professor_id).first()
@@ -4567,7 +4506,7 @@ def admin_professor_excluir(request, professor_id):
 @csrf_exempt
 @require_http_methods(["GET", "POST"])
 def admin_alunos(request):
-    if not _admin_logado():
+    if not _admin_logado(request):
         return JsonResponse({"detail": "Não autenticado."}, status=401)
 
     if request.method == "GET":
@@ -4602,7 +4541,7 @@ def admin_alunos(request):
 @csrf_exempt
 @require_http_methods(["DELETE"])
 def admin_aluno_excluir(request, aluno_id):
-    if not _admin_logado():
+    if not _admin_logado(request):
         return JsonResponse({"detail": "Não autenticado."}, status=401)
 
     aluno = Estudante.objects.filter(id=aluno_id).first()
@@ -4619,7 +4558,7 @@ def admin_aluno_excluir(request, aluno_id):
 @csrf_exempt
 @require_http_methods(["GET"])
 def admin_turmas(request):
-    if not _admin_logado():
+    if not _admin_logado(request):
         return JsonResponse({"detail": "Não autenticado."}, status=401)
 
     nomes = set(Estudante.objects.values_list("turma", flat=True))
@@ -4640,7 +4579,7 @@ def admin_turmas(request):
 @csrf_exempt
 @require_http_methods(["POST"])
 def admin_turma_renomear(request):
-    if not _admin_logado():
+    if not _admin_logado(request):
         return JsonResponse({"detail": "Não autenticado."}, status=401)
 
     body = json.loads(request.body or "{}")
@@ -4656,12 +4595,6 @@ def admin_turma_renomear(request):
     return JsonResponse({"alunos_atualizados": qtd_alunos, "vinculos_atualizados": qtd_vinculos})
 
 
-
-def _aluno_logado(request):
-    ip = get_ip(request)
-    return Estudante.objects.filter(ip=ip).first()
-
-
 @csrf_exempt
 @require_http_methods(["GET"])
 def dashboard_aluno(request):
@@ -4669,68 +4602,7 @@ def dashboard_aluno(request):
     if not aluno:
         return JsonResponse({"detail": "Não autenticado."}, status=401)
 
-    notas = Nota.objects.filter(aluno=aluno).select_related("disciplina")
-
-    medias_por_disciplina = []
-    for n in notas:
-        media = n.maf if n.maf is not None else n.ma
-        if media is not None:
-            medias_por_disciplina.append({
-                "disciplina": n.disciplina.nome_disciplina if n.disciplina else None,
-                "media": float(media),
-            })
-
-    media_geral = None
-    if medias_por_disciplina:
-        media_geral = round(
-            sum(m["media"] for m in medias_por_disciplina) / len(medias_por_disciplina), 1
-        )
-
-    atencao_necessaria = [
-        {"disciplina": m["disciplina"], "media": m["media"]}
-        for m in medias_por_disciplina
-        if m["media"] < 6
-    ]
-
-    frequencias = Frequencia.objects.filter(aluno=aluno)
-    total_freq = frequencias.count()
-    presentes = frequencias.filter(presente=True).count()
-    frequencia_percentual = round((presentes / total_freq) * 100, 1) if total_freq else None
-    frequencia_baixa_pe_de_meia = frequencia_percentual is not None and frequencia_percentual < 80
-
-    vinculos_aluno = buscar_atravessapor_por_turma(aluno.turma)
-    hoje = date.today()
-    atividades = Atividade.objects.filter(turma__in=vinculos_aluno).select_related("disciplina")
-
-    pendentes_qs = atividades.filter(data_entrega__gte=hoje).order_by("data_entrega")
-    atrasadas_qs = atividades.filter(data_entrega__lt=hoje)
-    total_pendencias = pendentes_qs.count() + atrasadas_qs.count()
-
-    proximas_entregas = [
-        {
-            "titulo": a.titulo,
-            "disciplina": a.disciplina.nome_disciplina if a.disciplina else None,
-            "data_entrega": a.data_entrega.isoformat() if a.data_entrega else None,
-        }
-        for a in pendentes_qs[:5]
-    ]
-
-    total_conteudos = Conteudo.objects.filter(turma__in=vinculos_aluno).count()
-
-    return JsonResponse({
-        "media_geral": media_geral,
-        "total_pendencias": total_pendencias,
-        "frequencia_percentual": frequencia_percentual,
-        "frequencia_baixa_pe_de_meia": frequencia_baixa_pe_de_meia,
-        "total_conteudos": total_conteudos,
-        "atencao_necessaria": atencao_necessaria[:6],
-        "proximas_entregas": proximas_entregas,
-    })
-
-
-# def _aluno_logado():
-#     ip = get_ip(request)
-#     return Estudante.objects.filter(ip=ip).first()
+    return JsonResponse(_calcular_dashboard(aluno))
 
 
 @csrf_exempt
@@ -4795,28 +4667,6 @@ def atividades_aluno(request):
     return JsonResponse({"atividades": resultado})
 
 
-# @csrf_exempt
-# @require_http_methods(["GET"])
-# def boletim_aluno(request):
-#     aluno = _aluno_logado(request)
-#     if not aluno:
-#         return JsonResponse({"detail": "Não autenticado."}, status=401)
-
-#     notas = Nota.objects.filter(aluno=aluno).select_related("disciplina", "professor").order_by("disciplina__nome_disciplina")
-
-#     return JsonResponse({
-#         "boletim": [
-#             {
-#                 "disciplina": n.disciplina.nome_disciplina if n.disciplina else None,
-#                 "professor_nome": n.professor.nome_completo if n.professor else None,
-#                 "nm1_t1": n.nm1_t1, "nm2_t1": n.nm2_t1, "nm3_t1": n.nm3_t1, "rpt_t1": n.rpt_t1, "mt_t1": n.mt_t1,
-#                 "nm1_t2": n.nm1_t2, "nm2_t2": n.nm2_t2, "nm3_t2": n.nm3_t2, "rpt_t2": n.rpt_t2, "mt_t2": n.mt_t2,
-#                 "nm1_t3": n.nm1_t3, "nm2_t3": n.nm2_t3, "nm3_t3": n.nm3_t3, "rpt_t3": n.rpt_t3, "mt_t3": n.mt_t3,
-#                 "ma": n.ma, "pf": n.pf, "maf": n.maf, "rcf": n.rcf, "tgf": n.tgf, "rf": n.rf,
-#             }
-#             for n in notas
-#         ]
-#     })
 @csrf_exempt
 @require_http_methods(["GET"])
 def boletim_aluno(request):
@@ -5138,12 +4988,6 @@ def solicitacao_responsavel_excluir(request, vinculo_id):
 
     return JsonResponse({"detail": "Removido."})
 
-# def _responsavel_logado():
-#     ip = get_ip(request)
-#     return Responsavel.objects.filter(ip=ip).first()
-def _responsavel_logado(request):
-    ip = get_ip(request)
-    return Responsavel.objects.filter(ip=ip).first()
 
 @csrf_exempt
 @require_http_methods(["GET"])
@@ -5219,7 +5063,6 @@ def registrar_responsavel(request):
 
 @csrf_exempt
 def login_responsavel(request):
-    ip = get_ip(request)
     nome_completo = request.GET.get("nome_completo", "").strip().upper()
     senha = request.GET.get("senha", "").strip()
 
@@ -5228,14 +5071,14 @@ def login_responsavel(request):
     if responsavel is None:
         return JsonResponse({"return": False})
 
-    Responsavel.objects.filter(id=responsavel.id).update(ip=ip)
-    return JsonResponse({"return": True})
+    response = JsonResponse({"return": True})
+    _criar_sessao_e_setar_cookie(response, "RESPONSAVEL", responsavel.id, responsavel.nome_completo)
+    return response
 
 
 @csrf_exempt
 def auth_responsavel(request):
-    ip = get_ip(request)
-    responsavel = Responsavel.objects.filter(ip=ip).first()
+    responsavel = _responsavel_logado(request)
 
     if not responsavel:
         return JsonResponse({"return": False})
@@ -5393,15 +5236,6 @@ def _calcular_dashboard(aluno):
 
 @csrf_exempt
 @require_http_methods(["GET"])
-def dashboard_aluno(request):
-    aluno = _aluno_logado(request)
-    if not aluno:
-        return JsonResponse({"detail": "Não autenticado."}, status=401)
-
-    return JsonResponse(_calcular_dashboard(aluno))
-
-@csrf_exempt
-@require_http_methods(["GET"])
 def dashboard_aluno_responsavel(request, aluno_id):
     responsavel = _responsavel_logado(request)
     if not responsavel:
@@ -5453,28 +5287,6 @@ def _verificar_acesso_responsavel(request, aluno_id):
     return responsavel, vinculo.aluno, None
 
 
-# @csrf_exempt
-# @require_http_methods(["GET"])
-# def boletim_aluno_responsavel(request, aluno_id):
-#     responsavel, aluno, erro = _verificar_acesso_responsavel(request, aluno_id)
-#     if erro:
-#         return erro
-
-#     notas = Nota.objects.filter(aluno=aluno).select_related("disciplina", "professor").order_by("disciplina__nome_disciplina")
-
-#     return JsonResponse({
-#         "aluno": {"nome_completo": aluno.nome_completo, "turma": aluno.turma},
-#         "boletim": [
-#             {
-#                 "disciplina": n.disciplina.nome_disciplina if n.disciplina else None,
-#                 "nm1_t1": n.nm1_t1, "nm2_t1": n.nm2_t1, "nm3_t1": n.nm3_t1, "mt_t1": n.mt_t1,
-#                 "nm1_t2": n.nm1_t2, "nm2_t2": n.nm2_t2, "nm3_t2": n.nm3_t2, "mt_t2": n.mt_t2,
-#                 "nm1_t3": n.nm1_t3, "nm2_t3": n.nm2_t3, "nm3_t3": n.nm3_t3, "mt_t3": n.mt_t3,
-#                 "ma": n.ma, "pf": n.pf, "maf": n.maf, "rf": n.rf,
-#             }
-#             for n in notas
-#         ]
-#     })
 @csrf_exempt
 @require_http_methods(["GET"])
 def boletim_aluno_responsavel(request, aluno_id):
@@ -5484,16 +5296,11 @@ def boletim_aluno_responsavel(request, aluno_id):
 
     ano_letivo = request.GET.get("ano_letivo", "2026")
 
-    # O boletim reflete o horário do aluno: ele só faz provas e atividades
-    # das disciplinas que estão na grade dele, então é a grade que define
-    # quais linhas aparecem — não o histórico solto de Notas no banco.
     vinculos = buscar_atravessapor_por_turma(aluno.turma)
     horarios = HorarioAula.objects.filter(turma__in=vinculos).select_related(
         "turma", "turma__professor"
     )
 
-    # Deduplica por disciplina (pode haver mais de um horário/aula pra
-    # mesma disciplina na semana).
     disciplinas_map = {}
     for h in horarios:
         disciplina = resolver_disciplina_da_turma(h.turma)
@@ -5534,9 +5341,6 @@ def boletim_aluno_responsavel(request, aluno_id):
         "aluno": {"nome_completo": aluno.nome_completo, "turma": aluno.turma},
         "boletim": boletim,
     })
-
-
-
 
 
 @csrf_exempt
@@ -6229,52 +6033,6 @@ def gerar_ficha_notas_pdf(request, turma_id):
     return response
 
 
-# @csrf_exempt
-# @require_http_methods(["GET"])
-# def boletim_aluno_pdf(request):
-#     """Gera o PDF do boletim do aluno autenticado, no mesmo padrão da ficha de notas do professor."""
-#     aluno = _aluno_logado(request)
-#     if not aluno:
-#         return JsonResponse({"detail": "Não autenticado."}, status=401)
-
-#     notas = Nota.objects.filter(aluno=aluno).select_related(
-#         "disciplina", "professor"
-#     ).order_by("disciplina__nome_disciplina")
-
-#     linhas = []
-#     for n in notas:
-#         linhas.append({
-#             "disciplina": n.disciplina.nome_disciplina if n.disciplina else "—",
-#             "professor_nome": n.professor.nome_completo if n.professor else "—",
-#             "nm1_t1": _campo_pdf(n, "nm1_t1"), "nm2_t1": _campo_pdf(n, "nm2_t1"),
-#             "nm3_t1": _campo_pdf(n, "nm3_t1"), "mt_t1": _campo_pdf(n, "mt_t1"),
-#             "nm1_t2": _campo_pdf(n, "nm1_t2"), "nm2_t2": _campo_pdf(n, "nm2_t2"),
-#             "nm3_t2": _campo_pdf(n, "nm3_t2"), "mt_t2": _campo_pdf(n, "mt_t2"),
-#             "nm1_t3": _campo_pdf(n, "nm1_t3"), "nm2_t3": _campo_pdf(n, "nm2_t3"),
-#             "nm3_t3": _campo_pdf(n, "nm3_t3"), "mt_t3": _campo_pdf(n, "mt_t3"),
-#             "ma": _campo_pdf(n, "ma"), "pf": _campo_pdf(n, "pf"),
-#             "maf": _campo_pdf(n, "maf"),
-#             "rf": n.get_rf_display(),
-#         })
-
-#     logo_path_absoluto = os.path.join(settings.BASE_DIR, "app", "static", "logo.png")
-#     logo_path = f"file://{logo_path_absoluto}" if os.path.exists(logo_path_absoluto) else None
-
-#     contexto = {
-#         "aluno": aluno,
-#         "linhas": linhas,
-#         "logo_path": logo_path,
-#         "data_emissao": date.today().strftime("%d/%m/%Y"),
-#     }
-
-#     html_string = render_to_string("boletim/pdf.html", contexto)
-#     pdf_file = HTML(string=html_string).write_pdf()
-
-#     nome_arquivo = f"boletim_{_nome_arquivo_seguro(aluno.nome_completo)}.pdf"
-
-#     response = HttpResponse(pdf_file, content_type="application/pdf")
-#     response["Content-Disposition"] = f'inline; filename="{nome_arquivo}"'
-#     return response
 @csrf_exempt
 @require_http_methods(["GET"])
 def boletim_aluno_pdf(request):
@@ -6346,52 +6104,7 @@ def boletim_aluno_pdf(request):
     return response
 
 
-# @csrf_exempt
-# @require_http_methods(["GET"])
-# def boletim_aluno_pdf_responsavel(request, aluno_id):
-#     """Gera o PDF do boletim do aluno, para o responsável com acesso aprovado."""
-#     responsavel, aluno, erro = _verificar_acesso_responsavel(request, aluno_id)
-#     if erro:
-#         return erro
 
-#     notas = Nota.objects.filter(aluno=aluno).select_related(
-#         "disciplina", "professor"
-#     ).order_by("disciplina__nome_disciplina")
-
-#     linhas = []
-#     for n in notas:
-#         linhas.append({
-#             "disciplina": n.disciplina.nome_disciplina if n.disciplina else "—",
-#             "professor_nome": n.professor.nome_completo if n.professor else "—",
-#             "nm1_t1": _campo_pdf(n, "nm1_t1"), "nm2_t1": _campo_pdf(n, "nm2_t1"),
-#             "nm3_t1": _campo_pdf(n, "nm3_t1"), "mt_t1": _campo_pdf(n, "mt_t1"),
-#             "nm1_t2": _campo_pdf(n, "nm1_t2"), "nm2_t2": _campo_pdf(n, "nm2_t2"),
-#             "nm3_t2": _campo_pdf(n, "nm3_t2"), "mt_t2": _campo_pdf(n, "mt_t2"),
-#             "nm1_t3": _campo_pdf(n, "nm1_t3"), "nm2_t3": _campo_pdf(n, "nm2_t3"),
-#             "nm3_t3": _campo_pdf(n, "nm3_t3"), "mt_t3": _campo_pdf(n, "mt_t3"),
-#             "ma": _campo_pdf(n, "ma"), "pf": _campo_pdf(n, "pf"),
-#             "maf": _campo_pdf(n, "maf"),
-#             "rf": n.get_rf_display(),
-#         })
-
-#     logo_path_absoluto = os.path.join(settings.BASE_DIR, "django_siaa", "app", "static", "logo.png")
-#     logo_path = f"file://{logo_path_absoluto}" if os.path.exists(logo_path_absoluto) else None
-
-#     contexto = {
-#         "aluno": aluno,
-#         "linhas": linhas,
-#         "logo_path": logo_path,
-#         "data_emissao": date.today().strftime("%d/%m/%Y"),
-#     }
-
-#     html_string = render_to_string("boletim/pdf.html", contexto)
-#     pdf_file = HTML(string=html_string).write_pdf()
-
-#     nome_arquivo = f"boletim_{_nome_arquivo_seguro(aluno.nome_completo)}.pdf"
-
-#     response = HttpResponse(pdf_file, content_type="application/pdf")
-#     response["Content-Disposition"] = f'inline; filename="{nome_arquivo}"'
-#     return response
 @csrf_exempt
 @require_http_methods(["GET"])
 def boletim_aluno_pdf_responsavel(request, aluno_id):
