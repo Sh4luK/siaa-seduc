@@ -35,13 +35,13 @@ export default function EnviarMensagemProfessorPage() {
 
   useEffect(() => {
     async function init() {
-      const authRes = await fetch(`${API_BASE}/api/responsavel/auth`);
+      const authRes = await fetch(`${API_BASE}/api/responsavel/auth`, { credentials: "include" });
       const authData = await authRes.json();
       if (!authData.return) {
         router.push("/responsavel/login");
         return;
       }
-      const res = await fetch(`${API_BASE}/api/responsavel/alunos/${alunoId}/mensagem/professor/opcoes`);
+      const res = await fetch(`${API_BASE}/api/responsavel/alunos/${alunoId}/mensagem/professor/opcoes`, { credentials: "include" });
       if (res.ok) {
         const data = await res.json();
         setProfessores(data.professores || []);
@@ -95,6 +95,7 @@ export default function EnviarMensagemProfessorPage() {
     try {
       const res = await fetch(`${API_BASE}/api/responsavel/alunos/${alunoId}/mensagem/professor`, {
         method: "POST",
+        credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ professor_id: professorSelecionado.id, conteudo: conteudo.trim() }),
       });
