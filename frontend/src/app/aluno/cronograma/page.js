@@ -34,7 +34,7 @@ export default function CronogramaAlunoPage() {
   const router = useRouter();
 
   const carregar = useCallback(async () => {
-    const res = await fetch(`${API_BASE}/api/students/cronograma`);
+    const res = await fetch(`${API_BASE}/api/students/cronograma`, { credentials: "include" });
     if (res.ok) {
       const d = await res.json();
       setEstudos(d.estudos || []);
@@ -44,7 +44,7 @@ export default function CronogramaAlunoPage() {
   useEffect(() => {
     async function init() {
       try {
-        const authRes = await fetch(`${API_BASE}/api/students/auth`);
+        const authRes = await fetch(`${API_BASE}/api/students/auth`, { credentials: "include" });
         const authData = await authRes.json();
 
         if (!authData.return) {
@@ -77,6 +77,7 @@ export default function CronogramaAlunoPage() {
     setEnviando(true);
     try {
       const res = await fetch(`${API_BASE}/api/students/cronograma`, {
+        credentials: "include",
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ titulo: titulo.trim(), disciplina: disciplina.trim(), data }),
@@ -99,7 +100,7 @@ export default function CronogramaAlunoPage() {
   async function alternarConcluido(id) {
     setErro(null);
     try {
-      const res = await fetch(`${API_BASE}/api/students/cronograma/${id}/concluir`, { method: "POST" });
+      const res = await fetch(`${API_BASE}/api/students/cronograma/${id}/concluir`, { method: "POST", credentials: "include" });
       if (!res.ok) throw new Error("Não foi possível atualizar.");
       const d = await res.json();
       setEstudos((atual) => atual.map((e) => (e.id === id ? { ...e, concluido: d.concluido } : e)));
@@ -111,7 +112,7 @@ export default function CronogramaAlunoPage() {
   async function excluir(id) {
     setErro(null);
     try {
-      const res = await fetch(`${API_BASE}/api/students/cronograma/${id}`, { method: "DELETE" });
+      const res = await fetch(`${API_BASE}/api/students/cronograma/${id}`, { method: "DELETE", credentials: "include" });
       if (!res.ok) throw new Error("Não foi possível excluir.");
       setEstudos((atual) => atual.filter((e) => e.id !== id));
     } catch (e2) {
