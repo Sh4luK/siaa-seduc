@@ -30,7 +30,7 @@ export default function NovoComunicadoPage() {
   useEffect(() => {
     async function init() {
       try {
-        const authRes = await fetch(`${API_BASE}/api/coordenacao/auth`);
+        const authRes = await fetch(`${API_BASE}/api/coordenacao/auth`, { credentials: "include" });
         const authData = await authRes.json();
 
         if (!authData.return) {
@@ -40,7 +40,7 @@ export default function NovoComunicadoPage() {
         }
         setAuthenticated(true);
 
-        const profRes = await fetch(`${API_BASE}/api/coordenacao/professores-simples`);
+        const profRes = await fetch(`${API_BASE}/api/coordenacao/professores-simples`, { credentials: "include" });
         const profData = await profRes.json();
         setProfessores(profData.professores || []);
       } catch (error) {
@@ -65,7 +65,8 @@ export default function NovoComunicadoPage() {
       setTurmaId("");
       try {
         const res = await fetch(
-          `${API_BASE}/api/coordenacao/professores/${professorId}/turmas`
+          `${API_BASE}/api/coordenacao/professores/${professorId}/turmas`,
+          { credentials: "include" }
         );
         const data = await res.json();
         setTurmas(data.turmas || []);
@@ -96,6 +97,7 @@ export default function NovoComunicadoPage() {
     setEnviando(true);
     try {
       const res = await fetch(`${API_BASE}/api/coordenacao/comunicados/criar`, {
+        credentials: "include",
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
