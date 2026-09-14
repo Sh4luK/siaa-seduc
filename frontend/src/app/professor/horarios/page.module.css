@@ -1,0 +1,91 @@
+.listaErros {
+  list-style: none;
+  color: #b91c1c;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  padding: 0.85rem 1.1rem;
+  border-radius: 10px;
+  margin-bottom: 1.25rem;
+  font-size: 0.85rem;
+}
+
+.subtitle {
+  font-size: 0.9rem;
+  color: #6b7280;
+}
+
+.vazio {
+  font-size: 0.9rem;
+  color: #6b7280;
+  padding: 1.5rem;
+  background: #f9fafb;
+  border-radius: 12px;
+  text-align: center;
+}
+
+.gradeSemana {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0.9rem;
+}
+
+@media (max-width: 900px) {
+  .gradeSemana {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 560px) {
+  .gradeSemana {
+    grid-template-columns: 1fr;
+  }
+}
+
+.diaColuna {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.diaHeader {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #2563eb;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  padding-bottom: 0.4rem;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+.diaVazio {
+  font-size: 0.8rem;
+  color: #9ca3af;
+  margin: 0;
+}
+
+.aulaCard {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 0.7rem 0.85rem;
+}
+
+.aulaHorario {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #2563eb;
+}
+
+.aulaDisciplina {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #101828;
+}
+
+.aulaTurma {
+  font-size: 0.76rem;
+  color: #6b7280;
+}
