@@ -185,6 +185,10 @@ export default function Professor() {
                 <i className="ti ti-clock" aria-hidden="true" />
                 Horários
               </Link>
+              <Link href="/professor/mensagem" className={layoutStyles.navLink}>
+                <i className="ti ti-clock" aria-hidden="true" />
+                Mensagens
+              </Link>
             </nav>
 
             <div className={layoutStyles.sidebarFooter}>
