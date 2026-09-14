@@ -19,7 +19,7 @@ export default function AvaliacaoDetalheCoordenacaoPage() {
   useEffect(() => {
     async function init() {
       try {
-        const authRes = await fetch(`${API_BASE}/api/coordenacao/auth`);
+        const authRes = await fetch(`${API_BASE}/api/coordenacao/auth`, { credentials: "include" });
         const authData = await authRes.json();
 
         if (!authData.return) {
@@ -27,7 +27,7 @@ export default function AvaliacaoDetalheCoordenacaoPage() {
           return;
         }
 
-        const res = await fetch(`${API_BASE}/api/coordenacao/avaliacoes/${avaliacaoId}`);
+        const res = await fetch(`${API_BASE}/api/coordenacao/avaliacoes/${avaliacaoId}`, { credentials: "include" });
         if (!res.ok) {
           const corpoErro = await res.text();
           let msg = `Falha ao carregar avaliação (status ${res.status})`;
