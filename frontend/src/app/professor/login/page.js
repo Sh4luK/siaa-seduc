@@ -20,7 +20,7 @@ export default function ProfessorLoginPage() {
   useEffect(() => {
     async function verifyAuth() {
       try {
-        const res = await fetch(`${API_BASE}/api/teacher/auth`);
+        const res = await fetch(`${API_BASE}/api/teacher/auth`, { credentials: "include" });
         const data = await res.json();
 
         if (data.return === true) {
@@ -50,7 +50,7 @@ export default function ProfessorLoginPage() {
 
     try {
       const url = `${API_BASE}/api/teacher/login?nome_completo=${encodeURIComponent(nomeCompleto)}&senha=${encodeURIComponent(password)}`;
-      const res = await fetch(url);
+      const res = await fetch(url, { credentials: "include" });
       const data = await res.json();
 
       if (data.return === true) {
