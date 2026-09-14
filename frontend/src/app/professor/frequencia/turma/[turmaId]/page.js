@@ -51,7 +51,7 @@ export default function FrequenciaTurmaPage() {
   useEffect(() => {
     async function init() {
       try {
-        const authRes = await fetch(`${API_BASE}/api/teacher/auth`);
+        const authRes = await fetch(`${API_BASE}/api/teacher/auth`, { credentials: "include" });
         const authData = await authRes.json();
         if (!authData.return) {
           router.push("/professor/login");
@@ -61,7 +61,8 @@ export default function FrequenciaTurmaPage() {
         setProfessorId(profId);
 
         const discRes = await fetch(
-          `${API_BASE}/api/teacher/turma/disciplinas?turma=${turmaId}&professor=${profId}`
+          `${API_BASE}/api/teacher/turma/disciplinas?turma=${turmaId}&professor=${profId}`,
+          { credentials: "include" }
         );
         if (!discRes.ok) throw new Error(`Falha ao buscar disciplinas (status ${discRes.status})`);
         const discData = await discRes.json();
@@ -101,7 +102,7 @@ export default function FrequenciaTurmaPage() {
 
       try {
         const url = `${API_BASE}/api/teacher/frequencia/turma/get?turma=${disciplinaEscolhida.turma_id}&professor=${professorId}&data=${dataSelecionada}`;
-        const res = await fetch(url);
+        const res = await fetch(url, { credentials: "include" });
         if (!res.ok) {
           const corpoErro = await res.text();
           throw new Error(`Falha ao buscar frequência (status ${res.status}) - ${corpoErro}`);
@@ -145,6 +146,7 @@ export default function FrequenciaTurmaPage() {
     try {
       const res = await fetch(`${API_BASE}/api/teacher/frequencia/turma/salvar`, {
         method: "POST",
+        credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           turma: disciplinaEscolhida.turma_id,
