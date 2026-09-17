@@ -6461,3 +6461,116 @@ def _username_do_autor(tipo, referencia_id, nome_completo):
     if not perfil:
         perfil = _obter_ou_criar_perfil_blog(tipo, referencia_id, nome_completo)
     return perfil.nome_usuario
+
+
+STATUS_RELACIONAMENTO_LABEL = dict(PerfilBlog.STATUS_RELACIONAMENTO_CHOICES)
+
+
+@csrf_exempt
+@require_http_methods(["GET"])
+def get_perfil_blog(request, nome_usuario):
+    perfil = PerfilBlog.objects.filter(nome_usuario=nome_usuario).first()
+    if not perfil:
+        return JsonResponse({"message": "Usuário não encontrado."}, status=404)
+
+    sessao = _sessao_blog_atual(request)
+    eh_proprio_perfil = bool(
+        sessao and sessao.tipo == perfil.tipo and sessao.referencia_id == perfil.referencia_id
+    )
+
+    modelo = MODELOS_POR_TIPO_BLOG.get(perfil.tipo)
+    usuario_obj = modelo.objects.filter(id=perfil.referencia_id).first() if modelo else None
+    nome_completo = usuario_obj.nome_completo if usuario_obj else "Usuário removido"
+
+    posts = Post.objects.filter(autor_tipo=perfil.tipo, autor_id=perfil.referencia_id).order_by("-data_criacao")
+    total_curtidas_recebidas = sum(p.curtidas.count() for p in posts)
+
+    posts_json = [
+        {
+            "id": p.id,
+            "titulo": p.titulo,
+            "resumo": (p.conteudo[:160] + "…") if len(p.conteudo) > 160 else p.conteudo,
+            "imagem_url": caminho_relativo_arquivo(p.imagem) if p.imagem else None,
+            "data_criacao": p.data_criacao.isoformat(),
+            "total_curtidas": p.curtidas.count(),
+            "total_comentarios": p.comentarios.count(),
+        }
+        for p in posts
+    ]
+
+    return JsonResponse({
+        "perfil": {
+            "nome_usuario": perfil.nome_usuario,
+            "nome_completo": nome_completo,
+            "tipo": perfil.tipo,
+            "bio": perfil.bio,
+            "data_nascimento": perfil.data_nascimento.isoformat() if perfil.data_nascimento else None,
+            "status_relacionamento": perfil.status_relacionamento,
+            "status_relacionamento_label": STATUS_RELACIONAMENTO_LABEL.get(perfil.status_relacionamento, ""),
+            "foto_perfil_url": caminho_relativo_arquivo(perfil.foto_perfil) if perfil.foto_perfil else None,
+            "eh_proprio_perfil": eh_proprio_perfil,
+        },
+        "estatisticas": {
+            "total_posts": posts.count(),
+            "total_curtidas_recebidas": total_curtidas_recebidas,
+        },
+        "posts": posts_json,
+    })
+
+
+@csrf_exempt
+@require_http_methods(["POST"])
+def editar_perfil_blog(request, nome_usuario):
+    sessao = _sessao_blog_atual(request)
+    if not sessao:
+        return JsonResponse({"message": "Você precisa estar autenticado."}, status=401)
+
+    perfil = PerfilBlog.objects.filter(nome_usuario=nome_usuario).first()
+    if not perfil:
+        return JsonResponse({"message": "Usuário não encontrado."}, status=404)
+
+    if perfil.tipo != sessao.tipo or perfil.referencia_id != sessao.referencia_id:
+        return JsonResponse({"message": "Você só pode editar seu próprio perfil."}, status=403)
+
+    novo_username = (request.POST.get("nome_usuario") or "").strip().lower()
+    bio = (request.POST.get("bio") or "").strip()
+    data_nascimento_str = request.POST.get("data_nascimento") or ""
+    status_relacionamento = request.POST.get("status_relacionamento") or ""
+    remover_foto = request.POST.get("remover_foto") == "true"
+    nova_foto = request.FILES.get("foto_perfil")
+
+    if not novo_username:
+        return JsonResponse({"message": "O nome de usuário não pode ficar vazio."}, status=400)
+
+    if not re.match(r"^[a-z0-9_.]{3,30}$", novo_username):
+        return JsonResponse(
+            {"message": "Use de 3 a 30 caracteres: letras minúsculas, números, ponto ou underline."},
+            status=400
+        )
+
+    if PerfilBlog.objects.filter(nome_usuario=novo_username).exclude(id=perfil.id).exists():
+        return JsonResponse({"message": "Esse nome de usuário já está em uso."}, status=400)
+
+    if status_relacionamento and status_relacionamento not in STATUS_RELACIONAMENTO_LABEL:
+        return JsonResponse({"message": "Status de relacionamento inválido."}, status=400)
+
+    data_nascimento = None
+    if data_nascimento_str:
+        try:
+            data_nascimento = date.fromisoformat(data_nascimento_str)
+        except ValueError:
+            return JsonResponse({"message": "Formato de data de nascimento inválido. Use AAAA-MM-DD."}, status=400)
+
+    perfil.nome_usuario = novo_username
+    perfil.bio = bio
+    perfil.data_nascimento = data_nascimento
+    perfil.status_relacionamento = status_relacionamento
+
+    if nova_foto:
+        perfil.foto_perfil = nova_foto
+    elif remover_foto:
+        perfil.foto_perfil = None
+
+    perfil.save()
+
+    return JsonResponse({"message": "Perfil atualizado com sucesso.", "nome_usuario": perfil.nome_usuario})
