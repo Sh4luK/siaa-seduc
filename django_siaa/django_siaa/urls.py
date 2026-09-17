@@ -172,6 +172,8 @@ urlpatterns = [
     path('api/coordenacao/professores/<int:professor_id>/horarios/opcoes', app.views.get_opcoes_horario_professor),
     path('api/coordenacao/professores/<int:professor_id>/horarios/salvar', app.views.salvar_horario_professor),
     path("api/blog/posts/<int:post_id>/curtidas", app.views.curtidas_post),
+    path('api/blog/perfil/<str:nome_usuario>', app.views.get_perfil_blog),
+    path('api/blog/perfil/<str:nome_usuario>/editar', app.views.editar_perfil_blog),
 
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
