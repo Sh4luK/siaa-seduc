@@ -33,6 +33,21 @@ export default function PostDetalhePage() {
   const [enviandoComentario, setEnviandoComentario] = useState(false);
   const [curtindo, setCurtindo] = useState(false);
 
+
+  const [mostrarCurtidores, setMostrarCurtidores] = useState(false);
+  const [curtidores, setCurtidores] = useState([]);
+
+  async function handleAbrirCurtidores() {
+    setMostrarCurtidores(true);
+    try {
+      const res = await fetch(`${API_BASE}/api/blog/posts/${postId}/curtidas`, { credentials: "include" });
+      const data = await res.json();
+      setCurtidores(data.curtidas || []);
+    } catch (error) {
+      setCurtidores([]);
+    }
+  }
+
   useEffect(() => {
     async function init() {
       try {
@@ -245,7 +260,7 @@ export default function PostDetalhePage() {
                 <MarkdownContent content={post.conteudo} />
               </div>
 
-              <div className={styles.postAcoes}>
+              {/* <div className={styles.postAcoes}>
                 <button
                   className={`${styles.acaoBotao} ${post.curtido_por_mim ? styles.acaoBotaoAtivo : ""}`}
                   onClick={handleCurtir}
@@ -266,7 +281,64 @@ export default function PostDetalhePage() {
                   </svg>
                   {comentarios.length} {comentarios.length === 1 ? "comentário" : "comentários"}
                 </span>
+              </div> */}
+              <div className={styles.postAcoes}>
+                <button
+                  className={`${styles.acaoBotao} ${post.curtido_por_mim ? styles.acaoBotaoAtivo : ""}`}
+                  onClick={handleCurtir}
+                  disabled={!usuario || curtindo}
+                  title={usuario ? "Curtir" : "Entre para curtir"}
+                >
+                  <svg width="17" height="17" viewBox="0 0 24 24" fill={post.curtido_por_mim ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M19.5 12.572l-7.5 7.428l-7.5 -7.428a5 5 0 1 1 7.5 -6.566a5 5 0 1 1 7.5 6.572" />
+                  </svg>
+                  Curtir
+                </button>
+
+                {post.total_curtidas > 0 ? (
+                  <button className={styles.verCurtidoresBotao} onClick={handleAbrirCurtidores}>
+                    {post.total_curtidas} {post.total_curtidas === 1 ? "curtida" : "curtidas"}
+                  </button>
+                ) : (
+                  <span className={styles.acaoBotao}>0 curtidas</span>
+                )}
+
+                <span className={styles.acaoBotao}>
+                  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M8 9h8" />
+                    <path d="M8 13h6" />
+                    <path d="M18 4a3 3 0 0 1 3 3v8a3 3 0 0 1 -3 3h-5l-5 3v-3h-2a3 3 0 0 1 -3 -3v-8a3 3 0 0 1 3 -3h12z" />
+                  </svg>
+                  {comentarios.length} {comentarios.length === 1 ? "comentário" : "comentários"}
+                </span>
               </div>
+
+              {mostrarCurtidores && (
+                <div className={styles.modalOverlay} onClick={() => setMostrarCurtidores(false)}>
+                  <div className={styles.modalCard} onClick={(e) => e.stopPropagation()}>
+                    <div className={styles.modalHeader}>
+                      <h3>Curtidas</h3>
+                      <button className={styles.modalFechar} onClick={() => setMostrarCurtidores(false)}>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M18 6l-12 12" />
+                          <path d="M6 6l12 12" />
+                        </svg>
+                      </button>
+                    </div>
+                    <ul className={styles.modalLista}>
+                      {curtidores.map((c, i) => (
+                        <li key={i} className={styles.modalItem}>
+                          <span className={styles.avatarIniciaisPequeno}>{c.nome_completo.charAt(0)}</span>
+                          <div>
+                            <span className={styles.modalNome}>{c.nome_completo}</span>
+                            <span className={styles.modalTipo}>{TIPO_LABEL[c.tipo] || c.tipo}</span>
+                          </div>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              )}
             </article>
 
             <section className={styles.comentariosSecao}>
