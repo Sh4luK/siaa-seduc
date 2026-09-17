@@ -1,4 +1,4 @@
-.page {
+/* .page {
   min-height: 100vh;
   background: #f5f7fa;
   color: #1a2942;
@@ -199,4 +199,353 @@
   object-fit: cover;
   border-radius: 8px;
   margin-bottom: 0.85rem;
+} */
+
+
+.page {
+  min-height: 100vh;
+  background: #f5f7fa;
+  color: #1a2942;
+  font-family: "IBM Plex Sans", "Inter", "Segoe UI", system-ui, sans-serif;
+}
+
+.topbar {
+  background: #ffffff;
+  border-bottom: 1px solid #e2e8f0;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.topbarInner {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 0.9rem 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.brandLogo {
+  width: 28px;
+  height: auto;
+}
+
+.brandText {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #1a2942;
+}
+
+.userArea {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.avatarIniciaisTopbar {
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  background: rgba(11, 79, 158, 0.1);
+  color: #0b4f9e;
+  font-weight: 700;
+  font-size: 0.8rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.userNome {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #5b6b85;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 120px;
+}
+
+.botaoNovoPost,
+.botaoEntrar {
+  padding: 0.45rem 0.9rem;
+  background: #0b4f9e;
+  color: #fff;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background 0.15s ease;
+}
+
+.botaoNovoPost:hover,
+.botaoEntrar:hover {
+  background: #0a2f5c;
+}
+
+.corpo {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 1.5rem 1.25rem 3rem;
+  display: grid;
+  grid-template-columns: 1fr 300px;
+  gap: 1.5rem;
+  align-items: start;
+}
+
+@media (max-width: 800px) {
+  .corpo {
+    grid-template-columns: 1fr;
+  }
+}
+
+.feed {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  min-width: 0;
+}
+
+.vazio {
+  text-align: center;
+  color: #5b6b85;
+  font-size: 0.9rem;
+  padding: 2rem;
+}
+
+.postCard {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 1.25rem;
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
+}
+
+.postHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  margin-bottom: 0.85rem;
+}
+
+.avatarIniciais {
+  flex-shrink: 0;
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: rgba(11, 79, 158, 0.1);
+  color: #0b4f9e;
+  font-weight: 700;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.postHeaderTextos {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.postAutorLinha {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.postAutor {
+  font-size: 0.86rem;
+  font-weight: 700;
+  color: #1a2942;
+}
+
+.badge {
+  font-size: 0.62rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  padding: 0.12rem 0.45rem;
+  border-radius: 999px;
+}
+
+.badgeAluno { background: rgba(11, 79, 158, 0.1); color: #0b4f9e; }
+.badgeProfessor { background: rgba(21, 128, 61, 0.1); color: #15803d; }
+.badgeResponsavel { background: rgba(181, 103, 10, 0.1); color: #b5670a; }
+.badgeCoordenador { background: rgba(124, 58, 237, 0.1); color: #7c3aed; }
+
+.postMeta {
+  font-size: 0.72rem;
+  color: #94a3b8;
+}
+
+.postLink {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+}
+
+.postImagem {
+  display: block;
+  width: 100%;
+  max-height: 320px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-bottom: 0.85rem;
+}
+
+.postTitulo {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #1a2942;
+  margin: 0 0 0.4rem;
+}
+
+.postResumo {
+  font-size: 0.88rem;
+  color: #5b6b85;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.postAcoes {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+  padding-top: 0.85rem;
+  border-top: 1px solid #eef0f3;
+}
+
+.acaoBotao {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: none;
+  border: none;
+  color: #5b6b85;
+  font-size: 0.82rem;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  padding: 0.2rem 0.4rem;
+  border-radius: 6px;
+  transition: color 0.15s ease, background 0.15s ease;
+}
+
+.acaoBotao:hover {
+  background: #f1f5f9;
+  color: #1a2942;
+}
+
+.acaoBotao:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.acaoBotaoAtivo {
+  color: #b91c1c;
+}
+
+/* ===== Sidebar ===== */
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  position: sticky;
+  top: 4.5rem;
+}
+
+.sidebarCard {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 1.1rem 1.25rem;
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
+}
+
+.sidebarTitulo {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #1a2942;
+  margin: 0 0 0.9rem;
+}
+
+.statsGrid {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.statItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.statValor {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #0b4f9e;
+}
+
+.statLabel {
+  font-size: 0.68rem;
+  color: #94a3b8;
+}
+
+.rankingLista {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.rankingItem {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  text-decoration: none;
+}
+
+.rankingPosicao {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  border-radius: 6px;
+  background: rgba(11, 79, 158, 0.08);
+  color: #0b4f9e;
+  font-size: 0.7rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.rankingTextos {
+  min-width: 0;
+}
+
+.rankingTitulo {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #1a2942;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.rankingMeta {
+  display: block;
+  font-size: 0.7rem;
+  color: #94a3b8;
 }
