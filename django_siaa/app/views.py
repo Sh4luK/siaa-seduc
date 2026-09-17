@@ -3390,6 +3390,49 @@ def _sessao_blog_atual(request):
     return Sessao.objects.filter(token=token).first()
 
 
+# @csrf_exempt
+# @require_http_methods(["POST"])
+# def blog_login(request):
+#     body = json.loads(request.body or "{}")
+#     nome_completo = (body.get("nome_completo") or "").strip().upper()
+#     senha = (body.get("senha") or "").strip()
+#     tipo = (body.get("tipo") or "").strip().upper()
+
+#     modelo = MODELOS_POR_TIPO_BLOG.get(tipo)
+#     if not modelo:
+#         return JsonResponse({"return": False, "detail": "Tipo inválido."}, status=400)
+
+#     usuario = modelo.objects.filter(nome_completo=nome_completo, senha=senha).first()
+#     if not usuario:
+#         return JsonResponse({"return": False, "detail": "Nome ou senha inválidos."}, status=401)
+
+#     sessao = Sessao.objects.create(tipo=tipo, referencia_id=usuario.id, nome_completo=usuario.nome_completo)
+
+#     response = JsonResponse({"return": True, "usuario": {"nome_completo": usuario.nome_completo, "tipo": tipo}})
+#     response.set_cookie(
+#         "blog_session", sessao.token,
+#         max_age=60 * 60 * 24 * 30,
+#         httponly=True,
+#         samesite="None",
+#         secure=True,
+#     )
+#     return response
+
+
+# @csrf_exempt
+# @require_http_methods(["GET"])
+# def blog_auth(request):
+#     sessao = _sessao_blog_atual(request)
+#     if not sessao:
+#         return JsonResponse({"return": False})
+#     return JsonResponse({
+#         "return": True,
+#         "usuario": {
+#             "nome_completo": sessao.nome_completo,
+#             "tipo": sessao.tipo,
+#             "referencia_id": sessao.referencia_id,
+#         },
+#     })
 @csrf_exempt
 @require_http_methods(["POST"])
 def blog_login(request):
@@ -3407,14 +3450,15 @@ def blog_login(request):
         return JsonResponse({"return": False, "detail": "Nome ou senha inválidos."}, status=401)
 
     sessao = Sessao.objects.create(tipo=tipo, referencia_id=usuario.id, nome_completo=usuario.nome_completo)
+    perfil = _obter_ou_criar_perfil_blog(tipo, usuario.id, usuario.nome_completo)
 
-    response = JsonResponse({"return": True, "usuario": {"nome_completo": usuario.nome_completo, "tipo": tipo}})
+    response = JsonResponse({
+        "return": True,
+        "usuario": {"nome_completo": usuario.nome_completo, "tipo": tipo, "nome_usuario": perfil.nome_usuario},
+    })
     response.set_cookie(
         "blog_session", sessao.token,
-        max_age=60 * 60 * 24 * 30,
-        httponly=True,
-        samesite="None",
-        secure=True,
+        max_age=60 * 60 * 24 * 30, httponly=True, samesite="None", secure=True,
     )
     return response
 
@@ -3425,14 +3469,19 @@ def blog_auth(request):
     sessao = _sessao_blog_atual(request)
     if not sessao:
         return JsonResponse({"return": False})
+
+    perfil = _obter_ou_criar_perfil_blog(sessao.tipo, sessao.referencia_id, sessao.nome_completo)
+
     return JsonResponse({
         "return": True,
         "usuario": {
             "nome_completo": sessao.nome_completo,
             "tipo": sessao.tipo,
             "referencia_id": sessao.referencia_id,
+            "nome_usuario": perfil.nome_usuario,
         },
     })
+
 
 
 @csrf_exempt
@@ -3447,6 +3496,20 @@ def get_posts(request):
                 post=p, autor_tipo=sessao.tipo, autor_id=sessao.referencia_id
             ).exists()
 
+        # resultado.append({
+        #     "id": p.id,
+        #     "titulo": p.titulo,
+        #     "resumo": (p.conteudo[:220] + "…") if len(p.conteudo) > 220 else p.conteudo,
+        #     "imagem_url": caminho_relativo_arquivo(p.imagem) if p.imagem else None,
+        #     "tempo_leitura": p.tempo_leitura,
+        #     "data_criacao": p.data_criacao.isoformat(),
+        #     "autor_nome": p.autor_nome,
+        #     "autor_tipo": p.autor_tipo,
+        #     "autor_id": p.autor_id,
+        #     "total_curtidas": p.curtidas.count(),
+        #     "total_comentarios": p.comentarios.count(),
+        #     "curtido_por_mim": curtido_por_mim,
+        # })
         resultado.append({
             "id": p.id,
             "titulo": p.titulo,
@@ -3457,10 +3520,12 @@ def get_posts(request):
             "autor_nome": p.autor_nome,
             "autor_tipo": p.autor_tipo,
             "autor_id": p.autor_id,
+            "autor_username": _username_do_autor(p.autor_tipo, p.autor_id, p.autor_nome),  # <- novo
             "total_curtidas": p.curtidas.count(),
             "total_comentarios": p.comentarios.count(),
             "curtido_por_mim": curtido_por_mim,
         })
+
 
     return JsonResponse({"total_posts": len(resultado), "posts": resultado})
 
@@ -3500,6 +3565,7 @@ def get_post_detalhe(request, post_id):
             "autor_nome": post.autor_nome,
             "autor_tipo": post.autor_tipo,
             "autor_id": post.autor_id,
+            "autor_username": _username_do_autor(post.autor_tipo, post.autor_id, post.autor_nome),
             "total_curtidas": post.curtidas.count(),
             "curtido_por_mim": curtido_por_mim,
         },
