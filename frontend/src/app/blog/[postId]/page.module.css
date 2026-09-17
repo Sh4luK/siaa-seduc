@@ -466,3 +466,111 @@ button.acaoBotao:hover {
   border-radius: 10px;
   margin-bottom: 1.5rem;
 }
+
+.verCurtidoresBotao {
+  background: none;
+  border: none;
+  color: #5b6b85;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0.3rem 0.5rem;
+  border-radius: 6px;
+  transition: color 0.15s ease, background 0.15s ease;
+}
+
+.verCurtidoresBotao:hover {
+  background: #f1f5f9;
+  color: #0b4f9e;
+  text-decoration: underline;
+}
+
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 20, 40, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+  padding: 1.5rem;
+}
+
+.modalCard {
+  background: #ffffff;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 360px;
+  max-height: 70vh;
+  overflow-y: auto;
+  box-shadow: 0 8px 30px rgba(16, 24, 40, 0.2);
+}
+
+.modalHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid #eef0f3;
+}
+
+.modalHeader h3 {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #1a2942;
+}
+
+.modalFechar {
+  background: none;
+  border: none;
+  color: #5b6b85;
+  cursor: pointer;
+  padding: 0.2rem;
+  display: flex;
+}
+
+.modalLista {
+  list-style: none;
+  margin: 0;
+  padding: 0.5rem;
+}
+
+.modalItem {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.6rem 0.75rem;
+  border-radius: 8px;
+}
+
+.modalItem:hover {
+  background: #f8fafc;
+}
+
+.avatarIniciaisPequeno {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: rgba(11, 79, 158, 0.1);
+  color: #0b4f9e;
+  font-weight: 700;
+  font-size: 0.78rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modalNome {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #1a2942;
+}
+
+.modalTipo {
+  display: block;
+  font-size: 0.7rem;
+  color: #94a3b8;
+}
