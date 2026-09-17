@@ -6386,3 +6386,12 @@ def _obter_ou_criar_perfil_blog(tipo, referencia_id, nome_completo):
         defaults={"nome_usuario": _gerar_username_unico(nome_completo)},
     )
     return perfil
+
+
+
+
+def _username_do_autor(tipo, referencia_id, nome_completo):
+    perfil = PerfilBlog.objects.filter(tipo=tipo, referencia_id=referencia_id).first()
+    if not perfil:
+        perfil = _obter_ou_criar_perfil_blog(tipo, referencia_id, nome_completo)
+    return perfil.nome_usuario
