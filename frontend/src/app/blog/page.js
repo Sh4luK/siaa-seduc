@@ -280,7 +280,7 @@ export default function BlogPage() {
                   </div>
                 </div>
 
-                <Link href={`/blog/${post.id}`} className={styles.postLink}>
+                <Link href={`/blog/post/${post.id}`} className={styles.postLink}>
                   {post.imagem_url && (
                     <img src={`${API_BASE}${post.imagem_url}`} alt={post.titulo} className={styles.postImagem} />
                   )}
@@ -301,7 +301,7 @@ export default function BlogPage() {
                     {post.total_curtidas}
                   </button>
 
-                  <Link href={`/blog/${post.id}`} className={styles.acaoBotao}>
+                  <Link href={`/blog/post/${post.id}`} className={styles.acaoBotao}>
                     <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <path d="M8 9h8" />
                       <path d="M8 13h6" />
@@ -340,7 +340,7 @@ export default function BlogPage() {
               <ul className={styles.rankingLista}>
                 {maisCurtidos.map((post, i) => (
                   <li key={post.id}>
-                    <Link href={`/blog/${post.id}`} className={styles.rankingItem}>
+                    <Link href={`/blog/post/${post.id}`} className={styles.rankingItem}>
                       <span className={styles.rankingPosicao}>{i + 1}</span>
                       <div className={styles.rankingTextos}>
                         <span className={styles.rankingTitulo}>{post.titulo}</span>
