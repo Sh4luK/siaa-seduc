@@ -52,11 +52,13 @@ from .models import ConversaResponsavelProfessor
 from .models import MensagemChatResponsavelProfessor
 from .models import ConversaResponsavelCoordenador
 from .models import MensagemChatResponsavelCoordenador
+from .models import PerfilBlog
 from django.db import models
 import json
 import string
 from django.templatetags.static import static
 from django.template.loader import render_to_string
+from django.utils.text import slugify
 from weasyprint import HTML
 from django.views.decorators.http import require_http_methods
 from django.db.models import Avg
@@ -6375,3 +6377,12 @@ def _gerar_username_unico(nome_completo):
         contador += 1
         candidato = f"{base}{contador}"
     return candidato
+
+
+
+def _obter_ou_criar_perfil_blog(tipo, referencia_id, nome_completo):
+    perfil, _ = PerfilBlog.objects.get_or_create(
+        tipo=tipo, referencia_id=referencia_id,
+        defaults={"nome_usuario": _gerar_username_unico(nome_completo)},
+    )
+    return perfil
