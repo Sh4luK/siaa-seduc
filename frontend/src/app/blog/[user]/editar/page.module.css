@@ -1,0 +1,218 @@
+.page {
+  min-height: 100vh;
+  background: #f5f7fa;
+  font-family: "IBM Plex Sans", "Inter", "Segoe UI", system-ui, sans-serif;
+  color: #1a2942;
+}
+
+.pageLoading {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f5f7fa;
+  color: #5b6b85;
+}
+
+.wrapper {
+  max-width: 560px;
+  margin: 0 auto;
+  padding: 2rem 1.25rem 3rem;
+}
+
+.headerRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+}
+
+.title {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #1a2942;
+  margin: 0;
+}
+
+.voltarBotao {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #5b6b85;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+}
+
+.voltarBotao:hover {
+  background: #f1f5f9;
+}
+
+.listaErros {
+  list-style: none;
+  color: #b91c1c;
+  background: rgba(220, 38, 38, 0.06);
+  border: 1px solid rgba(220, 38, 38, 0.25);
+  padding: 0.85rem 1.1rem;
+  border-radius: 10px;
+  margin-bottom: 1.25rem;
+  font-size: 0.85rem;
+}
+
+.mensagemSucesso {
+  color: #15803d;
+  background: rgba(21, 128, 61, 0.06);
+  border: 1px solid rgba(21, 128, 61, 0.25);
+  padding: 0.7rem 1rem;
+  border-radius: 10px;
+  margin-bottom: 1.25rem;
+  font-size: 0.88rem;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 1.5rem;
+}
+
+.campo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.linhaDupla {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+@media (max-width: 480px) {
+  .linhaDupla { grid-template-columns: 1fr; }
+}
+
+.label {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #1a2942;
+}
+
+.input, .select, .textarea {
+  padding: 0.6rem 0.75rem;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 0.88rem;
+  color: #1a2942;
+  background: #fff;
+  font-family: inherit;
+}
+
+.textarea {
+  resize: vertical;
+}
+
+.input:focus, .select:focus, .textarea:focus {
+  outline: none;
+  border-color: #0b4f9e;
+  box-shadow: 0 0 0 3px rgba(11, 79, 158, 0.12);
+}
+
+.usernameInputWrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0 0.75rem;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 8px;
+}
+
+.usernameInputWrapper span {
+  color: #94a3b8;
+  font-weight: 600;
+}
+
+.usernameInputWrapper input {
+  border: none;
+  padding: 0.6rem 0;
+  flex: 1;
+}
+
+.usernameInputWrapper input:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+.contador {
+  align-self: flex-end;
+  font-size: 0.7rem;
+  color: #94a3b8;
+}
+
+.inputArquivoOculto {
+  display: none;
+}
+
+.dropzone {
+  display: block;
+  text-align: center;
+  padding: 1.25rem;
+  border: 1.5px dashed #cbd5e1;
+  border-radius: 10px;
+  color: #5b6b85;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.dropzone:hover {
+  border-color: #0b4f9e;
+  background: #f8fafc;
+}
+
+.previewWrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+}
+
+.previewFoto {
+  width: 72px;
+  height: 72px;
+  border-radius: 12px;
+  object-fit: cover;
+  border: 1px solid #e2e8f0;
+}
+
+.removerFotoBotao {
+  background: none;
+  border: none;
+  color: #b91c1c;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.botaoSalvar {
+  margin-top: 0.4rem;
+  padding: 0.75rem;
+  background: #0b4f9e;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.botaoSalvar:hover {
+  background: #0a2f5c;
+}
+
+.botaoSalvar:disabled {
+  background: #cbd5e1;
+  cursor: not-allowed;
+}
