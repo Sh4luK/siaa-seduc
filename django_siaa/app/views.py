@@ -6365,3 +6365,13 @@ def curtidas_post(request, post_id):
         })
 
     return JsonResponse({"total": len(resultado), "curtidas": resultado})
+
+
+def _gerar_username_unico(nome_completo):
+    base = slugify(nome_completo).replace("-", "")[:20] or "usuario"
+    candidato = base
+    contador = 1
+    while PerfilBlog.objects.filter(nome_usuario=candidato).exists():
+        contador += 1
+        candidato = f"{base}{contador}"
+    return candidato
