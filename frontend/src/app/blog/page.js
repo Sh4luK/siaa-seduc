@@ -199,10 +199,10 @@ export default function BlogPage() {
       prev.map((p) =>
         p.id === postId
           ? {
-              ...p,
-              curtido_por_mim: !p.curtido_por_mim,
-              total_curtidas: p.curtido_por_mim ? p.total_curtidas - 1 : p.total_curtidas + 1,
-            }
+            ...p,
+            curtido_por_mim: !p.curtido_por_mim,
+            total_curtidas: p.curtido_por_mim ? p.total_curtidas - 1 : p.total_curtidas + 1,
+          }
           : p
       )
     );
@@ -236,12 +236,25 @@ export default function BlogPage() {
             <span className={styles.brandText}>Blog SIAA</span>
           </div>
 
-          {usuario ? (
+          {/* {usuario ? (
             <div className={styles.userArea}>
               <span className={styles.avatarIniciaisTopbar}>
                 {usuario.nome_completo?.trim().charAt(0) || "?"}
               </span>
               <span className={styles.userNome}>{usuario.nome_completo}</span>
+              <Link href="/blog/novo" className={styles.botaoNovoPost}>
+                + Novo post
+              </Link>
+            </div>
+          ) : ( */}
+          {usuario ? (
+            <div className={styles.userArea}>
+              <Link href={`/blog/${usuario.nome_usuario}`} className={styles.avatarIniciaisTopbar}>
+                {usuario.nome_completo?.trim().charAt(0) || "?"}
+              </Link>
+              <Link href={`/blog/${usuario.nome_usuario}`} className={styles.userNome}>
+                {usuario.nome_completo}
+              </Link>
               <Link href="/blog/novo" className={styles.botaoNovoPost}>
                 + Novo post
               </Link>
@@ -267,9 +280,22 @@ export default function BlogPage() {
                   <span className={styles.avatarIniciais}>
                     {post.autor_nome?.trim().charAt(0) || "?"}
                   </span>
-                  <div className={styles.postHeaderTextos}>
+                  {/* <div className={styles.postHeaderTextos}>
                     <div className={styles.postAutorLinha}>
                       <span className={styles.postAutor}>{post.autor_nome}</span>
+                      <span className={`${styles.badge} ${TIPO_COR[post.autor_tipo] || ""}`}>
+                        {TIPO_LABEL[post.autor_tipo] || post.autor_tipo}
+                      </span>
+                    </div>
+                    <span className={styles.postMeta}>
+                      {formatarData(post.data_criacao)} · {post.tempo_leitura} min de leitura
+                    </span>
+                  </div> */}
+                  <div className={styles.postHeaderTextos}>
+                    <div className={styles.postAutorLinha}>
+                      <Link href={`/blog/${post.autor_username}`} className={styles.postAutor}>
+                        {post.autor_nome}
+                      </Link>
                       <span className={`${styles.badge} ${TIPO_COR[post.autor_tipo] || ""}`}>
                         {TIPO_LABEL[post.autor_tipo] || post.autor_tipo}
                       </span>
