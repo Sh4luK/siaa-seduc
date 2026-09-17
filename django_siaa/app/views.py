@@ -6344,3 +6344,24 @@ def salvar_horario_professor(request, professor_id):
         "total_salvos": total_salvos,
         "erros": erros,
     })
+
+@csrf_exempt
+@require_http_methods(["GET"])
+def curtidas_post(request, post_id):
+    """Lista quem curtiu um post — resolve o nome a partir do tipo+id salvos
+    em cada Curtida, já que o model não guarda o nome diretamente (evita
+    nome desatualizado se a pessoa mudar de nome depois de curtir)."""
+    post = Post.objects.filter(id=post_id).first()
+    if not post:
+        return JsonResponse({"message": "Post não encontrado."}, status=404)
+
+    resultado = []
+    for c in post.curtidas.order_by("-data_criacao"):
+        modelo = MODELOS_POR_TIPO_BLOG.get(c.autor_tipo)
+        usuario = modelo.objects.filter(id=c.autor_id).first() if modelo else None
+        resultado.append({
+            "nome_completo": usuario.nome_completo if usuario else "Usuário removido",
+            "tipo": c.autor_tipo,
+        })
+
+    return JsonResponse({"total": len(resultado), "curtidas": resultado})
