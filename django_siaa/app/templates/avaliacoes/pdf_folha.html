@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<style>
+  @page {
+    size: A4;
+    margin: 2cm 2cm 2.5cm 2cm;
+  }
+  body {
+    font-family: "Helvetica", "Arial", sans-serif;
+    color: #1a1a1a;
+    font-size: 11.5pt;
+    line-height: 1.5;
+  }
+
+  /* Cabeçalho */
+  table.cabecalho {
+    width: 100%;
+    border-bottom: 2px solid #1a1a1a;
+    margin-bottom: 18px;
+  }
+  table.cabecalho td { padding: 0 16px 12px 0; vertical-align: top; }
+  .cabecalho-logo { width: 56px; height: 56px; }
+  .cabecalho-titulo {
+    font-size: 14pt;
+    font-weight: bold;
+    margin: 0 0 6px;
+  }
+  table.cabecalho-linha { width: 100%; font-size: 10pt; margin: 2px 0; }
+  table.cabecalho-linha td { padding: 0 24px 0 0; border: 0; }
+
+  /* Área de identificação do aluno */
+  table.identificacao {
+    width: 100%;
+    border: 1px solid #1a1a1a;
+    margin-bottom: 22px;
+  }
+  table.identificacao td { padding: 8px 14px 10px; vertical-align: bottom; }
+  .identificacao-label {
+    font-size: 8.5pt;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #555;
+  }
+  .identificacao-linha { border-bottom: 1px solid #1a1a1a; height: 20px; }
+
+  /* Questões */
+  .questao {
+    margin-bottom: 20px;
+    page-break-inside: avoid;
+  }
+  .questao-cabecalho { font-weight: bold; margin-bottom: 6px; }
+  .questao-enunciado {
+    text-align: justify;
+    margin: 0 0 10px;
+  }
+  .questao-linhas-resposta { margin-top: 14px; }
+  .linha-resposta { border-bottom: 1px solid #999; height: 20px; margin-bottom: 4px; }
+  table.alternativas { width: 100%; }
+  table.alternativas td { padding: 0 0 5px; vertical-align: top; }
+  td.alternativa-letra { width: 24px; font-weight: bold; }
+
+</style>
+</head>
+<body>
+
+  <table class="cabecalho">
+    <tr>
+      <td width="64"><img class="cabecalho-logo" src="{{ logo_path }}" alt="Logo da escola"></td>
+      <td>
+        <p class="cabecalho-titulo">{{ avaliacao.titulo }}</p>
+        <table class="cabecalho-linha">
+          <tr>
+            <td><strong>Disciplina:</strong> {{ disciplina }}</td>
+            <td><strong>Turma:</strong> {{ avaliacao.turma.turma }}</td>
+          </tr>
+          <tr>
+            <td><strong>Curso:</strong> {{ avaliacao.curso|default:"—" }}</td>
+            <td><strong>Data:</strong> {{ avaliacao.data|date:"d/m/Y" }}</td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+
+  <table class="identificacao">
+    <tr>
+      <td width="60"><span class="identificacao-label">Nº</span><div class="identificacao-linha">&nbsp;</div></td>
+      <td><span class="identificacao-label">Nome do aluno</span><div class="identificacao-linha">&nbsp;</div></td>
+    </tr>
+  </table>
+
+  {% for questao in questoes %}
+    <div class="questao">
+      <div class="questao-cabecalho">
+        <span>{{ forloop.counter }}.</span>
+      </div>
+      <p class="questao-enunciado">{{ questao.enunciado }}</p>
+
+      {% if questao.tipo == "OBJETIVA" %}
+        <table class="alternativas">
+          {% for alternativa in questao.alternativas.all %}
+            <tr>
+              <td class="alternativa-letra">{{ alternativa.letra }})</td>
+              <td>{{ alternativa.texto }}</td>
+            </tr>
+          {% endfor %}
+        </table>
+      {% else %}
+        <div class="questao-linhas-resposta">
+          <div class="linha-resposta"></div>
+          <div class="linha-resposta"></div>
+          <div class="linha-resposta"></div>
+        </div>
+      {% endif %}
+    </div>
+  {% endfor %}
+
+</body>
+</html>

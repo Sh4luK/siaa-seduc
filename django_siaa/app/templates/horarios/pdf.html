@@ -6,18 +6,20 @@
   @page { size: A4 landscape; margin: 1.5cm; }
   body { font-family: 'IBM Plex Sans', Inter, 'Segoe UI', sans-serif; color: #1a2942; }
 
-  .cabecalho { display: flex; align-items: center; gap: 0.8cm; margin-bottom: 0.6cm; border-bottom: 2px solid #0b4f9e; padding-bottom: 0.4cm; }
+  table.cabecalho { width: 100%; margin-bottom: 0.6cm; border-bottom: 2px solid #0b4f9e; }
+  table.cabecalho td { padding: 0 0.4cm 0.3cm 0; vertical-align: middle; }
   .cabecalho img { height: 1.8cm; }
   .cabecalho h1 { font-size: 16pt; margin: 0; color: #0b4f9e; }
   .cabecalho p { font-size: 9pt; margin: 2px 0 0; color: #5b6b85; }
 
-  .info-aluno { display: flex; justify-content: space-between; font-size: 9.5pt; margin-bottom: 0.6cm; color: #1a2942; }
+  table.info-aluno { width: 100%; font-size: 9.5pt; margin-bottom: 0.5cm; color: #1a2942; }
+  table.info-aluno td { padding: 0 0 4px; }
 
-  .grade { display: flex; gap: 0.4cm; }
-  .dia-coluna { flex: 1; }
+  table.grade { width: 100%; }
+  table.grade td.dia-coluna { vertical-align: top; padding: 0 0.15cm; }
   .dia-header {
     font-size: 9pt; font-weight: 700; text-transform: uppercase; letter-spacing: 0.03em;
-    color: #0b4f9e; background: rgba(11, 79, 158, 0.08); padding: 0.25cm 0.3cm;
+    color: #0b4f9e; background: #e6eef8; padding: 0.25cm 0.3cm;
     border-radius: 4px; margin-bottom: 0.3cm; text-align: center;
   }
   .aula-card {
@@ -34,23 +36,28 @@
 </head>
 <body>
 
-  <div class="cabecalho">
-    {% if logo_path %}<img src="{{ logo_path }}">{% endif %}
-    <div>
-      <h1>Grade de Horários</h1>
-      <p>Governo do Estado do Piauí — Secretaria de Estado da Educação</p>
-    </div>
-  </div>
+  <table class="cabecalho">
+    <tr>
+      {% if logo_path %}<td width="70"><img src="{{ logo_path }}"></td>{% endif %}
+      <td>
+        <h1>Grade de Horários</h1>
+        <p>Governo do Estado do Piauí — Secretaria de Estado da Educação</p>
+      </td>
+    </tr>
+  </table>
 
-  <div class="info-aluno">
-    <span><strong>Aluno:</strong> {{ aluno.nome_completo }}</span>
-    <span><strong>Turma:</strong> {{ aluno.turma }}</span>
-    <span><strong>Escola:</strong> {{ aluno.escola }}</span>
-  </div>
+  <table class="info-aluno">
+    <tr>
+      <td><strong>Aluno:</strong> {{ aluno.nome_completo }}</td>
+      <td><strong>Turma:</strong> {{ aluno.turma }}</td>
+      <td><strong>Escola:</strong> {{ aluno.escola }}</td>
+    </tr>
+  </table>
 
-  <div class="grade">
+  <table class="grade">
+    <tr>
     {% for dia in dias %}
-    <div class="dia-coluna">
+    <td class="dia-coluna" width="{% widthratio 100 dias|length 1 %}%">
       <div class="dia-header">{{ dia.label }}</div>
       {% if dia.aulas %}
         {% for aula in dia.aulas %}
@@ -63,9 +70,10 @@
       {% else %}
         <div class="dia-vazio">—</div>
       {% endif %}
-    </div>
+    </td>
     {% endfor %}
-  </div>
+    </tr>
+  </table>
 
   <div class="rodape">Emitido em {{ data_emissao }}</div>
 

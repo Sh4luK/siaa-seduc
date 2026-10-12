@@ -218,3 +218,9 @@ __marimo__/
 .streamlit/secrets.toml
 node_modules
 token.txt
+.vercel
+.env*
+
+# Banco local (produção usa Postgres/Neon)
+db.sqlite3
+db.sqlite3-query

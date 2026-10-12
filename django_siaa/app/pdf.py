@@ -1,5 +1,5 @@
 from io import BytesIO
-from urllib.parse import unquote, urlparse
+from urllib.parse import unquote
 
 from xhtml2pdf import pisa
 
@@ -7,9 +7,9 @@ from xhtml2pdf import pisa
 def _link_callback(uri, rel):
     # Aceita file:///C:/... e caminhos locais; URLs http(s) passam direto.
     if uri.startswith("file://"):
-        path = unquote(urlparse(uri).path)
+        path = unquote(uri[len("file://"):])
         if len(path) > 2 and path[0] == "/" and path[2] == ":":
-            path = path[1:]
+            path = path[1:]  # /C:/... (Windows)
         return path
     return uri
 

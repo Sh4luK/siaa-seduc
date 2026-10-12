@@ -15,13 +15,17 @@
       font-size: 10px;
     }
 
-    .cabecalho {
-      display: flex;
-      align-items: center;
-      gap: 12px;
+    table.cabecalho {
+      border: 0;
       border-bottom: 2px solid #0b4f9e;
-      padding-bottom: 10px;
       margin-bottom: 14px;
+    }
+
+    table.cabecalho td {
+      border: 0;
+      text-align: left;
+      padding: 0 12px 8px 0;
+      vertical-align: middle;
     }
 
     .cabecalho img {
@@ -41,11 +45,19 @@
       color: #5b6b85;
     }
 
-    .info-linha {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 12px;
+    table.info-linha {
+      margin-bottom: 10px;
       font-size: 10.5px;
+    }
+
+    table.info-linha td {
+      border: 0;
+      padding: 0 0 2px;
+      text-align: left;
+    }
+
+    table.info-linha td.dir {
+      text-align: right;
     }
 
     .info-linha strong {
@@ -75,7 +87,6 @@
     td.nome {
       text-align: left;
       font-weight: 600;
-      white-space: nowrap;
     }
 
     tbody tr:nth-child(even) {
@@ -93,33 +104,28 @@
 
 <body>
 
-  <!-- <div class="cabecalho">
-    <img src="{{ logo_path }}" alt="Logo">
-    <div>
-      <h1>Ficha de Notas — {{ nome_turma }}</h1>
-      <p>Disciplina: {{ disciplina }} · Ano letivo: {{ ano_letivo }}</p>
-    </div>
-  </div> -->
-  <div class="cabecalho">
-    {% if logo_path %}
-    <img src="{{ logo_path }}" alt="Logo">
-    {% endif %}
-    <div>
-      <h1>Ficha de Notas — {{ nome_turma }}</h1>
-      <p>Disciplina: {{ disciplina }} · Ano letivo: {{ ano_letivo }}</p>
-    </div>
-  </div>
+  <table class="cabecalho">
+    <tr>
+      {% if logo_path %}<td width="56"><img src="{{ logo_path }}" alt="Logo"></td>{% endif %}
+      <td>
+        <h1>Ficha de Notas — {{ nome_turma }}</h1>
+        <p>Disciplina: {{ disciplina }} · Ano letivo: {{ ano_letivo }}</p>
+      </td>
+    </tr>
+  </table>
 
-  <div class="info-linha">
-    <span>Professor(a): <strong>{{ professor }}</strong></span>
-    <span>Emitido em: <strong>{{ data_emissao }}</strong></span>
-  </div>
+  <table class="info-linha">
+    <tr>
+      <td>Professor(a): <strong>{{ professor }}</strong></td>
+      <td class="dir">Emitido em: <strong>{{ data_emissao }}</strong></td>
+    </tr>
+  </table>
 
   <table>
     <thead>
       <tr>
-        <th rowspan="2">Nº</th>
-        <th rowspan="2">Aluno</th>
+        <th rowspan="2" width="22">Nº</th>
+        <th rowspan="2" width="125">Aluno</th>
         <th colspan="4">1º Trimestre</th>
         <th colspan="4">2º Trimestre</th>
         <th colspan="4">3º Trimestre</th>
@@ -128,7 +134,7 @@
         <th rowspan="2">MAF</th>
         <th rowspan="2">RCF</th>
         <th rowspan="2">TGF</th>
-        <th rowspan="2">Situação</th>
+        <th rowspan="2" width="48">Situação</th>
       </tr>
       <tr>
         <th>NM1</th>
@@ -149,7 +155,7 @@
       {% for linha in linhas %}
       <tr>
         <td>{{ linha.posicao_ordem }}</td>
-        <td class="nome">{{ linha.nome_completo }}</td>
+        <td class="nome" width="125">{{ linha.nome_completo }}</td>
         <td>{{ linha.nm1_t1 }}</td>
         <td>{{ linha.nm2_t1 }}</td>
         <td>{{ linha.nm3_t1 }}</td>

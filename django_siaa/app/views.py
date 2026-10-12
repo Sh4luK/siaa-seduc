@@ -4144,7 +4144,7 @@ def gerar_avaliacao_pdf(request, avaliacao_id):
         "logo_path": logo_path,
     }
 
-    html_string = render_to_string("avaliacoes/pdf.html", contexto)
+    html_string = render_to_string("avaliacoes/pdf_folha.html", contexto)
     from .pdf import html_to_pdf
     pdf_file = html_to_pdf(html_string)
 

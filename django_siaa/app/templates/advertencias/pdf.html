@@ -42,18 +42,9 @@
   .campos {
     margin-bottom: 24px;
   }
-  .campo-linha {
-    display: flex;
-    margin-bottom: 8px;
-  }
-  .campo-label {
-    font-weight: bold;
-    width: 130px;
-    flex-shrink: 0;
-  }
-  .campo-valor {
-    flex: 1;
-  }
+  table.campos { width: 100%; }
+  table.campos td { padding: 0 0 8px; vertical-align: top; }
+  td.campo-label { font-weight: bold; width: 130px; }
   .descricao-titulo {
     font-weight: bold;
     margin-top: 20px;
@@ -67,15 +58,9 @@
     border-radius: 4px;
     min-height: 120px;
   }
-  .assinaturas {
-    margin-top: 72px;
-    display: flex;
-    justify-content: space-between;
-  }
-  .assinatura {
-    width: 45%;
-    text-align: center;
-  }
+  table.assinaturas { width: 100%; margin-top: 72px; }
+  table.assinaturas td { width: 45%; text-align: center; padding: 0; }
+  table.assinaturas td.espaco { width: 10%; }
   .assinatura-linha {
     border-top: 1px solid #1a1a1a;
     margin-bottom: 6px;
@@ -110,35 +95,17 @@
     {% if eh_penalidade %}Termo de Penalidade{% else %}Termo de Advertência{% endif %}
   </h1>
 
-  <div class="campos">
+  <table class="campos">
     {% if eh_penalidade %}
-      <div class="campo-linha">
-        <span class="campo-label">Professor(a):</span>
-        <span class="campo-valor">{{ advertencia.professor.nome_completo }}</span>
-      </div>
+      <tr><td class="campo-label">Professor(a):</td><td>{{ advertencia.professor.nome_completo }}</td></tr>
     {% else %}
-      <div class="campo-linha">
-        <span class="campo-label">Aluno(a):</span>
-        <span class="campo-valor">{{ advertencia.aluno.nome_completo }}</span>
-      </div>
-      <div class="campo-linha">
-        <span class="campo-label">Turma:</span>
-        <span class="campo-valor">{{ advertencia.aluno.turma }}</span>
-      </div>
-      <div class="campo-linha">
-        <span class="campo-label">Escola:</span>
-        <span class="campo-valor">{{ escola }}</span>
-      </div>
+      <tr><td class="campo-label">Aluno(a):</td><td>{{ advertencia.aluno.nome_completo }}</td></tr>
+      <tr><td class="campo-label">Turma:</td><td>{{ advertencia.aluno.turma }}</td></tr>
+      <tr><td class="campo-label">Escola:</td><td>{{ escola }}</td></tr>
     {% endif %}
-    <div class="campo-linha">
-      <span class="campo-label">Data:</span>
-      <span class="campo-valor">{{ advertencia.data|date:"d/m/Y" }}</span>
-    </div>
-    <div class="campo-linha">
-      <span class="campo-label">Assunto:</span>
-      <span class="campo-valor">{{ advertencia.titulo }}</span>
-    </div>
-  </div>
+    <tr><td class="campo-label">Data:</td><td>{{ advertencia.data|date:"d/m/Y" }}</td></tr>
+    <tr><td class="campo-label">Assunto:</td><td>{{ advertencia.titulo }}</td></tr>
+  </table>
 
   {% if advertencia.is_suspensao %}
     <div class="suspensao-aviso">
@@ -151,18 +118,21 @@
   <p class="descricao-titulo">Descrição da ocorrência</p>
   <div class="descricao-texto">{{ advertencia.descricao }}</div>
 
-  <div class="assinaturas">
-    <div class="assinatura">
+  <table class="assinaturas">
+    <tr>
+      <td>
       <div class="assinatura-linha"></div>
       <p class="assinatura-label">{{ emitido_por }}</p>
-    </div>
-    <div class="assinatura">
+    </td>
+      <td class="espaco"></td>
+      <td>
       <div class="assinatura-linha"></div>
       <p class="assinatura-label">
         {% if eh_penalidade %}Assinatura do(a) professor(a){% else %}Assinatura do(a) responsável{% endif %}
       </p>
-    </div>
-  </div>
+    </td>
+    </tr>
+  </table>
 
   <p class="rodape">Documento emitido pelo SIAA em {{ advertencia.data|date:"d/m/Y" }}.</p>
 </body>

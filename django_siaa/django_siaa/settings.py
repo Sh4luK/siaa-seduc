@@ -39,9 +39,6 @@ SECRET_KEY = os.environ.get(
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get("DJANGO_DEBUG", "True").lower() in ("1", "true", "yes")
 
-ALLOWED_HOSTS = []
-
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -176,7 +173,9 @@ CSRF_TRUSTED_ORIGINS = [
 USE_X_FORWARDED_HOST = True
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
-ALLOWED_HOSTS = _env_list("DJANGO_ALLOWED_HOSTS", "*")
+ALLOWED_HOSTS = _env_list(
+    "DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1,.app.github.dev"
+)
 
 # Uploads: Vercel Blob em produção (sistema de arquivos da Vercel é efêmero)
 MEDIA_URL = "/media/"

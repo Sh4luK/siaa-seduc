@@ -6,17 +6,19 @@
   @page { size: A4 landscape; margin: 1.5cm; }
   body { font-family: 'IBM Plex Sans', Inter, 'Segoe UI', sans-serif; color: #1a2942; }
 
-  .cabecalho { display: flex; align-items: center; gap: 0.8cm; margin-bottom: 0.6cm; border-bottom: 2px solid #0b4f9e; padding-bottom: 0.4cm; }
+  table.cabecalho { width: 100%; margin-bottom: 0.6cm; border-bottom: 2px solid #0b4f9e; }
+  table.cabecalho td { border: 0; text-align: left; padding: 0 0.4cm 0.3cm 0; vertical-align: middle; }
   .cabecalho img { height: 1.8cm; }
   .cabecalho h1 { font-size: 16pt; margin: 0; color: #0b4f9e; }
   .cabecalho p { font-size: 9pt; margin: 2px 0 0; color: #5b6b85; }
 
-  .info-aluno { display: flex; justify-content: space-between; font-size: 9.5pt; margin-bottom: 0.5cm; color: #1a2942; }
+  table.info-aluno { width: 100%; font-size: 9.5pt; margin-bottom: 0.4cm; color: #1a2942; }
+  table.info-aluno td { border: 0; text-align: left; padding: 0 0 4px; }
 
   table { width: 100%; border-collapse: collapse; font-size: 7.5pt; }
   th, td { border: 1px solid #e2e8f0; padding: 4px 5px; text-align: center; }
   th { background: #f8fafc; font-weight: 700; text-transform: uppercase; font-size: 6.8pt; color: #1a2942; }
-  thead tr:first-child th { background: rgba(11, 79, 158, 0.08); color: #0b4f9e; }
+  thead tr:first-child th { background: #e6eef8; color: #0b4f9e; }
   td.disciplina { text-align: left; font-weight: 600; }
 
   .rodape { margin-top: 0.8cm; font-size: 8pt; color: #5b6b85; text-align: right; }
@@ -24,25 +26,29 @@
 </head>
 <body>
 
-  <div class="cabecalho">
-    {% if logo_path %}<img src="{{ logo_path }}">{% endif %}
-    <div>
-      <h1>Boletim Escolar</h1>
-      <p>Governo do Estado do Piauí — Secretaria de Estado da Educação</p>
-    </div>
-  </div>
+  <table class="cabecalho">
+    <tr>
+      {% if logo_path %}<td width="70"><img src="{{ logo_path }}"></td>{% endif %}
+      <td>
+        <h1>Boletim Escolar</h1>
+        <p>Governo do Estado do Piauí — Secretaria de Estado da Educação</p>
+      </td>
+    </tr>
+  </table>
 
-  <div class="info-aluno">
-    <span><strong>Aluno:</strong> {{ aluno.nome_completo }}</span>
-    <span><strong>Turma:</strong> {{ aluno.turma }}</span>
-    <span><strong>Escola:</strong> {{ aluno.escola }}</span>
-  </div>
+  <table class="info-aluno">
+    <tr>
+      <td><strong>Aluno:</strong> {{ aluno.nome_completo }}</td>
+      <td><strong>Turma:</strong> {{ aluno.turma }}</td>
+      <td><strong>Escola:</strong> {{ aluno.escola }}</td>
+    </tr>
+  </table>
 
   <table>
     <thead>
       <tr>
-        <th rowspan="2">Disciplina</th>
-        <th rowspan="2">Professor(a)</th>
+        <th rowspan="2" width="95">Disciplina</th>
+        <th rowspan="2" width="95">Professor(a)</th>
         <th colspan="4">1º Trimestre</th>
         <th colspan="4">2º Trimestre</th>
         <th colspan="4">3º Trimestre</th>
@@ -60,7 +66,7 @@
     <tbody>
       {% for l in linhas %}
       <tr>
-        <td class="disciplina">{{ l.disciplina }}</td>
+        <td class="disciplina" width="95">{{ l.disciplina }}</td>
         <td>{{ l.professor_nome }}</td>
         <td>{{ l.nm1_t1 }}</td><td>{{ l.nm2_t1 }}</td><td>{{ l.nm3_t1 }}</td><td>{{ l.mt_t1 }}</td>
         <td>{{ l.nm1_t2 }}</td><td>{{ l.nm2_t2 }}</td><td>{{ l.nm3_t2 }}</td><td>{{ l.mt_t2 }}</td>
