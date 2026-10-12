@@ -6,7 +6,7 @@ import Link from "next/link";
 import layoutStyles from "../page.module.css";
 import styles from "./page.module.css";
 
-const API_BASE = "https://obscure-happiness-v67rpjq7p96vfxj4g-8000.app.github.dev";
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 const MESES = ["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
 
 function diasNoMes(ano, mes) { return new Date(ano, mes, 0).getDate(); }

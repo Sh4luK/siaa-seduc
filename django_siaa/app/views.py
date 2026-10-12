@@ -59,7 +59,6 @@ import string
 from django.templatetags.static import static
 from django.template.loader import render_to_string
 from django.utils.text import slugify
-from weasyprint import HTML
 from django.views.decorators.http import require_http_methods
 from django.db.models import Avg
 import json
@@ -207,55 +206,36 @@ def view_students(request):
 # @csrf_exempt
 def search_student(request):
     fullName = request.GET.get("fullname", "").strip().lower()
-    course = request.GET.get("course", "").strip().lower()
 
-    file = Path("/workspaces/siaa-seduc/infra/alunos_formatados.json")
-    if not file.exists():
-        file = Path(__file__).resolve().parent.parent / "alunos_formatados.json"
-    
-    try:
-        with open(file, "r", encoding="utf-8") as f:
-            students_data = json.load(f)
-        
-        results = []
+    students = Estudante.objects.all()
+    if fullName:
+        students = students.filter(nome_completo__icontains=fullName)
 
-        for page_id, page_content in students_data.items():
-            students_list = page_content.get("alunos", [])
+    results = [
+        {
+            "posicao_ordem": student.posicao_ordem,
+            "nome_completo": student.nome_completo,
+            "escola": student.escola,
+            "serie": student.serie,
+            "turma": student.turma,
+            "periodo": student.periodo,
+            "curso": student.curso,
+        }
+        for student in students
+    ]
 
-            for student in students_list:
-                student_name = student.get('nome_completo', '')
-
-                if fullName and fullName not in student_name.lower():
-                    continue
-
-                results.append({
-                    "posicao_ordem": student.get('posicao_ordem'),
-                    "nome_completo": student_name,
-                    "escola": page_content.get('escola'),
-                    "serie": page_content.get('serie'),
-                    "turma": page_content.get('turma'),
-                    "periodo": page_content.get('periodo'),
-                    "curso": page_content.get('curso')
-                })
-
-        print({
-            "total_encontrado": len(results),
-            "estudante": results
-        })  
-        return JsonResponse({
-            "total_encontrado": len(results),
-            "estudante": results
-        })
-    except FileNotFoundError:
-        return JsonResponse({"erro": "Arquivo data.json não encontrado."})
-    except json.JSONDecodeError:
-        return JsonResponse({"erro": "Erro ao processar o arquivo JSON."})
+    return JsonResponse({
+        "total_encontrado": len(results),
+        "estudante": results
+    })
 
 
 @csrf_exempt
+@require_http_methods(["POST"])
 def login_student(request):
-    fullName = request.GET.get("fullname").strip().upper()
-    password = request.GET.get("password").strip().lower()
+    body = json.loads(request.body or "{}")
+    fullName = (body.get("fullname") or "").strip().upper()
+    password = (body.get("password") or "").strip().lower()
 
     student = Estudante.objects.filter(nome_completo=fullName, senha=password).first()
 
@@ -292,9 +272,11 @@ def auth_student(request):
     
 
 @csrf_exempt
+@require_http_methods(["POST"])
 def login_teacher(request):
-    nome_completo = request.GET.get("nome_completo").strip().upper()
-    senha = request.GET.get("senha").strip().upper()
+    body = json.loads(request.body or "{}")
+    nome_completo = (body.get("nome_completo") or "").strip().upper()
+    senha = (body.get("senha") or "").strip().upper()
 
     getProfessor = Professor.objects.filter(nome_completo=nome_completo, senha=senha).first()
 
@@ -1565,9 +1547,11 @@ def deletar_comunicado(request, comunicado_id):
 
 
 @csrf_exempt
+@require_http_methods(["POST"])
 def login_coordenacao(request):
-    nome_completo = request.GET.get("nome_completo").strip().upper()
-    senha = request.GET.get("senha").strip()
+    body = json.loads(request.body or "{}")
+    nome_completo = (body.get("nome_completo") or "").strip().upper()
+    senha = (body.get("senha") or "").strip()
 
     coordenador = Coordenador.objects.filter(nome_completo=nome_completo, senha=senha).first()
 
@@ -2916,7 +2900,8 @@ def gerar_advertencia_pdf(request, advertencia_id):
     }
 
     html_string = render_to_string("advertencias/pdf.html", contexto)
-    pdf_file = HTML(string=html_string).write_pdf()
+    from .pdf import html_to_pdf
+    pdf_file = html_to_pdf(html_string)
 
     prefixo = "penalidade" if advertencia.tipo == "PENALIDADE" else "advertencia"
     nome_arquivo = f"{prefixo}_{advertencia.id}.pdf"
@@ -3947,7 +3932,7 @@ def _gerar_pdf_avaliacao(avaliacao):
     aluno_da_turma = Estudante.objects.filter(turma=avaliacao.turma).first()
     curso = aluno_da_turma.curso if aluno_da_turma else "—"
 
-    logo_path = os.path.join(settings.BASE_DIR, "app", "static", "img", "logo.png")
+    logo_path = os.path.join(settings.BASE_DIR, "app", "static", "logo.png")
     logo_url = f"file://{logo_path}"
 
     questoes_contexto = []
@@ -3956,7 +3941,7 @@ def _gerar_pdf_avaliacao(avaliacao):
             "enunciado": q.enunciado,
             "tipo": q.tipo,
             "tipo_label": "Objetiva" if q.tipo == "OBJETIVA" else "Subjetiva",
-            "imagem_url": f"file://{q.imagem.path}" if q.imagem else None,
+            "imagem_url": q.imagem.url if q.imagem else None,
             "alternativas": q.alternativas.all() if q.tipo == "OBJETIVA" else [],
         })
 
@@ -3968,7 +3953,8 @@ def _gerar_pdf_avaliacao(avaliacao):
     }
 
     html_string = render_to_string("avaliacoes/pdf.html", contexto)
-    return HTML(string=html_string).write_pdf()
+    from .pdf import html_to_pdf
+    return html_to_pdf(html_string)
 
 @csrf_exempt
 def avaliacao_detalhe_coordenacao(request, avaliacao_id):
@@ -4159,7 +4145,8 @@ def gerar_avaliacao_pdf(request, avaliacao_id):
     }
 
     html_string = render_to_string("avaliacoes/pdf.html", contexto)
-    pdf_file = HTML(string=html_string).write_pdf()
+    from .pdf import html_to_pdf
+    pdf_file = html_to_pdf(html_string)
 
     nome_arquivo = f"avaliacao_{avaliacao.id}.pdf"
     response = HttpResponse(pdf_file, content_type="application/pdf")
@@ -4848,7 +4835,7 @@ def horarios_aluno_pdf(request):
         for dia in DIAS_ORDEM
     ]
 
-    logo_path_absoluto = os.path.join(settings.BASE_DIR, "django_siaa", "app", "static", "logo.png")
+    logo_path_absoluto = os.path.join(settings.BASE_DIR, "app", "static", "logo.png")
     logo_path = f"file://{logo_path_absoluto}" if os.path.exists(logo_path_absoluto) else None
 
     contexto = {
@@ -4859,7 +4846,8 @@ def horarios_aluno_pdf(request):
     }
 
     html_string = render_to_string("horarios/pdf.html", contexto)
-    pdf_file = HTML(string=html_string).write_pdf()
+    from .pdf import html_to_pdf
+    pdf_file = html_to_pdf(html_string)
 
     nome_arquivo = f"horario_{_nome_arquivo_seguro(aluno.nome_completo)}.pdf"
 
@@ -5130,9 +5118,11 @@ def registrar_responsavel(request):
 
 
 @csrf_exempt
+@require_http_methods(["POST"])
 def login_responsavel(request):
-    nome_completo = request.GET.get("nome_completo", "").strip().upper()
-    senha = request.GET.get("senha", "").strip()
+    body = json.loads(request.body or "{}")
+    nome_completo = (body.get("nome_completo") or "").strip().upper()
+    senha = (body.get("senha") or "").strip()
 
     responsavel = Responsavel.objects.filter(nome_completo=nome_completo, senha=senha).first()
 
@@ -6078,7 +6068,7 @@ def gerar_ficha_notas_pdf(request, turma_id):
             "rf": nota.get_rf_display() if nota else "Não Definido",
         })
 
-    logo_path_absoluto = os.path.join(settings.BASE_DIR, 'django_siaa', 'app', 'static', 'logo.png')
+    logo_path_absoluto = os.path.join(settings.BASE_DIR, 'app', 'static', 'logo.png')
     logo_path = f"file://{logo_path_absoluto}" if os.path.exists(logo_path_absoluto) else None
 
     contexto = {
@@ -6092,7 +6082,8 @@ def gerar_ficha_notas_pdf(request, turma_id):
     }
 
     html_string = render_to_string("notas/ficha_pdf.html", contexto)
-    pdf_file = HTML(string=html_string).write_pdf()
+    from .pdf import html_to_pdf
+    pdf_file = html_to_pdf(html_string)
 
     nome_arquivo = f"ficha_notas_{_nome_arquivo_seguro(nome_turma)}_{_nome_arquivo_seguro(disciplina.nome_disciplina)}.pdf"
 
@@ -6152,7 +6143,7 @@ def boletim_aluno_pdf(request):
             "rf": nota.get_rf_display() if nota else "Não Definido",
         })
 
-    logo_path_absoluto = os.path.join(settings.BASE_DIR, "django_siaa", "app", "static", "logo.png")
+    logo_path_absoluto = os.path.join(settings.BASE_DIR, "app", "static", "logo.png")
     logo_path = f"file://{logo_path_absoluto}" if os.path.exists(logo_path_absoluto) else None
 
     contexto = {
@@ -6163,7 +6154,8 @@ def boletim_aluno_pdf(request):
     }
 
     html_string = render_to_string("boletim/pdf.html", contexto)
-    pdf_file = HTML(string=html_string).write_pdf()
+    from .pdf import html_to_pdf
+    pdf_file = html_to_pdf(html_string)
 
     nome_arquivo = f"boletim_{_nome_arquivo_seguro(aluno.nome_completo)}.pdf"
 
@@ -6224,7 +6216,7 @@ def boletim_aluno_pdf_responsavel(request, aluno_id):
             "rf": nota.get_rf_display() if nota else "Não Definido",
         })
 
-    logo_path_absoluto = os.path.join(settings.BASE_DIR, "django_siaa", "app", "static", "logo.png")
+    logo_path_absoluto = os.path.join(settings.BASE_DIR, "app", "static", "logo.png")
     logo_path = f"file://{logo_path_absoluto}" if os.path.exists(logo_path_absoluto) else None
 
     contexto = {
@@ -6235,7 +6227,8 @@ def boletim_aluno_pdf_responsavel(request, aluno_id):
     }
 
     html_string = render_to_string("boletim/pdf.html", contexto)
-    pdf_file = HTML(string=html_string).write_pdf()
+    from .pdf import html_to_pdf
+    pdf_file = html_to_pdf(html_string)
 
     nome_arquivo = f"boletim_{_nome_arquivo_seguro(aluno.nome_completo)}.pdf"
 

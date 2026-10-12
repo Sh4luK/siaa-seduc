@@ -6,7 +6,7 @@ import Link from "next/link";
 import layoutStyles from "../../../page.module.css";
 import styles from "../../professor/enviar/page.module.css";
 
-const API_BASE = "https://obscure-happiness-v67rpjq7p96vfxj4g-8000.app.github.dev";
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
 export default function EnviarMensagemCoordenadorPage() {
   const router = useRouter();

@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import styles from "../page.module.css";
 import Image from "next/image";
 
-const API_BASE = "https://obscure-happiness-v67rpjq7p96vfxj4g-8000.app.github.dev";
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
 export default function ProfessorLoginPage() {
   const [nomeCompleto, setNomeCompleto] = useState("");
@@ -49,8 +49,12 @@ export default function ProfessorLoginPage() {
     setError("");
 
     try {
-      const url = `${API_BASE}/api/teacher/login?nome_completo=${encodeURIComponent(nomeCompleto)}&senha=${encodeURIComponent(password)}`;
-      const res = await fetch(url, { credentials: "include" });
+      const res = await fetch(`${API_BASE}/api/teacher/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ nome_completo: nomeCompleto, senha: password }),
+      });
       const data = await res.json();
 
       if (data.return === true) {

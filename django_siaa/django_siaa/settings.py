@@ -10,20 +10,34 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
+import os
 from pathlib import Path
+from urllib.parse import urlparse
+
+from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+load_dotenv(BASE_DIR / ".env")
+load_dotenv(BASE_DIR / ".env.local")
+
+
+def _env_list(name, default=""):
+    return [v.strip() for v in os.environ.get(name, default).split(",") if v.strip()]
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-3zsf9fxl)l=!y-cszahkm7@*#1=466eogkc^w*#epa-j*yi)14"
+SECRET_KEY = os.environ.get(
+    "DJANGO_SECRET_KEY",
+    "django-insecure-3zsf9fxl)l=!y-cszahkm7@*#1=466eogkc^w*#epa-j*yi)14",
+)
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get("DJANGO_DEBUG", "True").lower() in ("1", "true", "yes")
 
 ALLOWED_HOSTS = []
 
@@ -45,6 +59,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -76,12 +91,28 @@ WSGI_APPLICATION = "django_siaa.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+_database_url = os.environ.get("DATABASE_URL") or os.environ.get("POSTGRES_URL")
+if _database_url:
+    _url = urlparse(_database_url)
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.postgresql",
+            "NAME": _url.path.lstrip("/"),
+            "USER": _url.username,
+            "PASSWORD": _url.password,
+            "HOST": _url.hostname,
+            "PORT": _url.port or 5432,
+            "CONN_MAX_AGE": 0,
+            "OPTIONS": {"sslmode": "require"},
+        }
     }
-}
+else:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": BASE_DIR / "db.sqlite3",
+        }
+    }
 
 
 # Password validation
@@ -119,40 +150,40 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = "static/"
+STATIC_ROOT = BASE_DIR / "staticfiles"
 
 APPEND_SLASH = False
 
 CSRF_COOKIE_SECURE = True
-
 CSRF_COOKIE_HTTPONLY = True
 
-# LOGIN_URL = "login/"
-
-# CORS_ALLOWED_ORIGINS = [
-#     "http://localhost:3000", # Porta padrão do Next.js
-#     "https://friendly-space-computing-machine-7v457jp474w72q46-3000.app.github.dev",
-# ]
-
-CORS_ALLOW_ALL_ORIGINS = True
-ALLOWED_HOSTS = ['*']
+# Frontend (Next.js) e backend ficam em domínios diferentes na Vercel.
+# Ex.: FRONTEND_ORIGINS=https://meu-front.vercel.app
 CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOWED_ORIGINS = _env_list(
+    "FRONTEND_ORIGINS",
+    "http://localhost:3000,https://obscure-happiness-v67rpjq7p96vfxj4g-3000.app.github.dev",
+)
+CORS_ALLOWED_ORIGIN_REGEXES = _env_list("FRONTEND_ORIGIN_REGEXES")
 
 CSRF_TRUSTED_ORIGINS = [
     "https://*.app.github.dev",
+    "https://*.vercel.app",
     "http://localhost:8000",
     "https://localhost:8000",
-]
+] + _env_list("FRONTEND_ORIGINS")
 
 USE_X_FORWARDED_HOST = True
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = _env_list("DJANGO_ALLOWED_HOSTS", "*")
 
+# Uploads: Vercel Blob em produção (sistema de arquivos da Vercel é efêmero)
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
-
-CORS_ALLOW_CREDENTIALS = True
-CORS_ALLOWED_ORIGINS = [
-    "https://obscure-happiness-v67rpjq7p96vfxj4g-3000.app.github.dev",
-]
+if os.environ.get("BLOB_READ_WRITE_TOKEN"):
+    STORAGES = {
+        "default": {"BACKEND": "app.storage.VercelBlobStorage"},
+        "staticfiles": {"BACKEND": "whitenoise.storage.CompressedStaticFilesStorage"},
+    }

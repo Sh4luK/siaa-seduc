@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import styles from "./page.module.css"
 
-const API_BASE = "https://obscure-happiness-v67rpjq7p96vfxj4g-8000.app.github.dev";
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
 export default function CoordenacaoLoginPage() {
   const [verificandoSessao, setVerificandoSessao] = useState(true);
@@ -50,8 +50,12 @@ export default function CoordenacaoLoginPage() {
     setLoading(true);
 
     try {
-      const url = `${API_BASE}/api/coordenacao/login?nome_completo=${encodeURIComponent(nomeCompleto.trim())}&senha=${encodeURIComponent(senha.trim())}`;
-      const res = await fetch(url, { credentials: "include" });
+      const res = await fetch(`${API_BASE}/api/coordenacao/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ nome_completo: nomeCompleto.trim(), senha: senha.trim() }),
+      });
       if (!res.ok) throw new Error(`Falha ao autenticar (status ${res.status})`);
       const data = await res.json();
 

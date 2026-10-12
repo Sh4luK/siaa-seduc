@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import styles from "../page.module.css";
 import Image from "next/image";
 
-const API_BASE = "https://obscure-happiness-v67rpjq7p96vfxj4g-8000.app.github.dev";
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
 export default function AlunoLoginPage() {
   const [fullName, setFullName] = useState("");
@@ -67,8 +67,12 @@ export default function AlunoLoginPage() {
 
   async function auth_student_button() {
     try {
-      const url = `${API_BASE}/api/students/login?fullname=${encodeURIComponent(fullName)}&password=${password}`;
-      const student_login = await fetch(url, { credentials: "include" });
+      const student_login = await fetch(`${API_BASE}/api/students/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ fullname: fullName, password }),
+      });
       const data = await student_login.json();
       if (data.return === true) {
         router.push("/aluno");

@@ -7,7 +7,7 @@ import Link from "next/link";
 import logo from "@/assets/logo.png";
 import styles from "./page.module.css";
 
-const API_BASE = "https://obscure-happiness-v67rpjq7p96vfxj4g-8000.app.github.dev";
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
 function normalizar(texto) {
   return texto

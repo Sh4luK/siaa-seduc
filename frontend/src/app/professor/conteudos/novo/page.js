@@ -6,7 +6,7 @@ import layoutStyles from "../../page.module.css";
 import styles from "./page.module.css";
 import Image from "next/image";
 import logo from "../../../../assets/logo.png";
-const API_BASE = "https://obscure-happiness-v67rpjq7p96vfxj4g-8000.app.github.dev";
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
 function hojeISO() {
   const hoje = new Date();

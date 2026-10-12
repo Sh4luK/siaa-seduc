@@ -1,0 +1,9 @@
+Django>=6.0
+djangorestframework
+django-cors-headers
+python-dotenv
+psycopg[binary]
+whitenoise
+requests
+xhtml2pdf
+reportlab
