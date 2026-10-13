@@ -190,7 +190,7 @@ export default function MensagensProfessorPage() {
             <div className={styles.headerRow}>
               <div>
                 <h1 className={layoutStyles.greeting}>Mensagens</h1>
-                <p className={layoutStyles.subtitle}>Conversas com a coordenação e com responsáveis, {firstName}.</p>
+                <p className={layoutStyles.subtitle}>Conversas com a organização e com responsáveis, {firstName}.</p>
               </div>
             </div>
 
@@ -199,7 +199,7 @@ export default function MensagensProfessorPage() {
                 className={aba === "coordenacao" ? styles.abaAtiva : styles.aba}
                 onClick={() => setAba("coordenacao")}
               >
-                Coordenação
+                Organização
                 {conversasCoordenacao.some((c) => c.nao_lidas > 0) && <span className={styles.pontoNaoLido} />}
               </button>
               <button
@@ -219,7 +219,7 @@ export default function MensagensProfessorPage() {
               <p className={styles.subtitle}>Carregando conversas...</p>
             ) : conversasAtivas.length === 0 ? (
               <p className={styles.vazio}>
-                {aba === "coordenacao" ? "Nenhuma conversa com a coordenação até o momento." : "Nenhuma conversa com responsáveis até o momento."}
+                {aba === "coordenacao" ? "Nenhuma conversa com a organização até o momento." : "Nenhuma conversa com responsáveis até o momento."}
               </p>
             ) : (
               <ul className={styles.conversasList}>
@@ -235,7 +235,7 @@ export default function MensagensProfessorPage() {
                       <div className={styles.conversaInfo}>
                         <div className={styles.conversaTopo}>
                           <p className={styles.conversaTitulo}>
-                            {aba === "coordenacao" ? "Coordenação" : c.responsavel_nome}
+                            {aba === "coordenacao" ? "Organização" : c.responsavel_nome}
                           </p>
                           <span className={styles.conversaData}>{formatarDataHora(c.ultima_atualizacao)}</span>
                         </div>

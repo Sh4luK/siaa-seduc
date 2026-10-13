@@ -73,7 +73,7 @@ api = os.getenv("IP_API")
 # ============================================================
 # AUTENTICAÇÃO POR SESSÃO/COOKIE (substitui a autenticação por IP)
 # ============================================================
-# Cada perfil (aluno, professor, coordenação, responsável, admin) tem seu
+# Cada perfil (aluno, professor, organização, responsável, admin) tem seu
 # próprio cookie de sessão, para que um mesmo navegador possa manter mais
 # de um perfil logado ao mesmo tempo sem um sobrescrever o outro.
 # O blog usa seu próprio cookie separado (blog_session), pois quem loga
@@ -2252,7 +2252,7 @@ def get_eventos_coordenacao(request):
     resultado = []
     for e in eventos:
         if e.coordenador:
-            criado_por = f"{e.coordenador.escola or 'Coordenação'}"
+            criado_por = f"{e.coordenador.escola or 'Organização'}"
             origem = "coordenacao"
         elif e.professor:
             criado_por = e.professor.nome_completo
@@ -2288,7 +2288,7 @@ def get_evento_detalhe(request, evento_id):
     hoje = date.today()
 
     if evento.coordenador:
-        criado_por = evento.coordenador.escola or "Coordenação"
+        criado_por = evento.coordenador.escola or "Organização"
         origem = "coordenacao"
     elif evento.professor:
         criado_por = evento.professor.nome_completo
@@ -2369,7 +2369,7 @@ def criar_evento_coordenacao(request):
             "data": evento.data.isoformat(),
             "turma_id": evento.turma_id,
             "nome_turma": evento.turma.turma if evento.turma else None,
-            "criado_por": coordenador.escola or "Coordenação",
+            "criado_por": coordenador.escola or "Organização",
             "origem": "coordenacao",
         }
     })
@@ -2474,7 +2474,7 @@ def get_comunicados_coordenacao(request):
     resultado = []
     for c in comunicados:
         if c.coordenador:
-            criado_por = c.coordenador.escola or "Coordenação"
+            criado_por = c.coordenador.escola or "Organização"
             origem = "coordenacao"
         elif c.professor:
             criado_por = c.professor.nome_completo
@@ -2508,7 +2508,7 @@ def get_comunicado_detalhe(request, comunicado_id):
         return JsonResponse({"message": "Comunicado não encontrado."}, status=404)
 
     if comunicado.coordenador:
-        criado_por = comunicado.coordenador.escola or "Coordenação"
+        criado_por = comunicado.coordenador.escola or "Organização"
         origem = "coordenacao"
     elif comunicado.professor:
         criado_por = comunicado.professor.nome_completo
@@ -2589,7 +2589,7 @@ def criar_comunicado_coordenacao(request):
             "data": comunicado.data.isoformat(),
             "turma_id": comunicado.turma_id,
             "nome_turma": comunicado.turma.turma if comunicado.turma else None,
-            "criado_por": coordenador.escola or "Coordenação",
+            "criado_por": coordenador.escola or "Organização",
             "origem": "coordenacao",
         }
     })
@@ -2679,7 +2679,7 @@ def get_advertencias_coordenacao(request):
             "aluno_turma": a.aluno.turma if a.aluno else None,
             "professor_id": a.professor_id,
             "professor_nome": a.professor.nome_completo if a.professor else None,
-            "emitido_por": (a.coordenador.escola or "Coordenação") if a.coordenador else None,
+            "emitido_por": (a.coordenador.escola or "Organização") if a.coordenador else None,
             "is_suspensao": a.is_suspensao,
             "data_inicio_suspensao": a.data_inicio_suspensao.isoformat() if a.data_inicio_suspensao else None,
             "data_termino_suspensao": a.data_termino_suspensao.isoformat() if a.data_termino_suspensao else None,
@@ -2709,7 +2709,7 @@ def get_advertencia_detalhe(request, advertencia_id):
             "aluno_turma": advertencia.aluno.turma if advertencia.aluno else None,
             "professor_id": advertencia.professor_id,
             "professor_nome": advertencia.professor.nome_completo if advertencia.professor else None,
-            "emitido_por": (advertencia.coordenador.escola or "Coordenação") if advertencia.coordenador else None,
+            "emitido_por": (advertencia.coordenador.escola or "Organização") if advertencia.coordenador else None,
             "is_suspensao": advertencia.is_suspensao,
             "data_inicio_suspensao": advertencia.data_inicio_suspensao.isoformat() if advertencia.data_inicio_suspensao else None,
             "data_termino_suspensao": advertencia.data_termino_suspensao.isoformat() if advertencia.data_termino_suspensao else None,
@@ -2896,7 +2896,7 @@ def gerar_advertencia_pdf(request, advertencia_id):
         "advertencia": advertencia,
         "eh_penalidade": advertencia.tipo == "PENALIDADE",
         "escola": advertencia.aluno.escola if advertencia.aluno else "",
-        "emitido_por": (advertencia.coordenador.escola or "Coordenação Pedagógica") if advertencia.coordenador else "Coordenação Pedagógica",
+        "emitido_por": (advertencia.coordenador.escola or "Organização Pedagógica") if advertencia.coordenador else "Organização Pedagógica",
     }
 
     html_string = render_to_string("advertencias/pdf.html", contexto)
@@ -3286,7 +3286,7 @@ def get_eventos_professor_visualizacao(request):
     resultado = []
     for e in eventos.order_by("data"):
         if e.coordenador:
-            criado_por = e.coordenador.escola or "Coordenação"
+            criado_por = e.coordenador.escola or "Organização"
             origem = "coordenacao"
         elif e.professor:
             criado_por = e.professor.nome_completo
@@ -5488,7 +5488,7 @@ def comunicados_aluno_responsavel(request, aluno_id):
         if c.turma is not None and _turma_normalizada(c.turma.turma) != turma_aluno_norm:
             continue
         if c.coordenador:
-            criado_por, origem = (c.coordenador.escola or "Coordenação"), "coordenacao"
+            criado_por, origem = (c.coordenador.escola or "Organização"), "coordenacao"
         elif c.professor:
             criado_por, origem = c.professor.nome_completo, "professor"
         else:
@@ -5515,7 +5515,7 @@ def advertencias_aluno_responsavel(request, aluno_id):
         "advertencias": [
             {
                 "id": a.id, "titulo": a.titulo, "descricao": a.descricao, "data": a.data.isoformat(),
-                "emitido_por": (a.coordenador.escola or "Coordenação") if a.coordenador else None,
+                "emitido_por": (a.coordenador.escola or "Organização") if a.coordenador else None,
                 "is_suspensao": a.is_suspensao,
                 "data_inicio_suspensao": a.data_inicio_suspensao.isoformat() if a.data_inicio_suspensao else None,
                 "data_termino_suspensao": a.data_termino_suspensao.isoformat() if a.data_termino_suspensao else None,
@@ -5577,7 +5577,7 @@ def calendario_aluno_responsavel(request, aluno_id):
         if e.turma is not None and _turma_normalizada(e.turma.turma) != turma_aluno_norm:
             continue
         if e.coordenador:
-            criado_por, origem = (e.coordenador.escola or "Coordenação"), "coordenacao"
+            criado_por, origem = (e.coordenador.escola or "Organização"), "coordenacao"
         elif e.professor:
             criado_por, origem = e.professor.nome_completo, "professor"
         else:
@@ -5728,7 +5728,7 @@ def mensagem_coordenador_responsavel_enviar(request, aluno_id):
 
     coordenador = _coordenador_da_escola_do_aluno(aluno)
     if not coordenador:
-        return JsonResponse({"detail": "Coordenação da escola do aluno não encontrada."}, status=404)
+        return JsonResponse({"detail": "Organização da escola do aluno não encontrada."}, status=404)
 
     body = json.loads(request.body or "{}")
     conteudo = (body.get("conteudo") or "").strip()
@@ -5764,7 +5764,7 @@ def mensagem_conversa_coordenador_responsavel(request, aluno_id, conversa_id):
             for m in conversa.mensagens.all()
         ]
         return JsonResponse({
-            "conversa": {"id": conversa.id, "coordenador_nome": conversa.coordenador.escola or "Coordenação"},
+            "conversa": {"id": conversa.id, "coordenador_nome": conversa.coordenador.escola or "Organização"},
             "mensagens": mensagens,
         })
 
@@ -5982,7 +5982,7 @@ def solicitacoes_responsavel_coordenacao(request):
 @csrf_exempt
 @require_http_methods(["POST"])
 def solicitacao_responsavel_coordenacao_responder(request, vinculo_id):
-    """Permite à coordenação aprovar/recusar diretamente — útil se o aluno
+    """Permite à organização aprovar/recusar diretamente — útil se o aluno
     demorar a responder ou estiver inacessível."""
     coordenador = _coordenador_logado(request)
     if not coordenador:
@@ -6267,7 +6267,7 @@ def horarios_professor(request):
     return JsonResponse({"horarios": resultado})
 
 
-# ---------- Coordenação: edição do horário de um professor específico ----------
+# ---------- Organização: edição do horário de um professor específico ----------
 
 @csrf_exempt
 @require_http_methods(["GET"])

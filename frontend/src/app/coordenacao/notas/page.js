@@ -105,7 +105,7 @@ export default function NotasCoordenacaoPage() {
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M15 6l-6 6l6 6" />
           </svg>
-          Coordenação
+          Organização
         </Link>
 
         <h1 className={styles.title}>Notas</h1>

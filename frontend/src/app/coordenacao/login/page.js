@@ -89,7 +89,7 @@ export default function CoordenacaoLoginPage() {
       <div className={styles.card}>
         <div className={styles.header}>
           <Image src={logo} alt="Logo do SIAA" className={styles.logo} priority />
-          <h1 className={styles.titulo}>Acesso da Coordenação</h1>
+          <h1 className={styles.titulo}>Acesso da Organização</h1>
           <p className={styles.subtitulo}>
             Entre com suas credenciais para gerenciar a escola.
           </p>

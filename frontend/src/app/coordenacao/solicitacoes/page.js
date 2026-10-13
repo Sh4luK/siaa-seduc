@@ -87,7 +87,7 @@ export default function SolicitacoesCoordenacaoPage() {
     <div className={styles.page}>
       <div className={styles.topBar}>Governo do Estado do Piauí — Secretaria de Estado da Educação</div>
       <div className={styles.wrapper}>
-        <Link href="/coordenacao" className={styles.voltarLink}>← Coordenação</Link>
+        <Link href="/coordenacao" className={styles.voltarLink}>← Organização</Link>
 
         <h1 className={styles.title}>Solicitações de responsáveis</h1>
         <p className={styles.subtitle}>Vínculos entre responsáveis e alunos da sua escola.</p>

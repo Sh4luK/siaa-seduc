@@ -219,7 +219,7 @@ export default function ConversaProfessorPage() {
                 <line x1="4" y1="18" x2="20" y2="18" />
               </svg>
             </button>
-            <span className={layoutStyles.topbarTitle}>Conversa com a coordenação</span>
+            <span className={layoutStyles.topbarTitle}>Conversa com a organização</span>
           </header>
 
           <main className={styles.main}>
@@ -230,7 +230,7 @@ export default function ConversaProfessorPage() {
                   <polyline points="12 19 5 12 12 5" />
                 </svg>
               </Link>
-              <h1 className={styles.titulo}>Coordenação</h1>
+              <h1 className={styles.titulo}>Organização</h1>
             </div>
 
             {erro && (

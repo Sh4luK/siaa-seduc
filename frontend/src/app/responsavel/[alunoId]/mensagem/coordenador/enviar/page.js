@@ -63,7 +63,7 @@ export default function EnviarMensagemCoordenadorPage() {
       <div className={layoutStyles.wrapper}>
         <Link href={`/responsavel/${alunoId}/mensagem`} className={layoutStyles.voltarLink}>← Mensagens</Link>
 
-        <h1 className={layoutStyles.title}>Nova mensagem — Coordenação</h1>
+        <h1 className={layoutStyles.title}>Nova mensagem — Organização</h1>
 
         <form className={styles.card} onSubmit={handleSubmit}>
           <label className={styles.campo}>

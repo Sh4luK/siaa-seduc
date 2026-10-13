@@ -47,7 +47,7 @@ const ACCESS_POINTS = [
   },
   {
     href: "/coordenacao",
-    label: "Coordenador",
+    label: "Organização",
     description: "Gerencie alunos, turmas, professores e configurações do sistema.",
     tab: "staff",
     icon: (

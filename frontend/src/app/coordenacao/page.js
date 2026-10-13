@@ -142,12 +142,25 @@ const NAV_ITEMS = [
       </svg>
     ),
   },
+  {
+    href: "/corrigir/turmas",
+    label: "Turmas",
+    icon: (
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M9 7a4 4 0 1 0 8 0a4 4 0 0 0 -8 0" />
+        <path d="M3 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" />
+        <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+        <path d="M21 21v-2a4 4 0 0 0 -3 -3.85" />
+      </svg>
+    ),
+  },
 ];
 
 // Os mesmos itens de navegação, com descrição — usados nos cards do painel.
 const CARDS = [
   { ...NAV_ITEMS[1], description: "Cadastre e gerencie vínculos de turma e disciplina." },
   { ...NAV_ITEMS[2], description: "Consulte, cadastre e edite os dados dos alunos." },
+  { ...NAV_ITEMS[12], description: "Gerencie as turmas e corrija nomes divergentes." },
   { ...NAV_ITEMS[3], description: "Eventos e datas importantes da escola." },
   { ...NAV_ITEMS[4], description: "Grade de aulas semanal por turma." },
   { ...NAV_ITEMS[5], description: "Registros disciplinares de alunos e professores." },
@@ -292,7 +305,7 @@ export default function CoordenacaoDashboardPage() {
                 <line x1="4" y1="18" x2="20" y2="18" />
               </svg>
             </button>
-            <span className={styles.topbarTitle}>Painel da Coordenação</span>
+            <span className={styles.topbarTitle}>Painel da Organização</span>
           </header>
 
           <main className={styles.main}>

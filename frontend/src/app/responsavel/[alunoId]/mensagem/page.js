@@ -77,7 +77,7 @@ export default function MensagemHubPage() {
         <TabsResponsavel alunoId={alunoId} ativa="mensagem" />
 
         <h1 className={layoutStyles.title}>Mensagens</h1>
-        <p className={layoutStyles.subtitle}>Fale com um professor ou com a coordenação.</p>
+        <p className={layoutStyles.subtitle}>Fale com um professor ou com a organização.</p>
 
         <div className={styles.opcoes}>
           <Link href={`/responsavel/${alunoId}/mensagem/professor`} className={styles.opcaoCard}>
@@ -91,7 +91,7 @@ export default function MensagemHubPage() {
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <circle cx="12" cy="7" r="4" /><path d="M5.5 21a6.5 6.5 0 0 1 13 0" />
             </svg>
-            <span>{indoParaCoordenacao ? "Abrindo..." : "Falar com a coordenação"}</span>
+            <span>{indoParaCoordenacao ? "Abrindo..." : "Falar com a organização"}</span>
           </button>
         </div>
       </div>

@@ -61,7 +61,7 @@ export default function BlogLoginPage() {
               <option value="ALUNO">Aluno</option>
               <option value="PROFESSOR">Professor</option>
               <option value="RESPONSAVEL">Responsável</option>
-              <option value="COORDENADOR">Coordenador</option>
+              <option value="COORDENADOR">Organização</option>
             </select>
           </label>
 

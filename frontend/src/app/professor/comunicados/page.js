@@ -39,8 +39,8 @@ export default function ComunicadosPage() {
         setAuthenticated(true);
         setNomeCompleto(authData.teacher.nome_completo);
 
-        // Reaproveita o mesmo endpoint usado pela coordenação para listar
-        // comunicados, filtrando aqui só os emitidos pela coordenação.
+        // Reaproveita o mesmo endpoint usado pela organização para listar
+        // comunicados, filtrando aqui só os emitidos pela organização.
         const comunicadosRes = await fetch(`${API_BASE}/api/coordenacao/comunicados`, { credentials: "include" });
         if (!comunicadosRes.ok) throw new Error(`Falha ao buscar comunicados (status ${comunicadosRes.status})`);
         const comunicadosData = await comunicadosRes.json();
@@ -179,7 +179,7 @@ export default function ComunicadosPage() {
               <div>
                 <h1 className={layoutStyles.greeting}>Comunicados</h1>
                 <p className={layoutStyles.subtitle}>
-                  Avisos enviados pela coordenação, {firstName}.
+                  Avisos enviados pela organização, {firstName}.
                 </p>
               </div>
             </div>
@@ -195,7 +195,7 @@ export default function ComunicadosPage() {
             {carregando ? (
               <p className={styles.subtitle}>Carregando comunicados...</p>
             ) : comunicados.length === 0 ? (
-              <p className={styles.vazio}>Nenhum comunicado da coordenação até o momento.</p>
+              <p className={styles.vazio}>Nenhum comunicado da organização até o momento.</p>
             ) : (
               <ul className={styles.comunicadosList}>
                 {comunicados.map((c) => (

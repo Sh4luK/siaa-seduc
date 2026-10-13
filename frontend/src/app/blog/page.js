@@ -13,7 +13,7 @@
 //   return data.toLocaleDateString("pt-BR", { day: "2-digit", month: "short", year: "numeric" });
 // }
 
-// const TIPO_LABEL = { ALUNO: "Aluno", PROFESSOR: "Professor", RESPONSAVEL: "Responsável", COORDENADOR: "Coordenador" };
+// const TIPO_LABEL = { ALUNO: "Aluno", PROFESSOR: "Professor", RESPONSAVEL: "Responsável", COORDENADOR: "Organização" };
 
 // export default function BlogPage() {
 //   const [posts, setPosts] = useState([]);
@@ -157,7 +157,7 @@ import styles from "./page.module.css";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
-const TIPO_LABEL = { ALUNO: "Aluno", PROFESSOR: "Professor", RESPONSAVEL: "Responsável", COORDENADOR: "Coordenador" };
+const TIPO_LABEL = { ALUNO: "Aluno", PROFESSOR: "Professor", RESPONSAVEL: "Responsável", COORDENADOR: "Organização" };
 const TIPO_COR = {
   ALUNO: styles.badgeAluno,
   PROFESSOR: styles.badgeProfessor,
