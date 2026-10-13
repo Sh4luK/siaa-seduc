@@ -6,6 +6,7 @@ import Link from "next/link";
 import Image from "next/image";
 import logo from "@/assets/logo.png";
 import styles from "./page.module.css";
+import ImportarPlanilha from "../ImportarPlanilha";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
@@ -129,6 +130,8 @@ export default function DisciplinasCoordenacaoPage() {
             </p>
           </div>
         </div>
+
+        <ImportarPlanilha tipo="disciplinas" onImportado={carregar} />
 
         <input
           type="text"

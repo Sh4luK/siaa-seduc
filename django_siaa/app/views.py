@@ -3207,6 +3207,184 @@ def renomear_turma(request):
 
 
 @csrf_exempt
+def get_membros_turma(request):
+    if not _coordenador_logado(request):
+        return JsonResponse({"message": "Não autenticado."}, status=401)
+
+    nome_turma = (request.GET.get("turma") or "").strip()
+    if not nome_turma:
+        return JsonResponse({"message": "Informe a turma."}, status=400)
+
+    alunos = Estudante.objects.filter(turma=nome_turma).order_by("posicao_ordem", "nome_completo")
+    vinculos = (
+        AtravessaPor.objects.filter(turma=nome_turma)
+        .select_related("professor")
+        .order_by("professor__nome_completo", "disciplina_lecionada")
+    )
+
+    return JsonResponse({
+        "turma": nome_turma,
+        "alunos": [{"id": a.id, "nome_completo": a.nome_completo} for a in alunos],
+        "professores": [
+            {
+                "vinculo_id": v.id,
+                "professor_id": v.professor_id,
+                "nome_completo": v.professor.nome_completo,
+                "disciplina": v.disciplina_lecionada or "",
+            }
+            for v in vinculos
+        ],
+        "opcoes_professores": [
+            {"id": p.id, "nome_completo": p.nome_completo}
+            for p in Professor.objects.all().order_by("nome_completo")
+        ],
+        "opcoes_disciplinas": list(
+            Disciplina.objects.exclude(nome_disciplina__isnull=True)
+            .exclude(nome_disciplina="")
+            .order_by("nome_disciplina")
+            .values_list("nome_disciplina", flat=True)
+        ),
+    })
+
+
+@csrf_exempt
+def adicionar_aluno_turma(request):
+    if request.method != "POST":
+        return JsonResponse({"message": "Método não permitido."}, status=405)
+    if not _coordenador_logado(request):
+        return JsonResponse({"message": "Não autenticado."}, status=401)
+
+    try:
+        body = json.loads(request.body)
+    except json.JSONDecodeError:
+        return JsonResponse({"message": "JSON inválido."}, status=400)
+
+    nome_turma = (body.get("turma") or "").strip()
+    if not nome_turma:
+        return JsonResponse({"message": "Informe a turma."}, status=400)
+
+    aluno = Estudante.objects.filter(id=body.get("aluno_id")).first()
+    if not aluno:
+        return JsonResponse({"message": "Aluno não encontrado."}, status=404)
+
+    if aluno.turma == nome_turma:
+        return JsonResponse({"message": f"{aluno.nome_completo} já está nesta turma."}, status=400)
+
+    aluno.turma = nome_turma
+    aluno.save()
+
+    return JsonResponse({"message": f"{aluno.nome_completo} adicionado(a) à turma {nome_turma}."})
+
+
+@csrf_exempt
+def remover_aluno_turma(request):
+    if request.method != "POST":
+        return JsonResponse({"message": "Método não permitido."}, status=405)
+    if not _coordenador_logado(request):
+        return JsonResponse({"message": "Não autenticado."}, status=401)
+
+    try:
+        body = json.loads(request.body)
+    except json.JSONDecodeError:
+        return JsonResponse({"message": "JSON inválido."}, status=400)
+
+    aluno = Estudante.objects.filter(id=body.get("aluno_id")).first()
+    if not aluno:
+        return JsonResponse({"message": "Aluno não encontrado."}, status=404)
+
+    # O aluno continua cadastrado — só fica sem turma até ser colocado em outra.
+    turma_anterior = aluno.turma
+    aluno.turma = ""
+    aluno.save()
+
+    return JsonResponse({"message": f"{aluno.nome_completo} removido(a) da turma {turma_anterior}."})
+
+
+@csrf_exempt
+def adicionar_professor_turma(request):
+    if request.method != "POST":
+        return JsonResponse({"message": "Método não permitido."}, status=405)
+    coordenador = _coordenador_logado(request)
+    if not coordenador:
+        return JsonResponse({"message": "Não autenticado."}, status=401)
+
+    try:
+        body = json.loads(request.body)
+    except json.JSONDecodeError:
+        return JsonResponse({"message": "JSON inválido."}, status=400)
+
+    nome_turma = (body.get("turma") or "").strip()
+    disciplina = (body.get("disciplina") or "").strip()
+    if not nome_turma or not disciplina:
+        return JsonResponse({"message": "Informe a turma e a disciplina."}, status=400)
+
+    professor = Professor.objects.filter(id=body.get("professor_id")).first()
+    if not professor:
+        return JsonResponse({"message": "Professor não encontrado."}, status=404)
+
+    if AtravessaPor.objects.filter(
+        professor=professor, turma=nome_turma, disciplina_lecionada=disciplina
+    ).exists():
+        return JsonResponse(
+            {"message": f"{professor.nome_completo} já leciona {disciplina} nesta turma."},
+            status=400
+        )
+
+    # Escola e etapa acompanham os vínculos que a turma já tem, para o novo
+    # vínculo aparecer junto dos demais nas telas que agrupam por esses campos.
+    referencia = AtravessaPor.objects.filter(turma=nome_turma).first()
+
+    AtravessaPor.objects.create(
+        professor=professor,
+        escola=referencia.escola if referencia else (coordenador.escola or ""),
+        turma=nome_turma,
+        etapa=referencia.etapa if referencia else "",
+        disciplina_lecionada=disciplina,
+    )
+
+    return JsonResponse({
+        "message": f"{professor.nome_completo} adicionado(a) à turma {nome_turma} ({disciplina})."
+    })
+
+
+@csrf_exempt
+def remover_professor_turma(request):
+    if request.method != "POST":
+        return JsonResponse({"message": "Método não permitido."}, status=405)
+    if not _coordenador_logado(request):
+        return JsonResponse({"message": "Não autenticado."}, status=401)
+
+    try:
+        body = json.loads(request.body)
+    except json.JSONDecodeError:
+        return JsonResponse({"message": "JSON inválido."}, status=400)
+
+    vinculo = AtravessaPor.objects.filter(id=body.get("vinculo_id")).select_related("professor").first()
+    if not vinculo:
+        return JsonResponse({"message": "Vínculo não encontrado."}, status=404)
+
+    # Apagar o vínculo apaga em cascata o que foi lançado nele; com notas ou
+    # frequências registradas, a remoção é bloqueada (mesma regra da edição
+    # de professores).
+    if Nota.objects.filter(turma_id=vinculo.id).exists() or Frequencia.objects.filter(turma_id=vinculo.id).exists():
+        return JsonResponse(
+            {
+                "message": (
+                    f"Não é possível remover {vinculo.professor.nome_completo}: existem notas ou "
+                    f"frequências lançadas neste vínculo. Remova os lançamentos antes."
+                )
+            },
+            status=400
+        )
+
+    nome_professor = vinculo.professor.nome_completo
+    nome_turma = vinculo.turma
+    vinculo.delete()
+
+    return JsonResponse({"message": f"{nome_professor} removido(a) da turma {nome_turma}."})
+
+
+@csrf_exempt
 def get_alunos_corrigir(request):
     busca = request.GET.get("busca", "").strip()
 

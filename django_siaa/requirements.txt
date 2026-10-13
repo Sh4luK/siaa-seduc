@@ -7,3 +7,4 @@ whitenoise
 requests
 xhtml2pdf
 reportlab
+openpyxl

@@ -1,0 +1,128 @@
+.bloco {
+  margin-bottom: 1.25rem;
+}
+
+.botaoAbrir {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #0b4f9e;
+  background: #ffffff;
+  border: 1px solid #c7d7ec;
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.botaoAbrir:hover {
+  background: #eef4fb;
+}
+
+.painel {
+  margin-top: 0.75rem;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 1rem 1.1rem;
+}
+
+.texto {
+  font-size: 0.85rem;
+  color: #5b6b85;
+  margin: 0 0 0.6rem;
+  line-height: 1.5;
+}
+
+.colunas {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.78rem;
+  color: #1a2942;
+  overflow-wrap: anywhere;
+}
+
+.acoes {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-top: 0.9rem;
+}
+
+.arquivo {
+  flex: 1;
+  min-width: 200px;
+  font-size: 0.82rem;
+  color: #1a2942;
+}
+
+.botaoEnviar,
+.botaoModelo {
+  font-size: 0.82rem;
+  font-weight: 600;
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.botaoEnviar {
+  color: #ffffff;
+  background: #0b4f9e;
+  border: none;
+  transition: background 0.15s ease;
+}
+
+.botaoEnviar:hover {
+  background: #0a2f5c;
+}
+
+.botaoEnviar:disabled {
+  background: #cbd5e1;
+  cursor: not-allowed;
+}
+
+.botaoModelo {
+  color: #1a2942;
+  background: transparent;
+  border: 1px solid #e2e8f0;
+}
+
+.botaoModelo:hover {
+  background: #f1f5f9;
+}
+
+.erro {
+  font-size: 0.85rem;
+  color: #b91c1c;
+  background: rgba(220, 38, 38, 0.06);
+  border: 1px solid rgba(220, 38, 38, 0.25);
+  border-radius: 8px;
+  padding: 0.7rem 1rem;
+  margin: 0.9rem 0 0;
+}
+
+.resultado {
+  margin-top: 0.9rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 0.7rem 1rem;
+}
+
+.resultadoResumo {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #1a2942;
+  margin: 0;
+}
+
+.resultadoErros {
+  font-size: 0.82rem;
+  color: #b91c1c;
+  margin: 0.6rem 0 0;
+  padding-left: 1.1rem;
+  max-height: 220px;
+  overflow-y: auto;
+}

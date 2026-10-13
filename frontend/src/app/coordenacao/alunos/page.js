@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import styles from "./page.module.css";
+import ImportarPlanilha from "../ImportarPlanilha";
 import logo from "../../../assets/logo.png";
 import Image from "next/image";
 
@@ -48,6 +49,13 @@ export default function AlunosCoordenacaoPage() {
 
     init();
   }, [router]);
+
+  async function recarregar() {
+    const res = await fetch(`${API_BASE}/api/coordenacao/alunos`, { credentials: "include" });
+    if (!res.ok) return;
+    const data = await res.json();
+    setAlunos(data.alunos || []);
+  }
 
   async function handleDeletar(alunoId) {
     setDeletandoId(alunoId);
@@ -127,6 +135,8 @@ export default function AlunosCoordenacaoPage() {
             + Cadastrar aluno
           </Link>
         </div>
+
+        <ImportarPlanilha tipo="alunos" onImportado={recarregar} />
 
         {erros.length > 0 && (
           <ul className={styles.listaErros}>

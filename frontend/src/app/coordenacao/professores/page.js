@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import styles from "./page.module.css";
+import ImportarPlanilha from "../ImportarPlanilha";
 import logo from "../../../assets/logo.png";
 import Image from "next/image";
 
@@ -49,6 +50,13 @@ export default function ProfessoresCoordenacaoPage() {
 
     init();
   }, [router]);
+
+  async function recarregar() {
+    const res = await fetch(`${API_BASE}/api/coordenacao/professores`, { credentials: "include" });
+    if (!res.ok) return;
+    const data = await res.json();
+    setProfessores(data.professores || []);
+  }
 
   async function handleDeletar(professorId) {
     setDeletandoId(professorId);
@@ -122,6 +130,8 @@ export default function ProfessoresCoordenacaoPage() {
             + Novo professor
           </Link>
         </div>
+
+        <ImportarPlanilha tipo="professores" onImportado={recarregar} />
 
         {erros.length > 0 && (
           <ul className={styles.listaErros}>

@@ -180,6 +180,101 @@
   background: #f1f5f9;
 }
 
+.painel {
+  flex-basis: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  border-top: 1px solid #e2e8f0;
+  padding-top: 14px;
+  margin-top: 4px;
+}
+
+.painelSecao {
+  min-width: 0;
+}
+
+.painelTitulo {
+  font-size: 13px;
+  font-weight: 700;
+  color: #1a2942;
+  margin: 0 0 8px;
+}
+
+.painelVazio {
+  flex-basis: 100%;
+  font-size: 12.5px;
+  color: #5b6b85;
+  margin: 0 0 8px;
+}
+
+.painelAdicionar {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin: 10px 0 8px;
+}
+
+.painelAdicionar .input {
+  flex: 1;
+  min-width: 180px;
+}
+
+.membros {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  max-height: 280px;
+  overflow-y: auto;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+}
+
+.membro {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 7px 12px;
+  font-size: 13px;
+}
+
+.membro + .membro {
+  border-top: 1px solid #e2e8f0;
+}
+
+.membroNome {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.membroDetalhe {
+  color: #5b6b85;
+  font-size: 12px;
+}
+
+.botaoRemover {
+  padding: 5px 12px;
+  border-radius: 8px;
+  background: transparent;
+  border: 1px solid rgba(220, 38, 38, 0.35);
+  color: #b91c1c;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.botaoRemover:hover {
+  background: rgba(220, 38, 38, 0.06);
+}
+
+.botaoRemover:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 .pageLoading {
   min-height: 100vh;
   display: flex;
