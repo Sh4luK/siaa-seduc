@@ -110,6 +110,34 @@ def _criar_sessao_e_setar_cookie(response, tipo, referencia_id, nome_completo):
     return sessao
 
 
+@csrf_exempt
+@require_http_methods(["POST"])
+def logout(request):
+    try:
+        body = json.loads(request.body or "{}")
+    except json.JSONDecodeError:
+        return JsonResponse({"return": False, "detail": "JSON inválido."}, status=400)
+
+    if not isinstance(body, dict) or not isinstance(body.get("tipo"), str):
+        return JsonResponse({"return": False, "detail": "Tipo de sessão inválido."}, status=400)
+
+    tipo = body["tipo"].strip().upper()
+    cookie_name = "blog_session" if tipo == "BLOG" else COOKIE_POR_TIPO.get(tipo)
+    if not cookie_name:
+        return JsonResponse({"return": False, "detail": "Tipo de sessão inválido."}, status=400)
+
+    token = request.COOKIES.get(cookie_name)
+    if token:
+        sessoes = Sessao.objects.filter(token=token)
+        if tipo != "BLOG":
+            sessoes = sessoes.filter(tipo=tipo)
+        sessoes.delete()
+
+    response = JsonResponse({"return": True})
+    response.delete_cookie(cookie_name, samesite="None")
+    return response
+
+
 def _aluno_logado(request):
     sessao = _obter_sessao(request, "ALUNO")
     if not sessao:
