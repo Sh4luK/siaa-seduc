@@ -6686,9 +6686,6 @@ def _username_do_autor(tipo, referencia_id, nome_completo):
     return perfil.nome_usuario
 
 
-STATUS_RELACIONAMENTO_LABEL = dict(PerfilBlog.STATUS_RELACIONAMENTO_CHOICES)
-
-
 @csrf_exempt
 @require_http_methods(["GET"])
 def get_perfil_blog(request, nome_usuario):
@@ -6728,8 +6725,6 @@ def get_perfil_blog(request, nome_usuario):
             "tipo": perfil.tipo,
             "bio": perfil.bio,
             "data_nascimento": perfil.data_nascimento.isoformat() if perfil.data_nascimento else None,
-            "status_relacionamento": perfil.status_relacionamento,
-            "status_relacionamento_label": STATUS_RELACIONAMENTO_LABEL.get(perfil.status_relacionamento, ""),
             "foto_perfil_url": caminho_relativo_arquivo(perfil.foto_perfil) if perfil.foto_perfil else None,
             "eh_proprio_perfil": eh_proprio_perfil,
         },
@@ -6758,7 +6753,6 @@ def editar_perfil_blog(request, nome_usuario):
     novo_username = (request.POST.get("nome_usuario") or "").strip().lower()
     bio = (request.POST.get("bio") or "").strip()
     data_nascimento_str = request.POST.get("data_nascimento") or ""
-    status_relacionamento = request.POST.get("status_relacionamento") or ""
     remover_foto = request.POST.get("remover_foto") == "true"
     nova_foto = request.FILES.get("foto_perfil")
 
@@ -6774,9 +6768,6 @@ def editar_perfil_blog(request, nome_usuario):
     if PerfilBlog.objects.filter(nome_usuario=novo_username).exclude(id=perfil.id).exists():
         return JsonResponse({"message": "Esse nome de usuário já está em uso."}, status=400)
 
-    if status_relacionamento and status_relacionamento not in STATUS_RELACIONAMENTO_LABEL:
-        return JsonResponse({"message": "Status de relacionamento inválido."}, status=400)
-
     data_nascimento = None
     if data_nascimento_str:
         try:
@@ -6787,7 +6778,6 @@ def editar_perfil_blog(request, nome_usuario):
     perfil.nome_usuario = novo_username
     perfil.bio = bio
     perfil.data_nascimento = data_nascimento
-    perfil.status_relacionamento = status_relacionamento
 
     if nova_foto:
         perfil.foto_perfil = nova_foto

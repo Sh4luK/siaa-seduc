@@ -6,15 +6,6 @@ import styles from "./page.module.css";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
-const STATUS_OPCOES = [
-  { valor: "", label: "Prefiro não dizer" },
-  { valor: "SOLTEIRO", label: "Solteiro(a)" },
-  { valor: "NAMORANDO", label: "Namorando" },
-  { valor: "CASADO", label: "Casado(a)" },
-  { valor: "COMPLICADO", label: "É complicado" },
-  { valor: "NAO_INFORMAR", label: "Prefiro não informar" },
-];
-
 export default function EditarPerfilPage() {
   const { user } = useParams();
   const router = useRouter();
@@ -26,7 +17,6 @@ export default function EditarPerfilPage() {
   const [nomeUsuario, setNomeUsuario] = useState("");
   const [bio, setBio] = useState("");
   const [dataNascimento, setDataNascimento] = useState("");
-  const [statusRelacionamento, setStatusRelacionamento] = useState("");
   const [fotoAtualUrl, setFotoAtualUrl] = useState(null);
   const [fotoFile, setFotoFile] = useState(null);
   const [fotoPreview, setFotoPreview] = useState(null);
@@ -51,7 +41,6 @@ export default function EditarPerfilPage() {
         setNomeUsuario(data.perfil.nome_usuario);
         setBio(data.perfil.bio || "");
         setDataNascimento(data.perfil.data_nascimento || "");
-        setStatusRelacionamento(data.perfil.status_relacionamento || "");
         setFotoAtualUrl(data.perfil.foto_perfil_url ? `${API_BASE}${data.perfil.foto_perfil_url}` : null);
       } catch (error) {
         setErros([error.message]);
@@ -102,7 +91,6 @@ export default function EditarPerfilPage() {
       formData.append("nome_usuario", nomeUsuario.trim().toLowerCase());
       formData.append("bio", bio.trim());
       formData.append("data_nascimento", dataNascimento);
-      formData.append("status_relacionamento", statusRelacionamento);
       if (fotoFile) formData.append("foto_perfil", fotoFile);
       if (removerFoto) formData.append("remover_foto", "true");
 
@@ -214,31 +202,15 @@ export default function EditarPerfilPage() {
               <span className={styles.contador}>{bio.length}/280</span>
             </div>
 
-            <div className={styles.linhaDupla}>
-              <div className={styles.campo}>
-                <label className={styles.label} htmlFor="data_nascimento">Data de nascimento</label>
-                <input
-                  id="data_nascimento"
-                  type="date"
-                  className={styles.input}
-                  value={dataNascimento}
-                  onChange={(e) => setDataNascimento(e.target.value)}
-                />
-              </div>
-
-              <div className={styles.campo}>
-                <label className={styles.label} htmlFor="status_relacionamento">Status de relacionamento</label>
-                <select
-                  id="status_relacionamento"
-                  className={styles.select}
-                  value={statusRelacionamento}
-                  onChange={(e) => setStatusRelacionamento(e.target.value)}
-                >
-                  {STATUS_OPCOES.map((opcao) => (
-                    <option key={opcao.valor} value={opcao.valor}>{opcao.label}</option>
-                  ))}
-                </select>
-              </div>
+            <div className={styles.campo}>
+              <label className={styles.label} htmlFor="data_nascimento">Data de nascimento</label>
+              <input
+                id="data_nascimento"
+                type="date"
+                className={styles.input}
+                value={dataNascimento}
+                onChange={(e) => setDataNascimento(e.target.value)}
+              />
             </div>
 
             <button type="submit" className={styles.botaoSalvar} disabled={saving}>

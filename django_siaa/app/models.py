@@ -586,22 +586,11 @@ class Curtida(models.Model):
 
 
 class PerfilBlog(models.Model):
-    STATUS_RELACIONAMENTO_CHOICES = [
-        ("SOLTEIRO", "Solteiro(a)"),
-        ("NAMORANDO", "Namorando"),
-        ("CASADO", "Casado(a)"),
-        ("COMPLICADO", "É complicado"),
-        ("NAO_INFORMAR", "Prefiro não informar"),
-    ]
-
     tipo = models.CharField(max_length=20, choices=Sessao.TIPO_CHOICES)
     referencia_id = models.PositiveIntegerField()
     nome_usuario = models.CharField(max_length=30, unique=True)
     bio = models.TextField(blank=True, default="")
     data_nascimento = models.DateField(null=True, blank=True)
-    status_relacionamento = models.CharField(
-        max_length=20, choices=STATUS_RELACIONAMENTO_CHOICES, blank=True, default=""
-    )
     foto_perfil = models.ImageField(upload_to="blog/perfis/%Y/%m/", null=True, blank=True)
     criado_em = models.DateTimeField(auto_now_add=True)
     atualizado_em = models.DateTimeField(auto_now=True)
