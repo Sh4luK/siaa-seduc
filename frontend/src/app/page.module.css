@@ -12,6 +12,7 @@
   --tab-guardian: #0d8a6e;
   --tab-teacher: #b5670a;
   --tab-staff: #6d28d9;
+  --tab-blog: #c2416c;
 
   min-height: 100vh;
   background-color: var(--fundo);
@@ -161,6 +162,7 @@
 .card[data-tab="guardian"] .iconCircle { background-color: rgba(13, 138, 110, 0.1); color: var(--tab-guardian); }
 .card[data-tab="teacher"] .iconCircle { background-color: rgba(181, 103, 10, 0.1); color: var(--tab-teacher); }
 .card[data-tab="staff"] .iconCircle { background-color: rgba(109, 40, 217, 0.1); color: var(--tab-staff); }
+.card[data-tab="blog"] .iconCircle { background-color: rgba(194, 65, 108, 0.1); color: var(--tab-blog); }
 
 .cardBody {
   display: flex;
