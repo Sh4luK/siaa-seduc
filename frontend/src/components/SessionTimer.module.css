@@ -1,0 +1,8 @@
+.tempo {
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.expirado {
+  color: #991b1b;
+}
