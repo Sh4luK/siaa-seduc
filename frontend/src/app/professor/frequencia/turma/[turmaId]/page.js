@@ -43,6 +43,7 @@ export default function FrequenciaTurmaPage() {
   const [disciplinaEscolhida, setDisciplinaEscolhida] = useState(null);
   const [dataSelecionada, setDataSelecionada] = useState(dataDaUrl || hojeISO());
   const [assunto, setAssunto] = useState("");
+  const [estrategiaMetodologica, setEstrategiaMetodologica] = useState("");
   const [carregandoAlunos, setCarregandoAlunos] = useState(false);
   const [alunos, setAlunos] = useState([]);
   const [mensagem, setMensagem] = useState(null);
@@ -111,6 +112,7 @@ export default function FrequenciaTurmaPage() {
 
         setAlunos(data.alunos || []);
         setAssunto(data.assunto || "");
+        setEstrategiaMetodologica(data.estrategia_metodologica || "");
       } catch (error) {
         setErros([`Erro ao carregar frequência: ${error.message}`]);
       } finally {
@@ -153,6 +155,7 @@ export default function FrequenciaTurmaPage() {
           professor: professorId,
           data: dataSelecionada,
           assunto,
+          estrategia_metodologica: estrategiaMetodologica,
           lancamentos,
         }),
       });
@@ -237,6 +240,7 @@ export default function FrequenciaTurmaPage() {
                           setDisciplinaEscolhida(null);
                           setAlunos([]);
                           setAssunto("");
+                          setEstrategiaMetodologica("");
                           setMensagem(null);
                           setErros([]);
                         }}
@@ -267,7 +271,7 @@ export default function FrequenciaTurmaPage() {
                   <>
                     <div className={styles.assuntoBloco}>
                       <label className={styles.assuntoLabel} htmlFor="assunto-aula">
-                        Assunto do dia
+                        Conteúdo abordado
                       </label>
                       <textarea
                         id="assunto-aula"
@@ -275,6 +279,20 @@ export default function FrequenciaTurmaPage() {
                         placeholder="Descreva o conteúdo trabalhado nesta aula..."
                         value={assunto}
                         onChange={(e) => setAssunto(e.target.value)}
+                        rows={3}
+                      />
+                    </div>
+
+                    <div className={styles.assuntoBloco}>
+                      <label className={styles.assuntoLabel} htmlFor="estrategia-aula">
+                        Estratégia metodológica
+                      </label>
+                      <textarea
+                        id="estrategia-aula"
+                        className={styles.assuntoTextarea}
+                        placeholder="Ex.: aula expositiva dialogada, trabalho em grupo, experimento..."
+                        value={estrategiaMetodologica}
+                        onChange={(e) => setEstrategiaMetodologica(e.target.value)}
                         rows={3}
                       />
                     </div>

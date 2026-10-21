@@ -150,7 +150,8 @@ class Aula(models.Model):
     ano_letivo = models.PositiveIntegerField(default=2026)
 
     data = models.DateField()
-    assunto = models.TextField(blank=True, default="")
+    assunto = models.TextField(blank=True, default="")  # exibido como "Conteúdo abordado"
+    estrategia_metodologica = models.TextField(blank=True, default="")
 
     atualizado_em = models.DateTimeField(auto_now=True)
 

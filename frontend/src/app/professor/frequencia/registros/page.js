@@ -62,7 +62,7 @@ export default function RegistrosFrequenciaPage() {
     if (!termo) return registros;
 
     return registros.filter((r) => {
-      const alvo = [r.nome_turma, r.disciplina, r.assunto, formatarData(r.data)]
+      const alvo = [r.nome_turma, r.disciplina, r.assunto, r.estrategia_metodologica, formatarData(r.data)]
         .filter(Boolean)
         .join(" ")
         .toLowerCase();
@@ -204,7 +204,7 @@ export default function RegistrosFrequenciaPage() {
               </svg>
               <input
                 type="text"
-                placeholder="Buscar por turma, disciplina, assunto ou data..."
+                placeholder="Buscar por turma, disciplina, conteúdo ou data..."
                 className={styles.buscaInput}
                 value={busca}
                 onChange={(e) => setBusca(e.target.value)}
@@ -250,7 +250,13 @@ export default function RegistrosFrequenciaPage() {
 
                       {registro.assunto && (
                         <p className={styles.registroAssunto} title={registro.assunto}>
-                          {registro.assunto}
+                          <strong>Conteúdo:</strong> {registro.assunto}
+                        </p>
+                      )}
+
+                      {registro.estrategia_metodologica && (
+                        <p className={styles.registroAssunto} title={registro.estrategia_metodologica}>
+                          <strong>Estratégia:</strong> {registro.estrategia_metodologica}
                         </p>
                       )}
 

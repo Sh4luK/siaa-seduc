@@ -1008,6 +1008,7 @@ def get_frequencia_turma(request):
         "disciplina": disciplina.nome_disciplina,
         "data": data_str,
         "assunto": aula.assunto if aula else "",
+        "estrategia_metodologica": aula.estrategia_metodologica if aula else "",
         "total_alunos": len(resultado),
         "alunos": resultado
     })
@@ -1028,6 +1029,7 @@ def salvar_frequencia_turma(request):
     data_str = body.get("data")
     ano_letivo = body.get("ano_letivo", 2026)
     assunto = body.get("assunto", "")
+    estrategia_metodologica = body.get("estrategia_metodologica", "")
     lancamentos = body.get("lancamentos", [])
 
     if not all([turma_id, professor_id, data_str]):
@@ -1058,7 +1060,11 @@ def salvar_frequencia_turma(request):
         )
     Aula.objects.update_or_create(
         turma=turma, disciplina=disciplina, professor=professor, data=data_selecionada,
-        defaults={"assunto": assunto, "ano_letivo": ano_letivo},
+        defaults={
+            "assunto": assunto,
+            "estrategia_metodologica": estrategia_metodologica,
+            "ano_letivo": ano_letivo,
+        },
     )
 
     erros_gerais = []
@@ -1125,6 +1131,7 @@ def get_registros_frequencia(request):
             "disciplina": aula.disciplina.nome_disciplina,
             "data": aula.data.isoformat(),
             "assunto": aula.assunto,
+            "estrategia_metodologica": aula.estrategia_metodologica,
             "total_alunos": total_alunos,
             "total_presentes": total_presentes,
             "total_faltas": total_alunos - total_presentes,
