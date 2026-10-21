@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import styles from "./LogoutButton.module.css";
+import SessionTimer from "./SessionTimer";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
@@ -32,9 +33,14 @@ export default function LogoutButton() {
   const [blogAutenticadoEm, setBlogAutenticadoEm] = useState("");
   const [enviando, setEnviando] = useState(false);
   const [erro, setErro] = useState("");
+  const [confirmacaoAberta, setConfirmacaoAberta] = useState(false);
 
   const sessao = obterSessaoDaRota(pathname);
   const rotaBlog = sessao?.tipo === "BLOG";
+  const loginPath = sessao?.login;
+  const redirecionarParaLogin = useCallback(() => {
+    if (loginPath) router.replace(loginPath);
+  }, [loginPath, router]);
 
   useEffect(() => {
     if (!rotaBlog) return;
@@ -87,7 +93,10 @@ export default function LogoutButton() {
       <button
         className={styles.botao}
         type="button"
-        onClick={handleLogout}
+        onClick={() => {
+          setErro("");
+          setConfirmacaoAberta((aberta) => !aberta);
+        }}
         disabled={enviando}
       >
         <svg
@@ -107,7 +116,40 @@ export default function LogoutButton() {
         </svg>
         {enviando ? "Saindo..." : "Sair"}
       </button>
-      {erro && <p className={styles.erro} role="alert">{erro}</p>}
+      <section
+        className={styles.confirmacao}
+        role="dialog"
+        aria-label="Confirmar saída da conta"
+        hidden={!confirmacaoAberta}
+      >
+        <p>
+          Deseja mesmo sair desta conta? Seu tempo de sessão é{" "}
+          <SessionTimer
+            tipo={sessao.tipo}
+            visivel={confirmacaoAberta}
+            onExpirou={redirecionarParaLogin}
+          />.
+        </p>
+        {erro && <p className={styles.erro} role="alert">{erro}</p>}
+        <div className={styles.acoes}>
+          <button
+            className={styles.botaoSecundario}
+            type="button"
+            onClick={() => setConfirmacaoAberta(false)}
+            disabled={enviando}
+          >
+            Cancelar
+          </button>
+          <button
+            className={styles.botaoConfirmar}
+            type="button"
+            onClick={handleLogout}
+            disabled={enviando}
+          >
+            {enviando ? "Saindo..." : "Sair da conta"}
+          </button>
+        </div>
+      </section>
     </div>
   );
 }
