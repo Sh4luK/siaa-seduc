@@ -2,7 +2,7 @@ import re
 from urllib.parse import urlparse
 from urllib.parse import unquote
 from django.utils import timezone
-from datetime import date
+from datetime import date, timedelta
 import unicodedata
 from django.db.models.functions import Replace
 from django.db.models import Value
@@ -86,6 +86,7 @@ COOKIE_POR_TIPO = {
     "COORDENADOR": "coordenacao_session",
     "ADMIN": "admin_session",
 }
+COOKIE_MAX_AGE = 60 * 60 * 3
 
 
 def _obter_sessao(request, tipo):
@@ -102,12 +103,35 @@ def _criar_sessao_e_setar_cookie(response, tipo, referencia_id, nome_completo):
     sessao = Sessao.objects.create(tipo=tipo, referencia_id=referencia_id, nome_completo=nome_completo)
     response.set_cookie(
         COOKIE_POR_TIPO[tipo], sessao.token,
-        max_age=60 * 60 * 24 * 30,  # 30 dias
+        max_age=COOKIE_MAX_AGE,
         httponly=True,
         samesite="None",
         secure=True,  # obrigatório com samesite=None sobre HTTPS (Codespaces já é HTTPS)
     )
     return sessao
+
+
+@csrf_exempt
+@require_http_methods(["GET"])
+def session_status(request):
+    tipo = request.GET.get("tipo", "").strip().upper()
+
+    if tipo == "BLOG":
+        token = request.COOKIES.get("blog_session")
+        sessao = Sessao.objects.filter(token=token).first() if token else None
+    elif tipo in COOKIE_POR_TIPO:
+        sessao = _obter_sessao(request, tipo)
+    else:
+        return JsonResponse({"return": False, "detail": "Tipo de sessão inválido."}, status=400)
+
+    if not sessao:
+        return JsonResponse({"return": False})
+
+    expira_em = sessao.criado_em + timedelta(seconds=COOKIE_MAX_AGE)
+    if expira_em <= timezone.now():
+        return JsonResponse({"return": False})
+
+    return JsonResponse({"return": True, "expires_at": expira_em.isoformat()})
 
 
 @csrf_exempt
@@ -3602,7 +3626,7 @@ def _sessao_blog_atual(request):
 #     response = JsonResponse({"return": True, "usuario": {"nome_completo": usuario.nome_completo, "tipo": tipo}})
 #     response.set_cookie(
 #         "blog_session", sessao.token,
-#         max_age=60 * 60 * 24 * 30,
+#         max_age=COOKIE_MAX_AGE,
 #         httponly=True,
 #         samesite="None",
 #         secure=True,
@@ -3649,7 +3673,7 @@ def blog_login(request):
     })
     response.set_cookie(
         "blog_session", sessao.token,
-        max_age=60 * 60 * 24 * 30, httponly=True, samesite="None", secure=True,
+        max_age=COOKIE_MAX_AGE, httponly=True, samesite="None", secure=True,
     )
     return response
 
