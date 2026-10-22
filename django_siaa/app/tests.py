@@ -163,7 +163,8 @@ class DisciplinaResolverTests(TestCase):
 
 class AtividadeEnvioTests(TestCase):
     def setUp(self):
-        self.media_dir = tempfile.TemporaryDirectory()
+        # ignore_cleanup_errors: no Windows o arquivo lido no teste pode seguir aberto
+        self.media_dir = tempfile.TemporaryDirectory(ignore_cleanup_errors=True)
         self.addCleanup(self.media_dir.cleanup)
         self.media_settings = override_settings(MEDIA_ROOT=self.media_dir.name)
         self.media_settings.enable()
@@ -450,7 +451,7 @@ class AtividadeQuestoesEDevolutivaTests(TestCase):
         self.assertEqual(response.status_code, 400)
         self.assertFalse(Atividade.objects.exists())
 
-    def test_student_answers_on_platform_and_teacher_gives_feedback(self):
+    def test_student_answers_on_platform_and_teacher_sees_answers(self):
         self.criar_atividade(self.questoes_padrao())
         atividade = Atividade.objects.get(turma=self.turma_a)
         objetiva = atividade.questoes.get(tipo="OBJETIVA")
@@ -475,58 +476,58 @@ class AtividadeQuestoesEDevolutivaTests(TestCase):
         self.assertNotIn("correta", lista_aluno["questoes"][0]["alternativas"][0])
 
         envio = AtividadeEnvio.objects.get()
-        enviado_em = envio.enviado_em
         self.client.cookies["professor_session"] = self.sessao_professor.token
         envios = self.client.get(f"/api/teacher/atividades/{atividade.id}/envios").json()["envios"]
+        self.assertEqual(envios[0]["id"], envio.id)
         self.assertEqual(envios[0]["acertos"], 1)
         self.assertEqual(envios[0]["total_objetivas"], 1)
 
-        correcao = self.client.post(
-            f"/api/teacher/atividades/envios/{envio.id}/corrigir",
-            json.dumps({"feedback": "Muito bem!", "nota": "9,5"}),
-            content_type="application/json",
-        )
-        self.assertEqual(correcao.status_code, 200)
-        envio.refresh_from_db()
-        self.assertEqual(envio.feedback, "Muito bem!")
-        self.assertEqual(envio.nota, Decimal("9.5"))
-        self.assertIsNotNone(envio.corrigido_em)
-        self.assertEqual(envio.enviado_em, enviado_em)
-
-        # aluno vê a devolutiva e não pode mais reenviar
-        visto = self.client.get("/api/students/atividades").json()["atividades"][0]["envio"]
-        self.assertEqual(visto["feedback"], "Muito bem!")
-        self.assertEqual(visto["nota"], 9.5)
-        self.assertTrue(visto["respostas"][0]["correta"])
-        reenvio = self.enviar_respostas(atividade, [
-            {"questao_id": objetiva.id, "alternativa_id": certa.id},
-            {"questao_id": subjetiva.id, "texto": "Outra resposta."},
+    def test_submission_without_file_receives_signed_visto(self):
+        self.criar_atividade(self.questoes_padrao())
+        atividade = Atividade.objects.get(turma=self.turma_a)
+        objetiva = atividade.questoes.get(tipo="OBJETIVA")
+        subjetiva = atividade.questoes.get(tipo="SUBJETIVA")
+        self.enviar_respostas(atividade, [
+            {"questao_id": objetiva.id, "alternativa_id": objetiva.alternativas.get(correta=True).id},
+            {"questao_id": subjetiva.id, "texto": "Juntando as quantidades."},
         ])
-        self.assertEqual(reenvio.status_code, 400)
+        envio = AtividadeEnvio.objects.get()
+        self.assertFalse(envio.arquivo)
 
-    def test_teacher_cannot_grade_outside_zero_to_ten_or_other_teachers_work(self):
+        media_dir = tempfile.TemporaryDirectory(ignore_cleanup_errors=True)
+        self.addCleanup(media_dir.cleanup)
+        self.client.cookies["professor_session"] = self.sessao_professor.token
+        with override_settings(MEDIA_ROOT=media_dir.name, SIAA_VISTO_SECRET="x" * 32):
+            correcao = self.client.post(
+                f"/api/teacher/atividades/{atividade.id}/envios/{envio.id}/corrigir",
+                json.dumps({"parecer": "Muito bem!"}),
+                content_type="application/json",
+            )
+            self.assertEqual(correcao.status_code, 200, correcao.content)
+            envio.refresh_from_db()
+            self.assertEqual(envio.visto_dados["arquivo_nome"], f"respostas_envio_{envio.id}.txt")
+
+            verificacao = self.client.get(
+                f"/api/vistos/{envio.id}/verificar", {"hash": envio.visto_assinatura}
+            )
+            self.assertTrue(verificacao.json()["valido"])
+
+    def test_other_teacher_cannot_give_visto(self):
         self.criar_atividade(self.questoes_padrao())
         atividade = Atividade.objects.get(turma=self.turma_a)
         envio = AtividadeEnvio.objects.create(atividade=atividade, aluno=self.aluno, comentario="ok")
-
-        self.client.cookies["professor_session"] = self.sessao_professor.token
-        fora = self.client.post(
-            f"/api/teacher/atividades/envios/{envio.id}/corrigir",
-            json.dumps({"nota": 11}),
-            content_type="application/json",
-        )
-        self.assertEqual(fora.status_code, 400)
 
         outro = Professor.objects.create(nome_completo="Outro Professor")
         sessao_outro = Sessao.objects.create(
             tipo="PROFESSOR", referencia_id=outro.id, nome_completo=outro.nome_completo
         )
         self.client.cookies["professor_session"] = sessao_outro.token
-        alheio = self.client.post(
-            f"/api/teacher/atividades/envios/{envio.id}/corrigir",
-            json.dumps({"nota": 8}),
-            content_type="application/json",
-        )
+        with override_settings(SIAA_VISTO_SECRET="x" * 32):
+            alheio = self.client.post(
+                f"/api/teacher/atividades/{atividade.id}/envios/{envio.id}/corrigir",
+                json.dumps({"parecer": "ok"}),
+                content_type="application/json",
+            )
         self.assertEqual(alheio.status_code, 404)
 
 

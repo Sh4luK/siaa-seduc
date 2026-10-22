@@ -56,74 +56,6 @@ function RespostasDoAluno({ questoes, respostas }) {
   );
 }
 
-function FormCorrecao({ envio, onSalvo }) {
-  const [feedback, setFeedback] = useState(envio.feedback || "");
-  const [nota, setNota] = useState(envio.nota ?? "");
-  const [salvando, setSalvando] = useState(false);
-  const [erro, setErro] = useState("");
-  const [salvo, setSalvo] = useState(false);
-
-  async function salvar(e) {
-    e.preventDefault();
-    setErro("");
-    setSalvo(false);
-    setSalvando(true);
-    try {
-      const res = await fetch(`${API_BASE}/api/teacher/atividades/envios/${envio.id}/corrigir`, {
-        method: "POST",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ feedback, nota }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message || `status ${res.status}`);
-      onSalvo(data.envio);
-      setSalvo(true);
-    } catch (error) {
-      setErro(error.message);
-    } finally {
-      setSalvando(false);
-    }
-  }
-
-  return (
-    <form className={styles.correcao} onSubmit={salvar}>
-      <label className={styles.correcaoLabel} htmlFor={`feedback-${envio.id}`}>
-        Feedback para o aluno
-      </label>
-      <textarea
-        id={`feedback-${envio.id}`}
-        className={styles.feedbackInput}
-        rows={3}
-        placeholder="Comente o que ficou bom e o que precisa melhorar..."
-        value={feedback}
-        onChange={(e) => setFeedback(e.target.value)}
-      />
-      <div className={styles.correcaoRodape}>
-        <label className={styles.notaCampo}>
-          Nota
-          <input
-            type="text"
-            inputMode="decimal"
-            className={styles.notaInput}
-            placeholder="0 a 10"
-            value={nota}
-            onChange={(e) => {
-              const valor = e.target.value;
-              if (valor === "" || /^\d{0,2}([.,]\d{0,2})?$/.test(valor)) setNota(valor);
-            }}
-          />
-        </label>
-        <button type="submit" className={styles.salvarCorrecao} disabled={salvando}>
-          {salvando ? "Salvando…" : envio.corrigido_em ? "Atualizar correção" : "Salvar correção"}
-        </button>
-      </div>
-      {erro && <p className={styles.correcaoErro}>{erro}</p>}
-      {salvo && <p className={styles.correcaoOk}>Correção salva. O aluno já pode ver a devolutiva.</p>}
-    </form>
-  );
-}
-
 export default function EnviosAtividadePage() {
   const { atividadeId } = useParams();
   const router = useRouter();
@@ -160,12 +92,6 @@ export default function EnviosAtividadePage() {
 
     carregarEnvios();
   }, [atividadeId, router]);
-
-  function atualizarEnvio(envioAtualizado) {
-    setEnvios((prev) =>
-      prev.map((e) => (e.id === envioAtualizado.id ? { ...e, ...envioAtualizado } : e))
-    );
-  }
 
   async function responderSolicitacao(envioId, acao) {
     setRespondendoId(envioId);
@@ -210,7 +136,7 @@ export default function EnviosAtividadePage() {
   }
 
   const questoes = atividade?.questoes || [];
-  const corrigidos = envios.filter((e) => e.corrigido_em).length;
+  const corrigidos = envios.filter((e) => e.visto_emitido_em).length;
 
   return (
     <div className={layoutStyles.page}>
@@ -246,7 +172,7 @@ export default function EnviosAtividadePage() {
                 <p className={styles.resumo}>
                   {envios.length} {envios.length === 1 ? "envio recebido" : "envios recebidos"}
                   {" · "}
-                  {corrigidos} corrigido(s)
+                  {corrigidos} com visto
                 </p>
                 <ul className={styles.lista}>
                   {envios.map((envio) => (
@@ -255,10 +181,8 @@ export default function EnviosAtividadePage() {
                         <h2 className={styles.aluno}>{envio.aluno}</h2>
                         <div className={styles.selos}>
                           {envio.atrasado && <span className={styles.atrasado}>Enviado com atraso</span>}
-                          {envio.corrigido_em ? (
-                            <span className={styles.corrigido}>
-                              Corrigido{envio.nota !== null ? ` · ${envio.nota}` : ""}
-                            </span>
+                          {envio.visto_emitido_em ? (
+                            <span className={styles.corrigido}>Visto emitido</span>
                           ) : (
                             <span className={styles.aguardando}>Aguardando correção</span>
                           )}
@@ -302,7 +226,6 @@ export default function EnviosAtividadePage() {
                         </a>
                       )}
 
-                      <FormCorrecao envio={envio} onSalvo={atualizarEnvio} />
                       {envio.alteracao_status === "SOLICITADA" && (
                         <section className={styles.solicitacao}>
                           <div>

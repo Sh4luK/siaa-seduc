@@ -471,11 +471,41 @@ def _montar_pdf_visto(conteudo_original, arquivo_nome, dados, assinatura, url_ve
     return saida.getvalue()
 
 
-def gerar_pdf_visto(envio, professor, parecer, chave, url_verificacao):
-    with envio.arquivo.open("rb") as arquivo:
-        conteudo_original = arquivo.read()
 
-    arquivo_nome = os.path.basename(envio.arquivo.name)
+def _conteudo_original_do_envio(envio):
+    """Bytes e nome do documento que o visto assina.
+
+    Com arquivo, é o próprio arquivo do aluno. Sem arquivo (atividade respondida
+    só com as questões da plataforma), é um texto gerado com as questões, as
+    respostas e o comentário, em ordem fixa para que o SHA-256 seja reproduzível.
+    """
+    if envio.arquivo:
+        with envio.arquivo.open("rb") as arquivo:
+            return arquivo.read(), os.path.basename(envio.arquivo.name)
+
+    respostas = {
+        r.questao_id: r
+        for r in envio.respostas.select_related("alternativa").all()
+    }
+    linhas = [f"Respostas do envio {envio.id} - {envio.atividade.titulo}", ""]
+    for numero, questao in enumerate(envio.atividade.questoes.all(), start=1):
+        linhas.append(f"{numero}. {questao.enunciado}")
+        resposta = respostas.get(questao.id)
+        if questao.tipo == "OBJETIVA":
+            alt = resposta.alternativa if resposta else None
+            linhas.append(f"   Resposta: {alt.letra}) {alt.texto}" if alt else "   Resposta: (em branco)")
+        else:
+            linhas.append(f"   Resposta: {resposta.texto if resposta else '(em branco)'}")
+        linhas.append("")
+    if envio.comentario:
+        linhas += ["Comentário do aluno:", envio.comentario, ""]
+    if len(linhas) <= 2:
+        raise ValueError("O envio não tem arquivo nem respostas para receber o visto.")
+    return "\n".join(linhas).encode("utf-8"), f"respostas_envio_{envio.id}.txt"
+
+
+def gerar_pdf_visto(envio, professor, parecer, chave, url_verificacao):
+    conteudo_original, arquivo_nome = _conteudo_original_do_envio(envio)
     arquivo_sha256 = hashlib.sha256(conteudo_original).hexdigest()
     atividade = envio.atividade
     disciplina = atividade.disciplina.nome_disciplina if atividade.disciplina else ""
@@ -573,8 +603,7 @@ def regenerar_pdf_visto(envio, chave, url_verificacao):
     if not hmac.compare_digest(assinatura, assinatura_esperada):
         raise ValueError("A assinatura do visto não confere com os dados registrados.")
 
-    with envio.arquivo.open("rb") as arquivo:
-        conteudo_original = arquivo.read()
+    conteudo_original, _ = _conteudo_original_do_envio(envio)
     arquivo_sha256 = hashlib.sha256(conteudo_original).hexdigest()
     if not hmac.compare_digest(arquivo_sha256, dados.get("arquivo_sha256", "")):
         raise ValueError("O arquivo original mudou desde a emissão do visto.")

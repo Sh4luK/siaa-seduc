@@ -1714,6 +1714,8 @@ def envios_atividade_professor(request, atividade_id):
         },
         "envios": [
             {
+                # id, respostas às questões e acertos das objetivas
+                **_serializar_envio_atividade(envio, atividade, com_gabarito=True),
                 "aluno": envio.aluno.nome_completo,
                 "comentario": envio.comentario,
                 "enviado_em": envio.enviado_em.isoformat(),
@@ -5622,12 +5624,16 @@ def atividades_aluno(request):
             "data_entrega": a.data_entrega.isoformat() if a.data_entrega else None,
             "arquivo": a.arquivo.url if a.arquivo else None,
             "status": status,
+            "questoes": _serializar_questoes_atividade(a, com_gabarito=False),
             "envio": {
+                # respostas às questões da plataforma (sem gabarito para o aluno)
+                **_serializar_envio_atividade(envio, a, com_gabarito=False),
                 "id": envio.id,
                 "comentario": envio.comentario,
                 "enviado_em": envio.enviado_em.isoformat(),
-                "arquivo_url": caminho_relativo_arquivo(envio.arquivo),
-                "arquivo_nome": envio.arquivo.name.split("/")[-1],
+                # o envio pode ter só respostas, sem arquivo
+                "arquivo_url": caminho_relativo_arquivo(envio.arquivo) if envio.arquivo else None,
+                "arquivo_nome": envio.arquivo.name.split("/")[-1] if envio.arquivo else None,
                 "alteracao_status": envio.alteracao_status,
                 "alteracao_solicitada_em": (
                     envio.alteracao_solicitada_em.isoformat()
