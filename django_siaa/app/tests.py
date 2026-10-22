@@ -1,10 +1,13 @@
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase, override_settings
 from django.http import JsonResponse
+from django.utils import timezone
+from io import BytesIO
 import json
 from decimal import Decimal
 import tempfile
 from unittest.mock import patch
+from pypdf import PdfReader
 
 from .models import (
     Atividade,
@@ -18,6 +21,7 @@ from .models import (
     Professor,
     Sessao,
 )
+from .atividade_visto import gerar_pdf_visto, regenerar_pdf_visto
 from .views import _criar_sessao_e_setar_cookie, resolver_disciplina_da_turma
 
 
@@ -193,6 +197,49 @@ class AtividadeEnvioTests(TestCase):
             nome_completo=self.professor.nome_completo,
         )
 
+    def test_visto_pdf_has_compact_header_and_stamp_on_summary_page(self):
+        resposta = self.enviar_arquivo("atividade.txt", b"conteudo do envio")
+        self.assertEqual(resposta.status_code, 200)
+        envio = AtividadeEnvio.objects.get()
+        envio.comentario = "**Resposta _destacada_**\n\n- Primeiro item\n- Segundo item"
+        envio.save(update_fields=["comentario"])
+
+        resultado = gerar_pdf_visto(
+            envio=envio,
+            professor=self.professor,
+            parecer="Bom trabalho.",
+            chave="x" * 32,
+            url_verificacao="https://siaa.example/api/vistos/1/verificar?hash=__HASH__",
+        )
+
+        pdf = PdfReader(BytesIO(resultado["pdf"]))
+        self.assertEqual(len(pdf.pages), 2)
+        capa = pdf.pages[0].extract_text()
+        self.assertIn("Registro de atividade", capa)
+        self.assertIn("VISTO", capa)
+        self.assertIn("Atividade de teste", capa)
+        self.assertIn("HMAC-SHA256", capa)
+        self.assertIn("COMPROVANTE DE ENVIO E CORREÇÃO", capa)
+        self.assertIn("COMENTÁRIO DO ALUNO", capa)
+        self.assertIn("Resposta", capa)
+        self.assertIn("destacada", capa)
+        self.assertIn("Primeiro item", capa)
+        self.assertNotIn("**Resposta", capa)
+        self.assertNotIn("- Primeiro item", capa)
+
+        envio.visto_emitido_em = timezone.now()
+        envio.visto_assinatura = resultado["assinatura"]
+        envio.visto_dados = resultado["dados"]
+        pdf_atualizado = regenerar_pdf_visto(
+            envio,
+            "x" * 32,
+            "https://siaa.example/api/vistos/1/verificar?hash=__HASH__",
+        )
+        pdf_atualizado = PdfReader(BytesIO(pdf_atualizado))
+        self.assertEqual(len(pdf_atualizado.pages), 2)
+        self.assertIn(resultado["assinatura"], pdf_atualizado.pages[0].extract_text())
+        self.assertEqual(envio.visto_assinatura, resultado["assinatura"])
+
     def enviar_arquivo(self, nome, conteudo):
         self.client.cookies["aluno_session"] = self.sessao_aluno.token
         return self.client.post(
@@ -203,17 +250,24 @@ class AtividadeEnvioTests(TestCase):
             },
         )
 
-    def test_student_can_replace_submission_and_teacher_can_review_it(self):
+    def test_student_needs_teacher_approval_before_replacing_submission(self):
         primeira_resposta = self.enviar_arquivo("primeira.txt", b"primeira versao")
         self.assertEqual(primeira_resposta.status_code, 200)
         primeira_envio_id = primeira_resposta.json()["envio"]["id"]
 
         segunda_resposta = self.enviar_arquivo("segunda.txt", b"segunda versao")
-        self.assertEqual(segunda_resposta.status_code, 200)
+        self.assertEqual(segunda_resposta.status_code, 409)
         self.assertEqual(AtividadeEnvio.objects.count(), 1)
         envio = AtividadeEnvio.objects.get()
         self.assertEqual(envio.id, primeira_envio_id)
-        self.assertEqual(envio.arquivo.read(), b"segunda versao")
+        self.assertEqual(envio.arquivo.read(), b"primeira versao")
+
+        resposta_solicitacao = self.client.post(
+            f"/api/students/atividades/{self.atividade.id}/solicitar-alteracao"
+        )
+        self.assertEqual(resposta_solicitacao.status_code, 200)
+        envio.refresh_from_db()
+        self.assertEqual(envio.alteracao_status, "SOLICITADA")
 
         resposta_aluno = self.client.get("/api/students/atividades")
         self.assertEqual(resposta_aluno.status_code, 200)
@@ -225,6 +279,83 @@ class AtividadeEnvioTests(TestCase):
         )
         self.assertEqual(resposta_professor.status_code, 200)
         self.assertEqual(resposta_professor.json()["envios"][0]["aluno"], self.aluno.nome_completo)
+        self.assertEqual(resposta_professor.json()["envios"][0]["alteracao_status"], "SOLICITADA")
+
+        resposta_decisao = self.client.post(
+            f"/api/teacher/atividades/{self.atividade.id}/envios/{envio.id}/solicitacao",
+            data=json.dumps({"acao": "aprovar"}),
+            content_type="application/json",
+        )
+        self.assertEqual(resposta_decisao.status_code, 200)
+
+        segunda_resposta = self.enviar_arquivo("segunda.txt", b"segunda versao")
+        self.assertEqual(segunda_resposta.status_code, 200)
+        self.assertEqual(AtividadeEnvio.objects.count(), 1)
+        envio.refresh_from_db()
+        self.assertEqual(envio.id, primeira_envio_id)
+        self.assertEqual(envio.arquivo.read(), b"segunda versao")
+        self.assertEqual(envio.alteracao_status, "NENHUMA")
+
+    def test_teacher_can_deny_edit_request_and_student_must_ask_again(self):
+        self.assertEqual(self.enviar_arquivo("atividade.txt", b"versao inicial").status_code, 200)
+        self.assertEqual(
+            self.client.post(
+                f"/api/students/atividades/{self.atividade.id}/solicitar-alteracao"
+            ).status_code,
+            200,
+        )
+        envio = AtividadeEnvio.objects.get()
+
+        self.client.cookies["professor_session"] = self.sessao_professor.token
+        resposta = self.client.post(
+            f"/api/teacher/atividades/{self.atividade.id}/envios/{envio.id}/solicitacao",
+            data=json.dumps({"acao": "negar"}),
+            content_type="application/json",
+        )
+        self.assertEqual(resposta.status_code, 200)
+        envio.refresh_from_db()
+        self.assertEqual(envio.alteracao_status, "NEGADA")
+
+        self.client.cookies["aluno_session"] = self.sessao_aluno.token
+        self.assertEqual(self.enviar_arquivo("outra.txt", b"nao autorizado").status_code, 409)
+        self.assertEqual(
+            self.client.post(
+                f"/api/students/atividades/{self.atividade.id}/solicitar-alteracao"
+            ).status_code,
+            200,
+        )
+
+    def test_student_can_open_only_their_own_submission_details(self):
+        resposta = self.enviar_arquivo("atividade.txt", b"versao inicial")
+        envio_id = resposta.json()["envio"]["id"]
+
+        lista = self.client.get("/api/students/envios")
+        self.assertEqual(lista.status_code, 200)
+        self.assertEqual(len(lista.json()["envios"]), 1)
+        self.assertEqual(lista.json()["envios"][0]["arquivo_nome"], "atividade.txt")
+        self.assertEqual(lista.json()["envios"][0]["comentario"], "Segue minha atividade.")
+        self.assertEqual(lista.json()["envios"][0]["atividade"]["id"], self.atividade.id)
+
+        detalhe = self.client.get(f"/api/students/envios/{envio_id}")
+        self.assertEqual(detalhe.status_code, 200)
+        self.assertEqual(detalhe.json()["atividade"]["id"], self.atividade.id)
+        self.assertEqual(detalhe.json()["envio"]["id"], envio_id)
+
+        outro_aluno = Estudante.objects.create(nome_completo="Outro aluno", turma="Turma A")
+        sessao_outro_aluno = Sessao.objects.create(
+            tipo="ALUNO",
+            referencia_id=outro_aluno.id,
+            nome_completo=outro_aluno.nome_completo,
+        )
+        self.client.cookies["aluno_session"] = sessao_outro_aluno.token
+        self.assertEqual(
+            self.client.get("/api/students/envios").json()["envios"],
+            [],
+        )
+        self.assertEqual(
+            self.client.get(f"/api/students/envios/{envio_id}").status_code,
+            404,
+        )
 
     def test_student_cannot_submit_for_an_activity_outside_their_class(self):
         outra_turma = AtravessaPor.objects.create(
