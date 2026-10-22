@@ -6,8 +6,8 @@ import layoutStyles from "../../page.module.css";
 import styles from "./page.module.css";
 import Image from "next/image";
 import logo from "../../../../assets/logo.png";
+import SeletorTurmas from "../../SeletorTurmas";
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
-const TODAS_TURMAS = "__todas__";
 
 function hojeISO() {
   const hoje = new Date();
@@ -24,8 +24,7 @@ export default function NovoConteudoPage() {
   const [professorId, setProfessorId] = useState(null);
   const [nomeCompleto, setNomeCompleto] = useState("");
   const [turmasAgrupadas, setTurmasAgrupadas] = useState([]);
-  const [todasTurmasSelecionadas, setTodasTurmasSelecionadas] = useState(false);
-  const [disciplinasDaTurma, setDisciplinasDaTurma] = useState([]);
+  const [turmasSelecionadas, setTurmasSelecionadas] = useState([]);
   const [mensagem, setMensagem] = useState(null);
   const [erros, setErros] = useState([]);
   const [arquivoNome, setArquivoNome] = useState("");
@@ -34,7 +33,6 @@ export default function NovoConteudoPage() {
     titulo: "",
     data: hojeISO(),
     descricao: "",
-    turma_id: "",
     arquivo: null,
   });
 
@@ -83,21 +81,6 @@ export default function NovoConteudoPage() {
     setForm((prev) => ({ ...prev, [campo]: valor }));
   }
 
-  function handleTurmaChange(nomeTurma) {
-    if (nomeTurma === TODAS_TURMAS) {
-      setTodasTurmasSelecionadas(true);
-      setDisciplinasDaTurma([]);
-      handleFormChange("turma_id", TODAS_TURMAS);
-      return;
-    }
-
-    setTodasTurmasSelecionadas(false);
-    const grupo = turmasAgrupadas.find((g) => g.nomeTurma === nomeTurma);
-    const opcoes = grupo ? grupo.opcoes : [];
-    setDisciplinasDaTurma(opcoes);
-    handleFormChange("turma_id", opcoes.length === 1 ? String(opcoes[0].id) : "");
-  }
-
   function handleArquivoChange(e) {
     const file = e.target.files?.[0] || null;
     handleFormChange("arquivo", file);
@@ -115,8 +98,8 @@ export default function NovoConteudoPage() {
       setSaving(false);
       return;
     }
-    if (!form.turma_id) {
-      setErros(["Selecione a turma e a disciplina."]);
+    if (turmasSelecionadas.length === 0) {
+      setErros(["Selecione pelo menos uma turma."]);
       setSaving(false);
       return;
     }
@@ -129,13 +112,7 @@ export default function NovoConteudoPage() {
     try {
       const formData = new FormData();
       formData.append("professor", professorId);
-      if (todasTurmasSelecionadas) {
-        turmasAgrupadas.flatMap((grupo) => grupo.opcoes).forEach((turma) => {
-          formData.append("turmas", turma.id);
-        });
-      } else {
-        formData.append("turma", form.turma_id);
-      }
+      turmasSelecionadas.forEach((id) => formData.append("turmas", id));
       formData.append("titulo", form.titulo.trim());
       formData.append("descricao", form.descricao.trim());
       formData.append("data", form.data);
@@ -237,57 +214,20 @@ export default function NovoConteudoPage() {
                 />
               </div>
 
-              <div className={styles.linhaDupla}>
-                <div className={styles.campo}>
-                  <label className={styles.label} htmlFor="turma">
-                    Turma <span className={styles.obrigatorio}>*</span>
-                  </label>
-                  <select
-                    id="turma"
-                    className={styles.select}
-                    onChange={(e) => handleTurmaChange(e.target.value)}
-                    defaultValue=""
-                    required
-                  >
-                    <option value="" disabled>Selecione a turma</option>
-                    <option value={TODAS_TURMAS}>Todas as Turmas</option>
-                    {turmasAgrupadas.map((grupo) => (
-                      <option key={grupo.nomeTurma} value={grupo.nomeTurma}>
-                        {grupo.nomeTurma}
-                      </option>
-                    ))}
-                  </select>
-                  {todasTurmasSelecionadas && (
-                    <p className={styles.avisoTodasTurmas} role="status">
-                      Ao selecionar esta opção, o conteúdo será cadastrado em todas as disciplinas vinculadas às suas turmas.
-                    </p>
-                  )}
-                </div>
-
-                <div className={styles.campo}>
-                  <label className={styles.label} htmlFor="disciplina">
-                    Disciplina <span className={styles.obrigatorio}>*</span>
-                  </label>
-                  <select
-                    id="disciplina"
-                    className={styles.select}
-                    value={form.turma_id}
-                    onChange={(e) => handleFormChange("turma_id", e.target.value)}
-                    disabled={todasTurmasSelecionadas || disciplinasDaTurma.length === 0}
-                    required
-                  >
-                    <option value={todasTurmasSelecionadas ? TODAS_TURMAS : ""} disabled>
-                      {todasTurmasSelecionadas
-                        ? "Todas as disciplinas vinculadas"
-                        : disciplinasDaTurma.length === 0 ? "Escolha a turma primeiro" : "Selecione a disciplina"}
-                    </option>
-                    {disciplinasDaTurma.map((opcao) => (
-                      <option key={opcao.id} value={opcao.id}>
-                        {opcao.disciplina_lecionada}
-                      </option>
-                    ))}
-                  </select>
-                </div>
+              <div className={styles.campo}>
+                <span className={styles.label}>
+                  Turmas e disciplinas <span className={styles.obrigatorio}>*</span>
+                </span>
+                <SeletorTurmas
+                  turmasAgrupadas={turmasAgrupadas}
+                  selecionadas={turmasSelecionadas}
+                  onChange={setTurmasSelecionadas}
+                />
+                {turmasSelecionadas.length > 1 && (
+                  <p className={styles.avisoTodasTurmas} role="status">
+                    O conteúdo será cadastrado em cada uma das {turmasSelecionadas.length} turmas/disciplinas marcadas.
+                  </p>
+                )}
               </div>
 
               <div className={styles.campo}>

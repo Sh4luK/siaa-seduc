@@ -130,7 +130,7 @@ export default function NovaAvaliacaoPage() {
     if (!titulo.trim()) errosValidacao.push("O título da avaliação é obrigatório.");
     if (!data) errosValidacao.push("A data é obrigatória.");
     if (!turma) errosValidacao.push("Selecione a turma.");
-    if (!disciplina) errosValidacao.push("Selecione a matéria.");
+    if (!disciplina) errosValidacao.push("Selecione a disciplina.");
 
     questoes.forEach((q, i) => {
       if (!q.enunciado.trim()) errosValidacao.push(`Questão ${i + 1}: o enunciado é obrigatório.`);
@@ -288,7 +288,7 @@ export default function NovaAvaliacaoPage() {
 
             <div className={styles.campo}>
               <label className={styles.label}>
-                Matéria <span className={styles.obrigatorio}>*</span>
+                Disciplina <span className={styles.obrigatorio}>*</span>
               </label>
               <select
                 className={styles.select}
@@ -297,7 +297,7 @@ export default function NovaAvaliacaoPage() {
                 disabled={!turma}
               >
                 <option value="" disabled>
-                  {turma ? "Selecione a matéria" : "Selecione a turma primeiro"}
+                  {turma ? "Selecione a disciplina" : "Selecione a turma primeiro"}
                 </option>
                 {disciplinasDisponiveis.map((d) => (
                   <option key={d} value={d}>{d}</option>
