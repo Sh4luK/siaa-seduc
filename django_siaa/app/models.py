@@ -283,12 +283,34 @@ class AtividadeAlternativa(models.Model):
 
 
 class AtividadeEnvio(models.Model):
+    ALTERACAO_STATUS_CHOICES = [
+        ("NENHUMA", "Sem solicitação"),
+        ("SOLICITADA", "Solicitada"),
+        ("APROVADA", "Aprovada"),
+        ("NEGADA", "Negada"),
+    ]
+
     atividade = models.ForeignKey(Atividade, on_delete=models.CASCADE, related_name="envios")
     aluno = models.ForeignKey("app.Estudante", on_delete=models.CASCADE, related_name="envios_atividade")
     # Opcional: o aluno pode só responder as questões da atividade na plataforma
     arquivo = models.FileField(upload_to="envios_atividades/%Y/%m/", null=True, blank=True)
     comentario = models.TextField(blank=True, default="")
     enviado_em = models.DateTimeField(auto_now=True)
+    alteracao_status = models.CharField(
+        max_length=10,
+        choices=ALTERACAO_STATUS_CHOICES,
+        default="NENHUMA",
+    )
+    alteracao_solicitada_em = models.DateTimeField(null=True, blank=True)
+    parecer_professor = models.TextField(blank=True, default="")
+    visto_emitido_em = models.DateTimeField(null=True, blank=True)
+    visto_assinatura = models.CharField(max_length=64, blank=True, default="")
+    visto_dados = models.JSONField(default=dict, blank=True)
+    visto_pdf = models.FileField(
+        upload_to="vistos_atividades/%Y/%m/",
+        null=True,
+        blank=True,
+    )
 
     # Devolutiva do professor
     feedback = models.TextField(blank=True, default="", db_default="")
