@@ -114,26 +114,32 @@ class Nota(models.Model):
         return round(sum(validos) / len(validos), 1)
 
     def calcular(self):
-        MEDIA_MINIMA = Decimal("6.0")
-
         for t in (1, 2, 3):
             notas = [getattr(self, f"nm{i}_t{t}") for i in (1, 2, 3)]
             mt = self._media(notas)
-            setattr(self, f"mt_t{t}", mt)
 
+            nm3 = getattr(self, f"nm3_t{t}")
             rpt = getattr(self, f"rpt_t{t}")
-            mtf = rpt if rpt is not None else mt
-            setattr(self, f"mtf_t{t}", mtf)
+            if rpt is not None and (
+                (nm3 is not None and nm3 < Decimal("6"))
+                or (mt is not None and mt < Decimal("6"))
+            ):
+                setattr(self, f"nm3_t{t}", rpt)
+                notas[2] = rpt
+                mt = self._media(notas)
+
+            setattr(self, f"mt_t{t}", mt)
+            setattr(self, f"mtf_t{t}", mt)
 
         mtfs = [self.mtf_t1, self.mtf_t2, self.mtf_t3]
         self.ma = self._media(mtfs)
 
         if self.ma is None:
             self.maf = None
-        elif self.ma >= MEDIA_MINIMA or self.pf is None:
+        elif self.pf is None:
             self.maf = self.ma
         else:
-            self.maf = round((self.ma + self.pf) / 2, 1)
+            self.maf = round((self.ma * 6 + self.pf * 4) / 10, 1)
 
     def save(self, *args, **kwargs):
         self.calcular()
@@ -150,8 +156,7 @@ class Aula(models.Model):
     ano_letivo = models.PositiveIntegerField(default=2026)
 
     data = models.DateField()
-    assunto = models.TextField(blank=True, default="")  # exibido como "Conteúdo abordado"
-    estrategia_metodologica = models.TextField(blank=True, default="")
+    assunto = models.TextField(blank=True, default="")
 
     atualizado_em = models.DateTimeField(auto_now=True)
 
