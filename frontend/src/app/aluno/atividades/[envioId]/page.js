@@ -166,6 +166,9 @@ export default function GerenciarEnvioPage({ params }) {
             </div>
           )}
 
+          {envio?.visto_emitido_em && envio.nota !== null && envio.nota !== undefined && (
+            <p className={styles.nota}>Nota: <strong>{String(envio.nota).replace(".", ",")}</strong> / 10</p>
+          )}
           {envio?.parecer_professor && (
             <div className={styles.arquivoAtual}>
               <span>Parecer do professor</span>

@@ -181,6 +181,9 @@ export default function DetalheEnvioAlunoPage({ params }) {
                     <p>Registrado em {formatarDataHora(envio.visto_emitido_em)}</p>
                   </div>
                 </div>
+                {envio.visto_emitido_em && envio.nota !== null && envio.nota !== undefined && (
+                  <p className={styles.nota}>Nota: <strong>{String(envio.nota).replace(".", ",")}</strong> / 10</p>
+                )}
                 {envio.parecer_professor && (
                   <p className={styles.parecer}>{envio.parecer_professor}</p>
                 )}

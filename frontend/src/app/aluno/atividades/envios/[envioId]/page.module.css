@@ -376,3 +376,14 @@
     transition: none;
   }
 }
+
+.nota {
+  margin: 0.4rem 0;
+  font-size: 0.9rem;
+  color: #1a2942;
+}
+
+.nota strong {
+  color: #15803d;
+  font-size: 1rem;
+}

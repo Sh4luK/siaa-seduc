@@ -498,19 +498,40 @@ class AtividadeQuestoesEDevolutivaTests(TestCase):
         self.addCleanup(media_dir.cleanup)
         self.client.cookies["professor_session"] = self.sessao_professor.token
         with override_settings(MEDIA_ROOT=media_dir.name, SIAA_VISTO_SECRET="x" * 32):
+            url = f"/api/teacher/atividades/{atividade.id}/envios/{envio.id}/corrigir"
+            fora = self.client.post(
+                url, json.dumps({"parecer": "ok", "nota": "11"}), content_type="application/json"
+            )
+            self.assertEqual(fora.status_code, 400)
+
             correcao = self.client.post(
-                f"/api/teacher/atividades/{atividade.id}/envios/{envio.id}/corrigir",
-                json.dumps({"parecer": "Muito bem!"}),
+                url,
+                json.dumps({"parecer": "Muito bem!", "nota": "8,5"}),
                 content_type="application/json",
             )
             self.assertEqual(correcao.status_code, 200, correcao.content)
+            self.assertEqual(correcao.json()["nota"], 8.5)
             envio.refresh_from_db()
             self.assertEqual(envio.visto_dados["arquivo_nome"], f"respostas_envio_{envio.id}.txt")
+            self.assertEqual(envio.nota, Decimal("8.50"))
+            self.assertEqual(envio.visto_dados["nota"], "8.50")
+
+            with envio.visto_pdf.open("rb") as arquivo_pdf:
+                capa = PdfReader(arquivo_pdf).pages[0].extract_text()
+            self.assertIn("NOTA", capa)
+            self.assertIn("8,5", capa)
 
             verificacao = self.client.get(
                 f"/api/vistos/{envio.id}/verificar", {"hash": envio.visto_assinatura}
             )
-            self.assertTrue(verificacao.json()["valido"])
+            self.assertEqual(verificacao.json(), {"valido": True, "nota": 8.5})
+
+            # nota alterada fora da correção: o visto deixa de valer
+            AtividadeEnvio.objects.filter(id=envio.id).update(nota=Decimal("10"))
+            adulterado = self.client.get(
+                f"/api/vistos/{envio.id}/verificar", {"hash": envio.visto_assinatura}
+            )
+            self.assertFalse(adulterado.json()["valido"])
 
     def test_other_teacher_cannot_give_visto(self):
         self.criar_atividade(self.questoes_padrao())

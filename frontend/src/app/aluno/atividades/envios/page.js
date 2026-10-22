@@ -139,6 +139,9 @@ export default function EnviosAlunoPage() {
                       <MarkdownContent content={envio.comentario} collapsible />
                     </div>
                   )}
+                  {envio.visto_emitido_em && envio.nota !== null && envio.nota !== undefined && (
+                    <p className={styles.nota}>Nota: <strong>{String(envio.nota).replace(".", ",")}</strong> / 10</p>
+                  )}
                   {envio.parecer_professor && (
                     <div className={styles.parecer}>
                       <span>Parecer do professor</span>

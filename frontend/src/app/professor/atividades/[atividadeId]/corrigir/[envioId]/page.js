@@ -35,6 +35,7 @@ export default function CorrigirEnvioPage() {
   const [atividade, setAtividade] = useState(null);
   const [envio, setEnvio] = useState(null);
   const [parecer, setParecer] = useState("");
+  const [nota, setNota] = useState("");
   const [erro, setErro] = useState("");
 
   useEffect(() => {
@@ -77,7 +78,7 @@ export default function CorrigirEnvioPage() {
           method: "POST",
           credentials: "include",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ parecer }),
+          body: JSON.stringify({ parecer, nota }),
         }
       );
       const data = await res.json();
@@ -85,6 +86,7 @@ export default function CorrigirEnvioPage() {
       setEnvio((prev) => ({
         ...prev,
         parecer_professor: data.parecer_professor,
+        nota: data.nota,
         visto_emitido_em: data.visto_emitido_em,
         visto_assinatura: data.visto_assinatura,
         visto_pdf_url: data.visto_pdf_url,
@@ -202,6 +204,11 @@ export default function CorrigirEnvioPage() {
                     <h2>Correção assinada e registrada</h2>
                     <p>Emitida em {formatarDataHora(envio.visto_emitido_em)}</p>
                   </div>
+                  {envio.nota !== null && envio.nota !== undefined && (
+                    <span className={styles.notaSelo}>
+                      Nota {String(envio.nota).replace(".", ",")}
+                    </span>
+                  )}
                 </div>
                 {envio.parecer_professor && (
                   <div className={styles.parecer}>
@@ -243,9 +250,26 @@ export default function CorrigirEnvioPage() {
                     rows={5}
                     placeholder="Registre observações sobre o trabalho. Este parecer ficará incluído no PDF assinado."
                   />
+                  <label htmlFor="nota">
+                    Nota <span className={styles.opcional}>(0 a 10, opcional)</span>
+                  </label>
+                  <input
+                    id="nota"
+                    type="text"
+                    inputMode="decimal"
+                    className={styles.notaInput}
+                    placeholder="Ex.: 8,5"
+                    value={nota}
+                    onChange={(event) => {
+                      const valor = event.target.value;
+                      if (valor === "" || (/^\d{0,2}([.,]\d{0,2})?$/.test(valor) && Number(valor.replace(",", ".")) <= 10)) {
+                        setNota(valor);
+                      }
+                    }}
+                  />
                   <p className={styles.avisoAssinatura}>
                     <i className="ti ti-shield-lock" aria-hidden="true" />
-                    Ao emitir o visto, o parecer e o arquivo ficam registrados e não poderão ser alterados.
+                    Ao emitir o visto, o parecer, a nota e o arquivo ficam registrados e não poderão ser alterados.
                     A autenticação HMAC do SIAA não é uma assinatura Gov.br ou ICP-Brasil.
                   </p>
                   <button type="submit" disabled={salvando}>

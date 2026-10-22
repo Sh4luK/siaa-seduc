@@ -439,3 +439,39 @@
     transform: none;
   }
 }
+
+.opcional {
+  color: #94a3b8;
+  font-weight: 400;
+}
+
+.notaInput {
+  width: 7rem;
+  box-sizing: border-box;
+  padding: 0.65rem 0.8rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 9px;
+  background: #f8fafc;
+  color: #1a2942;
+  font: inherit;
+  font-size: 0.95rem;
+  text-align: center;
+}
+
+.notaInput:focus {
+  outline: none;
+  border-color: #0b4f9e;
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(11, 79, 158, 0.12);
+}
+
+.notaSelo {
+  margin-left: auto;
+  padding: 0.35rem 0.8rem;
+  border-radius: 999px;
+  background: #15803d;
+  color: #ffffff;
+  font-size: 0.9rem;
+  font-weight: 700;
+  white-space: nowrap;
+}

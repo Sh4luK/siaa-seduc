@@ -1771,6 +1771,7 @@ def correcao_envio_atividade_professor(request, atividade_id, envio_id):
             "arquivo_nome": envio.arquivo.name.split("/")[-1] if envio.arquivo else None,
             "alteracao_status": envio.alteracao_status,
             "parecer_professor": envio.parecer_professor,
+            "nota": float(envio.nota) if envio.nota is not None else None,
             "visto_emitido_em": (
                 envio.visto_emitido_em.isoformat()
                 if envio.visto_emitido_em else None
@@ -1810,6 +1811,17 @@ def corrigir_envio_atividade_professor(request, atividade_id, envio_id):
         return JsonResponse({"message": "O parecer deve ser um texto."}, status=400)
     parecer = body.get("parecer", "").strip()
 
+    # Nota opcional de 0 a 10, aceita "8,5" ou 8.5
+    nota = None
+    nota_bruta = body.get("nota")
+    if nota_bruta not in (None, ""):
+        try:
+            nota = Decimal(str(nota_bruta).replace(",", ".")).quantize(Decimal("0.01"))
+        except (InvalidOperation, ValueError):
+            return JsonResponse({"message": "Nota inválida."}, status=400)
+        if not nota.is_finite() or nota < 0 or nota > 10:
+            return JsonResponse({"message": "A nota deve ficar entre 0 e 10."}, status=400)
+
     with transaction.atomic():
         envio = AtividadeEnvio.objects.select_for_update().select_related(
             "aluno", "atividade", "atividade__turma", "atividade__disciplina"
@@ -1836,11 +1848,13 @@ def corrigir_envio_atividade_professor(request, atividade_id, envio_id):
                 parecer=parecer,
                 chave=chave,
                 url_verificacao=f"{url_verificacao}?{urlencode({'hash': '__HASH__'})}",
+                nota=nota,
             )
         except ValueError as error:
             return JsonResponse({"message": str(error)}, status=400)
 
         envio.parecer_professor = parecer
+        envio.nota = nota
         envio.visto_emitido_em = resultado["assinado_em"]
         envio.visto_assinatura = resultado["assinatura"]
         envio.visto_dados = resultado["dados"]
@@ -1851,6 +1865,7 @@ def corrigir_envio_atividade_professor(request, atividade_id, envio_id):
         )
         envio.save(update_fields=[
             "parecer_professor",
+            "nota",
             "visto_emitido_em",
             "visto_assinatura",
             "visto_dados",
@@ -1863,6 +1878,7 @@ def corrigir_envio_atividade_professor(request, atividade_id, envio_id):
         "visto_assinatura": envio.visto_assinatura,
         "visto_pdf_url": envio.visto_pdf.url,
         "parecer_professor": envio.parecer_professor,
+        "nota": float(envio.nota) if envio.nota is not None else None,
     })
 
 
@@ -1870,7 +1886,7 @@ def corrigir_envio_atividade_professor(request, atividade_id, envio_id):
 @require_http_methods(["GET"])
 def verificar_visto_envio(request, envio_id):
     envio = AtividadeEnvio.objects.filter(id=envio_id).only(
-        "visto_assinatura", "visto_dados", "visto_emitido_em"
+        "visto_assinatura", "visto_dados", "visto_emitido_em", "nota"
     ).first()
     fornecida = request.GET.get("hash", "")
     chave = getattr(settings, "SIAA_VISTO_SECRET", "")
@@ -1882,7 +1898,17 @@ def verificar_visto_envio(request, envio_id):
         hmac.compare_digest(fornecida, envio.visto_assinatura)
         and hmac.compare_digest(esperada, envio.visto_assinatura)
     )
-    return JsonResponse({"valido": valido})
+
+    # Vistos com nota: a nota gravada no envio tem que ser a mesma que foi assinada
+    nota_assinada = envio.visto_dados.get("nota") if isinstance(envio.visto_dados, dict) else None
+    if valido and nota_assinada is not None:
+        nota_atual = None if envio.nota is None else f"{envio.nota:.2f}"
+        valido = nota_atual == nota_assinada
+
+    resposta = {"valido": valido}
+    if valido and nota_assinada is not None:
+        resposta["nota"] = float(nota_assinada)
+    return JsonResponse(resposta)
 
 
 @csrf_exempt
@@ -2050,6 +2076,7 @@ def _serializar_envio_aluno(envio):
             if envio.alteracao_solicitada_em else None
         ),
         "parecer_professor": envio.parecer_professor,
+        "nota": float(envio.nota) if envio.nota is not None else None,
         "visto_emitido_em": (
             envio.visto_emitido_em.isoformat()
             if envio.visto_emitido_em else None

@@ -162,6 +162,14 @@ def _comentario_markdown_flowables(conteudo, styles):
     return parser.flowables
 
 
+def formatar_nota(nota):
+    """'8.50' -> '8,5'; None -> None (vistos antigos não têm nota)."""
+    if nota in (None, ""):
+        return None
+    texto = f"{float(nota):.2f}".rstrip("0").rstrip(".")
+    return texto.replace(".", ",")
+
+
 def _gerar_pdf_resumo(dados, parecer, assinatura, url_verificacao):
     buffer = BytesIO()
     assinado_em = timezone.localtime(datetime.fromisoformat(dados["assinado_em"]))
@@ -299,6 +307,12 @@ def _gerar_pdf_resumo(dados, parecer, assinatura, url_verificacao):
             styles["MetadadosSIAA"],
         ),
     ]
+    nota_txt = formatar_nota(dados.get("nota"))
+    if nota_txt is not None:
+        story.append(Paragraph(
+            f"<font color='#16345c'><b>NOTA</b></font>  <b>{nota_txt}</b> / 10",
+            styles["MetadadosSIAA"],
+        ))
     if dados["descricao"]:
         story.extend([
             Paragraph("DESCRIÇÃO DA ATIVIDADE", styles["SecaoSIAA"]),
@@ -354,10 +368,13 @@ def _gerar_pdf_resumo(dados, parecer, assinatura, url_verificacao):
         pdf.setFont("Helvetica-Bold", 6)
         pdf.drawCentredString(0, -9, "SIAA-SEDUC")
         pdf.setFont("Helvetica", 5)
+        data_carimbo = assinado_em.strftime("%d/%m/%Y")
+        if nota_txt is not None:
+            data_carimbo = f"{data_carimbo}  ·  NOTA {nota_txt}"
         pdf.drawCentredString(
             0,
             -16,
-            assinado_em.strftime("%d/%m/%Y"),
+            data_carimbo,
         )
         pdf.restoreState()
         pdf.setFillColor(colors.HexColor("#eaf2f8"))
@@ -504,7 +521,7 @@ def _conteudo_original_do_envio(envio):
     return "\n".join(linhas).encode("utf-8"), f"respostas_envio_{envio.id}.txt"
 
 
-def gerar_pdf_visto(envio, professor, parecer, chave, url_verificacao):
+def gerar_pdf_visto(envio, professor, parecer, chave, url_verificacao, nota=None):
     conteudo_original, arquivo_nome = _conteudo_original_do_envio(envio)
     arquivo_sha256 = hashlib.sha256(conteudo_original).hexdigest()
     atividade = envio.atividade
@@ -528,6 +545,8 @@ def gerar_pdf_visto(envio, professor, parecer, chave, url_verificacao):
         "arquivo_sha256": arquivo_sha256,
         "comentario_aluno": envio.comentario,
         "parecer_professor": parecer,
+        # nota entra nos dados assinados: alterá-la depois invalida o visto
+        "nota": None if nota is None else f"{nota:.2f}",
         "assinado_em": momento.isoformat(),
     }
     assinatura = assinatura_hmac(dados, chave)
