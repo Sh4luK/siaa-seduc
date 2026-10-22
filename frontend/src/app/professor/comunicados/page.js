@@ -39,16 +39,31 @@ export default function ComunicadosPage() {
         setAuthenticated(true);
         setNomeCompleto(authData.teacher.nome_completo);
 
-        // Reaproveita o mesmo endpoint usado pela organização para listar
-        // comunicados, filtrando aqui só os emitidos pela organização.
-        const comunicadosRes = await fetch(`${API_BASE}/api/coordenacao/comunicados`, { credentials: "include" });
-        if (!comunicadosRes.ok) throw new Error(`Falha ao buscar comunicados (status ${comunicadosRes.status})`);
-        const comunicadosData = await comunicadosRes.json();
+        const [coordenacaoRes, professorRes] = await Promise.all([
+          fetch(`${API_BASE}/api/coordenacao/comunicados`, { credentials: "include" }),
+          fetch(`${API_BASE}/api/teacher/comunicados?professor=${authData.teacher.id}`, { credentials: "include" }),
+        ]);
+        if (!coordenacaoRes.ok) {
+          throw new Error(`Falha ao buscar comunicados da organização (status ${coordenacaoRes.status})`);
+        }
+        if (!professorRes.ok) {
+          throw new Error(`Falha ao buscar seus comunicados (status ${professorRes.status})`);
+        }
+        const [coordenacaoData, professorData] = await Promise.all([
+          coordenacaoRes.json(),
+          professorRes.json(),
+        ]);
 
-        const apenasCoordenacao = (comunicadosData.comunicados || []).filter(
+        const apenasCoordenacao = (coordenacaoData.comunicados || []).filter(
           (c) => c.origem === "coordenacao"
         );
-        setComunicados(apenasCoordenacao);
+        const doProfessor = (professorData.comunicados || []).map((c) => ({
+          ...c,
+          origem: "professor",
+        }));
+        setComunicados(
+          [...apenasCoordenacao, ...doProfessor].sort((a, b) => b.data.localeCompare(a.data))
+        );
       } catch (error) {
         setErros([`Erro ao carregar dados: ${error.message}`]);
       } finally {
@@ -179,9 +194,12 @@ export default function ComunicadosPage() {
               <div>
                 <h1 className={layoutStyles.greeting}>Comunicados</h1>
                 <p className={layoutStyles.subtitle}>
-                  Avisos enviados pela organização, {firstName}.
+                  Avisos da organização e comunicados enviados por você, {firstName}.
                 </p>
               </div>
+              <Link href="/professor/comunicados/novo" className={styles.novoBotao}>
+                Novo comunicado
+              </Link>
             </div>
 
             {erros.length > 0 && (
@@ -216,6 +234,9 @@ export default function ComunicadosPage() {
                         <span className={styles.comunicadoTurmaBadge}>{c.nome_turma}</span>
                       ) : (
                         <span className={styles.comunicadoGeralBadge}>Geral</span>
+                      )}
+                      {c.origem === "professor" && (
+                        <span className={styles.comunicadoOrigem}>Enviado por você</span>
                       )}
                       <p className={styles.comunicadoMensagem}>{c.mensagem}</p>
                     </div>
