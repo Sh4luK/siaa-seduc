@@ -7,6 +7,30 @@
   margin-bottom: 1.5rem;
 }
 
+.novoBotao {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.65rem 1rem;
+  border-radius: 8px;
+  color: #ffffff;
+  background: #0b4f9e;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.novoBotao:hover {
+  background: #0a2f5c;
+}
+
+@media (max-width: 600px) {
+  .novoBotao {
+    width: 100%;
+  }
+}
+
 .listaErros {
   list-style: none;
   color: #b91c1c;
@@ -110,6 +134,14 @@
 .comunicadoGeralBadge {
   color: #0b4f9e;
   background: rgba(11, 79, 158, 0.08);
+}
+
+.comunicadoOrigem {
+  display: inline-block;
+  margin: 0 0 0.5rem 0.4rem;
+  color: #15803d;
+  font-size: 0.68rem;
+  font-weight: 700;
 }
 
 .comunicadoMensagem {
