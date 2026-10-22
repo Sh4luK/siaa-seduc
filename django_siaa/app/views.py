@@ -31,6 +31,7 @@ from .models import Aula
 from .models import Evento
 from .models import Conteudo
 from .models import Atividade
+from .models import AtividadeEnvio
 from .models import Comunicado
 from .models import Coordenador
 from .models import Advertencia
@@ -506,29 +507,17 @@ def buscar_alunos_por_turma(nome_turma):
 
 
 def _normalizar_texto(texto):
-    texto = texto or ""
-    texto = unicodedata.normalize("NFC", texto)
-    return texto.replace(" ", "").strip().lower()
+    texto = unicodedata.normalize("NFKD", texto or "")
+    texto = "".join(caractere for caractere in texto if not unicodedata.combining(caractere))
+    return "".join(texto.split()).casefold()
 
 
 def resolver_disciplina_da_turma(turma_obj):
     nome_busca = _normalizar_texto(turma_obj.disciplina_lecionada)
-    print("DEBUG - buscando (normalizado):", repr(nome_busca))
-    print("DEBUG - bytes do texto buscado:", nome_busca.encode("utf-8"))
-
-    if not nome_busca:
-        return None
-
-    for disciplina in Disciplina.objects.all():
-        nome_disc_normalizado = _normalizar_texto(disciplina.nome_disciplina)
-        if "quim" in nome_disc_normalizado or "quí" in nome_disc_normalizado:
-            print("DEBUG - candidato:", repr(nome_disc_normalizado))
-            print("DEBUG - bytes do candidato:", nome_disc_normalizado.encode("utf-8"))
-            print("DEBUG - são iguais?", nome_disc_normalizado == nome_busca)
-
-    for disciplina in Disciplina.objects.all():
-        if _normalizar_texto(disciplina.nome_disciplina) == nome_busca:
-            return disciplina
+    if nome_busca:
+        for disciplina in Disciplina.objects.all():
+            if _normalizar_texto(disciplina.nome_disciplina) == nome_busca:
+                return disciplina
 
     return None
 
@@ -1475,18 +1464,26 @@ def criar_atividade(request):
         return JsonResponse({"message": "Método não permitido."}, status=405)
 
     professor_id = request.POST.get("professor")
-    turma_id = request.POST.get("turma")
+    turmas_ids = request.POST.getlist("turmas")
+    if not turmas_ids:
+        turma_id = request.POST.get("turma")
+        turmas_ids = [turma_id] if turma_id else []
     titulo = (request.POST.get("titulo") or "").strip()
     descricao = (request.POST.get("descricao") or "").strip()
     data_str = request.POST.get("data")
     data_entrega_str = request.POST.get("data_entrega")
     arquivo = request.FILES.get("arquivo")
 
-    if not all([professor_id, turma_id, titulo, data_str]):
+    if not all([professor_id, turmas_ids, titulo, data_str]):
         return JsonResponse(
-            {"message": "Campos 'professor', 'turma', 'titulo' e 'data' são obrigatórios."},
+            {"message": "Campos 'professor', 'turma(s)', 'titulo' e 'data' são obrigatórios."},
             status=400
         )
+
+    try:
+        turmas_ids = list(dict.fromkeys(int(turma_id) for turma_id in turmas_ids))
+    except (TypeError, ValueError):
+        return JsonResponse({"message": "Identificador de turma inválido."}, status=400)
 
     try:
         data_atividade = date.fromisoformat(data_str)
@@ -1505,31 +1502,41 @@ def criar_atividade(request):
     except Professor.DoesNotExist:
         return JsonResponse({"message": "Professor não encontrado."}, status=404)
 
-    turma = AtravessaPor.objects.filter(id=turma_id).first()
-    if not turma:
-        return JsonResponse({"message": "Turma não encontrada."}, status=404)
-
-    disciplina = resolver_disciplina_da_turma(turma)
-    if not disciplina:
+    turmas = list(AtravessaPor.objects.filter(professor=professor, id__in=turmas_ids))
+    if len(turmas) != len(turmas_ids):
         return JsonResponse(
-            {"message": "Não foi possível resolver a disciplina associada a esta turma."},
+            {"message": "Uma ou mais turmas não foram encontradas ou não pertencem ao professor."},
             status=404
         )
 
-    atividade = Atividade.objects.create(
-        professor=professor,
-        turma=turma,
-        disciplina=disciplina,
-        titulo=titulo,
-        descricao=descricao,
-        data=data_atividade,
-        data_entrega=data_entrega,
-        arquivo=arquivo,
-    )
+    turmas_disciplinas = []
+    for turma in turmas:
+        disciplina = resolver_disciplina_da_turma(turma)
+        if not disciplina:
+            return JsonResponse(
+                {"message": f"Não foi possível resolver a disciplina da turma {turma.turma}."},
+                status=404
+            )
+        turmas_disciplinas.append((turma, disciplina))
 
-    return JsonResponse({
-        "message": "Atividade criada com sucesso.",
-        "atividade": {
+    atividades = []
+    for turma, disciplina in turmas_disciplinas:
+        atividade = Atividade.objects.create(
+            professor=professor,
+            turma=turma,
+            disciplina=disciplina,
+            titulo=titulo,
+            descricao=descricao,
+            data=data_atividade,
+            data_entrega=data_entrega,
+            arquivo=arquivo if not atividades else (
+                atividades[0].arquivo.name if atividades[0].arquivo else None
+            ),
+        )
+        atividades.append(atividade)
+
+    atividades_serializadas = [
+        {
             "id": atividade.id,
             "titulo": atividade.titulo,
             "descricao": atividade.descricao,
@@ -1540,6 +1547,100 @@ def criar_atividade(request):
             "disciplina": atividade.disciplina.nome_disciplina,
             "arquivo_url": caminho_relativo_arquivo(atividade.arquivo),
         }
+        for atividade in atividades
+    ]
+
+    return JsonResponse({
+        "message": f"Atividade criada com sucesso em {len(atividades)} turma(s).",
+        "atividade": atividades_serializadas[0],
+        "atividades": atividades_serializadas,
+    })
+
+
+@csrf_exempt
+@require_http_methods(["GET"])
+def envios_atividade_professor(request, atividade_id):
+    professor = _professor_logado(request)
+    if not professor:
+        return JsonResponse({"detail": "Não autenticado."}, status=401)
+
+    atividade = Atividade.objects.filter(
+        id=atividade_id, professor=professor
+    ).select_related("turma", "disciplina").first()
+    if not atividade:
+        return JsonResponse({"message": "Atividade não encontrada."}, status=404)
+
+    envios = atividade.envios.select_related("aluno").all()
+    return JsonResponse({
+        "atividade": {
+            "id": atividade.id,
+            "titulo": atividade.titulo,
+            "descricao": atividade.descricao,
+            "data": atividade.data.isoformat(),
+            "data_entrega": atividade.data_entrega.isoformat() if atividade.data_entrega else None,
+            "nome_turma": atividade.turma.turma,
+            "disciplina": atividade.disciplina.nome_disciplina,
+        },
+        "envios": [
+            {
+                "id": envio.id,
+                "aluno": envio.aluno.nome_completo,
+                "comentario": envio.comentario,
+                "enviado_em": envio.enviado_em.isoformat(),
+                "arquivo_url": caminho_relativo_arquivo(envio.arquivo),
+                "arquivo_nome": envio.arquivo.name.split("/")[-1] if envio.arquivo else None,
+                "atrasado": bool(
+                    atividade.data_entrega
+                    and timezone.localdate(envio.enviado_em) > atividade.data_entrega
+                ),
+            }
+            for envio in envios
+        ],
+    })
+
+
+@csrf_exempt
+@require_http_methods(["POST"])
+def enviar_atividade_aluno(request, atividade_id):
+    aluno = _aluno_logado(request)
+    if not aluno:
+        return JsonResponse({"detail": "Não autenticado."}, status=401)
+
+    atividade = Atividade.objects.filter(
+        id=atividade_id,
+        turma__in=buscar_atravessapor_por_turma(aluno.turma),
+    ).first()
+    if not atividade:
+        return JsonResponse({"message": "Atividade não encontrada para esta turma."}, status=404)
+
+    arquivo = request.FILES.get("arquivo")
+    if not arquivo:
+        return JsonResponse({"message": "O arquivo da atividade é obrigatório."}, status=400)
+
+    envio = AtividadeEnvio.objects.filter(atividade=atividade, aluno=aluno).first()
+    arquivo_anterior = envio.arquivo.name if envio and envio.arquivo else None
+    if not envio:
+        envio = AtividadeEnvio(atividade=atividade, aluno=aluno)
+    envio.arquivo = arquivo
+    envio.comentario = (request.POST.get("comentario") or "").strip()
+    envio.save()
+
+    if arquivo_anterior and arquivo_anterior != envio.arquivo.name:
+        default_storage.delete(arquivo_anterior)
+
+    return JsonResponse({
+        "message": "Atividade enviada com sucesso.",
+        "envio": {
+            "id": envio.id,
+            "comentario": envio.comentario,
+            "enviado_em": envio.enviado_em.isoformat(),
+            "arquivo_url": caminho_relativo_arquivo(envio.arquivo),
+            "arquivo_nome": envio.arquivo.name.split("/")[-1],
+            "atrasado": bool(
+                atividade.data_entrega
+                and timezone.localdate(envio.enviado_em) > atividade.data_entrega
+            ),
+        },
     })
 
 
@@ -4991,10 +5092,17 @@ def atividades_aluno(request):
     atividades = Atividade.objects.filter(turma__in=vinculos).select_related(
         "turma", "turma__professor"
     ).order_by("data_entrega")
+    envios_por_atividade = {
+        envio.atividade_id: envio
+        for envio in AtividadeEnvio.objects.filter(
+            aluno=aluno, atividade__in=atividades
+        )
+    }
 
     resultado = []
     for a in atividades:
         disciplina = resolver_disciplina_da_turma(a.turma)
+        envio = envios_por_atividade.get(a.id)
         status = None
         if a.data_entrega:
             status = "atrasado" if a.data_entrega < hoje else "pendente"
@@ -5008,6 +5116,16 @@ def atividades_aluno(request):
             "data_entrega": a.data_entrega.isoformat() if a.data_entrega else None,
             "arquivo": a.arquivo.url if a.arquivo else None,
             "status": status,
+            "envio": {
+                "id": envio.id,
+                "comentario": envio.comentario,
+                "enviado_em": envio.enviado_em.isoformat(),
+                "arquivo_url": caminho_relativo_arquivo(envio.arquivo),
+                "arquivo_nome": envio.arquivo.name.split("/")[-1],
+                "atrasado": bool(
+                    a.data_entrega and timezone.localdate(envio.enviado_em) > a.data_entrega
+                ),
+            } if envio else None,
         })
 
     return JsonResponse({"atividades": resultado})
