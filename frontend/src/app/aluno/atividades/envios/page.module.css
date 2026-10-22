@@ -1,0 +1,391 @@
+.main {
+  width: min(100% - 2rem, 1040px);
+  margin: 0 auto;
+  padding: clamp(1.5rem, 4vw, 3rem) 0;
+}
+
+.voltar {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-bottom: 1.4rem;
+  color: #0b4f9e;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.voltar:hover {
+  text-decoration: underline;
+}
+
+.cabecalho {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.6rem;
+  padding: 1.35rem 1.5rem;
+  border: 1px solid #dbeafe;
+  border-radius: 16px;
+  background: linear-gradient(120deg, #eff6ff, #ffffff);
+}
+
+.cabecalhoIcone {
+  display: grid;
+  width: 52px;
+  height: 52px;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 14px;
+  background: #dbeafe;
+  color: #0b4f9e;
+  font-size: 1.6rem;
+}
+
+.sobretitulo {
+  margin: 0 0 0.25rem;
+  color: #0b4f9e;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.titulo {
+  margin: 0;
+  color: #1a2942;
+  font-size: clamp(1.5rem, 4vw, 2rem);
+  line-height: 1.2;
+}
+
+.subtitulo {
+  margin: 0.35rem 0 0;
+  color: #64748b;
+  font-size: 0.88rem;
+}
+
+.resumo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0 0 1rem;
+  color: #475569;
+  font-size: 0.85rem;
+}
+
+.resumo span {
+  display: inline-grid;
+  min-width: 1.8rem;
+  height: 1.8rem;
+  padding: 0 0.35rem;
+  place-items: center;
+  border-radius: 999px;
+  background: #dbeafe;
+  color: #0b4f9e;
+  font-weight: 700;
+}
+
+.lista {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 310px), 1fr));
+  gap: 1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.card {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 0.9rem;
+  padding: 1.1rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  background: #ffffff;
+  box-shadow: 0 3px 10px rgba(16, 24, 40, 0.04);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  border-color: #cbdaf0;
+  box-shadow: 0 8px 20px rgba(16, 24, 40, 0.08);
+}
+
+.cardTopo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+}
+
+.cardIcone {
+  display: grid;
+  width: 38px;
+  height: 38px;
+  place-items: center;
+  border-radius: 10px;
+  background: #eff6ff;
+  color: #0b4f9e;
+  font-size: 1.25rem;
+}
+
+.status {
+  padding: 0.3rem 0.65rem;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+.statusEnviado {
+  background: #f0fdf4;
+  color: #15803d;
+}
+
+.statusAtrasado,
+.statusNegado {
+  background: #fef2f2;
+  color: #b91c1c;
+}
+
+.statusPendente {
+  background: #fffbeb;
+  color: #92400e;
+}
+
+.statusAprovado {
+  background: #eff6ff;
+  color: #1d4ed8;
+}
+
+.cardConteudo {
+  min-height: 95px;
+}
+
+.disciplina {
+  margin: 0 0 0.25rem;
+  color: #0b4f9e;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.cardConteudo h2 {
+  margin: 0;
+  color: #1a2942;
+  font-size: 1rem;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
+.detalhes {
+  margin: 0.35rem 0 0;
+  color: #64748b;
+  font-size: 0.78rem;
+  overflow-wrap: anywhere;
+}
+
+.arquivo {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 0.35rem 0.5rem;
+  padding: 0.7rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 9px;
+  background: #f8fafc;
+  color: #0b4f9e;
+}
+
+.arquivo a {
+  color: #0b4f9e;
+  font-size: 0.82rem;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.arquivo span {
+  grid-column: 2;
+  color: #64748b;
+  font-size: 0.7rem;
+}
+
+.comentario {
+  padding-left: 0.7rem;
+  border-left: 3px solid #cbd5e1;
+}
+
+.comentario span {
+  color: #64748b;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.comentario p {
+  margin: 0.25rem 0 0;
+  color: #334155;
+  font-size: 0.82rem;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.parecer {
+  padding: 0.75rem;
+  border-left: 3px solid #22c55e;
+  border-radius: 0 8px 8px 0;
+  background: #f0fdf4;
+}
+
+.parecer span {
+  color: #15803d;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.parecer p {
+  margin: 0.25rem 0 0;
+  color: #334155;
+  font-size: 0.82rem;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.botaoDetalhes,
+.botaoPrincipal,
+.linkVisto {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  padding: 0.6rem 0.8rem;
+  border: 1px solid #bfdbfe;
+  border-radius: 8px;
+  background: #eff6ff;
+  color: #1e40af;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.botaoDetalhes {
+  margin-top: auto;
+}
+
+.linkVisto {
+  border-color: #bbf7d0;
+  background: #f0fdf4;
+  color: #15803d;
+}
+
+.linkVisto:hover {
+  border-color: #86efac;
+  background: #dcfce7;
+}
+
+.botaoDetalhes:hover,
+.botaoPrincipal:hover {
+  border-color: #93c5fd;
+  background: #dbeafe;
+}
+
+.estadoVazio {
+  display: flex;
+  min-height: 260px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  padding: 2rem;
+  border: 1px dashed #cbd5e1;
+  border-radius: 14px;
+  background: #ffffff;
+  color: #64748b;
+  text-align: center;
+}
+
+.estadoVazio > i {
+  color: #94a3b8;
+  font-size: 2rem;
+}
+
+.estadoVazio h2,
+.estadoVazio p {
+  margin: 0;
+}
+
+.estadoVazio h2 {
+  color: #1a2942;
+  font-size: 1rem;
+}
+
+.estadoVazio p {
+  font-size: 0.85rem;
+}
+
+.estadoVazio .botaoPrincipal {
+  margin-top: 0.5rem;
+}
+
+.carregando {
+  width: 24px;
+  height: 24px;
+  border: 3px solid #dbeafe;
+  border-top-color: #0b4f9e;
+  border-radius: 50%;
+  animation: girar 0.8s linear infinite;
+}
+
+.erro {
+  padding: 0.9rem 1rem;
+  border: 1px solid #fecaca;
+  border-radius: 9px;
+  background: #fef2f2;
+  color: #b91c1c;
+  font-size: 0.85rem;
+}
+
+@keyframes girar {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (max-width: 540px) {
+  .main {
+    width: min(100% - 1.25rem, 1040px);
+  }
+
+  .cabecalho {
+    align-items: flex-start;
+    padding: 1rem;
+  }
+
+  .cabecalhoIcone {
+    width: 42px;
+    height: 42px;
+    border-radius: 11px;
+    font-size: 1.3rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card,
+  .carregando,
+  .botaoDetalhes,
+  .botaoPrincipal {
+    animation: none;
+    transition: none;
+  }
+
+  .card:hover {
+    transform: none;
+  }
+}
