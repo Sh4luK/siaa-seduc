@@ -96,6 +96,17 @@
   color: #b91c1c;
 }
 
+.badgeEnviada {
+  flex-shrink: 0;
+  font-size: 0.7rem;
+  font-weight: 600;
+  border-radius: 999px;
+  padding: 0.25rem 0.65rem;
+  white-space: nowrap;
+  color: #15803d;
+  background: #f0fdf4;
+}
+
 .disciplinaBadge {
   display: inline-block;
   font-size: 0.7rem;
@@ -133,4 +144,107 @@
 
 .arquivoLink:hover {
   text-decoration: underline;
+}
+
+.envioAtual {
+  margin-top: 0.65rem;
+  padding: 0.65rem 0.75rem;
+  border-radius: 8px;
+  background: #f0fdf4;
+  font-size: 0.8rem;
+}
+
+.envioAtual > p {
+  margin: 0 0 0.25rem;
+}
+
+.envioAtual a {
+  color: #0b4f9e;
+  font-weight: 600;
+}
+
+.formEnvio {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: stretch;
+  gap: 0.4rem;
+  margin-top: 0.8rem;
+  padding-top: 0.8rem;
+  border-top: 1px solid #e2e8f0;
+}
+
+.formEnvio label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #1a2942;
+}
+
+.formEnvio input,
+.formEnvio textarea {
+  display: block;
+  width: 100%;
+  padding: 0.65rem 0.75rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  font: inherit;
+  font-size: 0.85rem;
+  color: #1a2942;
+  background: #f8fafc;
+  box-sizing: border-box;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+}
+
+.formEnvio input:focus,
+.formEnvio textarea:focus {
+  outline: none;
+  border-color: #0b4f9e;
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(11, 79, 158, 0.12);
+}
+
+.formEnvio input[type="file"] {
+  padding: 0.4rem;
+  cursor: pointer;
+}
+
+.formEnvio input[type="file"]::file-selector-button {
+  margin-right: 0.75rem;
+  padding: 0.5rem 0.75rem;
+  border: 0;
+  border-radius: 7px;
+  background: #e8eff8;
+  color: #0b4f9e;
+  font: inherit;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.formEnvio input[type="file"]::file-selector-button:hover {
+  background: #d8e5f4;
+}
+
+.formEnvio textarea {
+  min-height: 120px;
+  line-height: 1.5;
+  resize: vertical;
+}
+
+.formEnvio button {
+  justify-self: start;
+  margin-top: 0.2rem;
+  padding: 0.5rem 0.85rem;
+  border: 0;
+  border-radius: 8px;
+  background: #0b4f9e;
+  color: #ffffff;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.formEnvio button:disabled {
+  background: #94a3b8;
+  cursor: wait;
 }
