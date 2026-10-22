@@ -1,0 +1,378 @@
+.main {
+  width: min(100% - 2rem, 860px);
+  margin: 0 auto;
+  padding: clamp(1.5rem, 5vw, 3rem) 0;
+}
+
+.voltar {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-bottom: 1.25rem;
+  color: #0b4f9e;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.voltar:hover {
+  text-decoration: underline;
+}
+
+.card {
+  overflow: hidden;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  background: #ffffff;
+  box-shadow: 0 8px 26px rgba(16, 24, 40, 0.06);
+}
+
+.cabecalho {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.5rem;
+  border-bottom: 1px solid #e8edf4;
+  background: linear-gradient(120deg, #f8fbff, #ffffff);
+}
+
+.sobretitulo {
+  display: inline-block;
+  margin-bottom: 0.45rem;
+  color: #0b4f9e;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.titulo {
+  margin: 0;
+  color: #1a2942;
+  font-size: clamp(1.35rem, 4vw, 1.8rem);
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+}
+
+.disciplina {
+  margin: 0.45rem 0 0;
+  color: #64748b;
+  font-size: 0.85rem;
+}
+
+.status {
+  display: inline-flex;
+  align-items: center;
+  flex: 0 0 auto;
+  gap: 0.35rem;
+  padding: 0.4rem 0.7rem;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.statusEnviado,
+.statusAprovado {
+  background: #f0fdf4;
+  color: #15803d;
+}
+
+.statusAtrasado,
+.statusNegado {
+  background: #fef2f2;
+  color: #b91c1c;
+}
+
+.statusPendente {
+  background: #fffbeb;
+  color: #92400e;
+}
+
+.dados {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 190px), 1fr));
+  gap: 0.8rem;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid #eef2f6;
+}
+
+.dado {
+  display: grid;
+  gap: 0.3rem;
+  min-width: 0;
+}
+
+.dado span {
+  color: #64748b;
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.dado strong {
+  color: #1e293b;
+  font-size: 0.84rem;
+  overflow-wrap: anywhere;
+}
+
+.secao {
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid #eef2f6;
+}
+
+.secao h2 {
+  margin: 0 0 0.75rem;
+  color: #1e293b;
+  font-size: 0.95rem;
+}
+
+.texto,
+.comentario {
+  margin: 0;
+  color: #475569;
+  font-size: 0.86rem;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.arquivo {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 0.85rem;
+  border: 1px solid #dbeafe;
+  border-radius: 11px;
+  background: #f8fbff;
+}
+
+.arquivoIcone {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 10px;
+  background: #dbeafe;
+  color: #0b4f9e;
+  font-size: 1.3rem;
+}
+
+.arquivoInfo {
+  display: grid;
+  min-width: 0;
+  flex: 1;
+  gap: 0.25rem;
+}
+
+.arquivoInfo strong {
+  color: #1e293b;
+  font-size: 0.84rem;
+  overflow-wrap: anywhere;
+}
+
+.arquivoInfo span {
+  color: #64748b;
+  font-size: 0.72rem;
+}
+
+.botaoArquivo,
+.botaoEditar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 0.55rem 0.75rem;
+  border: 1px solid #bfdbfe;
+  border-radius: 8px;
+  background: #eff6ff;
+  color: #1e40af;
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.botaoArquivo:hover {
+  border-color: #93c5fd;
+  background: #dbeafe;
+}
+
+.semComentario {
+  margin: 0;
+  color: #94a3b8;
+  font-size: 0.84rem;
+  font-style: italic;
+}
+
+.assinaturaTitulo {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  margin-bottom: 0.75rem;
+  color: #15803d;
+}
+
+.assinaturaTitulo > i {
+  font-size: 1.5rem;
+}
+
+.assinaturaTitulo h2 {
+  margin: 0;
+  color: #166534;
+}
+
+.assinaturaTitulo p {
+  margin: 0.2rem 0 0;
+  color: #64748b;
+  font-size: 0.75rem;
+}
+
+.parecer {
+  margin: 0.75rem 0;
+  padding: 0.8rem;
+  border-left: 3px solid #22c55e;
+  border-radius: 0 8px 8px 0;
+  background: #f0fdf4;
+  color: #334155;
+  font-size: 0.85rem;
+  line-height: 1.55;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.hash {
+  margin: 0.75rem 0;
+  color: #64748b;
+  font-size: 0.72rem;
+}
+
+.hash code {
+  display: block;
+  margin-top: 0.3rem;
+  padding: 0.6rem;
+  border-radius: 7px;
+  background: #f1f5f9;
+  color: #334155;
+  overflow-wrap: anywhere;
+}
+
+.botaoVisto {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.6rem 0.8rem;
+  border: 1px solid #22c55e;
+  border-radius: 8px;
+  background: #22c55e;
+  color: #ffffff;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.botaoVisto:hover {
+  background: #16a34a;
+}
+
+.notaAssinatura {
+  margin: 0.55rem 0 0;
+  color: #64748b;
+  font-size: 0.72rem;
+  line-height: 1.4;
+}
+
+.aviso {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  margin: 1.25rem 1.5rem 1.5rem;
+  padding: 0.85rem 1rem;
+  border: 1px solid #86efac;
+  border-left: 4px solid #22c55e;
+  border-radius: 9px;
+  background: #f0fdf4;
+  color: #166534;
+}
+
+.aviso > i {
+  font-size: 1.1rem;
+}
+
+.aviso p {
+  flex: 1;
+  margin: 0;
+  font-size: 0.82rem;
+  line-height: 1.5;
+}
+
+.botaoEditar {
+  border-color: #22c55e;
+  background: #22c55e;
+  color: #ffffff;
+}
+
+.botaoEditar:hover {
+  border-color: #16a34a;
+  background: #16a34a;
+}
+
+.erro {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  padding: 1rem;
+  border: 1px solid #fecaca;
+  border-radius: 10px;
+  background: #fef2f2;
+  color: #b91c1c;
+  font-size: 0.85rem;
+}
+
+@media (max-width: 600px) {
+  .main {
+    width: min(100% - 1.25rem, 860px);
+  }
+
+  .cabecalho {
+    flex-direction: column;
+    padding: 1.1rem;
+  }
+
+  .dados,
+  .secao {
+    padding: 1.1rem;
+  }
+
+  .arquivo {
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .arquivoInfo {
+    flex-basis: calc(100% - 55px);
+  }
+
+  .botaoArquivo {
+    width: 100%;
+  }
+
+  .aviso {
+    margin: 1rem 1.1rem 1.1rem;
+  }
+
+  .botaoEditar {
+    width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .botaoArquivo,
+  .botaoEditar {
+    transition: none;
+  }
+}
