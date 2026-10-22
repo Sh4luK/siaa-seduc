@@ -6290,6 +6290,26 @@ def _campo_pdf(obj, nome):
     return str(valor) if valor is not None else "—"
 
 
+def _nota_ficha_pdf(obj, nome):
+    if obj is None:
+        return "—"
+    valor = getattr(obj, nome)
+    return f"{valor:.1f}" if valor is not None else "—"
+
+
+def _cor_nota_ficha_pdf(obj, nome):
+    if obj is None:
+        return ""
+    valor = getattr(obj, nome)
+    if valor is None:
+        return ""
+    if valor > 6:
+        return "nota-alta"
+    if valor < 6:
+        return "nota-baixa"
+    return ""
+
+
 
 def _nome_arquivo_seguro(texto):
     """Remove acentos e qualquer caractere fora de A-Z/0-9/_/- , pra nunca
@@ -6331,23 +6351,43 @@ def gerar_ficha_notas_pdf(request, turma_id):
         linhas.append({
             "posicao_ordem": aluno.posicao_ordem or "—",
             "nome_completo": aluno.nome_completo,
-            "nm1_t1": _campo_pdf(nota, "nm1_t1"), "nm2_t1": _campo_pdf(nota, "nm2_t1"),
-            "nm3_t1": _campo_pdf(nota, "nm3_t1"), "mt_t1": _campo_pdf(nota, "mt_t1"),
-            "nm1_t2": _campo_pdf(nota, "nm1_t2"), "nm2_t2": _campo_pdf(nota, "nm2_t2"),
-            "nm3_t2": _campo_pdf(nota, "nm3_t2"), "mt_t2": _campo_pdf(nota, "mt_t2"),
-            "nm1_t3": _campo_pdf(nota, "nm1_t3"), "nm2_t3": _campo_pdf(nota, "nm2_t3"),
-            "nm3_t3": _campo_pdf(nota, "nm3_t3"), "mt_t3": _campo_pdf(nota, "mt_t3"),
-            "ma": _campo_pdf(nota, "ma"), "pf": _campo_pdf(nota, "pf"),
-            "maf": _campo_pdf(nota, "maf"), "rcf": _campo_pdf(nota, "rcf"),
+            "nm1_t1": _nota_ficha_pdf(nota, "nm1_t1"), "nm2_t1": _nota_ficha_pdf(nota, "nm2_t1"),
+            "nm3_t1": _nota_ficha_pdf(nota, "nm3_t1"), "mt_t1": _nota_ficha_pdf(nota, "mt_t1"),
+            "rpt_t1": _nota_ficha_pdf(nota, "rpt_t1"), "mtf_t1": _nota_ficha_pdf(nota, "mtf_t1"),
+            "nm1_t2": _nota_ficha_pdf(nota, "nm1_t2"), "nm2_t2": _nota_ficha_pdf(nota, "nm2_t2"),
+            "nm3_t2": _nota_ficha_pdf(nota, "nm3_t2"), "mt_t2": _nota_ficha_pdf(nota, "mt_t2"),
+            "rpt_t2": _nota_ficha_pdf(nota, "rpt_t2"), "mtf_t2": _nota_ficha_pdf(nota, "mtf_t2"),
+            "nm1_t3": _nota_ficha_pdf(nota, "nm1_t3"), "nm2_t3": _nota_ficha_pdf(nota, "nm2_t3"),
+            "nm3_t3": _nota_ficha_pdf(nota, "nm3_t3"), "mt_t3": _nota_ficha_pdf(nota, "mt_t3"),
+            "rpt_t3": _nota_ficha_pdf(nota, "rpt_t3"), "mtf_t3": _nota_ficha_pdf(nota, "mtf_t3"),
+            "ma": _nota_ficha_pdf(nota, "ma"), "pf": _nota_ficha_pdf(nota, "pf"),
+            "maf": _nota_ficha_pdf(nota, "maf"), "rcf": _nota_ficha_pdf(nota, "rcf"),
             "tgf": nota.tgf if nota else 0,
             "rf": nota.get_rf_display() if nota else "Não Definido",
+            "rf_sigla": nota.rf if nota else "ND",
+            "cores": {
+                campo: _cor_nota_ficha_pdf(nota, campo)
+                for campo in (
+                    "nm1_t1", "nm2_t1", "nm3_t1", "mt_t1", "rpt_t1", "mtf_t1",
+                    "nm1_t2", "nm2_t2", "nm3_t2", "mt_t2", "rpt_t2", "mtf_t2",
+                    "nm1_t3", "nm2_t3", "nm3_t3", "mt_t3", "rpt_t3", "mtf_t3",
+                    "ma", "pf", "maf", "rcf",
+                )
+            },
         })
+
+    escola = turma_obj.escola or next((aluno.escola for aluno in alunos if aluno.escola), "—")
+    ano_serie = turma_obj.etapa or next((aluno.serie for aluno in alunos if aluno.serie), "—")
+    turno = next((aluno.periodo for aluno in alunos if aluno.periodo), "—")
 
     logo_path_absoluto = os.path.join(settings.BASE_DIR, 'app', 'static', 'logo.png')
     logo_path = f"file://{logo_path_absoluto}" if os.path.exists(logo_path_absoluto) else None
 
     contexto = {
         "nome_turma": nome_turma,
+        "escola": escola,
+        "ano_serie": ano_serie,
+        "turno": turno,
         "disciplina": disciplina.nome_disciplina,
         "professor": professor.nome_completo,
         "ano_letivo": ano_letivo,
