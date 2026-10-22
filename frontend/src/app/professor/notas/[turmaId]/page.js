@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import layoutStyles from "../../../page.module.css";
@@ -13,6 +13,30 @@ const CAMPOS = [
   "nm1_t2", "nm2_t2", "nm3_t2", "rpt_t2",
   "nm1_t3", "nm2_t3", "nm3_t3", "rpt_t3",
 ];
+
+function calcularMtf(notas, trimestre) {
+  const notasTrimestre = [1, 2, 3]
+    .map((numero) => notas[`nm${numero}_t${trimestre}`])
+    .map((valor) => valor === "" || valor === null || valor === undefined ? null : Number(valor));
+
+  const media = (valores) => {
+    const validas = valores.filter((valor) => valor !== null);
+    if (validas.length === 0) return null;
+    return validas.reduce((soma, nota) => soma + nota, 0) / validas.length;
+  };
+
+  const rpt = notas[`rpt_t${trimestre}`];
+  const mediaAtual = media(notasTrimestre);
+  if (
+    rpt !== "" && rpt !== null && rpt !== undefined
+    && ((notasTrimestre[2] !== null && notasTrimestre[2] < 6) || (mediaAtual !== null && mediaAtual < 6))
+  ) {
+    notasTrimestre[2] = Number(rpt);
+  }
+
+  const mediaFinal = media(notasTrimestre);
+  return mediaFinal === null ? null : Number(mediaFinal.toFixed(1));
+}
 
 const RF_OPCOES = [
   ["CUR", "Cursando"], ["AP", "Aprovado"], ["RE", "Reprovado"],
@@ -287,9 +311,9 @@ export default function NotasTurmaPage() {
                             <tr>
                               <th className={styles.stickyColNum} rowSpan={2}>Nº</th>
                               <th className={styles.stickyCol} rowSpan={2}>Aluno</th>
-                              <th colSpan={4}>1º Trimestre</th>
-                              <th colSpan={4}>2º Trimestre</th>
-                              <th colSpan={4}>3º Trimestre</th>
+                              <th colSpan={5}>1º Trimestre</th>
+                              <th colSpan={5}>2º Trimestre</th>
+                              <th colSpan={5}>3º Trimestre</th>
                               <th rowSpan={2}>MA</th>
                               <th rowSpan={2}>PF</th>
                               <th rowSpan={2}>MAF</th>
@@ -298,9 +322,9 @@ export default function NotasTurmaPage() {
                               <th rowSpan={2}>RF</th>
                             </tr>
                             <tr>
-                              <th>NM1</th><th>NM2</th><th>NM3</th><th>RPT</th>
-                              <th>NM1</th><th>NM2</th><th>NM3</th><th>RPT</th>
-                              <th>NM1</th><th>NM2</th><th>NM3</th><th>RPT</th>
+                              <th>NM1</th><th>NM2</th><th>NM3</th><th>RPT</th><th>MTF</th>
+                              <th>NM1</th><th>NM2</th><th>NM3</th><th>RPT</th><th>MTF</th>
+                              <th>NM1</th><th>NM2</th><th>NM3</th><th>RPT</th><th>MTF</th>
                             </tr>
                           </thead>
                           <tbody>
@@ -310,17 +334,29 @@ export default function NotasTurmaPage() {
                                 <td className={styles.stickyCol} title={aluno.nome_completo}>
                                   {aluno.nome_completo}
                                 </td>
-                                {CAMPOS.map((campo) => (
-                                  <td key={campo}>
-                                    <input
-                                      type="text"
-                                      inputMode="decimal"
-                                      className={`${styles.input} ${corDaNota(aluno.notas[campo])}`}
-                                      value={aluno.notas[campo] ?? ""}
-                                      onChange={(e) => handleChange(aluno.aluno_id, campo, e.target.value)}
-                                    />
-                                  </td>
-                                ))}
+                                {[1, 2, 3].map((trimestre) => {
+                                  const mtf = calcularMtf(aluno.notas, trimestre);
+                                  return (
+                                    <Fragment key={trimestre}>
+                                      {CAMPOS.slice((trimestre - 1) * 4, trimestre * 4).map((campo) => (
+                                        <td key={campo}>
+                                          <input
+                                            type="text"
+                                            inputMode="decimal"
+                                            className={`${styles.input} ${corDaNota(aluno.notas[campo])}`}
+                                            value={aluno.notas[campo] ?? ""}
+                                            onChange={(e) => handleChange(aluno.aluno_id, campo, e.target.value)}
+                                          />
+                                        </td>
+                                      ))}
+                                      <td>
+                                        <span className={`${styles.calculadoBadge} ${corDaNota(mtf)}`}>
+                                          {mtf ?? "—"}
+                                        </span>
+                                      </td>
+                                    </Fragment>
+                                  );
+                                })}
                                 <td>
                                   <span className={`${styles.calculadoBadge} ${corDaNota(aluno.notas.ma)}`}>
                                     {aluno.notas.ma ?? "—"}
