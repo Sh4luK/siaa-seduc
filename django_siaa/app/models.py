@@ -157,6 +157,7 @@ class Aula(models.Model):
 
     data = models.DateField()
     assunto = models.TextField(blank=True, default="")
+    estrategia_abordada = models.TextField(blank=True, default="")
 
     atualizado_em = models.DateTimeField(auto_now=True)
 
