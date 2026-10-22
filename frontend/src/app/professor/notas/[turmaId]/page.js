@@ -49,7 +49,9 @@ function corDaNota(valor) {
   if (valor === "" || valor === null || valor === undefined) return "";
   const numero = Number(valor);
   if (Number.isNaN(numero)) return "";
-  return numero < 6 ? styles.notaBaixa : styles.notaAlta;
+  if (numero > 6) return styles.notaAlta;
+  if (numero < 6) return styles.notaBaixa;
+  return "";
 }
 
 export default function NotasTurmaPage() {
