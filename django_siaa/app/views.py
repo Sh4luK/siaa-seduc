@@ -664,10 +664,13 @@ def salvar_notas(request):
         "disciplina": disciplina.nome_disciplina,
         "erros": erros,
         "notas": {
+            "nm3_t1": float(nota.nm3_t1) if nota.nm3_t1 is not None else None,
             "mt_t1": float(nota.mt_t1) if nota.mt_t1 is not None else None,
             "mtf_t1": float(nota.mtf_t1) if nota.mtf_t1 is not None else None,
+            "nm3_t2": float(nota.nm3_t2) if nota.nm3_t2 is not None else None,
             "mt_t2": float(nota.mt_t2) if nota.mt_t2 is not None else None,
             "mtf_t2": float(nota.mtf_t2) if nota.mtf_t2 is not None else None,
+            "nm3_t3": float(nota.nm3_t3) if nota.nm3_t3 is not None else None,
             "mt_t3": float(nota.mt_t3) if nota.mt_t3 is not None else None,
             "mtf_t3": float(nota.mtf_t3) if nota.mtf_t3 is not None else None,
             "ma": float(nota.ma) if nota.ma is not None else None,
@@ -852,10 +855,13 @@ def salvar_notas_turma(request):
             "nome_completo": aluno.nome_completo,
             "erros": erros_aluno,
             "notas": {
+                "nm3_t1": float(nota.nm3_t1) if nota.nm3_t1 is not None else None,
                 "mt_t1": float(nota.mt_t1) if nota.mt_t1 is not None else None,
                 "mtf_t1": float(nota.mtf_t1) if nota.mtf_t1 is not None else None,
+                "nm3_t2": float(nota.nm3_t2) if nota.nm3_t2 is not None else None,
                 "mt_t2": float(nota.mt_t2) if nota.mt_t2 is not None else None,
                 "mtf_t2": float(nota.mtf_t2) if nota.mtf_t2 is not None else None,
+                "nm3_t3": float(nota.nm3_t3) if nota.nm3_t3 is not None else None,
                 "mt_t3": float(nota.mt_t3) if nota.mt_t3 is not None else None,
                 "mtf_t3": float(nota.mtf_t3) if nota.mtf_t3 is not None else None,
                 "ma": float(nota.ma) if nota.ma is not None else None,
@@ -1007,6 +1013,8 @@ def get_frequencia_turma(request):
         "turma": nome_turma,
         "disciplina": disciplina.nome_disciplina,
         "data": data_str,
+        "conteudo_abordado": aula.assunto if aula else "",
+        "estrategia_abordada": aula.estrategia_abordada if aula else "",
         "assunto": aula.assunto if aula else "",
         "estrategia_metodologica": aula.estrategia_metodologica if aula else "",
         "total_alunos": len(resultado),
@@ -1029,7 +1037,6 @@ def salvar_frequencia_turma(request):
     data_str = body.get("data")
     ano_letivo = body.get("ano_letivo", 2026)
     assunto = body.get("assunto", "")
-    estrategia_metodologica = body.get("estrategia_metodologica", "")
     lancamentos = body.get("lancamentos", [])
 
     if not all([turma_id, professor_id, data_str]):
@@ -1060,11 +1067,7 @@ def salvar_frequencia_turma(request):
         )
     Aula.objects.update_or_create(
         turma=turma, disciplina=disciplina, professor=professor, data=data_selecionada,
-        defaults={
-            "assunto": assunto,
-            "estrategia_metodologica": estrategia_metodologica,
-            "ano_letivo": ano_letivo,
-        },
+        defaults={"assunto": assunto, "ano_letivo": ano_letivo},
     )
 
     erros_gerais = []
@@ -1130,6 +1133,8 @@ def get_registros_frequencia(request):
             "nome_turma": aula.turma.turma,
             "disciplina": aula.disciplina.nome_disciplina,
             "data": aula.data.isoformat(),
+            "conteudo_abordado": aula.assunto,
+            "estrategia_abordada": aula.estrategia_abordada,
             "assunto": aula.assunto,
             "estrategia_metodologica": aula.estrategia_metodologica,
             "total_alunos": total_alunos,
@@ -1311,17 +1316,25 @@ def criar_conteudo(request):
         return JsonResponse({"message": "Método não permitido."}, status=405)
 
     professor_id = request.POST.get("professor")
-    turma_id = request.POST.get("turma")
+    turmas_ids = request.POST.getlist("turmas")
+    if not turmas_ids:
+        turma_id = request.POST.get("turma")
+        turmas_ids = [turma_id] if turma_id else []
     titulo = (request.POST.get("titulo") or "").strip()
     descricao = (request.POST.get("descricao") or "").strip()
     data_str = request.POST.get("data")
     arquivo = request.FILES.get("arquivo")
 
-    if not all([professor_id, turma_id, titulo, data_str]):
+    if not all([professor_id, turmas_ids, titulo, data_str]):
         return JsonResponse(
-            {"message": "Campos 'professor', 'turma', 'titulo' e 'data' são obrigatórios."},
+            {"message": "Campos 'professor', 'turma(s)', 'titulo' e 'data' são obrigatórios."},
             status=400
         )
+
+    try:
+        turmas_ids = list(dict.fromkeys(int(turma_id) for turma_id in turmas_ids))
+    except (TypeError, ValueError):
+        return JsonResponse({"message": "Identificador de turma inválido."}, status=400)
 
     try:
         data_conteudo = date.fromisoformat(data_str)
@@ -1333,30 +1346,38 @@ def criar_conteudo(request):
     except Professor.DoesNotExist:
         return JsonResponse({"message": "Professor não encontrado."}, status=404)
 
-    turma = AtravessaPor.objects.filter(id=turma_id).first()
-    if not turma:
-        return JsonResponse({"message": "Turma não encontrada."}, status=404)
-
-    disciplina = resolver_disciplina_da_turma(turma)
-    if not disciplina:
+    turmas = list(AtravessaPor.objects.filter(professor=professor, id__in=turmas_ids))
+    if len(turmas) != len(turmas_ids):
         return JsonResponse(
-            {"message": "Não foi possível resolver a disciplina associada a esta turma."},
+            {"message": "Uma ou mais turmas não foram encontradas ou não pertencem ao professor."},
             status=404
         )
 
-    conteudo = Conteudo.objects.create(
-        professor=professor,
-        turma=turma,
-        disciplina=disciplina,
-        titulo=titulo,
-        descricao=descricao,
-        data=data_conteudo,
-        arquivo=arquivo,
-    )
+    turmas_disciplinas = []
+    for turma in turmas:
+        disciplina = resolver_disciplina_da_turma(turma)
+        if not disciplina:
+            return JsonResponse(
+                {"message": f"Não foi possível resolver a disciplina da turma {turma.turma}."},
+                status=404
+            )
+        turmas_disciplinas.append((turma, disciplina))
 
-    return JsonResponse({
-        "message": "Conteúdo criado com sucesso.",
-        "conteudo": {
+    conteudos = []
+    for turma, disciplina in turmas_disciplinas:
+        conteudo = Conteudo.objects.create(
+            professor=professor,
+            turma=turma,
+            disciplina=disciplina,
+            titulo=titulo,
+            descricao=descricao,
+            data=data_conteudo,
+            arquivo=arquivo if not conteudos else conteudos[0].arquivo.name,
+        )
+        conteudos.append(conteudo)
+
+    conteudos_serializados = [
+        {
             "id": conteudo.id,
             "titulo": conteudo.titulo,
             "descricao": conteudo.descricao,
@@ -1366,6 +1387,13 @@ def criar_conteudo(request):
             "disciplina": conteudo.disciplina.nome_disciplina,
             "arquivo_url": caminho_relativo_arquivo(conteudo.arquivo),
         }
+        for conteudo in conteudos
+    ]
+
+    return JsonResponse({
+        "message": f"Conteúdo criado com sucesso em {len(conteudos)} turma(s).",
+        "conteudo": conteudos_serializados[0],
+        "conteudos": conteudos_serializados,
     })
 
 
@@ -1514,12 +1542,11 @@ def deletar_atividade(request, atividade_id):
 
 @csrf_exempt
 def get_comunicados(request):
-    professor_id = request.GET.get("professor")
+    professor = _professor_logado(request)
+    if not professor:
+        return JsonResponse({"message": "Não autenticado."}, status=401)
 
-    if not professor_id:
-        return JsonResponse({"message": "Parâmetro 'professor' é obrigatório."}, status=400)
-
-    comunicados = Comunicado.objects.filter(professor_id=professor_id).select_related("turma")
+    comunicados = Comunicado.objects.filter(professor=professor).select_related("turma")
 
     resultado = [
         {
@@ -1549,33 +1576,44 @@ def criar_comunicado(request):
     except json.JSONDecodeError:
         return JsonResponse({"message": "JSON inválido."}, status=400)
 
+    professor = _professor_logado(request)
+    if not professor:
+        return JsonResponse({"message": "Não autenticado."}, status=401)
+
     professor_id = body.get("professor")
     titulo = (body.get("titulo") or "").strip()
     mensagem = (body.get("mensagem") or "").strip()
     turma_id = body.get("turma")
+    data_str = body.get("data")
 
-    if not all([professor_id, titulo, mensagem]):
+    if not all([titulo, mensagem]):
         return JsonResponse(
-            {"message": "Campos 'professor', 'titulo' e 'mensagem' são obrigatórios."},
+            {"message": "Campos 'titulo' e 'mensagem' são obrigatórios."},
             status=400
         )
 
-    try:
-        professor = Professor.objects.get(id=professor_id)
-    except Professor.DoesNotExist:
-        return JsonResponse({"message": "Professor não encontrado."}, status=404)
+    if professor_id and str(professor.id) != str(professor_id):
+        return JsonResponse({"message": "Professor da sessão não corresponde ao informado."}, status=403)
 
     turma = None
     if turma_id:
-        turma = AtravessaPor.objects.filter(id=turma_id).first()
+        turma = AtravessaPor.objects.filter(id=turma_id, professor=professor).first()
         if not turma:
-            return JsonResponse({"message": "Turma não encontrada."}, status=404)
+            return JsonResponse({"message": "Turma não encontrada ou não vinculada ao professor."}, status=404)
+
+    data_comunicado = date.today()
+    if data_str:
+        try:
+            data_comunicado = date.fromisoformat(data_str)
+        except (TypeError, ValueError):
+            return JsonResponse({"message": "Formato de data inválido. Use AAAA-MM-DD."}, status=400)
 
     comunicado = Comunicado.objects.create(
         professor=professor,
         turma=turma,
         titulo=titulo,
         mensagem=mensagem,
+        data=data_comunicado,
     )
 
     return JsonResponse({
