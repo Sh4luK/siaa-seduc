@@ -8,3 +8,6 @@ requests
 xhtml2pdf
 reportlab
 openpyxl
+pypdf>=5.0
+Pillow>=10.0
+Markdown>=3.7
