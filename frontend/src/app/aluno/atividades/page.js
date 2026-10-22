@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
+import MarkdownContent from "@/app/components/MarkdownContent";
 import logo from "../../../assets/logo.png";
 import layoutStyles from "../page.module.css";
 import styles from "./page.module.css";
@@ -25,6 +26,8 @@ export default function AtividadesAlunoPage() {
   const [atividades, setAtividades] = useState([]);
   const [carregando, setCarregando] = useState(true);
   const [erros, setErros] = useState([]);
+  const [enviandoId, setEnviandoId] = useState(null);
+  const [mensagensEnvio, setMensagensEnvio] = useState({});
   const router = useRouter();
 
   useEffect(() => {
@@ -54,6 +57,35 @@ export default function AtividadesAlunoPage() {
     }
     init();
   }, [router]);
+
+  async function enviarAtividade(event, atividadeId) {
+    event.preventDefault();
+    const formElement = event.currentTarget;
+    setEnviandoId(atividadeId);
+    setMensagensEnvio((prev) => ({ ...prev, [atividadeId]: "" }));
+
+    try {
+      const formData = new FormData(formElement);
+      const res = await fetch(
+        `${API_BASE}/api/students/atividades/${atividadeId}/enviar`,
+        { method: "POST", credentials: "include", body: formData }
+      );
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || data.detail || `Falha ao enviar (status ${res.status})`);
+
+      setAtividades((prev) => prev.map((atividade) => (
+        atividade.id === atividadeId
+          ? { ...atividade, envio: data.envio }
+          : atividade
+      )));
+      formElement.reset();
+      setMensagensEnvio((prev) => ({ ...prev, [atividadeId]: data.message }));
+    } catch (error) {
+      setMensagensEnvio((prev) => ({ ...prev, [atividadeId]: `Erro ao enviar: ${error.message}` }));
+    } finally {
+      setEnviandoId(null);
+    }
+  }
 
   if (loading) {
     return (
@@ -161,7 +193,11 @@ export default function AtividadesAlunoPage() {
                     <div className={styles.cardInfo}>
                       <div className={styles.cardTopo}>
                         <p className={styles.cardTitulo}>{a.titulo}</p>
-                        {a.status && (
+                        {a.envio ? (
+                          <span className={styles.badgeEnviada}>
+                            {a.envio.atrasado ? "Enviada com atraso" : "Enviada"}
+                          </span>
+                        ) : a.status && (
                           <span className={a.status === "atrasado" ? styles.badgeAtrasado : styles.badgePendente}>
                             {a.status === "atrasado" ? "Em atraso" : "Pendente"}
                           </span>
@@ -177,6 +213,32 @@ export default function AtividadesAlunoPage() {
                           <i className="ti ti-paperclip" aria-hidden="true" /> Abrir arquivo
                         </a>
                       )}
+                      {a.envio && (
+                        <div className={styles.envioAtual}>
+                          <p>Último envio: {formatarData(a.envio.enviado_em.slice(0, 10))}</p>
+                          <a href={`${API_BASE}${a.envio.arquivo_url}`} target="_blank" rel="noopener noreferrer">
+                            {a.envio.arquivo_nome}
+                          </a>
+                          {a.envio.comentario && <MarkdownContent content={a.envio.comentario} />}
+                        </div>
+                      )}
+                      <form
+                        className={styles.formEnvio}
+                        onSubmit={(event) => enviarAtividade(event, a.id)}
+                      >
+                        <label htmlFor={`arquivo-${a.id}`}>Arquivo para envio</label>
+                        <input id={`arquivo-${a.id}`} name="arquivo" type="file" required />
+                        <label htmlFor={`comentario-${a.id}`}>Comentário (opcional)</label>
+                        <textarea id={`comentario-${a.id}`} name="comentario" rows={2} />
+                        <button type="submit" disabled={enviandoId === a.id}>
+                          {enviandoId === a.id
+                            ? "Enviando..."
+                            : a.envio ? "Substituir envio" : "Enviar atividade"}
+                        </button>
+                        {mensagensEnvio[a.id] && (
+                          <p role="status">{mensagensEnvio[a.id]}</p>
+                        )}
+                      </form>
                     </div>
                   </li>
                 ))}
