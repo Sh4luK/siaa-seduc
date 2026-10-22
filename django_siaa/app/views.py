@@ -1904,8 +1904,68 @@ def enviar_atividade_aluno(request, atividade_id):
             status=400,
         )
 
+    questoes = list(atividade.questoes.prefetch_related("alternativas").all())
+    respostas = []
+    if questoes:
+        try:
+            respostas_recebidas = json.loads(request.POST.get("respostas") or "[]")
+        except json.JSONDecodeError:
+            return JsonResponse({"message": "Respostas em formato inválido."}, status=400)
+        if not isinstance(respostas_recebidas, list):
+            return JsonResponse({"message": "Respostas em formato inválido."}, status=400)
+
+        questoes_por_id = {questao.id: questao for questao in questoes}
+        respostas_por_id = {}
+        for resposta in respostas_recebidas:
+            if not isinstance(resposta, dict):
+                return JsonResponse({"message": "Resposta em formato inválido."}, status=400)
+            try:
+                questao_id = int(resposta.get("questao_id"))
+            except (TypeError, ValueError):
+                return JsonResponse({"message": "Questão inválida nas respostas."}, status=400)
+            if questao_id not in questoes_por_id or questao_id in respostas_por_id:
+                return JsonResponse({"message": "Questão inválida nas respostas."}, status=400)
+            respostas_por_id[questao_id] = resposta
+
+        if set(respostas_por_id) != set(questoes_por_id):
+            return JsonResponse({"message": "Responda todas as questões antes de enviar."}, status=400)
+
+        for questao in questoes:
+            resposta = respostas_por_id[questao.id]
+            alternativa = None
+            texto = resposta.get("texto") or ""
+            if not isinstance(texto, str):
+                return JsonResponse(
+                    {"message": f"Resposta inválida para a questão {questao.ordem + 1}."},
+                    status=400,
+                )
+            texto = texto.strip()
+            if questao.tipo == "OBJETIVA":
+                try:
+                    alternativa_id = int(resposta.get("alternativa_id"))
+                except (TypeError, ValueError):
+                    return JsonResponse(
+                        {"message": f"Selecione uma alternativa para a questão {questao.ordem + 1}."},
+                        status=400,
+                    )
+                alternativa = next(
+                    (alt for alt in questao.alternativas.all() if alt.id == alternativa_id),
+                    None,
+                )
+                if not alternativa:
+                    return JsonResponse(
+                        {"message": f"Alternativa inválida para a questão {questao.ordem + 1}."},
+                        status=400,
+                    )
+            elif not texto:
+                return JsonResponse(
+                    {"message": f"Responda a questão {questao.ordem + 1}."},
+                    status=400,
+                )
+            respostas.append((questao, alternativa, texto))
+
     arquivo = request.FILES.get("arquivo")
-    if not arquivo:
+    if not arquivo and not questoes:
         return JsonResponse({"message": "O arquivo da atividade é obrigatório."}, status=400)
 
     envio = AtividadeEnvio.objects.filter(atividade=atividade, aluno=aluno).first()
@@ -1918,7 +1978,8 @@ def enviar_atividade_aluno(request, atividade_id):
     arquivo_anterior = envio.arquivo.name if envio and envio.arquivo else None
     if not envio:
         envio = AtividadeEnvio(atividade=atividade, aluno=aluno)
-    envio.arquivo = arquivo
+    if arquivo:
+        envio.arquivo = arquivo
     envio.comentario = (request.POST.get("comentario") or "").strip()
     envio.alteracao_status = "NENHUMA"
     envio.alteracao_solicitada_em = None
@@ -1934,6 +1995,9 @@ def enviar_atividade_aluno(request, atividade_id):
             for q, alt, texto in respostas
         ])
 
+    respostas_serializadas = _serializar_envio_atividade(
+        envio, atividade, com_gabarito=False
+    )["respostas"]
     return JsonResponse({
         "message": "Atividade enviada com sucesso.",
         "envio": {
@@ -1941,7 +2005,7 @@ def enviar_atividade_aluno(request, atividade_id):
             "comentario": envio.comentario,
             "enviado_em": envio.enviado_em.isoformat(),
             "arquivo_url": envio.arquivo.url if envio.arquivo else None,
-            "arquivo_nome": envio.arquivo.name.split("/")[-1],
+            "arquivo_nome": envio.arquivo.name.split("/")[-1] if envio.arquivo else None,
             "alteracao_status": envio.alteracao_status,
             "alteracao_solicitada_em": (
                 envio.alteracao_solicitada_em.isoformat()
@@ -1951,6 +2015,7 @@ def enviar_atividade_aluno(request, atividade_id):
                 atividade.data_entrega
                 and timezone.localdate(envio.enviado_em) > atividade.data_entrega
             ),
+            "respostas": respostas_serializadas,
         },
     })
 
