@@ -211,6 +211,20 @@
   color: #ffffff;
 }
 
+.enviosLink {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 0.5rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #1e40af;
+  text-decoration: none;
+}
+
+.enviosLink:hover {
+  text-decoration: underline;
+}
+
 .atividadeDeletar {
   display: flex;
   align-items: center;
