@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import MarkdownContent from "@/app/components/MarkdownContent";
 import logo from "../../../assets/logo.png";
 import layoutStyles from "../page.module.css";
 import styles from "./page.module.css";
@@ -83,6 +82,7 @@ export default function AtividadesAlunoPage() {
   const [carregando, setCarregando] = useState(true);
   const [erros, setErros] = useState([]);
   const [enviandoId, setEnviandoId] = useState(null);
+  const [solicitandoAlteracaoId, setSolicitandoAlteracaoId] = useState(null);
   const [mensagensEnvio, setMensagensEnvio] = useState({});
   // respostas[atividadeId][questaoId] = { alternativa_id } | { texto }
   const [respostas, setRespostas] = useState({});
@@ -167,11 +167,42 @@ export default function AtividadesAlunoPage() {
           : atividade
       )));
       formElement.reset();
-      setMensagensEnvio((prev) => ({ ...prev, [atividadeId]: data.message }));
     } catch (error) {
       setMensagensEnvio((prev) => ({ ...prev, [atividadeId]: `Erro ao enviar: ${error.message}` }));
     } finally {
       setEnviandoId(null);
+    }
+  }
+
+  async function solicitarAlteracao(atividadeId) {
+    setSolicitandoAlteracaoId(atividadeId);
+    setMensagensEnvio((prev) => ({ ...prev, [atividadeId]: "" }));
+
+    try {
+      const res = await fetch(
+        `${API_BASE}/api/students/atividades/${atividadeId}/solicitar-alteracao`,
+        { method: "POST", credentials: "include" }
+      );
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || data.detail || `Falha ao solicitar (status ${res.status})`);
+
+      setAtividades((prev) => prev.map((atividade) => (
+        atividade.id === atividadeId
+          ? {
+              ...atividade,
+              envio: {
+                ...atividade.envio,
+                alteracao_status: "SOLICITADA",
+                alteracao_solicitada_em: new Date().toISOString(),
+              },
+            }
+          : atividade
+      )));
+      setMensagensEnvio((prev) => ({ ...prev, [atividadeId]: data.message }));
+    } catch (error) {
+      setMensagensEnvio((prev) => ({ ...prev, [atividadeId]: `Erro ao solicitar alteração: ${error.message}` }));
+    } finally {
+      setSolicitandoAlteracaoId(null);
     }
   }
 
@@ -260,6 +291,10 @@ export default function AtividadesAlunoPage() {
           <main className={layoutStyles.main}>
             <h1 className={layoutStyles.greeting}>Atividades</h1>
             <p className={layoutStyles.subtitle}>Trabalhos e tarefas dos seus professores.</p>
+            <Link href="/aluno/atividades/envios" className={styles.meusEnvios}>
+              <i className="ti ti-folder-check" aria-hidden="true" />
+              Meus envios
+            </Link>
 
             {erros.length > 0 && (
               <ul className={styles.listaErros}>
@@ -303,73 +338,59 @@ export default function AtividadesAlunoPage() {
                           <i className="ti ti-paperclip" aria-hidden="true" /> Abrir arquivo
                         </a>
                       )}
-                      {a.envio && (
-                        <div className={styles.envioAtual}>
-                          <p>Último envio: {formatarData(a.envio.enviado_em.slice(0, 10))}</p>
-                          {a.envio.arquivo_url && (
-                            <a href={`${API_BASE}${a.envio.arquivo_url}`} target="_blank" rel="noopener noreferrer">
-                              {a.envio.arquivo_nome}
-                            </a>
-                          )}
-                          {a.envio.comentario && <MarkdownContent content={a.envio.comentario} />}
-                        </div>
-                      )}
-
-                      {a.envio?.corrigido_em ? (
-                        <>
-                          {a.questoes.length > 0 && (
-                            <Questoes
-                              atividadeId={a.id}
-                              questoes={a.questoes}
-                              respostas={respostas[a.id] || {}}
-                              correcao={a.envio.respostas}
-                            />
-                          )}
-                          <div className={styles.devolutiva}>
-                            <div className={styles.devolutivaTopo}>
-                              <span>Devolutiva do professor</span>
-                              {a.envio.nota !== null && (
-                                <span className={styles.devolutivaNota}>Nota {a.envio.nota}</span>
-                              )}
-                            </div>
-                            {a.envio.total_objetivas > 0 && (
-                              <p className={styles.devolutivaAcertos}>
-                                Você acertou {a.envio.acertos} de {a.envio.total_objetivas} questão(ões) objetiva(s).
-                              </p>
-                            )}
-                            {a.envio.feedback && <p className={styles.devolutivaTexto}>{a.envio.feedback}</p>}
-                          </div>
-                        </>
-                      ) : (
+                      {!a.envio ? (
                         <form
                           className={styles.formEnvio}
-                          onSubmit={(event) => enviarAtividade(event, a)}
+                          onSubmit={(event) => enviarAtividade(event, a.id)}
                         >
-                          {a.questoes.length > 0 && (
-                            <Questoes
-                              atividadeId={a.id}
-                              questoes={a.questoes}
-                              respostas={respostas[a.id] || {}}
-                              onChange={(questaoId, valor) => responder(a.id, questaoId, valor)}
-                            />
-                          )}
-                          <label htmlFor={`arquivo-${a.id}`}>
-                            Arquivo {a.questoes.length > 0 || a.envio?.arquivo_url ? "(opcional)" : ""}
-                          </label>
-                          <input id={`arquivo-${a.id}`} name="arquivo" type="file" />
-                          <label htmlFor={`comentario-${a.id}`}>
-                            {a.questoes.length > 0 ? "Comentário (opcional)" : "Resposta ou comentário"}
-                          </label>
+                          <label htmlFor={`arquivo-${a.id}`}>Arquivo para envio</label>
+                          <input id={`arquivo-${a.id}`} name="arquivo" type="file" required />
+                          <label htmlFor={`comentario-${a.id}`}>Comentário (opcional)</label>
                           <textarea id={`comentario-${a.id}`} name="comentario" rows={2} />
                           <button type="submit" disabled={enviandoId === a.id}>
-                            {enviandoId === a.id
-                              ? "Enviando..."
-                              : a.envio ? "Atualizar envio" : "Enviar atividade"}
+                            {enviandoId === a.id ? "Enviando..." : "Enviar atividade"}
                           </button>
                           {mensagensEnvio[a.id] && (
                             <p role="status">{mensagensEnvio[a.id]}</p>
                           )}
                         </form>
+                      ) : a.envio.alteracao_status === "APROVADA" ? (
+                        <div className={`${styles.solicitacaoBox} ${styles.solicitacaoAprovada}`}>
+                          <p className={styles.statusSolicitacao} role="status">
+                            <i className="ti ti-circle-check" aria-hidden="true" />
+                            O professor autorizou um novo envio.
+                          </p>
+                          <Link
+                            href={`/aluno/atividades/${a.envio.id}`}
+                            className={`${styles.solicitarBotao} ${styles.editarBotao}`}
+                          >
+                            Editar
+                          </Link>
+                        </div>
+                      ) : (
+                        <div className={styles.solicitacaoBox}>
+                          <p className={styles.statusSolicitacao} role="status">
+                            <i className="ti ti-alert-triangle" aria-hidden="true" />
+                            {a.envio.alteracao_status === "SOLICITADA"
+                              ? "Solicitação de novo envio aguardando resposta do professor."
+                              : a.envio.alteracao_status === "NEGADA"
+                                ? "O professor não autorizou o novo envio."
+                                : "Já existe um envio para esta atividade."}
+                          </p>
+                          {a.envio.alteracao_status !== "SOLICITADA" && (
+                            <button
+                              type="button"
+                              className={styles.solicitarBotao}
+                              onClick={() => solicitarAlteracao(a.id)}
+                              disabled={solicitandoAlteracaoId === a.id}
+                            >
+                              {solicitandoAlteracaoId === a.id ? "Solicitando..." : "Solicitar Novo Envio"}
+                            </button>
+                          )}
+                          {mensagensEnvio[a.id] && (
+                            <p role="status">{mensagensEnvio[a.id]}</p>
+                          )}
+                        </div>
                       )}
                     </div>
                   </li>
