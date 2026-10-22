@@ -7,6 +7,7 @@ import styles from "./page.module.css";
 import Image from "next/image";
 import logo from "../../../../assets/logo.png";
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+const TODAS_TURMAS = "__todas__";
 
 function hojeISO() {
   const hoje = new Date();
@@ -23,6 +24,7 @@ export default function NovoConteudoPage() {
   const [professorId, setProfessorId] = useState(null);
   const [nomeCompleto, setNomeCompleto] = useState("");
   const [turmasAgrupadas, setTurmasAgrupadas] = useState([]);
+  const [todasTurmasSelecionadas, setTodasTurmasSelecionadas] = useState(false);
   const [disciplinasDaTurma, setDisciplinasDaTurma] = useState([]);
   const [mensagem, setMensagem] = useState(null);
   const [erros, setErros] = useState([]);
@@ -82,6 +84,14 @@ export default function NovoConteudoPage() {
   }
 
   function handleTurmaChange(nomeTurma) {
+    if (nomeTurma === TODAS_TURMAS) {
+      setTodasTurmasSelecionadas(true);
+      setDisciplinasDaTurma([]);
+      handleFormChange("turma_id", TODAS_TURMAS);
+      return;
+    }
+
+    setTodasTurmasSelecionadas(false);
     const grupo = turmasAgrupadas.find((g) => g.nomeTurma === nomeTurma);
     const opcoes = grupo ? grupo.opcoes : [];
     setDisciplinasDaTurma(opcoes);
@@ -119,7 +129,13 @@ export default function NovoConteudoPage() {
     try {
       const formData = new FormData();
       formData.append("professor", professorId);
-      formData.append("turma", form.turma_id);
+      if (todasTurmasSelecionadas) {
+        turmasAgrupadas.flatMap((grupo) => grupo.opcoes).forEach((turma) => {
+          formData.append("turmas", turma.id);
+        });
+      } else {
+        formData.append("turma", form.turma_id);
+      }
       formData.append("titulo", form.titulo.trim());
       formData.append("descricao", form.descricao.trim());
       formData.append("data", form.data);
@@ -138,7 +154,8 @@ export default function NovoConteudoPage() {
         throw new Error(`Falha ao criar conteúdo (status ${res.status}) - ${corpoErro}`);
       }
 
-      setMensagem("Conteúdo criado com sucesso.");
+      const data = await res.json();
+      setMensagem(data.message || "Conteúdo criado com sucesso.");
       setTimeout(() => {
         router.push("/professor/conteudos");
       }, 900);
@@ -233,28 +250,36 @@ export default function NovoConteudoPage() {
                     required
                   >
                     <option value="" disabled>Selecione a turma</option>
+                    <option value={TODAS_TURMAS}>Todas as Turmas</option>
                     {turmasAgrupadas.map((grupo) => (
                       <option key={grupo.nomeTurma} value={grupo.nomeTurma}>
                         {grupo.nomeTurma}
                       </option>
                     ))}
                   </select>
+                  {todasTurmasSelecionadas && (
+                    <p className={styles.avisoTodasTurmas} role="status">
+                      Ao selecionar esta opção, o conteúdo será cadastrado em todas as disciplinas vinculadas às suas turmas.
+                    </p>
+                  )}
                 </div>
 
                 <div className={styles.campo}>
-                  <label className={styles.label} htmlFor="materia">
-                    Matéria <span className={styles.obrigatorio}>*</span>
+                  <label className={styles.label} htmlFor="disciplina">
+                    Disciplina <span className={styles.obrigatorio}>*</span>
                   </label>
                   <select
-                    id="materia"
+                    id="disciplina"
                     className={styles.select}
                     value={form.turma_id}
                     onChange={(e) => handleFormChange("turma_id", e.target.value)}
-                    disabled={disciplinasDaTurma.length === 0}
+                    disabled={todasTurmasSelecionadas || disciplinasDaTurma.length === 0}
                     required
                   >
-                    <option value="" disabled>
-                      {disciplinasDaTurma.length === 0 ? "Escolha a turma primeiro" : "Selecione a matéria"}
+                    <option value={todasTurmasSelecionadas ? TODAS_TURMAS : ""} disabled>
+                      {todasTurmasSelecionadas
+                        ? "Todas as disciplinas vinculadas"
+                        : disciplinasDaTurma.length === 0 ? "Escolha a turma primeiro" : "Selecione a disciplina"}
                     </option>
                     {disciplinasDaTurma.map((opcao) => (
                       <option key={opcao.id} value={opcao.id}>
