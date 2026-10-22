@@ -1,0 +1,101 @@
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  max-width: 680px;
+  margin: 0 auto;
+}
+
+.voltarLink {
+  width: fit-content;
+  margin-bottom: 1rem;
+  color: #0b4f9e;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.title {
+  margin: 0 0 0.3rem;
+  color: #1a2942;
+  font-size: 1.6rem;
+  font-weight: 700;
+}
+
+.subtitle {
+  margin: 0 0 1.5rem;
+  color: #5b6b85;
+  font-size: 0.9rem;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+  padding: 1.5rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  background: #ffffff;
+}
+
+.campo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.label {
+  color: #1a2942;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.input,
+.textarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.65rem 0.8rem;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 8px;
+  color: #1a2942;
+  background: #ffffff;
+  font: inherit;
+  font-size: 0.9rem;
+}
+
+.input:focus,
+.textarea:focus {
+  outline: none;
+  border-color: #0b4f9e;
+  box-shadow: 0 0 0 3px rgba(11, 79, 158, 0.12);
+}
+
+.textarea {
+  resize: vertical;
+}
+
+.botaoSalvar {
+  align-self: flex-start;
+  padding: 0.75rem 1.4rem;
+  border: none;
+  border-radius: 8px;
+  color: #ffffff;
+  background: #0b4f9e;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.botaoSalvar:disabled {
+  background: #94a3b8;
+  cursor: not-allowed;
+}
+
+.listaErros {
+  margin: 0 0 1rem;
+  padding: 0.85rem 1.1rem;
+  border: 1px solid rgba(220, 38, 38, 0.25);
+  border-radius: 8px;
+  color: #b91c1c;
+  background: rgba(220, 38, 38, 0.06);
+  font-size: 0.85rem;
+}
