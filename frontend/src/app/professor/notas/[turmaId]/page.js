@@ -14,28 +14,50 @@ const CAMPOS = [
   "nm1_t3", "nm2_t3", "nm3_t3", "rpt_t3",
 ];
 
-function calcularMtf(notas, trimestre) {
-  const notasTrimestre = [1, 2, 3]
-    .map((numero) => notas[`nm${numero}_t${trimestre}`])
-    .map((valor) => valor === "" || valor === null || valor === undefined ? null : Number(valor));
+function paraNumero(valor) {
+  return valor === "" || valor === null || valor === undefined ? null : Number(valor);
+}
 
-  const media = (valores) => {
-    const validas = valores.filter((valor) => valor !== null);
-    if (validas.length === 0) return null;
-    return validas.reduce((soma, nota) => soma + nota, 0) / validas.length;
-  };
+// Arredonda para 1 casa como o round() do Python no backend (empate vai para o par)
+function arredondar(valor) {
+  const escalado = Number((valor * 10).toFixed(6));
+  const piso = Math.floor(escalado);
+  const diferenca = escalado - piso;
+  let inteiro;
+  if (diferenca > 0.5) inteiro = piso + 1;
+  else if (diferenca < 0.5) inteiro = piso;
+  else inteiro = piso % 2 === 0 ? piso : piso + 1;
+  return inteiro / 10;
+}
 
-  const rpt = notas[`rpt_t${trimestre}`];
-  const mediaAtual = media(notasTrimestre);
-  if (
-    rpt !== "" && rpt !== null && rpt !== undefined
-    && ((notasTrimestre[2] !== null && notasTrimestre[2] < 6) || (mediaAtual !== null && mediaAtual < 6))
-  ) {
-    notasTrimestre[2] = Number(rpt);
-  }
+function media(valores) {
+  const validas = valores.filter((valor) => valor !== null);
+  if (validas.length === 0) return null;
+  return arredondar(validas.reduce((soma, nota) => soma + nota, 0) / validas.length);
+}
 
-  const mediaFinal = media(notasTrimestre);
-  return mediaFinal === null ? null : Number(mediaFinal.toFixed(1));
+// Mesmo cálculo de Nota.calcular() no backend, para o professor ver as
+// médias atualizarem enquanto digita.
+// MT: média das três notas. MTF: a RPT substitui a NM3 quando a NM3 ou a MT
+// ficam abaixo de 6. MA: média das MTFs. MAF = (MA × 6 + PF × 4) / 10.
+function calcularMedias(notas) {
+  const trimestres = [1, 2, 3].map((t) => {
+    const nms = [1, 2, 3].map((n) => paraNumero(notas[`nm${n}_t${t}`]));
+    const rpt = paraNumero(notas[`rpt_t${t}`]);
+    const mt = media(nms);
+    let mtf = mt;
+    if (rpt !== null && ((nms[2] !== null && nms[2] < 6) || (mt !== null && mt < 6))) {
+      mtf = media([nms[0], nms[1], rpt]);
+    }
+    return { mt, mtf };
+  });
+
+  const ma = media(trimestres.map((t) => t.mtf));
+  const pf = paraNumero(notas.pf);
+  let maf = null;
+  if (ma !== null) maf = pf === null ? ma : arredondar((ma * 6 + pf * 4) / 10);
+
+  return { trimestres, ma, maf };
 }
 
 const RF_OPCOES = [
@@ -209,7 +231,10 @@ export default function NotasTurmaPage() {
     );
   }
 
-  const totalAprovados = alunos.filter((a) => Number(a.notas.maf ?? a.notas.ma) >= 6).length;
+  const totalAprovados = alunos.filter((a) => {
+    const { maf } = calcularMedias(a.notas);
+    return maf !== null && maf >= 6;
+  }).length;
   const totalAbaixo = alunos.length - totalAprovados;
 
   return (
@@ -313,9 +338,9 @@ export default function NotasTurmaPage() {
                             <tr>
                               <th className={styles.stickyColNum} rowSpan={2}>Nº</th>
                               <th className={styles.stickyCol} rowSpan={2}>Aluno</th>
-                              <th colSpan={5}>1º Trimestre</th>
-                              <th colSpan={5}>2º Trimestre</th>
-                              <th colSpan={5}>3º Trimestre</th>
+                              <th colSpan={6}>1º Trimestre</th>
+                              <th colSpan={6}>2º Trimestre</th>
+                              <th colSpan={6}>3º Trimestre</th>
                               <th rowSpan={2}>MA</th>
                               <th rowSpan={2}>PF</th>
                               <th rowSpan={2}>MAF</th>
@@ -324,20 +349,26 @@ export default function NotasTurmaPage() {
                               <th rowSpan={2}>RF</th>
                             </tr>
                             <tr>
-                              <th>NM1</th><th>NM2</th><th>NM3</th><th>RPT</th><th>MTF</th>
-                              <th>NM1</th><th>NM2</th><th>NM3</th><th>RPT</th><th>MTF</th>
-                              <th>NM1</th><th>NM2</th><th>NM3</th><th>RPT</th><th>MTF</th>
+                              {[1, 2, 3].map((t) => (
+                                <Fragment key={t}>
+                                  <th>NM1</th><th>NM2</th><th>NM3</th><th>RPT</th>
+                                  <th title="Média trimestral">MT</th>
+                                  <th title="Média trimestral final (com recuperação)">MTF</th>
+                                </Fragment>
+                              ))}
                             </tr>
                           </thead>
                           <tbody>
-                            {alunos.map((aluno) => (
+                            {alunos.map((aluno) => {
+                              const medias = calcularMedias(aluno.notas);
+                              return (
                               <tr key={aluno.aluno_id}>
                                 <td className={styles.stickyColNum}>{aluno.posicao_ordem ?? "—"}</td>
                                 <td className={styles.stickyCol} title={aluno.nome_completo}>
                                   {aluno.nome_completo}
                                 </td>
                                 {[1, 2, 3].map((trimestre) => {
-                                  const mtf = calcularMtf(aluno.notas, trimestre);
+                                  const { mt, mtf } = medias.trimestres[trimestre - 1];
                                   return (
                                     <Fragment key={trimestre}>
                                       {CAMPOS.slice((trimestre - 1) * 4, trimestre * 4).map((campo) => (
@@ -352,6 +383,11 @@ export default function NotasTurmaPage() {
                                         </td>
                                       ))}
                                       <td>
+                                        <span className={`${styles.calculadoBadge} ${corDaNota(mt)}`}>
+                                          {mt ?? "—"}
+                                        </span>
+                                      </td>
+                                      <td>
                                         <span className={`${styles.calculadoBadge} ${corDaNota(mtf)}`}>
                                           {mtf ?? "—"}
                                         </span>
@@ -360,8 +396,8 @@ export default function NotasTurmaPage() {
                                   );
                                 })}
                                 <td>
-                                  <span className={`${styles.calculadoBadge} ${corDaNota(aluno.notas.ma)}`}>
-                                    {aluno.notas.ma ?? "—"}
+                                  <span className={`${styles.calculadoBadge} ${corDaNota(medias.ma)}`}>
+                                    {medias.ma ?? "—"}
                                   </span>
                                 </td>
                                 <td>
@@ -374,8 +410,8 @@ export default function NotasTurmaPage() {
                                   />
                                 </td>
                                 <td>
-                                  <span className={`${styles.calculadoBadge} ${corDaNota(aluno.notas.maf)}`}>
-                                    {aluno.notas.maf ?? "—"}
+                                  <span className={`${styles.calculadoBadge} ${corDaNota(medias.maf)}`}>
+                                    {medias.maf ?? "—"}
                                   </span>
                                 </td>
                                 <td>
@@ -404,7 +440,8 @@ export default function NotasTurmaPage() {
                                   </select>
                                 </td>
                               </tr>
-                            ))}
+                              );
+                            })}
                           </tbody>
                         </table>
                       </div>

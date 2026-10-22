@@ -30,7 +30,9 @@ class NotaCalculationTests(TestCase):
 
         nota.calcular()
 
-        self.assertEqual(nota.nm3_t1, Decimal("8"))
+        # A NM3 original fica gravada; a RPT só entra no cálculo da MTF
+        self.assertEqual(nota.nm3_t1, Decimal("4"))
+        self.assertEqual(nota.mt_t1, Decimal("6.0"))
         self.assertEqual(nota.mtf_t1, Decimal("7.3"))
 
     def test_rpt_replaces_nm3_when_trimester_average_is_below_six(self):
@@ -41,8 +43,17 @@ class NotaCalculationTests(TestCase):
 
         nota.calcular()
 
-        self.assertEqual(nota.nm3_t1, Decimal("8"))
+        self.assertEqual(nota.nm3_t1, Decimal("9"))
+        self.assertEqual(nota.mt_t1, Decimal("4.3"))
         self.assertEqual(nota.mtf_t1, Decimal("4.0"))
+
+    def test_mt_and_mtf_are_equal_without_recovery(self):
+        nota = Nota(nm1_t1=Decimal("7"), nm2_t1=Decimal("8"), nm3_t1=Decimal("9"))
+
+        nota.calcular()
+
+        self.assertEqual(nota.mt_t1, Decimal("8.0"))
+        self.assertEqual(nota.mtf_t1, Decimal("8.0"))
 
     def test_mtf_uses_three_assessment_grades_and_ma_and_maf_are_weighted(self):
         nota = Nota(
