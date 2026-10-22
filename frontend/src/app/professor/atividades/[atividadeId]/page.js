@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
+import Link from "next/link";
 import Image from "next/image";
 import MarkdownContent from "@/app/components/MarkdownContent";
 import logo from "../../../../assets/logo.png";
@@ -12,6 +13,11 @@ const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
 function formatarDataHora(dataISO) {
   return new Date(dataISO).toLocaleString("pt-BR");
+}
+
+function resolverUrl(url) {
+  if (!url) return "";
+  return url.startsWith("http") ? url : `${API_BASE}${url}`;
 }
 
 function RespostasDoAluno({ questoes, respostas }) {
@@ -125,6 +131,7 @@ export default function EnviosAtividadePage() {
   const [atividade, setAtividade] = useState(null);
   const [envios, setEnvios] = useState([]);
   const [erro, setErro] = useState("");
+  const [respondendoId, setRespondendoId] = useState(null);
 
   useEffect(() => {
     async function carregarEnvios() {
@@ -158,6 +165,34 @@ export default function EnviosAtividadePage() {
     setEnvios((prev) =>
       prev.map((e) => (e.id === envioAtualizado.id ? { ...e, ...envioAtualizado } : e))
     );
+  }
+
+  async function responderSolicitacao(envioId, acao) {
+    setRespondendoId(envioId);
+    setErro("");
+    try {
+      const res = await fetch(
+        `${API_BASE}/api/teacher/atividades/${atividadeId}/envios/${envioId}/solicitacao`,
+        {
+          method: "POST",
+          credentials: "include",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ acao }),
+        }
+      );
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || `Falha ao responder (status ${res.status})`);
+
+      setEnvios((prev) => prev.map((envio) => (
+        envio.id === envioId
+          ? { ...envio, alteracao_status: data.alteracao_status }
+          : envio
+      )));
+    } catch (error) {
+      setErro(`Erro ao responder à solicitação: ${error.message}`);
+    } finally {
+      setRespondendoId(null);
+    }
   }
 
   if (loading) {
@@ -227,6 +262,15 @@ export default function EnviosAtividadePage() {
                           ) : (
                             <span className={styles.aguardando}>Aguardando correção</span>
                           )}
+                          {envio.alteracao_status === "SOLICITADA" && (
+                            <span className={styles.solicitada}>Solicitação de alteração</span>
+                          )}
+                          {envio.alteracao_status === "APROVADA" && (
+                            <span className={styles.aprovada}>Alteração aprovada</span>
+                          )}
+                          {envio.alteracao_status === "NEGADA" && (
+                            <span className={styles.negada}>Alteração negada</span>
+                          )}
                         </div>
                       </div>
                       <p className={styles.dataEnvio}>
@@ -249,7 +293,7 @@ export default function EnviosAtividadePage() {
                       {envio.arquivo_url && (
                         <a
                           className={styles.arquivoLink}
-                          href={`${API_BASE}${envio.arquivo_url}`}
+                          href={resolverUrl(envio.arquivo_url)}
                           target="_blank"
                           rel="noopener noreferrer"
                           download
@@ -259,6 +303,57 @@ export default function EnviosAtividadePage() {
                       )}
 
                       <FormCorrecao envio={envio} onSalvo={atualizarEnvio} />
+                      {envio.alteracao_status === "SOLICITADA" && (
+                        <section className={styles.solicitacao}>
+                          <div>
+                            <h3>Pedido para alterar o envio</h3>
+                            {envio.alteracao_solicitada_em && (
+                              <p>Solicitado em {formatarDataHora(envio.alteracao_solicitada_em)}</p>
+                            )}
+                          </div>
+                          <div className={styles.acoesSolicitacao}>
+                            <button
+                              type="button"
+                              className={styles.aprovarBotao}
+                              onClick={() => responderSolicitacao(envio.id, "aprovar")}
+                              disabled={respondendoId === envio.id}
+                            >
+                              Aprovar
+                            </button>
+                            <button
+                              type="button"
+                              className={styles.negarBotao}
+                              onClick={() => responderSolicitacao(envio.id, "negar")}
+                              disabled={respondendoId === envio.id}
+                            >
+                              Negar
+                            </button>
+                          </div>
+                        </section>
+                      )}
+                      {envio.comentario && (
+                        <div className={styles.comentario}>
+                          <MarkdownContent content={envio.comentario} collapsible />
+                        </div>
+                      )}
+                      {envio.visto_pdf_url && (
+                        <a
+                          className={styles.pdfVistoLink}
+                          href={resolverUrl(envio.visto_pdf_url)}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          <i className="ti ti-file-type-pdf" aria-hidden="true" />
+                          Baixar PDF com visto
+                        </a>
+                      )}
+                      <Link
+                        className={styles.correcaoLink}
+                        href={`/professor/atividades/${atividadeId}/corrigir/${envio.id}`}
+                      >
+                        <i className={`ti ${envio.visto_emitido_em ? "ti-file-check" : "ti-writing"}`} aria-hidden="true" />
+                        {envio.visto_emitido_em ? "Ver correção e visto" : "Corrigir e dar visto"}
+                      </Link>
                     </li>
                   ))}
                 </ul>
