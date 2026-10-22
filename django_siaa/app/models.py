@@ -254,6 +254,21 @@ class Atividade(models.Model):
         return f"{self.titulo} - {self.turma} - {self.data}"
 
 
+class AtividadeEnvio(models.Model):
+    atividade = models.ForeignKey(Atividade, on_delete=models.CASCADE, related_name="envios")
+    aluno = models.ForeignKey("app.Estudante", on_delete=models.CASCADE, related_name="envios_atividade")
+    arquivo = models.FileField(upload_to="envios_atividades/%Y/%m/")
+    comentario = models.TextField(blank=True, default="")
+    enviado_em = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        unique_together = ("atividade", "aluno")
+        ordering = ["aluno__nome_completo"]
+
+    def __str__(self):
+        return f"{self.aluno} - {self.atividade}"
+
+
 
 class Coordenador(models.Model):
     nome_completo = models.CharField(max_length=255)
