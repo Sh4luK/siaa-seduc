@@ -5,6 +5,39 @@
   word-wrap: break-word;
 }
 
+.collapsed {
+  position: relative;
+  max-height: 9rem;
+  overflow: hidden;
+  mask-image: linear-gradient(to bottom, #000 78%, transparent);
+}
+
+.expandButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  margin-top: 0.35rem;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #0b4f9e;
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.expandButton:hover {
+  color: #083f80;
+  text-decoration: underline;
+}
+
+.expandButton:focus-visible {
+  outline: 2px solid #0b4f9e;
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
 .markdown p {
   margin: 0 0 1.1rem;
 }
