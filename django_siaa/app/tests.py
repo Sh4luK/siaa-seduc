@@ -1,11 +1,24 @@
-from django.test import TestCase
+from django.core.files.uploadedfile import SimpleUploadedFile
+from django.test import TestCase, override_settings
 from django.http import JsonResponse
 import json
 from decimal import Decimal
+import tempfile
 from unittest.mock import patch
 
-from .models import AtravessaPor, Comunicado, Conteudo, Disciplina, Nota, Professor, Sessao
-from .views import _criar_sessao_e_setar_cookie
+from .models import (
+    Atividade,
+    AtividadeEnvio,
+    AtravessaPor,
+    Comunicado,
+    Conteudo,
+    Disciplina,
+    Estudante,
+    Nota,
+    Professor,
+    Sessao,
+)
+from .views import _criar_sessao_e_setar_cookie, resolver_disciplina_da_turma
 
 
 class NotaCalculationTests(TestCase):
@@ -86,6 +99,143 @@ class ConteudoCreationTests(TestCase):
             {turma_a.id, turma_b.id},
         )
         self.assertEqual(len(response.json()["conteudos"]), 2)
+
+
+class AtividadeCreationTests(TestCase):
+    @patch("app.views.resolver_disciplina_da_turma")
+    def test_creates_activity_for_each_selected_teacher_class(self, resolver_disciplina):
+        professor = Professor.objects.create(nome_completo="Professor Teste")
+        disciplina = Disciplina.objects.create(nome_disciplina="Matemática")
+        turma_a = AtravessaPor.objects.create(professor=professor, turma="Turma A")
+        turma_b = AtravessaPor.objects.create(professor=professor, turma="Turma B")
+        resolver_disciplina.return_value = disciplina
+
+        response = self.client.post(
+            "/api/teacher/atividades/criar",
+            {
+                "professor": professor.id,
+                "turmas": [str(turma_a.id), str(turma_b.id)],
+                "titulo": "Atividade de teste",
+                "descricao": "Descrição",
+                "data": "2026-10-21",
+            },
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(Atividade.objects.count(), 2)
+        self.assertEqual(
+            set(Atividade.objects.values_list("turma_id", flat=True)),
+            {turma_a.id, turma_b.id},
+        )
+        self.assertEqual(len(response.json()["atividades"]), 2)
+
+
+class DisciplinaResolverTests(TestCase):
+    def test_resolves_subject_when_accents_or_unicode_normalization_differ(self):
+        disciplina = Disciplina.objects.create(nome_disciplina="INTELIGÊNCIA ARTIFICIAL")
+        professor = Professor.objects.create(nome_completo="Professor Teste")
+        turma = AtravessaPor.objects.create(
+            professor=professor,
+            turma="EMTPDES-SIS-2ª SERIE - INTEGRAL-I-A",
+            disciplina_lecionada="INTELIGENCIA ARTIFICIAL",
+        )
+
+        self.assertEqual(resolver_disciplina_da_turma(turma), disciplina)
+
+        turma.disciplina_lecionada = "Intelige\u0302ncia Artificial"
+        self.assertEqual(resolver_disciplina_da_turma(turma), disciplina)
+
+
+class AtividadeEnvioTests(TestCase):
+    def setUp(self):
+        self.media_dir = tempfile.TemporaryDirectory()
+        self.addCleanup(self.media_dir.cleanup)
+        self.media_settings = override_settings(MEDIA_ROOT=self.media_dir.name)
+        self.media_settings.enable()
+        self.addCleanup(self.media_settings.disable)
+
+        self.professor = Professor.objects.create(nome_completo="Professor Teste")
+        self.aluno = Estudante.objects.create(
+            nome_completo="Aluno Teste",
+            turma="Turma A",
+        )
+        self.turma = AtravessaPor.objects.create(
+            professor=self.professor,
+            turma=self.aluno.turma,
+        )
+        self.disciplina = Disciplina.objects.create(nome_disciplina="Matemática")
+        self.atividade = Atividade.objects.create(
+            professor=self.professor,
+            turma=self.turma,
+            disciplina=self.disciplina,
+            titulo="Atividade de teste",
+            data="2026-10-21",
+        )
+        self.sessao_aluno = Sessao.objects.create(
+            tipo="ALUNO",
+            referencia_id=self.aluno.id,
+            nome_completo=self.aluno.nome_completo,
+        )
+        self.sessao_professor = Sessao.objects.create(
+            tipo="PROFESSOR",
+            referencia_id=self.professor.id,
+            nome_completo=self.professor.nome_completo,
+        )
+
+    def enviar_arquivo(self, nome, conteudo):
+        self.client.cookies["aluno_session"] = self.sessao_aluno.token
+        return self.client.post(
+            f"/api/students/atividades/{self.atividade.id}/enviar",
+            {
+                "arquivo": SimpleUploadedFile(nome, conteudo),
+                "comentario": "Segue minha atividade.",
+            },
+        )
+
+    def test_student_can_replace_submission_and_teacher_can_review_it(self):
+        primeira_resposta = self.enviar_arquivo("primeira.txt", b"primeira versao")
+        self.assertEqual(primeira_resposta.status_code, 200)
+        primeira_envio_id = primeira_resposta.json()["envio"]["id"]
+
+        segunda_resposta = self.enviar_arquivo("segunda.txt", b"segunda versao")
+        self.assertEqual(segunda_resposta.status_code, 200)
+        self.assertEqual(AtividadeEnvio.objects.count(), 1)
+        envio = AtividadeEnvio.objects.get()
+        self.assertEqual(envio.id, primeira_envio_id)
+        self.assertEqual(envio.arquivo.read(), b"segunda versao")
+
+        resposta_aluno = self.client.get("/api/students/atividades")
+        self.assertEqual(resposta_aluno.status_code, 200)
+        self.assertEqual(resposta_aluno.json()["atividades"][0]["envio"]["id"], envio.id)
+
+        self.client.cookies["professor_session"] = self.sessao_professor.token
+        resposta_professor = self.client.get(
+            f"/api/teacher/atividades/{self.atividade.id}/envios"
+        )
+        self.assertEqual(resposta_professor.status_code, 200)
+        self.assertEqual(resposta_professor.json()["envios"][0]["aluno"], self.aluno.nome_completo)
+
+    def test_student_cannot_submit_for_an_activity_outside_their_class(self):
+        outra_turma = AtravessaPor.objects.create(
+            professor=self.professor,
+            turma="Turma B",
+        )
+        outra_atividade = Atividade.objects.create(
+            professor=self.professor,
+            turma=outra_turma,
+            disciplina=self.disciplina,
+            titulo="Outra atividade",
+            data="2026-10-21",
+        )
+        self.client.cookies["aluno_session"] = self.sessao_aluno.token
+
+        response = self.client.post(
+            f"/api/students/atividades/{outra_atividade.id}/enviar",
+            {"arquivo": SimpleUploadedFile("envio.txt", b"conteudo")},
+        )
+
+        self.assertEqual(response.status_code, 404)
+        self.assertFalse(AtividadeEnvio.objects.exists())
 
 
 class ProfessorComunicadoTests(TestCase):
