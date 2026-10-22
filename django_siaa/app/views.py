@@ -474,6 +474,20 @@ def _to_decimal(valor):
         return None
 
 
+def _mapa_tgf_por_aluno(turma, disciplina, professor, ano_letivo):
+    registros = (
+        Frequencia.objects.filter(
+            turma=turma,
+            disciplina=disciplina,
+            professor=professor,
+            ano_letivo=ano_letivo,
+        )
+        .values("aluno_id")
+        .annotate(total_faltas=models.Count("id", filter=models.Q(presente=False)))
+    )
+    return {registro["aluno_id"]: registro["total_faltas"] for registro in registros}
+
+
 def buscar_atravessapor_por_turma(nome_turma):
     nome_normalizado = (nome_turma or "").replace(" ", "").strip().lower()
 
@@ -704,6 +718,7 @@ def get_notas_turma(request):
 
     nome_turma = turma_obj.turma
     alunos = buscar_alunos_por_turma(nome_turma)
+    tgf_por_aluno = _mapa_tgf_por_aluno(turma_obj, disciplina, professor_id, ano_letivo)
 
     def campo(obj, nome):
         if obj is None:
@@ -738,7 +753,7 @@ def get_notas_turma(request):
 
                 "ma": campo(nota, "ma"), "pf": campo(nota, "pf"), "maf": campo(nota, "maf"),
                 "rcf": campo(nota, "rcf"),
-                "tgf": nota.tgf if nota else 0,
+                "tgf": tgf_por_aluno.get(aluno.id, 0),
                 "rf": nota.rf if nota else "CUR",
             }
         })
@@ -799,6 +814,7 @@ def salvar_notas_turma(request):
 
     resultado_por_aluno = []
     erros_gerais = []
+    tgf_por_aluno = _mapa_tgf_por_aluno(turma, disciplina, professor, ano_letivo)
 
     for lancamento in lancamentos:
         aluno_id = lancamento.get("aluno_id")
@@ -836,11 +852,7 @@ def salvar_notas_turma(request):
                     continue
                 setattr(nota, campo, valor)
 
-        if "tgf" in campos:
-            try:
-                nota.tgf = int(campos["tgf"] or 0)
-            except (ValueError, TypeError):
-                erros_aluno.append(f"Valor inválido para tgf: {campos['tgf']}")
+        nota.tgf = tgf_por_aluno.get(aluno.id, 0)
 
         if "rf" in campos:
             if campos["rf"] in rf_valido:
@@ -866,6 +878,7 @@ def salvar_notas_turma(request):
                 "mtf_t3": float(nota.mtf_t3) if nota.mtf_t3 is not None else None,
                 "ma": float(nota.ma) if nota.ma is not None else None,
                 "maf": float(nota.maf) if nota.maf is not None else None,
+                "tgf": nota.tgf,
             }
         })
 
@@ -1016,7 +1029,6 @@ def get_frequencia_turma(request):
         "conteudo_abordado": aula.assunto if aula else "",
         "estrategia_abordada": aula.estrategia_abordada if aula else "",
         "assunto": aula.assunto if aula else "",
-        "estrategia_metodologica": aula.estrategia_metodologica if aula else "",
         "total_alunos": len(resultado),
         "alunos": resultado
     })
@@ -1036,7 +1048,8 @@ def salvar_frequencia_turma(request):
     professor_id = body.get("professor")
     data_str = body.get("data")
     ano_letivo = body.get("ano_letivo", 2026)
-    assunto = body.get("assunto", "")
+    assunto = body.get("conteudo_abordado", body.get("assunto", "")) or ""
+    estrategia_abordada = body.get("estrategia_abordada", "") or ""
     lancamentos = body.get("lancamentos", [])
 
     if not all([turma_id, professor_id, data_str]):
@@ -1067,7 +1080,11 @@ def salvar_frequencia_turma(request):
         )
     Aula.objects.update_or_create(
         turma=turma, disciplina=disciplina, professor=professor, data=data_selecionada,
-        defaults={"assunto": assunto, "ano_letivo": ano_letivo},
+        defaults={
+            "assunto": assunto,
+            "estrategia_abordada": estrategia_abordada,
+            "ano_letivo": ano_letivo,
+        },
     )
 
     erros_gerais = []
@@ -1136,7 +1153,6 @@ def get_registros_frequencia(request):
             "conteudo_abordado": aula.assunto,
             "estrategia_abordada": aula.estrategia_abordada,
             "assunto": aula.assunto,
-            "estrategia_metodologica": aula.estrategia_metodologica,
             "total_alunos": total_alunos,
             "total_presentes": total_presentes,
             "total_faltas": total_alunos - total_presentes,
@@ -6340,6 +6356,7 @@ def gerar_ficha_notas_pdf(request, turma_id):
 
     nome_turma = turma_obj.turma
     alunos = buscar_alunos_por_turma(nome_turma)
+    tgf_por_aluno = _mapa_tgf_por_aluno(turma_obj, disciplina, professor, ano_letivo)
 
     linhas = []
     for aluno in alunos:
@@ -6362,7 +6379,7 @@ def gerar_ficha_notas_pdf(request, turma_id):
             "rpt_t3": _nota_ficha_pdf(nota, "rpt_t3"), "mtf_t3": _nota_ficha_pdf(nota, "mtf_t3"),
             "ma": _nota_ficha_pdf(nota, "ma"), "pf": _nota_ficha_pdf(nota, "pf"),
             "maf": _nota_ficha_pdf(nota, "maf"), "rcf": _nota_ficha_pdf(nota, "rcf"),
-            "tgf": nota.tgf if nota else 0,
+            "tgf": tgf_por_aluno.get(aluno.id, 0),
             "rf": nota.get_rf_display() if nota else "Não Definido",
             "rf_sigla": nota.rf if nota else "ND",
             "cores": {
