@@ -38,7 +38,12 @@ export default function SessionTimer({ tipo, visivel, onExpirou }) {
         return response.json();
       })
       .then((data) => {
-        const expiraEm = Date.parse(data.expires_at);
+        // Conta a partir dos segundos restantes informados pelo servidor, para não
+        // depender do relógio do computador (relógio adiantado expirava cedo demais
+        // e deixava o painel em loop com a tela de login).
+        const expiraEm = Number.isFinite(data.expires_in)
+          ? Date.now() + data.expires_in * 1000
+          : Date.parse(data.expires_at);
         if (data.return !== true || !Number.isFinite(expiraEm)) {
           if (data.return === false) {
             expirarSessao();

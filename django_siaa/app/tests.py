@@ -2,6 +2,7 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase, override_settings
 from django.http import JsonResponse
 from django.utils import timezone
+from datetime import timedelta
 from io import BytesIO
 import json
 from decimal import Decimal
@@ -622,6 +623,39 @@ class SessionCookieTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTrue(response.json()["return"])
         self.assertIn("expires_at", response.json())
+        self.assertGreater(response.json()["expires_in"], 3 * 60 * 60 - 60)
+
+    def test_expired_session_is_rejected_by_auth_and_status_alike(self):
+        # Antes, /api/teacher/auth aceitava a sessão vencida e /api/session/status
+        # recusava: o painel e o login ficavam redirecionando um para o outro.
+        professor = Professor.objects.create(nome_completo="Professor Teste")
+        sessao = Sessao.objects.create(
+            tipo="PROFESSOR", referencia_id=professor.id, nome_completo=professor.nome_completo
+        )
+        Sessao.objects.filter(id=sessao.id).update(
+            criado_em=timezone.now() - timedelta(hours=3, minutes=1)
+        )
+        self.client.cookies["professor_session"] = sessao.token
+
+        auth = self.client.get("/api/teacher/auth").json()
+        status = self.client.get("/api/session/status?tipo=PROFESSOR").json()
+
+        self.assertFalse(auth["return"])
+        self.assertFalse(status["return"])
+        self.assertFalse(Sessao.objects.filter(id=sessao.id).exists())
+
+    def test_session_within_three_hours_is_accepted_by_auth_and_status(self):
+        professor = Professor.objects.create(nome_completo="Professor Teste")
+        sessao = Sessao.objects.create(
+            tipo="PROFESSOR", referencia_id=professor.id, nome_completo=professor.nome_completo
+        )
+        Sessao.objects.filter(id=sessao.id).update(
+            criado_em=timezone.now() - timedelta(hours=2, minutes=59)
+        )
+        self.client.cookies["professor_session"] = sessao.token
+
+        self.assertTrue(self.client.get("/api/teacher/auth").json()["return"])
+        self.assertTrue(self.client.get("/api/session/status?tipo=PROFESSOR").json()["return"])
 
 
 class LogoutApiTests(TestCase):

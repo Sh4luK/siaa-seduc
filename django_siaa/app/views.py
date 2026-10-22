@@ -98,13 +98,30 @@ COOKIE_POR_TIPO = {
 COOKIE_MAX_AGE = 60 * 60 * 3
 
 
+def _expiracao_sessao(sessao):
+    return sessao.criado_em + timedelta(seconds=COOKIE_MAX_AGE)
+
+
+def _sessao_ativa(sessao):
+    """Sessões valem COOKIE_MAX_AGE a partir do login. Todas as verificações
+    (auth de cada perfil, blog e session_status) usam esta mesma regra; se
+    uma aceitasse e outra recusasse, o front ficava em loop entre o painel e o login.
+    Cookies antigos (de quando a sessão durava 30 dias) caem aqui."""
+    if sessao is None:
+        return None
+    if _expiracao_sessao(sessao) <= timezone.now():
+        sessao.delete()
+        return None
+    return sessao
+
+
 def _obter_sessao(request, tipo):
     """Lê o cookie do tipo pedido e retorna a Sessao correspondente, ou None."""
     cookie_name = COOKIE_POR_TIPO[tipo]
     token = request.COOKIES.get(cookie_name)
     if not token:
         return None
-    return Sessao.objects.filter(token=token, tipo=tipo).first()
+    return _sessao_ativa(Sessao.objects.filter(token=token, tipo=tipo).first())
 
 
 def _criar_sessao_e_setar_cookie(response, tipo, referencia_id, nome_completo):
@@ -126,8 +143,7 @@ def session_status(request):
     tipo = request.GET.get("tipo", "").strip().upper()
 
     if tipo == "BLOG":
-        token = request.COOKIES.get("blog_session")
-        sessao = Sessao.objects.filter(token=token).first() if token else None
+        sessao = _sessao_blog_atual(request)
     elif tipo in COOKIE_POR_TIPO:
         sessao = _obter_sessao(request, tipo)
     else:
@@ -136,11 +152,14 @@ def session_status(request):
     if not sessao:
         return JsonResponse({"return": False})
 
-    expira_em = sessao.criado_em + timedelta(seconds=COOKIE_MAX_AGE)
-    if expira_em <= timezone.now():
-        return JsonResponse({"return": False})
-
-    return JsonResponse({"return": True, "expires_at": expira_em.isoformat()})
+    expira_em = _expiracao_sessao(sessao)
+    return JsonResponse({
+        "return": True,
+        "expires_at": expira_em.isoformat(),
+        # Segundos restantes pelo relógio do servidor: o front conta a partir
+        # daqui, sem depender do relógio do computador do usuário
+        "expires_in": max(0, int((expira_em - timezone.now()).total_seconds())),
+    })
 
 
 @csrf_exempt
@@ -4299,7 +4318,7 @@ def _sessao_blog_atual(request):
     token = request.COOKIES.get("blog_session")
     if not token:
         return None
-    return Sessao.objects.filter(token=token).first()
+    return _sessao_ativa(Sessao.objects.filter(token=token).first())
 
 
 # @csrf_exempt
