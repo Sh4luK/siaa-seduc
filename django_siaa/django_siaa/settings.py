@@ -35,6 +35,7 @@ SECRET_KEY = os.environ.get(
     "DJANGO_SECRET_KEY",
     "django-insecure-3zsf9fxl)l=!y-cszahkm7@*#1=466eogkc^w*#epa-j*yi)14",
 )
+SIAA_VISTO_SECRET = os.environ.get("SIAA_VISTO_SECRET", "")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get("DJANGO_DEBUG", "True").lower() in ("1", "true", "yes")
