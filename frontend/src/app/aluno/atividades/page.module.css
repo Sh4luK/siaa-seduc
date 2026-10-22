@@ -146,23 +146,6 @@
   text-decoration: underline;
 }
 
-.envioAtual {
-  margin-top: 0.65rem;
-  padding: 0.65rem 0.75rem;
-  border-radius: 8px;
-  background: #f0fdf4;
-  font-size: 0.8rem;
-}
-
-.envioAtual > p {
-  margin: 0 0 0.25rem;
-}
-
-.envioAtual a {
-  color: #0b4f9e;
-  font-weight: 600;
-}
-
 .formEnvio {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
@@ -248,131 +231,100 @@
   background: #94a3b8;
   cursor: wait;
 }
-.badgeCorrigida {
-  flex-shrink: 0;
-  font-size: 0.7rem;
-  font-weight: 600;
-  border-radius: 999px;
-  padding: 0.25rem 0.65rem;
-  white-space: nowrap;
-  color: #1e40af;
-  background: #eff6ff;
+
+.solicitacaoBox {
+  display: grid;
+  justify-items: start;
+  gap: 0.65rem;
+  margin-top: 0.8rem;
+  padding: 0.85rem 1rem;
+  border: 1px solid #fcd34d;
+  border-left: 4px solid #f59e0b;
+  border-radius: 9px;
+  background: #fffbeb;
 }
 
-/* Questões respondidas na plataforma */
-.questoes {
-  display: flex;
-  flex-direction: column;
-  gap: 0.85rem;
-  margin: 0.8rem 0 0.2rem;
-  padding-left: 1.2rem;
+.solicitacaoAprovada {
+  border-color: #86efac;
+  border-left-color: #22c55e;
+  background: #f0fdf4;
 }
 
-.questao {
-  color: #1a2942;
-  font-size: 0.88rem;
-}
-
-.enunciado {
-  margin: 0 0 0.4rem;
-  font-weight: 600;
-  white-space: pre-wrap;
-}
-
-.alternativas {
-  display: flex;
-  flex-direction: column;
-  gap: 0.3rem;
-}
-
-.formEnvio .alternativa,
-.alternativa {
+.statusSolicitacao {
   display: flex;
   align-items: flex-start;
-  gap: 0.45rem;
-  padding: 0.4rem 0.55rem;
-  border: 1px solid #e2e8f0;
-  border-radius: 8px;
-  background: #ffffff;
-  font-size: 0.86rem;
-  font-weight: 400;
-  color: #334155;
-  cursor: pointer;
+  gap: 0.5rem;
+  margin: 0;
+  color: #854d0e;
+  font-size: 0.82rem;
+  line-height: 1.5;
 }
 
-.alternativa input {
-  margin-top: 0.2rem;
-  accent-color: #0b4f9e;
+.statusSolicitacao i {
+  margin-top: 0.1rem;
+  color: #d97706;
+  font-size: 1rem;
+  flex: 0 0 auto;
 }
 
-.alternativaCerta {
-  border-color: #86efac;
-  background: #f0fdf4;
+.solicitacaoAprovada .statusSolicitacao,
+.solicitacaoAprovada .statusSolicitacao i {
   color: #15803d;
 }
 
-.alternativaErrada {
-  border-color: #fca5a5;
-  background: #fef2f2;
-  color: #b91c1c;
-}
-
-.letra {
-  font-weight: 700;
-}
-
-.respostaTexto {
-  width: 100%;
-  box-sizing: border-box;
-  padding: 0.55rem 0.7rem;
-  border: 1px solid #e2e8f0;
-  border-radius: 8px;
-  font-family: inherit;
-  font-size: 0.86rem;
-  resize: vertical;
-}
-
-/* Devolutiva do professor */
-.devolutiva {
-  margin-top: 0.8rem;
-  padding: 0.8rem 0.9rem;
-  border: 1px solid #bfdbfe;
-  border-radius: 10px;
-  background: #eff6ff;
-  color: #1e3a8a;
-  font-size: 0.86rem;
-}
-
-.devolutivaTopo {
-  display: flex;
+.solicitarBotao {
+  display: inline-flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 0.5rem;
-  font-weight: 700;
-}
-
-.devolutivaNota {
-  padding: 0.2rem 0.6rem;
-  border-radius: 999px;
-  background: #1e40af;
-  color: #ffffff;
+  text-decoration: none;
+  padding: 0.55rem 0.85rem;
+  border: 1px solid #f59e0b;
+  border-radius: 8px;
+  background: #f59e0b;
+  color: #422006;
   font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
 }
 
-.devolutivaAcertos,
-.devolutivaTexto {
-  margin: 0.45rem 0 0;
+.solicitarBotao:hover {
+  border-color: #d97706;
+  background: #fbbf24;
 }
 
-.devolutivaTexto {
-  white-space: pre-wrap;
-  color: #1a2942;
+.solicitarBotao:disabled {
+  opacity: 0.65;
+  cursor: wait;
 }
 
-.formEnvio .alternativa input[type="radio"] {
-  display: inline-block;
-  width: auto;
-  padding: 0;
-  flex-shrink: 0;
-  box-shadow: none;
+.editarBotao {
+  border-color: #22c55e;
+  background: #22c55e;
+  color: #ffffff;
+}
+
+.editarBotao:hover {
+  border-color: #16a34a;
+  background: #16a34a;
+}
+
+.meusEnvios {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin: 0 0 1.25rem;
+  padding: 0.55rem 0.85rem;
+  border: 1px solid #bfdbfe;
+  border-radius: 8px;
+  background: #eff6ff;
+  color: #1e40af;
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.meusEnvios:hover {
+  border-color: #93c5fd;
+  background: #dbeafe;
 }
