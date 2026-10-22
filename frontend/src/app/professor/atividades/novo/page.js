@@ -8,6 +8,7 @@ import Image from "next/image";
 import logo from "@/assets/logo.png";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+const TODAS_TURMAS = "__todas__";
 
 function hojeISO() {
   const hoje = new Date();
@@ -24,6 +25,7 @@ export default function NovaAtividadePage() {
   const [professorId, setProfessorId] = useState(null);
   const [nomeCompleto, setNomeCompleto] = useState("");
   const [turmasAgrupadas, setTurmasAgrupadas] = useState([]);
+  const [todasTurmasSelecionadas, setTodasTurmasSelecionadas] = useState(false);
   const [disciplinasDaTurma, setDisciplinasDaTurma] = useState([]);
   const [mensagem, setMensagem] = useState(null);
   const [erros, setErros] = useState([]);
@@ -84,6 +86,14 @@ export default function NovaAtividadePage() {
   }
 
   function handleTurmaChange(nomeTurma) {
+    if (nomeTurma === TODAS_TURMAS) {
+      setTodasTurmasSelecionadas(true);
+      setDisciplinasDaTurma([]);
+      handleFormChange("turma_id", TODAS_TURMAS);
+      return;
+    }
+
+    setTodasTurmasSelecionadas(false);
     const grupo = turmasAgrupadas.find((g) => g.nomeTurma === nomeTurma);
     const opcoes = grupo ? grupo.opcoes : [];
     setDisciplinasDaTurma(opcoes);
@@ -126,7 +136,13 @@ export default function NovaAtividadePage() {
     try {
       const formData = new FormData();
       formData.append("professor", professorId);
-      formData.append("turma", form.turma_id);
+      if (todasTurmasSelecionadas) {
+        turmasAgrupadas.flatMap((grupo) => grupo.opcoes).forEach((turma) => {
+          formData.append("turmas", turma.id);
+        });
+      } else {
+        formData.append("turma", form.turma_id);
+      }
       formData.append("titulo", form.titulo.trim());
       formData.append("descricao", form.descricao.trim());
       formData.append("data", form.data);
@@ -148,7 +164,8 @@ export default function NovaAtividadePage() {
         throw new Error(`Falha ao criar atividade (status ${res.status}) - ${corpoErro}`);
       }
 
-      setMensagem("Atividade criada com sucesso.");
+      const data = await res.json();
+      setMensagem(data.message || "Atividade criada com sucesso.");
       setTimeout(() => {
         router.push("/professor/atividades");
       }, 900);
@@ -243,12 +260,18 @@ export default function NovaAtividadePage() {
                     required
                   >
                     <option value="" disabled>Selecione a turma</option>
+                    <option value={TODAS_TURMAS}>Todas as Turmas</option>
                     {turmasAgrupadas.map((grupo) => (
                       <option key={grupo.nomeTurma} value={grupo.nomeTurma}>
                         {grupo.nomeTurma}
                       </option>
                     ))}
                   </select>
+                  {todasTurmasSelecionadas && (
+                    <p className={styles.avisoTodasTurmas} role="status">
+                      Ao selecionar esta opção, a atividade será cadastrada em todas as disciplinas vinculadas às suas turmas.
+                    </p>
+                  )}
                 </div>
 
                 <div className={styles.campo}>
@@ -260,11 +283,13 @@ export default function NovaAtividadePage() {
                     className={styles.select}
                     value={form.turma_id}
                     onChange={(e) => handleFormChange("turma_id", e.target.value)}
-                    disabled={disciplinasDaTurma.length === 0}
+                    disabled={todasTurmasSelecionadas || disciplinasDaTurma.length === 0}
                     required
                   >
-                    <option value="" disabled>
-                      {disciplinasDaTurma.length === 0 ? "Escolha a turma primeiro" : "Selecione a matéria"}
+                    <option value={todasTurmasSelecionadas ? TODAS_TURMAS : ""} disabled>
+                      {todasTurmasSelecionadas
+                        ? "Todas as disciplinas vinculadas"
+                        : disciplinasDaTurma.length === 0 ? "Escolha a turma primeiro" : "Selecione a matéria"}
                     </option>
                     {disciplinasDaTurma.map((opcao) => (
                       <option key={opcao.id} value={opcao.id}>
