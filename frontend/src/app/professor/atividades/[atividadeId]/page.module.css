@@ -115,6 +115,13 @@
   gap: 0.65rem;
 }
 
+.badges {
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
 .aluno {
   margin: 0;
   color: #1a2942;
@@ -152,12 +159,100 @@
   color: #b45309;
 }
 
+.solicitada,
+.aprovada,
+.negada {
+  padding: 0.25rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 600;
+}
+
+.solicitada {
+  background: #fffbeb;
+  color: #92400e;
+}
+
+.aprovada {
+  background: #f0fdf4;
+  color: #15803d;
+}
+
+.negada {
+  background: #fef2f2;
+  color: #b91c1c;
+}
+
 .dataEnvio {
   margin: 0;
   padding-bottom: 0.65rem;
   border-bottom: 1px solid #edf1f6;
   color: #64748b;
   font-size: 0.8rem;
+}
+
+.solicitacao {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.8rem;
+  border: 1px solid #fde68a;
+  border-radius: 10px;
+  background: #fffbeb;
+}
+
+.solicitacao h3 {
+  margin: 0;
+  color: #78350f;
+  font-size: 0.82rem;
+}
+
+.solicitacao p {
+  margin: 0.25rem 0 0;
+  color: #92400e;
+  font-size: 0.75rem;
+}
+
+.acoesSolicitacao {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.aprovarBotao,
+.negarBotao {
+  padding: 0.45rem 0.7rem;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.aprovarBotao {
+  background: #15803d;
+  color: #ffffff;
+}
+
+.aprovarBotao:hover {
+  background: #166534;
+}
+
+.negarBotao {
+  border-color: #fecaca;
+  background: #ffffff;
+  color: #b91c1c;
+}
+
+.negarBotao:hover {
+  background: #fef2f2;
+}
+
+.aprovarBotao:disabled,
+.negarBotao:disabled {
+  opacity: 0.65;
+  cursor: wait;
 }
 
 .comentario {
@@ -174,6 +269,44 @@
 
 .comentario > div {
   margin: 0;
+}
+
+.correcaoLink,
+.pdfVistoLink {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  width: 100%;
+  min-width: 0;
+  padding: 0.65rem 0.8rem;
+  border: 1px solid #bfdbfe;
+  border-radius: 9px;
+  background: #eff6ff;
+  color: #1e40af;
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-align: center;
+  text-decoration: none;
+  overflow-wrap: anywhere;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.correcaoLink:hover,
+.pdfVistoLink:hover {
+  border-color: #93c5fd;
+  background: #dbeafe;
+}
+
+.pdfVistoLink {
+  border-color: #bbf7d0;
+  background: #f0fdf4;
+  color: #15803d;
+}
+
+.pdfVistoLink:hover {
+  border-color: #86efac;
+  background: #dcfce7;
 }
 
 .arquivoLink {
@@ -212,8 +345,13 @@
     grid-template-columns: minmax(0, 1fr);
   }
 
-  .selos {
+  .selos,
+  .badges {
     justify-content: flex-start;
+  }
+
+  .solicitacao {
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 
