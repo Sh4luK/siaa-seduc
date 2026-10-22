@@ -388,13 +388,9 @@ export default function NotasTurmaPage() {
                                   />
                                 </td>
                                 <td>
-                                  <input
-                                    type="number"
-                                    min="0"
-                                    className={styles.input}
-                                    value={aluno.notas.tgf ?? 0}
-                                    onChange={(e) => handleChange(aluno.aluno_id, "tgf", e.target.value)}
-                                  />
+                                  <span className={styles.calculadoBadge}>
+                                    {aluno.notas.tgf ?? 0}
+                                  </span>
                                 </td>
                                 <td>
                                   <select
