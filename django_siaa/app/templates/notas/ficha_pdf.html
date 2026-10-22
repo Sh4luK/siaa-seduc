@@ -1,186 +1,283 @@
 <!DOCTYPE html>
 <html>
-
 <head>
   <meta charset="utf-8">
   <style>
     @page {
       size: A4 landscape;
-      margin: 1.2cm;
+      margin: 0.65cm;
     }
 
     body {
-      font-family: "Helvetica", Arial, sans-serif;
-      color: #1a2942;
-      font-size: 10px;
-    }
-
-    table.cabecalho {
-      border: 0;
-      border-bottom: 2px solid #0b4f9e;
-      margin-bottom: 14px;
-    }
-
-    table.cabecalho td {
-      border: 0;
-      text-align: left;
-      padding: 0 12px 8px 0;
-      vertical-align: middle;
-    }
-
-    .cabecalho img {
-      width: 48px;
-      height: 48px;
-    }
-
-    .cabecalho h1 {
-      font-size: 15px;
-      margin: 0 0 2px;
-      color: #0b4f9e;
-    }
-
-    .cabecalho p {
-      margin: 0;
-      font-size: 10px;
-      color: #5b6b85;
-    }
-
-    table.info-linha {
-      margin-bottom: 10px;
-      font-size: 10.5px;
-    }
-
-    table.info-linha td {
-      border: 0;
-      padding: 0 0 2px;
-      text-align: left;
-    }
-
-    table.info-linha td.dir {
-      text-align: right;
-    }
-
-    .info-linha strong {
-      color: #1a2942;
+      font-family: Arial, Helvetica, sans-serif;
+      color: #111111;
+      font-size: 7px;
     }
 
     table {
       width: 100%;
-      border-collapse: collapse;
     }
 
-    th,
-    td {
-      border: 1px solid #cbd5e1;
-      padding: 4px 3px;
-      text-align: center;
+    .cabecalho {
+      margin-bottom: 5px;
     }
 
-    thead th {
-      background-color: #eaf1fb;
-      color: #0b4f9e;
-      font-weight: 700;
+    .cabecalho td {
+      border: 0;
+      vertical-align: middle;
+      padding: 1px 4px;
+    }
+
+    .logo {
+      width: 42px;
+      height: 42px;
+    }
+
+    .orgao {
       font-size: 9px;
+      font-weight: bold;
+      line-height: 1.5;
+    }
+
+    .titulo {
+      width: 39%;
+      border: 1px solid #111111 !important;
+      text-align: center;
+      font-size: 9px;
+      font-weight: bold;
       text-transform: uppercase;
     }
 
-    td.nome {
-      text-align: left;
-      font-weight: 600;
+    .identificacao {
+      margin-bottom: 5px;
+      font-size: 7px;
     }
 
-    tbody tr:nth-child(even) {
-      background-color: #f8fafc;
+    .identificacao td {
+      border: 1px solid #111111;
+      padding: 3px 4px;
+      vertical-align: middle;
     }
 
-    .rodape {
-      margin-top: 14px;
-      font-size: 8.5px;
-      color: #94a3b8;
+    .identificacao strong {
+      text-transform: uppercase;
+    }
+
+    .notas {
+      width: 100%;
+    }
+
+    .notas th,
+    .notas td {
+      border: 1px solid #111111;
+      text-align: center;
+      padding: 2px 1px;
+    }
+
+    .notas thead th {
+      font-size: 6px;
+      font-weight: bold;
+      text-transform: uppercase;
+    }
+
+    .notas .grupo {
+      font-size: 6.5px;
+      padding: 3px 1px;
+    }
+
+    .numero {
+      width: 18px;
+    }
+
+    .estudante {
+      width: 205px;
+    }
+
+    .nota {
+      width: 31px;
+    }
+
+    .resultado {
+      width: 32px;
+    }
+
+    .situacao {
+      width: 38px;
+    }
+
+    .nome {
+      text-align: left !important;
+      padding-left: 3px !important;
+      font-size: 6.2px;
+    }
+
+    .media {
+      font-weight: bold;
+    }
+
+    .nota-alta {
+      color: #0b4f9e;
+      font-weight: bold;
+    }
+
+    .nota-baixa {
+      color: #b91c1c;
+      font-weight: bold;
+    }
+
+    .legenda {
+      margin-top: 8px;
+      font-size: 6px;
+      table-layout: fixed;
+    }
+
+    .legenda td {
+      border: 1px solid #111111;
+      text-align: center;
+      padding: 3px 2px;
+    }
+
+    .sigPad {
+      height: 25px;
+      border: 0 !important;
+    }
+
+    .assinatura {
+      border: 0 !important;
+      border-top: 1px solid #111111 !important;
+      text-align: center;
+      padding: 3px !important;
+      font-size: 7px;
+    }
+
+    .emissao {
+      margin-top: 5px;
       text-align: right;
+      font-size: 6px;
     }
   </style>
 </head>
-
 <body>
-
   <table class="cabecalho">
     <tr>
-      {% if logo_path %}<td width="56"><img src="{{ logo_path }}" alt="Logo"></td>{% endif %}
-      <td>
-        <h1>Ficha de Notas — {{ nome_turma }}</h1>
-        <p>Disciplina: {{ disciplina }} · Ano letivo: {{ ano_letivo }}</p>
+      {% if logo_path %}
+      <td width="48"><img class="logo" src="{{ logo_path }}" alt="SEDUC-PI"></td>
+      {% endif %}
+      <td class="orgao">
+        GOVERNO DO ESTADO DO PIAUÍ<br>
+        SECRETARIA DE ESTADO DA EDUCAÇÃO — SEDUC<br>
+        SUPERINTENDÊNCIA DE ENSINO — SUPEN
       </td>
+      <td class="titulo">Ficha de rendimento — Ensino Médio Técnico Profissional</td>
     </tr>
   </table>
 
-  <table class="info-linha">
+  <table class="identificacao">
     <tr>
-      <td>Professor(a): <strong>{{ professor }}</strong></td>
-      <td class="dir">Emitido em: <strong>{{ data_emissao }}</strong></td>
+      <td colspan="2"><strong>GRE/Escola:</strong> {{ escola|default:"—" }}</td>
+      <td><strong>Ano/Série:</strong> {{ ano_serie|default:"—" }}</td>
+      <td><strong>Ano letivo:</strong> {{ ano_letivo }}</td>
+    </tr>
+    <tr>
+      <td><strong>Professor(a):</strong> {{ professor }}</td>
+      <td><strong>Disciplina/Área:</strong> {{ disciplina }}</td>
+      <td><strong>Turma:</strong> {{ nome_turma }}</td>
+      <td><strong>Turno:</strong> {{ turno|default:"—" }}</td>
     </tr>
   </table>
 
-  <table>
+  <table class="notas">
     <thead>
       <tr>
-        <th rowspan="2" width="22">Nº</th>
-        <th rowspan="2" width="125">Aluno</th>
-        <th colspan="4">1º Trimestre</th>
-        <th colspan="4">2º Trimestre</th>
-        <th colspan="4">3º Trimestre</th>
-        <th rowspan="2">MA</th>
-        <th rowspan="2">PF</th>
-        <th rowspan="2">MAF</th>
-        <th rowspan="2">RCF</th>
-        <th rowspan="2">TGF</th>
-        <th rowspan="2" width="48">Situação</th>
+        <th class="numero" rowspan="2">Nº</th>
+        <th class="estudante" rowspan="2">Estudante</th>
+        <th class="grupo" colspan="6">1º Trimestre — Avaliações</th>
+        <th class="grupo" colspan="6">2º Trimestre — Avaliações</th>
+        <th class="grupo" colspan="6">3º Trimestre — Avaliações</th>
+        <th class="grupo" colspan="4">Resultado anual</th>
+        <th class="grupo" colspan="5">Resultado final</th>
       </tr>
       <tr>
-        <th>NM1</th>
-        <th>NM2</th>
-        <th>NM3</th>
-        <th>MT</th>
-        <th>NM1</th>
-        <th>NM2</th>
-        <th>NM3</th>
-        <th>MT</th>
-        <th>NM1</th>
-        <th>NM2</th>
-        <th>NM3</th>
-        <th>MT</th>
+        <th class="nota">NM1</th><th class="nota">NM2</th><th class="nota">NM3</th>
+        <th class="nota">MT</th><th class="nota">RPT</th><th class="nota">MTF</th>
+        <th class="nota">NM1</th><th class="nota">NM2</th><th class="nota">NM3</th>
+        <th class="nota">MT</th><th class="nota">RPT</th><th class="nota">MTF</th>
+        <th class="nota">NM1</th><th class="nota">NM2</th><th class="nota">NM3</th>
+        <th class="nota">MT</th><th class="nota">RPT</th><th class="nota">MTF</th>
+        <th class="resultado">1ª MTF</th><th class="resultado">2ª MTF</th>
+        <th class="resultado">3ª MTF</th><th class="resultado">MA</th>
+        <th class="resultado">PF</th><th class="resultado">MAF</th>
+        <th class="resultado">RCF</th><th class="resultado">TGF</th>
+        <th class="situacao">RF</th>
       </tr>
     </thead>
     <tbody>
       {% for linha in linhas %}
       <tr>
         <td>{{ linha.posicao_ordem }}</td>
-        <td class="nome" width="125">{{ linha.nome_completo }}</td>
-        <td>{{ linha.nm1_t1 }}</td>
-        <td>{{ linha.nm2_t1 }}</td>
-        <td>{{ linha.nm3_t1 }}</td>
-        <td>{{ linha.mt_t1 }}</td>
-        <td>{{ linha.nm1_t2 }}</td>
-        <td>{{ linha.nm2_t2 }}</td>
-        <td>{{ linha.nm3_t2 }}</td>
-        <td>{{ linha.mt_t2 }}</td>
-        <td>{{ linha.nm1_t3 }}</td>
-        <td>{{ linha.nm2_t3 }}</td>
-        <td>{{ linha.nm3_t3 }}</td>
-        <td>{{ linha.mt_t3 }}</td>
-        <td><strong>{{ linha.ma }}</strong></td>
-        <td>{{ linha.pf }}</td>
-        <td><strong>{{ linha.maf }}</strong></td>
-        <td>{{ linha.rcf }}</td>
-        <td>{{ linha.tgf }}</td>
-        <td>{{ linha.rf }}</td>
+        <td class="nome">{{ linha.nome_completo }}</td>
+        <td class="{{ linha.cores.nm1_t1 }}">{{ linha.nm1_t1 }}</td>
+        <td class="{{ linha.cores.nm2_t1 }}">{{ linha.nm2_t1 }}</td>
+        <td class="{{ linha.cores.nm3_t1 }}">{{ linha.nm3_t1 }}</td>
+        <td class="{{ linha.cores.mt_t1 }}">{{ linha.mt_t1 }}</td>
+        <td class="{{ linha.cores.rpt_t1 }}">{{ linha.rpt_t1 }}</td>
+        <td class="media {{ linha.cores.mtf_t1 }}">{{ linha.mtf_t1 }}</td>
+        <td class="{{ linha.cores.nm1_t2 }}">{{ linha.nm1_t2 }}</td>
+        <td class="{{ linha.cores.nm2_t2 }}">{{ linha.nm2_t2 }}</td>
+        <td class="{{ linha.cores.nm3_t2 }}">{{ linha.nm3_t2 }}</td>
+        <td class="{{ linha.cores.mt_t2 }}">{{ linha.mt_t2 }}</td>
+        <td class="{{ linha.cores.rpt_t2 }}">{{ linha.rpt_t2 }}</td>
+        <td class="media {{ linha.cores.mtf_t2 }}">{{ linha.mtf_t2 }}</td>
+        <td class="{{ linha.cores.nm1_t3 }}">{{ linha.nm1_t3 }}</td>
+        <td class="{{ linha.cores.nm2_t3 }}">{{ linha.nm2_t3 }}</td>
+        <td class="{{ linha.cores.nm3_t3 }}">{{ linha.nm3_t3 }}</td>
+        <td class="{{ linha.cores.mt_t3 }}">{{ linha.mt_t3 }}</td>
+        <td class="{{ linha.cores.rpt_t3 }}">{{ linha.rpt_t3 }}</td>
+        <td class="media {{ linha.cores.mtf_t3 }}">{{ linha.mtf_t3 }}</td>
+        <td class="{{ linha.cores.mtf_t1 }}">{{ linha.mtf_t1 }}</td>
+        <td class="{{ linha.cores.mtf_t2 }}">{{ linha.mtf_t2 }}</td>
+        <td class="{{ linha.cores.mtf_t3 }}">{{ linha.mtf_t3 }}</td>
+        <td class="media {{ linha.cores.ma }}">{{ linha.ma }}</td>
+        <td class="{{ linha.cores.pf }}">{{ linha.pf }}</td>
+        <td class="media {{ linha.cores.maf }}">{{ linha.maf }}</td>
+        <td class="{{ linha.cores.rcf }}">{{ linha.rcf }}</td>
+        <td>{{ linha.tgf }}</td><td>{{ linha.rf_sigla }}</td>
       </tr>
       {% endfor %}
     </tbody>
   </table>
 
-  <p class="rodape">SIAA-SEDUC — Sistema Integrado de Acompanhamento Acadêmico</p>
+  <table class="legenda">
+    <tr>
+      <td>NM — Nota mensal</td>
+      <td>MT — Média trimestral</td>
+      <td>RPT — Recuperação paralela trimestral</td>
+      <td>PF — Prova final</td>
+      <td>MAF — Média anual final</td>
+    </tr>
+    <tr>
+      <td>TGF — Total geral de faltas</td>
+      <td>RCF — Recuperação final</td>
+      <td>MA — Média anual</td>
+      <td>RF — Resultado final</td>
+      <td>MTF — Média trimestral final</td>
+    </tr>
+    <tr>
+      <td colspan="5">
+        RF: CUR — Cursando · AP — Aprovado · RE — Reprovado · DE — Desistente · FA — Falecido ·
+        AB — Abandono · TR — Transferido · CA — Cancelado · TT — Troca de turma · TO — Transferido outros ·
+        PP — Para progressão · ND — Não definido
+      </td>
+    </tr>
+  </table>
 
+  <table>
+    <tr><td class="sigPad" colspan="2"></td></tr>
+    <tr>
+      <td class="assinatura" width="50%">Assinatura do(a) Coordenador(a)</td>
+      <td class="assinatura" width="50%">Assinatura do(a) Professor(a)</td>
+    </tr>
+  </table>
+  <p class="emissao">Emissão: {{ data_emissao }} · Desenvolvido pela SIAA-SEDUC</p>
 </body>
-
 </html>
