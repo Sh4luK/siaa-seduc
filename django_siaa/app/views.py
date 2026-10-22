@@ -1,6 +1,8 @@
 import re
+import hmac
 from urllib.parse import urlparse
 from urllib.parse import unquote
+from urllib.parse import urlencode
 from django.utils import timezone
 from datetime import date, timedelta
 import unicodedata
@@ -10,6 +12,7 @@ from django.db.models.functions import Trim
 from django.shortcuts import render, redirect
 import requests
 from django.http import HttpResponse, JsonResponse, request
+from django.core.files.base import ContentFile
 from django.views.decorators.csrf import csrf_exempt
 from django.forms.models import model_to_dict
 from django.conf import settings
@@ -57,7 +60,8 @@ from .models import MensagemChatResponsavelProfessor
 from .models import ConversaResponsavelCoordenador
 from .models import MensagemChatResponsavelCoordenador
 from .models import PerfilBlog
-from django.db import models
+from django.db import models, transaction
+from django.urls import reverse
 import json
 import string
 from django.templatetags.static import static
@@ -66,6 +70,7 @@ from django.utils.text import slugify
 from django.views.decorators.http import require_http_methods
 from django.db.models import Avg, Count, Q
 import json
+from .atividade_visto import assinatura_hmac, gerar_pdf_visto
 
 
 
@@ -1710,7 +1715,26 @@ def envios_atividade_professor(request, atividade_id):
         "envios": [
             {
                 "aluno": envio.aluno.nome_completo,
-                **_serializar_envio_atividade(envio, atividade, com_gabarito=True),
+                "comentario": envio.comentario,
+                "enviado_em": envio.enviado_em.isoformat(),
+                "arquivo_url": envio.arquivo.url if envio.arquivo else None,
+                "arquivo_nome": envio.arquivo.name.split("/")[-1] if envio.arquivo else None,
+                "alteracao_status": envio.alteracao_status,
+                "alteracao_solicitada_em": (
+                    envio.alteracao_solicitada_em.isoformat()
+                    if envio.alteracao_solicitada_em else None
+                ),
+                "parecer_professor": envio.parecer_professor,
+                "visto_emitido_em": (
+                    envio.visto_emitido_em.isoformat()
+                    if envio.visto_emitido_em else None
+                ),
+                "visto_assinatura": envio.visto_assinatura,
+                "visto_pdf_url": envio.visto_pdf.url if envio.visto_pdf else None,
+                "atrasado": bool(
+                    atividade.data_entrega
+                    and timezone.localdate(envio.enviado_em) > atividade.data_entrega
+                ),
             }
             for envio in envios
         ],
@@ -1718,48 +1742,145 @@ def envios_atividade_professor(request, atividade_id):
 
 
 @csrf_exempt
-@require_http_methods(["POST"])
-def corrigir_envio_atividade(request, envio_id):
-    """Devolutiva do professor: feedback em texto e nota (0 a 10) para o envio do aluno."""
+@require_http_methods(["GET"])
+def correcao_envio_atividade_professor(request, atividade_id, envio_id):
     professor = _professor_logado(request)
     if not professor:
         return JsonResponse({"detail": "Não autenticado."}, status=401)
 
-    envio = AtividadeEnvio.objects.filter(
-        id=envio_id, atividade__professor=professor
-    ).select_related("atividade").first()
+    envio = AtividadeEnvio.objects.select_related(
+        "aluno", "atividade", "atividade__turma", "atividade__disciplina"
+    ).filter(
+        id=envio_id,
+        atividade_id=atividade_id,
+        atividade__professor=professor,
+    ).first()
     if not envio:
         return JsonResponse({"message": "Envio não encontrado."}, status=404)
+
+    atividade = envio.atividade
+    return JsonResponse({
+        "envio": {
+            "id": envio.id,
+            "aluno": envio.aluno.nome_completo,
+            "comentario": envio.comentario,
+            "enviado_em": envio.enviado_em.isoformat(),
+            "arquivo_url": envio.arquivo.url if envio.arquivo else None,
+            "arquivo_nome": envio.arquivo.name.split("/")[-1] if envio.arquivo else None,
+            "alteracao_status": envio.alteracao_status,
+            "parecer_professor": envio.parecer_professor,
+            "visto_emitido_em": (
+                envio.visto_emitido_em.isoformat()
+                if envio.visto_emitido_em else None
+            ),
+            "visto_assinatura": envio.visto_assinatura,
+            "visto_pdf_url": envio.visto_pdf.url if envio.visto_pdf else None,
+        },
+        "atividade": {
+            "id": atividade.id,
+            "titulo": atividade.titulo,
+            "descricao": atividade.descricao,
+            "disciplina": atividade.disciplina.nome_disciplina if atividade.disciplina else "",
+            "turma": atividade.turma.turma,
+            "data_entrega": atividade.data_entrega.isoformat() if atividade.data_entrega else None,
+        },
+    })
+
+
+@csrf_exempt
+@require_http_methods(["POST"])
+def corrigir_envio_atividade_professor(request, atividade_id, envio_id):
+    professor = _professor_logado(request)
+    if not professor:
+        return JsonResponse({"detail": "Não autenticado."}, status=401)
+    chave = getattr(settings, "SIAA_VISTO_SECRET", "")
+    if len(chave) < 32:
+        return JsonResponse(
+            {"message": "A chave de assinatura do visto não está configurada corretamente no servidor."},
+            status=503,
+        )
 
     try:
         body = json.loads(request.body or "{}")
     except json.JSONDecodeError:
         return JsonResponse({"message": "JSON inválido."}, status=400)
+    if not isinstance(body, dict) or not isinstance(body.get("parecer", ""), str):
+        return JsonResponse({"message": "O parecer deve ser um texto."}, status=400)
+    parecer = body.get("parecer", "").strip()
 
-    feedback = (body.get("feedback") or "").strip()
-    nota_bruta = body.get("nota")
-    nota = None
-    if nota_bruta not in (None, ""):
+    with transaction.atomic():
+        envio = AtividadeEnvio.objects.select_for_update().select_related(
+            "aluno", "atividade", "atividade__turma", "atividade__disciplina"
+        ).filter(
+            id=envio_id,
+            atividade_id=atividade_id,
+            atividade__professor=professor,
+        ).first()
+        if not envio:
+            return JsonResponse({"message": "Envio não encontrado."}, status=404)
+        if envio.visto_emitido_em:
+            return JsonResponse(
+                {"message": "Este envio já recebeu um visto e não pode ser alterado."},
+                status=409,
+            )
+
+        url_verificacao = request.build_absolute_uri(
+            reverse("verificar_visto_envio", args=[envio.id])
+        )
         try:
-            nota = Decimal(str(nota_bruta).replace(",", "."))
-        except (InvalidOperation, ValueError):
-            return JsonResponse({"message": "Nota inválida."}, status=400)
-        if nota < 0 or nota > 10:
-            return JsonResponse({"message": "A nota deve ficar entre 0 e 10."}, status=400)
+            resultado = gerar_pdf_visto(
+                envio=envio,
+                professor=professor,
+                parecer=parecer,
+                chave=chave,
+                url_verificacao=f"{url_verificacao}?{urlencode({'hash': '__HASH__'})}",
+            )
+        except ValueError as error:
+            return JsonResponse({"message": str(error)}, status=400)
 
-    if not feedback and nota is None:
-        return JsonResponse({"message": "Escreva um feedback ou informe a nota."}, status=400)
-
-    envio.feedback = feedback
-    envio.nota = nota
-    envio.corrigido_em = timezone.now()
-    # update_fields para não mexer em enviado_em (auto_now), que marca a entrega do aluno
-    envio.save(update_fields=["feedback", "nota", "corrigido_em"])
+        envio.parecer_professor = parecer
+        envio.visto_emitido_em = resultado["assinado_em"]
+        envio.visto_assinatura = resultado["assinatura"]
+        envio.visto_dados = resultado["dados"]
+        envio.visto_pdf.save(
+            f"visto_envio_{envio.id}_{resultado['assinado_em'].strftime('%Y%m%d%H%M%S')}.pdf",
+            ContentFile(resultado["pdf"]),
+            save=False,
+        )
+        envio.save(update_fields=[
+            "parecer_professor",
+            "visto_emitido_em",
+            "visto_assinatura",
+            "visto_dados",
+            "visto_pdf",
+        ])
 
     return JsonResponse({
-        "message": "Correção salva.",
-        "envio": _serializar_envio_atividade(envio, envio.atividade, com_gabarito=True),
+        "message": "Correção registrada e visto emitido.",
+        "visto_emitido_em": envio.visto_emitido_em.isoformat(),
+        "visto_assinatura": envio.visto_assinatura,
+        "visto_pdf_url": envio.visto_pdf.url,
+        "parecer_professor": envio.parecer_professor,
     })
+
+
+@csrf_exempt
+@require_http_methods(["GET"])
+def verificar_visto_envio(request, envio_id):
+    envio = AtividadeEnvio.objects.filter(id=envio_id).only(
+        "visto_assinatura", "visto_dados", "visto_emitido_em"
+    ).first()
+    fornecida = request.GET.get("hash", "")
+    chave = getattr(settings, "SIAA_VISTO_SECRET", "")
+    if not envio or not envio.visto_emitido_em or len(chave) < 32 or not fornecida:
+        return JsonResponse({"valido": False})
+
+    esperada = assinatura_hmac(envio.visto_dados, chave)
+    valido = (
+        hmac.compare_digest(fornecida, envio.visto_assinatura)
+        and hmac.compare_digest(esperada, envio.visto_assinatura)
+    )
+    return JsonResponse({"valido": valido})
 
 
 @csrf_exempt
@@ -1784,50 +1905,23 @@ def enviar_atividade_aluno(request, atividade_id):
         )
 
     arquivo = request.FILES.get("arquivo")
-    comentario = (request.POST.get("comentario") or "").strip()
+    if not arquivo:
+        return JsonResponse({"message": "O arquivo da atividade é obrigatório."}, status=400)
 
-    # Respostas às questões da plataforma: [{"questao_id", "alternativa_id"?, "texto"?}]
-    try:
-        respostas_brutas = json.loads(request.POST.get("respostas") or "[]")
-    except json.JSONDecodeError:
-        return JsonResponse({"message": "Respostas em formato inválido."}, status=400)
-    if not isinstance(respostas_brutas, list):
-        return JsonResponse({"message": "Respostas em formato inválido."}, status=400)
-
-    questoes = {q.id: q for q in atividade.questoes.prefetch_related("alternativas")}
-    respostas = []
-    for r in respostas_brutas:
-        if not isinstance(r, dict):
-            continue
-        questao = questoes.get(r.get("questao_id"))
-        if not questao:
-            continue
-        if questao.tipo == "OBJETIVA":
-            alternativa = next(
-                (a for a in questao.alternativas.all() if a.id == r.get("alternativa_id")), None
-            )
-            if alternativa:
-                respostas.append((questao, alternativa, ""))
-        else:
-            texto = (r.get("texto") or "").strip()
-            if texto:
-                respostas.append((questao, None, texto))
-
-    if questoes and len(respostas) < len(questoes):
-        return JsonResponse({"message": "Responda todas as questões antes de enviar."}, status=400)
-
-    tem_arquivo = bool(arquivo or (envio and envio.arquivo))
-    if not questoes and not tem_arquivo and not comentario:
+    envio = AtividadeEnvio.objects.filter(atividade=atividade, aluno=aluno).first()
+    if envio and envio.alteracao_status != "APROVADA":
         return JsonResponse(
-            {"message": "Envie um arquivo ou escreva sua resposta antes de enviar."}, status=400
+            {"message": "Você já enviou esta atividade. Solicite uma alteração ao professor para enviar novamente."},
+            status=409,
         )
 
     arquivo_anterior = envio.arquivo.name if envio and envio.arquivo else None
     if not envio:
         envio = AtividadeEnvio(atividade=atividade, aluno=aluno)
-    if arquivo:
-        envio.arquivo = arquivo
-    envio.comentario = comentario
+    envio.arquivo = arquivo
+    envio.comentario = (request.POST.get("comentario") or "").strip()
+    envio.alteracao_status = "NENHUMA"
+    envio.alteracao_solicitada_em = None
     envio.save()
 
     if arquivo and arquivo_anterior and arquivo_anterior != envio.arquivo.name:
@@ -1842,7 +1936,152 @@ def enviar_atividade_aluno(request, atividade_id):
 
     return JsonResponse({
         "message": "Atividade enviada com sucesso.",
-        "envio": _serializar_envio_atividade(envio, atividade, com_gabarito=False),
+        "envio": {
+            "id": envio.id,
+            "comentario": envio.comentario,
+            "enviado_em": envio.enviado_em.isoformat(),
+            "arquivo_url": envio.arquivo.url if envio.arquivo else None,
+            "arquivo_nome": envio.arquivo.name.split("/")[-1],
+            "alteracao_status": envio.alteracao_status,
+            "alteracao_solicitada_em": (
+                envio.alteracao_solicitada_em.isoformat()
+                if envio.alteracao_solicitada_em else None
+            ),
+            "atrasado": bool(
+                atividade.data_entrega
+                and timezone.localdate(envio.enviado_em) > atividade.data_entrega
+            ),
+        },
+    })
+
+
+@csrf_exempt
+@require_http_methods(["GET"])
+def envios_atividade_aluno(request):
+    aluno = _aluno_logado(request)
+    if not aluno:
+        return JsonResponse({"detail": "Não autenticado."}, status=401)
+
+    envios = AtividadeEnvio.objects.filter(aluno=aluno).select_related(
+        "atividade", "atividade__turma", "atividade__disciplina", "atividade__professor"
+    ).order_by("-enviado_em")
+    return JsonResponse({"envios": [_serializar_envio_aluno(envio) for envio in envios]})
+
+
+def _serializar_envio_aluno(envio):
+    atividade = envio.atividade
+    disciplina = resolver_disciplina_da_turma(atividade.turma)
+    return {
+        "id": envio.id,
+        "comentario": envio.comentario,
+        "enviado_em": envio.enviado_em.isoformat(),
+        "arquivo_url": envio.arquivo.url if envio.arquivo else None,
+        "arquivo_nome": envio.arquivo.name.split("/")[-1] if envio.arquivo else None,
+        "alteracao_status": envio.alteracao_status,
+        "alteracao_solicitada_em": (
+            envio.alteracao_solicitada_em.isoformat()
+            if envio.alteracao_solicitada_em else None
+        ),
+        "parecer_professor": envio.parecer_professor,
+        "visto_emitido_em": (
+            envio.visto_emitido_em.isoformat()
+            if envio.visto_emitido_em else None
+        ),
+        "visto_assinatura": envio.visto_assinatura,
+        "visto_pdf_url": envio.visto_pdf.url if envio.visto_pdf else None,
+        "atrasado": bool(
+            atividade.data_entrega
+            and timezone.localdate(envio.enviado_em) > atividade.data_entrega
+        ),
+        "atividade": {
+            "id": atividade.id,
+            "titulo": atividade.titulo,
+            "descricao": atividade.descricao,
+            "disciplina": disciplina.nome_disciplina if disciplina else atividade.turma.disciplina_lecionada,
+            "turma": atividade.turma.turma,
+            "professor": atividade.professor.nome_completo,
+            "data_entrega": atividade.data_entrega.isoformat() if atividade.data_entrega else None,
+        },
+    }
+
+
+@csrf_exempt
+@require_http_methods(["GET"])
+def detalhe_envio_atividade_aluno(request, envio_id):
+    aluno = _aluno_logado(request)
+    if not aluno:
+        return JsonResponse({"detail": "Não autenticado."}, status=401)
+
+    envio = AtividadeEnvio.objects.select_related(
+        "atividade", "atividade__turma", "atividade__disciplina", "atividade__professor"
+    ).filter(id=envio_id, aluno=aluno).first()
+    if not envio:
+        return JsonResponse({"message": "Envio não encontrado."}, status=404)
+
+    dados_envio = _serializar_envio_aluno(envio)
+    atividade = dados_envio.pop("atividade")
+    return JsonResponse({"envio": dados_envio, "atividade": atividade})
+
+
+@csrf_exempt
+@require_http_methods(["POST"])
+def solicitar_alteracao_envio(request, atividade_id):
+    aluno = _aluno_logado(request)
+    if not aluno:
+        return JsonResponse({"detail": "Não autenticado."}, status=401)
+
+    atividade = Atividade.objects.filter(
+        id=atividade_id,
+        turma__in=buscar_atravessapor_por_turma(aluno.turma),
+    ).first()
+    if not atividade:
+        return JsonResponse({"message": "Atividade não encontrada para esta turma."}, status=404)
+
+    envio = AtividadeEnvio.objects.filter(atividade=atividade, aluno=aluno).first()
+    if not envio:
+        return JsonResponse({"message": "Envie a atividade antes de solicitar uma alteração."}, status=400)
+    if envio.alteracao_status in ("SOLICITADA", "APROVADA"):
+        return JsonResponse({"message": "Já existe uma solicitação em andamento ou aprovada."}, status=409)
+
+    envio.alteracao_status = "SOLICITADA"
+    envio.alteracao_solicitada_em = timezone.now()
+    envio.save(update_fields=["alteracao_status", "alteracao_solicitada_em"])
+    return JsonResponse({"message": "Solicitação de alteração enviada ao professor."})
+
+
+@csrf_exempt
+@require_http_methods(["POST"])
+def responder_solicitacao_alteracao_envio(request, atividade_id, envio_id):
+    professor = _professor_logado(request)
+    if not professor:
+        return JsonResponse({"detail": "Não autenticado."}, status=401)
+
+    try:
+        body = json.loads(request.body or "{}")
+    except json.JSONDecodeError:
+        return JsonResponse({"message": "JSON inválido."}, status=400)
+
+    if not isinstance(body, dict):
+        return JsonResponse({"message": "O corpo da solicitação deve ser um objeto JSON."}, status=400)
+
+    acao = body.get("acao")
+    if acao not in ("aprovar", "negar"):
+        return JsonResponse({"message": "A ação deve ser 'aprovar' ou 'negar'."}, status=400)
+
+    envio = AtividadeEnvio.objects.filter(
+        id=envio_id,
+        atividade_id=atividade_id,
+        atividade__professor=professor,
+        alteracao_status="SOLICITADA",
+    ).first()
+    if not envio:
+        return JsonResponse({"message": "Solicitação de alteração não encontrada."}, status=404)
+
+    envio.alteracao_status = "APROVADA" if acao == "aprovar" else "NEGADA"
+    envio.save(update_fields=["alteracao_status"])
+    return JsonResponse({
+        "message": "Solicitação aprovada." if acao == "aprovar" else "Solicitação negada.",
+        "alteracao_status": envio.alteracao_status,
     })
 
 
@@ -5318,8 +5557,21 @@ def atividades_aluno(request):
             "data_entrega": a.data_entrega.isoformat() if a.data_entrega else None,
             "arquivo": a.arquivo.url if a.arquivo else None,
             "status": status,
-            "questoes": _serializar_questoes_atividade(a, com_gabarito=False),
-            "envio": _serializar_envio_atividade(envio, a, com_gabarito=False) if envio else None,
+            "envio": {
+                "id": envio.id,
+                "comentario": envio.comentario,
+                "enviado_em": envio.enviado_em.isoformat(),
+                "arquivo_url": caminho_relativo_arquivo(envio.arquivo),
+                "arquivo_nome": envio.arquivo.name.split("/")[-1],
+                "alteracao_status": envio.alteracao_status,
+                "alteracao_solicitada_em": (
+                    envio.alteracao_solicitada_em.isoformat()
+                    if envio.alteracao_solicitada_em else None
+                ),
+                "atrasado": bool(
+                    a.data_entrega and timezone.localdate(envio.enviado_em) > a.data_entrega
+                ),
+            } if envio else None,
         })
 
     return JsonResponse({"atividades": resultado})
