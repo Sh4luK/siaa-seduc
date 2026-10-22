@@ -251,3 +251,12 @@
     align-items: stretch;
   }
 }
+.atividadeResumo {
+  margin: 0.35rem 0 0;
+  font-size: 0.78rem;
+  color: #64748b;
+}
+
+.atividadeResumo strong {
+  color: #b45309;
+}

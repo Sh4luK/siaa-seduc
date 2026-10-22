@@ -248,3 +248,131 @@
   background: #94a3b8;
   cursor: wait;
 }
+.badgeCorrigida {
+  flex-shrink: 0;
+  font-size: 0.7rem;
+  font-weight: 600;
+  border-radius: 999px;
+  padding: 0.25rem 0.65rem;
+  white-space: nowrap;
+  color: #1e40af;
+  background: #eff6ff;
+}
+
+/* Questões respondidas na plataforma */
+.questoes {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  margin: 0.8rem 0 0.2rem;
+  padding-left: 1.2rem;
+}
+
+.questao {
+  color: #1a2942;
+  font-size: 0.88rem;
+}
+
+.enunciado {
+  margin: 0 0 0.4rem;
+  font-weight: 600;
+  white-space: pre-wrap;
+}
+
+.alternativas {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.formEnvio .alternativa,
+.alternativa {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.45rem;
+  padding: 0.4rem 0.55rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  background: #ffffff;
+  font-size: 0.86rem;
+  font-weight: 400;
+  color: #334155;
+  cursor: pointer;
+}
+
+.alternativa input {
+  margin-top: 0.2rem;
+  accent-color: #0b4f9e;
+}
+
+.alternativaCerta {
+  border-color: #86efac;
+  background: #f0fdf4;
+  color: #15803d;
+}
+
+.alternativaErrada {
+  border-color: #fca5a5;
+  background: #fef2f2;
+  color: #b91c1c;
+}
+
+.letra {
+  font-weight: 700;
+}
+
+.respostaTexto {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.55rem 0.7rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 0.86rem;
+  resize: vertical;
+}
+
+/* Devolutiva do professor */
+.devolutiva {
+  margin-top: 0.8rem;
+  padding: 0.8rem 0.9rem;
+  border: 1px solid #bfdbfe;
+  border-radius: 10px;
+  background: #eff6ff;
+  color: #1e3a8a;
+  font-size: 0.86rem;
+}
+
+.devolutivaTopo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  font-weight: 700;
+}
+
+.devolutivaNota {
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  background: #1e40af;
+  color: #ffffff;
+  font-size: 0.8rem;
+}
+
+.devolutivaAcertos,
+.devolutivaTexto {
+  margin: 0.45rem 0 0;
+}
+
+.devolutivaTexto {
+  white-space: pre-wrap;
+  color: #1a2942;
+}
+
+.formEnvio .alternativa input[type="radio"] {
+  display: inline-block;
+  width: auto;
+  padding: 0;
+  flex-shrink: 0;
+  box-shadow: none;
+}

@@ -17,6 +17,62 @@ function formatarData(dataISO) {
   return `${dia}/${mes}/${ano}`;
 }
 
+function respostasIniciais(envio) {
+  return Object.fromEntries(
+    (envio?.respostas || []).map((r) => [r.questao_id, { alternativa_id: r.alternativa_id, texto: r.texto }])
+  );
+}
+
+// Questões da atividade respondidas na plataforma
+function Questoes({ atividadeId, questoes, respostas, onChange, correcao }) {
+  return (
+    <ol className={styles.questoes}>
+      {questoes.map((q) => {
+        const resposta = respostas[q.id] || {};
+        const resultado = correcao?.find((r) => r.questao_id === q.id);
+        return (
+          <li key={q.id} className={styles.questao}>
+            <p className={styles.enunciado}>{q.enunciado}</p>
+            {q.tipo === "OBJETIVA" ? (
+              <div className={styles.alternativas} role="radiogroup">
+                {q.alternativas.map((alt) => {
+                  const marcada = resposta.alternativa_id === alt.id;
+                  let classe = styles.alternativa;
+                  if (correcao && marcada) {
+                    classe += ` ${resultado?.correta ? styles.alternativaCerta : styles.alternativaErrada}`;
+                  }
+                  return (
+                    <label key={alt.id} className={classe}>
+                      <input
+                        type="radio"
+                        name={`q-${atividadeId}-${q.id}`}
+                        checked={marcada}
+                        disabled={Boolean(correcao)}
+                        onChange={() => onChange(q.id, { alternativa_id: alt.id })}
+                      />
+                      <span className={styles.letra}>{alt.letra})</span> {alt.texto}
+                    </label>
+                  );
+                })}
+              </div>
+            ) : (
+              <textarea
+                className={styles.respostaTexto}
+                rows={3}
+                aria-label="Sua resposta"
+                placeholder="Escreva sua resposta..."
+                value={resposta.texto || ""}
+                readOnly={Boolean(correcao)}
+                onChange={(e) => onChange(q.id, { texto: e.target.value })}
+              />
+            )}
+          </li>
+        );
+      })}
+    </ol>
+  );
+}
+
 export default function AtividadesAlunoPage() {
   const [authenticated, setAuthenticated] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -28,6 +84,8 @@ export default function AtividadesAlunoPage() {
   const [erros, setErros] = useState([]);
   const [enviandoId, setEnviandoId] = useState(null);
   const [mensagensEnvio, setMensagensEnvio] = useState({});
+  // respostas[atividadeId][questaoId] = { alternativa_id } | { texto }
+  const [respostas, setRespostas] = useState({});
   const router = useRouter();
 
   useEffect(() => {
@@ -47,7 +105,9 @@ export default function AtividadesAlunoPage() {
         const res = await fetch(`${API_BASE}/api/students/atividades`, { credentials: "include" });
         if (!res.ok) throw new Error(`Falha ao buscar atividades (status ${res.status})`);
         const data = await res.json();
-        setAtividades(data.atividades || []);
+        const lista = data.atividades || [];
+        setAtividades(lista);
+        setRespostas(Object.fromEntries(lista.map((a) => [a.id, respostasIniciais(a.envio)])));
       } catch (error) {
         setErros([`Erro ao carregar atividades: ${error.message}`]);
       } finally {
@@ -58,14 +118,42 @@ export default function AtividadesAlunoPage() {
     init();
   }, [router]);
 
-  async function enviarAtividade(event, atividadeId) {
+  function responder(atividadeId, questaoId, valor) {
+    setRespostas((prev) => ({
+      ...prev,
+      [atividadeId]: { ...(prev[atividadeId] || {}), [questaoId]: valor },
+    }));
+  }
+
+  async function enviarAtividade(event, atividade) {
     event.preventDefault();
+    const atividadeId = atividade.id;
     const formElement = event.currentTarget;
+    const minhas = respostas[atividadeId] || {};
+
+    const faltando = atividade.questoes.filter((q) => {
+      const r = minhas[q.id];
+      return q.tipo === "OBJETIVA" ? !r?.alternativa_id : !r?.texto?.trim();
+    });
+    if (faltando.length) {
+      setMensagensEnvio((prev) => ({
+        ...prev,
+        [atividadeId]: `Responda todas as questões antes de enviar (faltam ${faltando.length}).`,
+      }));
+      return;
+    }
+
     setEnviandoId(atividadeId);
     setMensagensEnvio((prev) => ({ ...prev, [atividadeId]: "" }));
 
     try {
       const formData = new FormData(formElement);
+      if (atividade.questoes.length) {
+        formData.append(
+          "respostas",
+          JSON.stringify(Object.entries(minhas).map(([questaoId, r]) => ({ questao_id: Number(questaoId), ...r })))
+        );
+      }
       const res = await fetch(
         `${API_BASE}/api/students/atividades/${atividadeId}/enviar`,
         { method: "POST", credentials: "include", body: formData }
@@ -193,7 +281,9 @@ export default function AtividadesAlunoPage() {
                     <div className={styles.cardInfo}>
                       <div className={styles.cardTopo}>
                         <p className={styles.cardTitulo}>{a.titulo}</p>
-                        {a.envio ? (
+                        {a.envio?.corrigido_em ? (
+                          <span className={styles.badgeCorrigida}>Corrigida</span>
+                        ) : a.envio ? (
                           <span className={styles.badgeEnviada}>
                             {a.envio.atrasado ? "Enviada com atraso" : "Enviada"}
                           </span>
@@ -216,29 +306,71 @@ export default function AtividadesAlunoPage() {
                       {a.envio && (
                         <div className={styles.envioAtual}>
                           <p>Último envio: {formatarData(a.envio.enviado_em.slice(0, 10))}</p>
-                          <a href={`${API_BASE}${a.envio.arquivo_url}`} target="_blank" rel="noopener noreferrer">
-                            {a.envio.arquivo_nome}
-                          </a>
+                          {a.envio.arquivo_url && (
+                            <a href={`${API_BASE}${a.envio.arquivo_url}`} target="_blank" rel="noopener noreferrer">
+                              {a.envio.arquivo_nome}
+                            </a>
+                          )}
                           {a.envio.comentario && <MarkdownContent content={a.envio.comentario} />}
                         </div>
                       )}
-                      <form
-                        className={styles.formEnvio}
-                        onSubmit={(event) => enviarAtividade(event, a.id)}
-                      >
-                        <label htmlFor={`arquivo-${a.id}`}>Arquivo para envio</label>
-                        <input id={`arquivo-${a.id}`} name="arquivo" type="file" required />
-                        <label htmlFor={`comentario-${a.id}`}>Comentário (opcional)</label>
-                        <textarea id={`comentario-${a.id}`} name="comentario" rows={2} />
-                        <button type="submit" disabled={enviandoId === a.id}>
-                          {enviandoId === a.id
-                            ? "Enviando..."
-                            : a.envio ? "Substituir envio" : "Enviar atividade"}
-                        </button>
-                        {mensagensEnvio[a.id] && (
-                          <p role="status">{mensagensEnvio[a.id]}</p>
-                        )}
-                      </form>
+
+                      {a.envio?.corrigido_em ? (
+                        <>
+                          {a.questoes.length > 0 && (
+                            <Questoes
+                              atividadeId={a.id}
+                              questoes={a.questoes}
+                              respostas={respostas[a.id] || {}}
+                              correcao={a.envio.respostas}
+                            />
+                          )}
+                          <div className={styles.devolutiva}>
+                            <div className={styles.devolutivaTopo}>
+                              <span>Devolutiva do professor</span>
+                              {a.envio.nota !== null && (
+                                <span className={styles.devolutivaNota}>Nota {a.envio.nota}</span>
+                              )}
+                            </div>
+                            {a.envio.total_objetivas > 0 && (
+                              <p className={styles.devolutivaAcertos}>
+                                Você acertou {a.envio.acertos} de {a.envio.total_objetivas} questão(ões) objetiva(s).
+                              </p>
+                            )}
+                            {a.envio.feedback && <p className={styles.devolutivaTexto}>{a.envio.feedback}</p>}
+                          </div>
+                        </>
+                      ) : (
+                        <form
+                          className={styles.formEnvio}
+                          onSubmit={(event) => enviarAtividade(event, a)}
+                        >
+                          {a.questoes.length > 0 && (
+                            <Questoes
+                              atividadeId={a.id}
+                              questoes={a.questoes}
+                              respostas={respostas[a.id] || {}}
+                              onChange={(questaoId, valor) => responder(a.id, questaoId, valor)}
+                            />
+                          )}
+                          <label htmlFor={`arquivo-${a.id}`}>
+                            Arquivo {a.questoes.length > 0 || a.envio?.arquivo_url ? "(opcional)" : ""}
+                          </label>
+                          <input id={`arquivo-${a.id}`} name="arquivo" type="file" />
+                          <label htmlFor={`comentario-${a.id}`}>
+                            {a.questoes.length > 0 ? "Comentário (opcional)" : "Resposta ou comentário"}
+                          </label>
+                          <textarea id={`comentario-${a.id}`} name="comentario" rows={2} />
+                          <button type="submit" disabled={enviandoId === a.id}>
+                            {enviandoId === a.id
+                              ? "Enviando..."
+                              : a.envio ? "Atualizar envio" : "Enviar atividade"}
+                          </button>
+                          {mensagensEnvio[a.id] && (
+                            <p role="status">{mensagensEnvio[a.id]}</p>
+                          )}
+                        </form>
+                      )}
                     </div>
                   </li>
                 ))}

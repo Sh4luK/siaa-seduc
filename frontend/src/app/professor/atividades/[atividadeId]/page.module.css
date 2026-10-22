@@ -91,9 +91,8 @@
 }
 
 .card {
-  display: grid;
-  grid-template-rows: auto auto 1fr auto;
-  align-content: start;
+  display: flex;
+  flex-direction: column;
   gap: 0.7rem;
   min-width: 0;
   padding: 1.15rem;
@@ -101,11 +100,10 @@
   border-radius: 14px;
   background: #ffffff;
   box-shadow: 0 2px 8px rgba(16, 24, 40, 0.04);
-  transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
 .card:hover {
-  transform: translateY(-2px);
   border-color: #cbdaf0;
   box-shadow: 0 8px 20px rgba(16, 24, 40, 0.08);
 }
@@ -125,14 +123,33 @@
   overflow-wrap: anywhere;
 }
 
-.atrasado {
-  justify-self: end;
+.selos {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.35rem;
+}
+
+.atrasado,
+.corrigido,
+.aguardando {
   padding: 0.25rem 0.6rem;
   border-radius: 999px;
   background: #fef2f2;
   color: #b91c1c;
   font-size: 0.72rem;
   font-weight: 600;
+  white-space: nowrap;
+}
+
+.corrigido {
+  background: #f0fdf4;
+  color: #15803d;
+}
+
+.aguardando {
+  background: #fffbeb;
+  color: #b45309;
 }
 
 .dataEnvio {
@@ -195,7 +212,154 @@
     grid-template-columns: minmax(0, 1fr);
   }
 
-  .atrasado {
-    justify-self: start;
+  .selos {
+    justify-content: flex-start;
   }
+}
+
+
+/* Respostas às questões da plataforma */
+.respostas {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  margin: 0;
+  padding-left: 1.2rem;
+}
+
+.resposta {
+  color: #334155;
+  font-size: 0.86rem;
+}
+
+.enunciado {
+  margin: 0 0 0.2rem;
+  font-weight: 600;
+  color: #1a2942;
+  white-space: pre-wrap;
+}
+
+.respostaCerta,
+.respostaErrada,
+.respostaTexto,
+.semResposta {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.respostaCerta {
+  color: #15803d;
+}
+
+.respostaErrada {
+  color: #b91c1c;
+}
+
+.gabarito {
+  color: #64748b;
+}
+
+.respostaTexto {
+  padding: 0.5rem 0.65rem;
+  border-radius: 8px;
+  background: #f8fafc;
+  white-space: pre-wrap;
+}
+
+.semResposta {
+  color: #94a3b8;
+  font-style: italic;
+}
+
+/* Devolutiva do professor */
+.correcao {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  margin-top: auto;
+  padding-top: 0.75rem;
+  border-top: 1px solid #edf1f6;
+}
+
+.correcaoLabel {
+  color: #1a2942;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.feedbackInput,
+.notaInput {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.55rem 0.7rem;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 0.86rem;
+  color: #1a2942;
+  resize: vertical;
+}
+
+.feedbackInput:focus,
+.notaInput:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+
+.correcaoRodape {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.notaCampo {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  color: #1a2942;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.notaInput {
+  width: 5.5rem;
+  text-align: center;
+}
+
+.salvarCorrecao {
+  padding: 0.55rem 1rem;
+  border: none;
+  border-radius: 8px;
+  background: #2563eb;
+  color: #ffffff;
+  font-family: inherit;
+  font-size: 0.84rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.salvarCorrecao:hover {
+  background: #1d4ed8;
+}
+
+.salvarCorrecao:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.correcaoErro,
+.correcaoOk {
+  margin: 0;
+  font-size: 0.8rem;
+}
+
+.correcaoErro {
+  color: #b91c1c;
+}
+
+.correcaoOk {
+  color: #15803d;
 }

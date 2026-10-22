@@ -256,12 +256,44 @@ class Atividade(models.Model):
         return f"{self.titulo} - {self.turma} - {self.data}"
 
 
+class AtividadeQuestao(models.Model):
+    """Questão respondida pelo aluno na própria plataforma (atividade sem arquivo)."""
+    TIPO_CHOICES = [
+        ("OBJETIVA", "Objetiva"),
+        ("SUBJETIVA", "Subjetiva"),
+    ]
+
+    atividade = models.ForeignKey(Atividade, on_delete=models.CASCADE, related_name="questoes")
+    ordem = models.PositiveIntegerField(default=0)
+    enunciado = models.TextField()
+    tipo = models.CharField(max_length=10, choices=TIPO_CHOICES, default="OBJETIVA")
+
+    class Meta:
+        ordering = ["ordem", "id"]
+
+
+class AtividadeAlternativa(models.Model):
+    questao = models.ForeignKey(AtividadeQuestao, on_delete=models.CASCADE, related_name="alternativas")
+    letra = models.CharField(max_length=1)
+    texto = models.CharField(max_length=300)
+    correta = models.BooleanField(default=False)
+
+    class Meta:
+        ordering = ["letra"]
+
+
 class AtividadeEnvio(models.Model):
     atividade = models.ForeignKey(Atividade, on_delete=models.CASCADE, related_name="envios")
     aluno = models.ForeignKey("app.Estudante", on_delete=models.CASCADE, related_name="envios_atividade")
-    arquivo = models.FileField(upload_to="envios_atividades/%Y/%m/")
+    # Opcional: o aluno pode só responder as questões da atividade na plataforma
+    arquivo = models.FileField(upload_to="envios_atividades/%Y/%m/", null=True, blank=True)
     comentario = models.TextField(blank=True, default="")
     enviado_em = models.DateTimeField(auto_now=True)
+
+    # Devolutiva do professor
+    feedback = models.TextField(blank=True, default="", db_default="")
+    nota = models.DecimalField(max_digits=4, decimal_places=2, null=True, blank=True)
+    corrigido_em = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         unique_together = ("atividade", "aluno")
@@ -269,6 +301,16 @@ class AtividadeEnvio(models.Model):
 
     def __str__(self):
         return f"{self.aluno} - {self.atividade}"
+
+
+class AtividadeResposta(models.Model):
+    envio = models.ForeignKey(AtividadeEnvio, on_delete=models.CASCADE, related_name="respostas")
+    questao = models.ForeignKey(AtividadeQuestao, on_delete=models.CASCADE, related_name="respostas")
+    alternativa = models.ForeignKey(AtividadeAlternativa, on_delete=models.SET_NULL, null=True, blank=True)
+    texto = models.TextField(blank=True, default="")
+
+    class Meta:
+        unique_together = ("envio", "questao")
 
 
 

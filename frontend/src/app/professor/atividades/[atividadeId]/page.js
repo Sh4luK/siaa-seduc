@@ -14,6 +14,110 @@ function formatarDataHora(dataISO) {
   return new Date(dataISO).toLocaleString("pt-BR");
 }
 
+function RespostasDoAluno({ questoes, respostas }) {
+  const porQuestao = Object.fromEntries(respostas.map((r) => [r.questao_id, r]));
+
+  return (
+    <ol className={styles.respostas}>
+      {questoes.map((q) => {
+        const resposta = porQuestao[q.id];
+        const escolhida = q.alternativas.find((a) => a.id === resposta?.alternativa_id);
+        const certa = q.alternativas.find((a) => a.correta);
+
+        return (
+          <li key={q.id} className={styles.resposta}>
+            <p className={styles.enunciado}>{q.enunciado}</p>
+            {q.tipo === "OBJETIVA" ? (
+              escolhida ? (
+                <p className={resposta.correta ? styles.respostaCerta : styles.respostaErrada}>
+                  {resposta.correta ? "✓" : "✗"} {escolhida.letra}) {escolhida.texto}
+                  {!resposta.correta && certa && (
+                    <span className={styles.gabarito}> · correta: {certa.letra}) {certa.texto}</span>
+                  )}
+                </p>
+              ) : (
+                <p className={styles.semResposta}>Sem resposta</p>
+              )
+            ) : resposta?.texto ? (
+              <p className={styles.respostaTexto}>{resposta.texto}</p>
+            ) : (
+              <p className={styles.semResposta}>Sem resposta</p>
+            )}
+          </li>
+        );
+      })}
+    </ol>
+  );
+}
+
+function FormCorrecao({ envio, onSalvo }) {
+  const [feedback, setFeedback] = useState(envio.feedback || "");
+  const [nota, setNota] = useState(envio.nota ?? "");
+  const [salvando, setSalvando] = useState(false);
+  const [erro, setErro] = useState("");
+  const [salvo, setSalvo] = useState(false);
+
+  async function salvar(e) {
+    e.preventDefault();
+    setErro("");
+    setSalvo(false);
+    setSalvando(true);
+    try {
+      const res = await fetch(`${API_BASE}/api/teacher/atividades/envios/${envio.id}/corrigir`, {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ feedback, nota }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || `status ${res.status}`);
+      onSalvo(data.envio);
+      setSalvo(true);
+    } catch (error) {
+      setErro(error.message);
+    } finally {
+      setSalvando(false);
+    }
+  }
+
+  return (
+    <form className={styles.correcao} onSubmit={salvar}>
+      <label className={styles.correcaoLabel} htmlFor={`feedback-${envio.id}`}>
+        Feedback para o aluno
+      </label>
+      <textarea
+        id={`feedback-${envio.id}`}
+        className={styles.feedbackInput}
+        rows={3}
+        placeholder="Comente o que ficou bom e o que precisa melhorar..."
+        value={feedback}
+        onChange={(e) => setFeedback(e.target.value)}
+      />
+      <div className={styles.correcaoRodape}>
+        <label className={styles.notaCampo}>
+          Nota
+          <input
+            type="text"
+            inputMode="decimal"
+            className={styles.notaInput}
+            placeholder="0 a 10"
+            value={nota}
+            onChange={(e) => {
+              const valor = e.target.value;
+              if (valor === "" || /^\d{0,2}([.,]\d{0,2})?$/.test(valor)) setNota(valor);
+            }}
+          />
+        </label>
+        <button type="submit" className={styles.salvarCorrecao} disabled={salvando}>
+          {salvando ? "Salvando…" : envio.corrigido_em ? "Atualizar correção" : "Salvar correção"}
+        </button>
+      </div>
+      {erro && <p className={styles.correcaoErro}>{erro}</p>}
+      {salvo && <p className={styles.correcaoOk}>Correção salva. O aluno já pode ver a devolutiva.</p>}
+    </form>
+  );
+}
+
 export default function EnviosAtividadePage() {
   const { atividadeId } = useParams();
   const router = useRouter();
@@ -50,6 +154,12 @@ export default function EnviosAtividadePage() {
     carregarEnvios();
   }, [atividadeId, router]);
 
+  function atualizarEnvio(envioAtualizado) {
+    setEnvios((prev) =>
+      prev.map((e) => (e.id === envioAtualizado.id ? { ...e, ...envioAtualizado } : e))
+    );
+  }
+
   if (loading) {
     return (
       <div className={layoutStyles.page}>
@@ -64,6 +174,9 @@ export default function EnviosAtividadePage() {
     );
   }
 
+  const questoes = atividade?.questoes || [];
+  const corrigidos = envios.filter((e) => e.corrigido_em).length;
+
   return (
     <div className={layoutStyles.page}>
       <div className={layoutStyles.content}>
@@ -76,6 +189,7 @@ export default function EnviosAtividadePage() {
                   <p className={styles.subtitle}>
                     {atividade.nome_turma} · {atividade.disciplina}
                     {atividade.data_entrega && ` · Prazo: ${atividade.data_entrega}`}
+                    {questoes.length > 0 && ` · ${questoes.length} questão(ões) na plataforma`}
                   </p>
                 )}
               </div>
@@ -96,27 +210,55 @@ export default function EnviosAtividadePage() {
               <>
                 <p className={styles.resumo}>
                   {envios.length} {envios.length === 1 ? "envio recebido" : "envios recebidos"}
+                  {" · "}
+                  {corrigidos} corrigido(s)
                 </p>
                 <ul className={styles.lista}>
                   {envios.map((envio) => (
                     <li key={envio.id} className={styles.card}>
                       <div className={styles.cardHeader}>
                         <h2 className={styles.aluno}>{envio.aluno}</h2>
-                        {envio.atrasado && <span className={styles.atrasado}>Enviado com atraso</span>}
+                        <div className={styles.selos}>
+                          {envio.atrasado && <span className={styles.atrasado}>Enviado com atraso</span>}
+                          {envio.corrigido_em ? (
+                            <span className={styles.corrigido}>
+                              Corrigido{envio.nota !== null ? ` · ${envio.nota}` : ""}
+                            </span>
+                          ) : (
+                            <span className={styles.aguardando}>Aguardando correção</span>
+                          )}
+                        </div>
                       </div>
-                      <p className={styles.dataEnvio}>Enviado em {formatarDataHora(envio.enviado_em)}</p>
-                      {envio.comentario && <div className={styles.comentario}>
-                        <MarkdownContent content={envio.comentario} />
-                      </div>}
-                      <a
-                        className={styles.arquivoLink}
-                        href={`${API_BASE}${envio.arquivo_url}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        download
-                      >
-                        Baixar {envio.arquivo_nome}
-                      </a>
+                      <p className={styles.dataEnvio}>
+                        Enviado em {formatarDataHora(envio.enviado_em)}
+                        {envio.total_objetivas > 0 && (
+                          <> · {envio.acertos}/{envio.total_objetivas} objetivas certas</>
+                        )}
+                      </p>
+
+                      {questoes.length > 0 && (
+                        <RespostasDoAluno questoes={questoes} respostas={envio.respostas || []} />
+                      )}
+
+                      {envio.comentario && (
+                        <div className={styles.comentario}>
+                          <MarkdownContent content={envio.comentario} />
+                        </div>
+                      )}
+
+                      {envio.arquivo_url && (
+                        <a
+                          className={styles.arquivoLink}
+                          href={`${API_BASE}${envio.arquivo_url}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          download
+                        >
+                          Baixar {envio.arquivo_nome}
+                        </a>
+                      )}
+
+                      <FormCorrecao envio={envio} onSalvo={atualizarEnvio} />
                     </li>
                   ))}
                 </ul>

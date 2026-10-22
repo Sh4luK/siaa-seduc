@@ -336,7 +336,17 @@ export default function AtividadesPage() {
                           className={styles.enviosLink}
                         >
                           Ver envios dos alunos
+                          {a.total_envios > 0 && ` (${a.total_envios})`}
                         </Link>
+                        {(a.total_questoes > 0 || a.envios_sem_correcao > 0) && (
+                          <p className={styles.atividadeResumo}>
+                            {a.total_questoes > 0 && `${a.total_questoes} questão(ões) na plataforma`}
+                            {a.total_questoes > 0 && a.envios_sem_correcao > 0 && " · "}
+                            {a.envios_sem_correcao > 0 && (
+                              <strong>{a.envios_sem_correcao} para corrigir</strong>
+                            )}
+                          </p>
+                        )}
                       </div>
                       <button
                         className={styles.atividadeDeletar}

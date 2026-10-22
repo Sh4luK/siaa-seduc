@@ -249,6 +249,156 @@ class AtividadeEnvioTests(TestCase):
         self.assertFalse(AtividadeEnvio.objects.exists())
 
 
+class AtividadeQuestoesEDevolutivaTests(TestCase):
+    def setUp(self):
+        self.professor = Professor.objects.create(nome_completo="Professor Teste")
+        self.aluno = Estudante.objects.create(nome_completo="Aluno Teste", turma="Turma A")
+        self.turma_a = AtravessaPor.objects.create(professor=self.professor, turma="Turma A")
+        self.turma_b = AtravessaPor.objects.create(professor=self.professor, turma="Turma B")
+        self.disciplina = Disciplina.objects.create(nome_disciplina="Matemática")
+        self.sessao_aluno = Sessao.objects.create(
+            tipo="ALUNO", referencia_id=self.aluno.id, nome_completo=self.aluno.nome_completo
+        )
+        self.sessao_professor = Sessao.objects.create(
+            tipo="PROFESSOR", referencia_id=self.professor.id, nome_completo=self.professor.nome_completo
+        )
+
+    def criar_atividade(self, questoes):
+        with patch("app.views.resolver_disciplina_da_turma", return_value=self.disciplina):
+            return self.client.post(
+                "/api/teacher/atividades/criar",
+                {
+                    "professor": self.professor.id,
+                    "turmas": [str(self.turma_a.id), str(self.turma_b.id)],
+                    "titulo": "Atividade na plataforma",
+                    "data": "2026-10-22",
+                    "questoes": json.dumps(questoes),
+                },
+            )
+
+    def questoes_padrao(self):
+        return [
+            {
+                "enunciado": "Quanto é 2 + 2?",
+                "tipo": "OBJETIVA",
+                "alternativas": [
+                    {"texto": "3", "correta": False},
+                    {"texto": "4", "correta": True},
+                    {"texto": "", "correta": False},
+                ],
+            },
+            {"enunciado": "Explique a soma.", "tipo": "SUBJETIVA", "alternativas": []},
+        ]
+
+    def enviar_respostas(self, atividade, respostas):
+        self.client.cookies["aluno_session"] = self.sessao_aluno.token
+        with patch("app.views.resolver_disciplina_da_turma", return_value=self.disciplina):
+            return self.client.post(
+                f"/api/students/atividades/{atividade.id}/enviar",
+                {"respostas": json.dumps(respostas)},
+            )
+
+    def test_creates_questions_without_file_for_each_selected_class(self):
+        response = self.criar_atividade(self.questoes_padrao())
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(Atividade.objects.count(), 2)
+        for atividade in Atividade.objects.all():
+            self.assertFalse(atividade.arquivo)
+            self.assertEqual(atividade.questoes.count(), 2)
+            objetiva = atividade.questoes.get(tipo="OBJETIVA")
+            # alternativa em branco é descartada
+            self.assertEqual(objetiva.alternativas.count(), 2)
+
+    def test_rejects_objective_question_without_one_correct_answer(self):
+        questoes = self.questoes_padrao()
+        questoes[0]["alternativas"][1]["correta"] = False
+
+        response = self.criar_atividade(questoes)
+
+        self.assertEqual(response.status_code, 400)
+        self.assertFalse(Atividade.objects.exists())
+
+    def test_student_answers_on_platform_and_teacher_gives_feedback(self):
+        self.criar_atividade(self.questoes_padrao())
+        atividade = Atividade.objects.get(turma=self.turma_a)
+        objetiva = atividade.questoes.get(tipo="OBJETIVA")
+        subjetiva = atividade.questoes.get(tipo="SUBJETIVA")
+        certa = objetiva.alternativas.get(correta=True)
+
+        incompleta = self.enviar_respostas(
+            atividade, [{"questao_id": objetiva.id, "alternativa_id": certa.id}]
+        )
+        self.assertEqual(incompleta.status_code, 400)
+
+        envio_resp = self.enviar_respostas(atividade, [
+            {"questao_id": objetiva.id, "alternativa_id": certa.id},
+            {"questao_id": subjetiva.id, "texto": "Juntando as quantidades."},
+        ])
+        self.assertEqual(envio_resp.status_code, 200)
+        # sem arquivo e sem gabarito para o aluno antes da correção
+        envio_json = envio_resp.json()["envio"]
+        self.assertIsNone(envio_json["arquivo_url"])
+        self.assertNotIn("correta", envio_json["respostas"][0])
+        lista_aluno = self.client.get("/api/students/atividades").json()["atividades"][0]
+        self.assertNotIn("correta", lista_aluno["questoes"][0]["alternativas"][0])
+
+        envio = AtividadeEnvio.objects.get()
+        enviado_em = envio.enviado_em
+        self.client.cookies["professor_session"] = self.sessao_professor.token
+        envios = self.client.get(f"/api/teacher/atividades/{atividade.id}/envios").json()["envios"]
+        self.assertEqual(envios[0]["acertos"], 1)
+        self.assertEqual(envios[0]["total_objetivas"], 1)
+
+        correcao = self.client.post(
+            f"/api/teacher/atividades/envios/{envio.id}/corrigir",
+            json.dumps({"feedback": "Muito bem!", "nota": "9,5"}),
+            content_type="application/json",
+        )
+        self.assertEqual(correcao.status_code, 200)
+        envio.refresh_from_db()
+        self.assertEqual(envio.feedback, "Muito bem!")
+        self.assertEqual(envio.nota, Decimal("9.5"))
+        self.assertIsNotNone(envio.corrigido_em)
+        self.assertEqual(envio.enviado_em, enviado_em)
+
+        # aluno vê a devolutiva e não pode mais reenviar
+        visto = self.client.get("/api/students/atividades").json()["atividades"][0]["envio"]
+        self.assertEqual(visto["feedback"], "Muito bem!")
+        self.assertEqual(visto["nota"], 9.5)
+        self.assertTrue(visto["respostas"][0]["correta"])
+        reenvio = self.enviar_respostas(atividade, [
+            {"questao_id": objetiva.id, "alternativa_id": certa.id},
+            {"questao_id": subjetiva.id, "texto": "Outra resposta."},
+        ])
+        self.assertEqual(reenvio.status_code, 400)
+
+    def test_teacher_cannot_grade_outside_zero_to_ten_or_other_teachers_work(self):
+        self.criar_atividade(self.questoes_padrao())
+        atividade = Atividade.objects.get(turma=self.turma_a)
+        envio = AtividadeEnvio.objects.create(atividade=atividade, aluno=self.aluno, comentario="ok")
+
+        self.client.cookies["professor_session"] = self.sessao_professor.token
+        fora = self.client.post(
+            f"/api/teacher/atividades/envios/{envio.id}/corrigir",
+            json.dumps({"nota": 11}),
+            content_type="application/json",
+        )
+        self.assertEqual(fora.status_code, 400)
+
+        outro = Professor.objects.create(nome_completo="Outro Professor")
+        sessao_outro = Sessao.objects.create(
+            tipo="PROFESSOR", referencia_id=outro.id, nome_completo=outro.nome_completo
+        )
+        self.client.cookies["professor_session"] = sessao_outro.token
+        alheio = self.client.post(
+            f"/api/teacher/atividades/envios/{envio.id}/corrigir",
+            json.dumps({"nota": 8}),
+            content_type="application/json",
+        )
+        self.assertEqual(alheio.status_code, 404)
+
+
 class ProfessorComunicadoTests(TestCase):
     def setUp(self):
         self.professor = Professor.objects.create(nome_completo="Professor Teste")

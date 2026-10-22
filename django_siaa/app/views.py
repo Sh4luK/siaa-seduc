@@ -32,6 +32,9 @@ from .models import Evento
 from .models import Conteudo
 from .models import Atividade
 from .models import AtividadeEnvio
+from .models import AtividadeQuestao
+from .models import AtividadeAlternativa
+from .models import AtividadeResposta
 from .models import Comunicado
 from .models import Coordenador
 from .models import Advertencia
@@ -61,7 +64,7 @@ from django.templatetags.static import static
 from django.template.loader import render_to_string
 from django.utils.text import slugify
 from django.views.decorators.http import require_http_methods
-from django.db.models import Avg
+from django.db.models import Avg, Count, Q
 import json
 
 
@@ -1426,7 +1429,15 @@ def get_atividades(request):
     if not professor_id:
         return JsonResponse({"message": "Parâmetro 'professor' é obrigatório."}, status=400)
 
-    atividades = Atividade.objects.filter(professor_id=professor_id).select_related("turma", "disciplina")
+    atividades = Atividade.objects.filter(professor_id=professor_id).select_related(
+        "turma", "disciplina"
+    ).annotate(
+        total_questoes=Count("questoes", distinct=True),
+        total_envios=Count("envios", distinct=True),
+        envios_sem_correcao=Count(
+            "envios", filter=Q(envios__corrigido_em__isnull=True), distinct=True
+        ),
+    )
 
     if mes and ano:
         atividades = atividades.filter(data__year=ano, data__month=mes)
@@ -1448,6 +1459,9 @@ def get_atividades(request):
             "disciplina": a.disciplina.nome_disciplina,
             "arquivo_url": caminho_relativo_arquivo(a.arquivo),
             "arquivo_nome": a.arquivo.name.split("/")[-1] if a.arquivo else None,
+            "total_questoes": a.total_questoes,
+            "total_envios": a.total_envios,
+            "envios_sem_correcao": a.envios_sem_correcao,
         }
         for a in atividades
     ]
@@ -1456,6 +1470,111 @@ def get_atividades(request):
         "total_atividades": len(resultado),
         "atividades": resultado
     })
+
+
+def _validar_questoes_atividade(bruto):
+    """Lê o JSON de questões enviado na criação da atividade.
+    Retorna (questoes, erro)."""
+    if not bruto:
+        return [], None
+    try:
+        questoes = json.loads(bruto)
+    except json.JSONDecodeError:
+        return None, "Questões em formato inválido."
+    if not isinstance(questoes, list):
+        return None, "Questões em formato inválido."
+
+    validas = []
+    for i, q in enumerate(questoes, start=1):
+        enunciado = (q.get("enunciado") or "").strip() if isinstance(q, dict) else ""
+        tipo = q.get("tipo") if isinstance(q, dict) else None
+        if not enunciado:
+            return None, f"Questão {i}: o enunciado é obrigatório."
+        if tipo not in ("OBJETIVA", "SUBJETIVA"):
+            return None, f"Questão {i}: tipo inválido."
+
+        alternativas = []
+        if tipo == "OBJETIVA":
+            for alt in q.get("alternativas") or []:
+                texto = (alt.get("texto") or "").strip()
+                if texto:
+                    alternativas.append({"texto": texto, "correta": bool(alt.get("correta"))})
+            if len(alternativas) < 2:
+                return None, f"Questão {i}: preencha pelo menos duas alternativas."
+            if sum(a["correta"] for a in alternativas) != 1:
+                return None, f"Questão {i}: marque exatamente uma alternativa correta."
+        validas.append({"enunciado": enunciado, "tipo": tipo, "alternativas": alternativas})
+    return validas, None
+
+
+def _criar_questoes_atividade(atividade, questoes):
+    for ordem, q in enumerate(questoes):
+        questao = AtividadeQuestao.objects.create(
+            atividade=atividade, ordem=ordem, enunciado=q["enunciado"], tipo=q["tipo"]
+        )
+        for i, alt in enumerate(q["alternativas"]):
+            AtividadeAlternativa.objects.create(
+                questao=questao, letra="ABCDEFGHIJ"[i], texto=alt["texto"], correta=alt["correta"]
+            )
+
+
+def _serializar_questoes_atividade(atividade, com_gabarito):
+    return [
+        {
+            "id": q.id,
+            "ordem": q.ordem,
+            "enunciado": q.enunciado,
+            "tipo": q.tipo,
+            "alternativas": [
+                {
+                    "id": a.id,
+                    "letra": a.letra,
+                    "texto": a.texto,
+                    **({"correta": a.correta} if com_gabarito else {}),
+                }
+                for a in q.alternativas.all()
+            ],
+        }
+        for q in atividade.questoes.prefetch_related("alternativas").all()
+    ]
+
+
+def _serializar_envio_atividade(envio, atividade, com_gabarito):
+    """Envio do aluno com respostas e devolutiva. O gabarito das objetivas só
+    aparece para o professor ou depois que a atividade foi corrigida."""
+    mostrar_gabarito = com_gabarito or envio.corrigido_em is not None
+    respostas = []
+    acertos = 0
+    total_objetivas = 0
+    for r in envio.respostas.select_related("questao", "alternativa").all():
+        correta = None
+        if r.questao.tipo == "OBJETIVA":
+            total_objetivas += 1
+            correta = bool(r.alternativa and r.alternativa.correta)
+            acertos += int(correta)
+        respostas.append({
+            "questao_id": r.questao_id,
+            "alternativa_id": r.alternativa_id,
+            "texto": r.texto,
+            **({"correta": correta} if mostrar_gabarito else {}),
+        })
+
+    return {
+        "id": envio.id,
+        "comentario": envio.comentario,
+        "enviado_em": envio.enviado_em.isoformat(),
+        "arquivo_url": caminho_relativo_arquivo(envio.arquivo) if envio.arquivo else None,
+        "arquivo_nome": envio.arquivo.name.split("/")[-1] if envio.arquivo else None,
+        "atrasado": bool(
+            atividade.data_entrega
+            and timezone.localdate(envio.enviado_em) > atividade.data_entrega
+        ),
+        "respostas": respostas,
+        **({"acertos": acertos, "total_objetivas": total_objetivas} if mostrar_gabarito else {}),
+        "feedback": envio.feedback,
+        "nota": float(envio.nota) if envio.nota is not None else None,
+        "corrigido_em": envio.corrigido_em.isoformat() if envio.corrigido_em else None,
+    }
 
 
 @csrf_exempt
@@ -1479,6 +1598,10 @@ def criar_atividade(request):
             {"message": "Campos 'professor', 'turma(s)', 'titulo' e 'data' são obrigatórios."},
             status=400
         )
+
+    questoes, erro_questoes = _validar_questoes_atividade(request.POST.get("questoes"))
+    if erro_questoes:
+        return JsonResponse({"message": erro_questoes}, status=400)
 
     try:
         turmas_ids = list(dict.fromkeys(int(turma_id) for turma_id in turmas_ids))
@@ -1533,6 +1656,7 @@ def criar_atividade(request):
                 atividades[0].arquivo.name if atividades[0].arquivo else None
             ),
         )
+        _criar_questoes_atividade(atividade, questoes)
         atividades.append(atividade)
 
     atividades_serializadas = [
@@ -1546,6 +1670,7 @@ def criar_atividade(request):
             "nome_turma": atividade.turma.turma,
             "disciplina": atividade.disciplina.nome_disciplina,
             "arquivo_url": caminho_relativo_arquivo(atividade.arquivo),
+            "total_questoes": len(questoes),
         }
         for atividade in atividades
     ]
@@ -1580,22 +1705,60 @@ def envios_atividade_professor(request, atividade_id):
             "data_entrega": atividade.data_entrega.isoformat() if atividade.data_entrega else None,
             "nome_turma": atividade.turma.turma,
             "disciplina": atividade.disciplina.nome_disciplina,
+            "questoes": _serializar_questoes_atividade(atividade, com_gabarito=True),
         },
         "envios": [
             {
-                "id": envio.id,
                 "aluno": envio.aluno.nome_completo,
-                "comentario": envio.comentario,
-                "enviado_em": envio.enviado_em.isoformat(),
-                "arquivo_url": caminho_relativo_arquivo(envio.arquivo),
-                "arquivo_nome": envio.arquivo.name.split("/")[-1] if envio.arquivo else None,
-                "atrasado": bool(
-                    atividade.data_entrega
-                    and timezone.localdate(envio.enviado_em) > atividade.data_entrega
-                ),
+                **_serializar_envio_atividade(envio, atividade, com_gabarito=True),
             }
             for envio in envios
         ],
+    })
+
+
+@csrf_exempt
+@require_http_methods(["POST"])
+def corrigir_envio_atividade(request, envio_id):
+    """Devolutiva do professor: feedback em texto e nota (0 a 10) para o envio do aluno."""
+    professor = _professor_logado(request)
+    if not professor:
+        return JsonResponse({"detail": "Não autenticado."}, status=401)
+
+    envio = AtividadeEnvio.objects.filter(
+        id=envio_id, atividade__professor=professor
+    ).select_related("atividade").first()
+    if not envio:
+        return JsonResponse({"message": "Envio não encontrado."}, status=404)
+
+    try:
+        body = json.loads(request.body or "{}")
+    except json.JSONDecodeError:
+        return JsonResponse({"message": "JSON inválido."}, status=400)
+
+    feedback = (body.get("feedback") or "").strip()
+    nota_bruta = body.get("nota")
+    nota = None
+    if nota_bruta not in (None, ""):
+        try:
+            nota = Decimal(str(nota_bruta).replace(",", "."))
+        except (InvalidOperation, ValueError):
+            return JsonResponse({"message": "Nota inválida."}, status=400)
+        if nota < 0 or nota > 10:
+            return JsonResponse({"message": "A nota deve ficar entre 0 e 10."}, status=400)
+
+    if not feedback and nota is None:
+        return JsonResponse({"message": "Escreva um feedback ou informe a nota."}, status=400)
+
+    envio.feedback = feedback
+    envio.nota = nota
+    envio.corrigido_em = timezone.now()
+    # update_fields para não mexer em enviado_em (auto_now), que marca a entrega do aluno
+    envio.save(update_fields=["feedback", "nota", "corrigido_em"])
+
+    return JsonResponse({
+        "message": "Correção salva.",
+        "envio": _serializar_envio_atividade(envio, envio.atividade, com_gabarito=True),
     })
 
 
@@ -1613,34 +1776,73 @@ def enviar_atividade_aluno(request, atividade_id):
     if not atividade:
         return JsonResponse({"message": "Atividade não encontrada para esta turma."}, status=404)
 
-    arquivo = request.FILES.get("arquivo")
-    if not arquivo:
-        return JsonResponse({"message": "O arquivo da atividade é obrigatório."}, status=400)
-
     envio = AtividadeEnvio.objects.filter(atividade=atividade, aluno=aluno).first()
+    if envio and envio.corrigido_em:
+        return JsonResponse(
+            {"message": "Esta atividade já foi corrigida pelo professor e não pode ser reenviada."},
+            status=400,
+        )
+
+    arquivo = request.FILES.get("arquivo")
+    comentario = (request.POST.get("comentario") or "").strip()
+
+    # Respostas às questões da plataforma: [{"questao_id", "alternativa_id"?, "texto"?}]
+    try:
+        respostas_brutas = json.loads(request.POST.get("respostas") or "[]")
+    except json.JSONDecodeError:
+        return JsonResponse({"message": "Respostas em formato inválido."}, status=400)
+    if not isinstance(respostas_brutas, list):
+        return JsonResponse({"message": "Respostas em formato inválido."}, status=400)
+
+    questoes = {q.id: q for q in atividade.questoes.prefetch_related("alternativas")}
+    respostas = []
+    for r in respostas_brutas:
+        if not isinstance(r, dict):
+            continue
+        questao = questoes.get(r.get("questao_id"))
+        if not questao:
+            continue
+        if questao.tipo == "OBJETIVA":
+            alternativa = next(
+                (a for a in questao.alternativas.all() if a.id == r.get("alternativa_id")), None
+            )
+            if alternativa:
+                respostas.append((questao, alternativa, ""))
+        else:
+            texto = (r.get("texto") or "").strip()
+            if texto:
+                respostas.append((questao, None, texto))
+
+    if questoes and len(respostas) < len(questoes):
+        return JsonResponse({"message": "Responda todas as questões antes de enviar."}, status=400)
+
+    tem_arquivo = bool(arquivo or (envio and envio.arquivo))
+    if not questoes and not tem_arquivo and not comentario:
+        return JsonResponse(
+            {"message": "Envie um arquivo ou escreva sua resposta antes de enviar."}, status=400
+        )
+
     arquivo_anterior = envio.arquivo.name if envio and envio.arquivo else None
     if not envio:
         envio = AtividadeEnvio(atividade=atividade, aluno=aluno)
-    envio.arquivo = arquivo
-    envio.comentario = (request.POST.get("comentario") or "").strip()
+    if arquivo:
+        envio.arquivo = arquivo
+    envio.comentario = comentario
     envio.save()
 
-    if arquivo_anterior and arquivo_anterior != envio.arquivo.name:
+    if arquivo and arquivo_anterior and arquivo_anterior != envio.arquivo.name:
         default_storage.delete(arquivo_anterior)
+
+    if questoes:
+        envio.respostas.all().delete()
+        AtividadeResposta.objects.bulk_create([
+            AtividadeResposta(envio=envio, questao=q, alternativa=alt, texto=texto)
+            for q, alt, texto in respostas
+        ])
 
     return JsonResponse({
         "message": "Atividade enviada com sucesso.",
-        "envio": {
-            "id": envio.id,
-            "comentario": envio.comentario,
-            "enviado_em": envio.enviado_em.isoformat(),
-            "arquivo_url": caminho_relativo_arquivo(envio.arquivo),
-            "arquivo_nome": envio.arquivo.name.split("/")[-1],
-            "atrasado": bool(
-                atividade.data_entrega
-                and timezone.localdate(envio.enviado_em) > atividade.data_entrega
-            ),
-        },
+        "envio": _serializar_envio_atividade(envio, atividade, com_gabarito=False),
     })
 
 
@@ -5116,16 +5318,8 @@ def atividades_aluno(request):
             "data_entrega": a.data_entrega.isoformat() if a.data_entrega else None,
             "arquivo": a.arquivo.url if a.arquivo else None,
             "status": status,
-            "envio": {
-                "id": envio.id,
-                "comentario": envio.comentario,
-                "enviado_em": envio.enviado_em.isoformat(),
-                "arquivo_url": caminho_relativo_arquivo(envio.arquivo),
-                "arquivo_nome": envio.arquivo.name.split("/")[-1],
-                "atrasado": bool(
-                    a.data_entrega and timezone.localdate(envio.enviado_em) > a.data_entrega
-                ),
-            } if envio else None,
+            "questoes": _serializar_questoes_atividade(a, com_gabarito=False),
+            "envio": _serializar_envio_atividade(envio, a, com_gabarito=False) if envio else None,
         })
 
     return JsonResponse({"atividades": resultado})
