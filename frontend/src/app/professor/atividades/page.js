@@ -331,6 +331,12 @@ export default function AtividadesPage() {
                             Baixar {a.arquivo_nome}
                           </a>
                         )}
+                        <Link
+                          href={`/professor/atividades/${a.id}`}
+                          className={styles.enviosLink}
+                        >
+                          Ver envios dos alunos
+                        </Link>
                       </div>
                       <button
                         className={styles.atividadeDeletar}
