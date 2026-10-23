@@ -8,20 +8,15 @@ import layoutStyles from "../../page.module.css";
 import styles from "./page.module.css";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "https://siaa-backend.vercel.app";
+const API_PROXY = "/backend-api";
 
 function resolverUrl(url) {
   if (!url) return "";
   const urlArquivo = new URL(url, `${API_BASE}/`);
-  const urlApi = new URL(API_BASE);
   const hostLocal = ["localhost", "127.0.0.1", "::1"];
 
-  if (
-    hostLocal.includes(urlArquivo.hostname)
-    && !hostLocal.includes(urlApi.hostname)
-  ) {
-    urlArquivo.protocol = urlApi.protocol;
-    urlArquivo.hostname = urlApi.hostname;
-    urlArquivo.port = urlApi.port;
+  if (!url.startsWith("http") || hostLocal.includes(urlArquivo.hostname)) {
+    return `/backend-api${urlArquivo.pathname}${urlArquivo.search}${urlArquivo.hash}`;
   }
 
   return urlArquivo.toString();
@@ -60,14 +55,15 @@ export default function AtividadeAlunoPage({ params }) {
   useEffect(() => {
     async function carregarAtividade() {
       try {
-        const authRes = await fetch(`${API_BASE}/api/students/auth`, { credentials: "include" });
+        const authRes = await fetch(`${API_PROXY}/api/students/auth`, { credentials: "include" });
         const authData = await authRes.json();
         if (!authData.return) {
-          router.push("/aluno/login");
+          const destino = `/aluno/atividades/${atividadeId}`;
+          router.push(`/aluno/login?next=${encodeURIComponent(destino)}`);
           return;
         }
 
-        const res = await fetch(`${API_BASE}/api/students/atividades/${atividadeId}`, {
+        const res = await fetch(`${API_PROXY}/api/students/atividades/${atividadeId}`, {
           credentials: "include",
         });
         const data = await res.json();
@@ -195,7 +191,7 @@ export default function AtividadeAlunoPage({ params }) {
         formData.append("limpar_arquivo", "true");
       }
 
-      const res = await fetch(`${API_BASE}/api/students/atividades/${atividadeId}/enviar`, {
+      const res = await fetch(`${API_PROXY}/api/students/atividades/${atividadeId}/enviar`, {
         method: "POST",
         credentials: "include",
         body: formData,
@@ -217,7 +213,7 @@ export default function AtividadeAlunoPage({ params }) {
     setMensagem("");
     try {
       const res = await fetch(
-        `${API_BASE}/api/students/atividades/${atividadeId}/solicitar-alteracao`,
+        `${API_PROXY}/api/students/atividades/${atividadeId}/solicitar-alteracao`,
         { method: "POST", credentials: "include" }
       );
       const data = await res.json();
