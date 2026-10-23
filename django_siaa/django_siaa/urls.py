@@ -143,6 +143,7 @@ urlpatterns = [
     path('api/students/dashboard', app.views.dashboard_aluno),
     path('api/students/conteudos', app.views.conteudos_aluno),
     path('api/students/atividades', app.views.atividades_aluno),
+    path('api/students/atividades/<int:atividade_id>', app.views.detalhe_atividade_aluno),
     path('api/students/atividades/<int:atividade_id>/enviar', app.views.enviar_atividade_aluno),
     path('api/students/atividades/<int:atividade_id>/solicitar-alteracao', app.views.solicitar_alteracao_envio),
     path('api/students/envios', app.views.envios_atividade_aluno),
