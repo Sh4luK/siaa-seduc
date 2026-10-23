@@ -127,6 +127,15 @@
   overflow-wrap: anywhere;
 }
 
+.semArquivo {
+  margin: 0;
+  padding: 1rem;
+  border-radius: 9px;
+  background: #f8fafc;
+  color: #64748b;
+  font-size: 0.84rem;
+}
+
 .tipoArquivo {
   padding: 0.25rem 0.6rem;
   border-radius: 999px;
@@ -186,6 +195,33 @@
   color: #0b4f9e;
   font-size: 0.85rem;
   font-weight: 700;
+}
+
+.respostasLivres {
+  display: grid;
+  gap: 0.65rem;
+  margin-top: 1rem;
+}
+
+.respostasLivres h2 {
+  margin: 0;
+  color: #1e293b;
+  font-size: 0.95rem;
+}
+
+.respostaLivre {
+  padding: 0.8rem 0.9rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 9px;
+  background: #f8fafc;
+  color: #334155;
+  font-size: 0.85rem;
+}
+
+.respostaLivre p {
+  margin: 0.35rem 0 0;
+  line-height: 1.5;
+  white-space: pre-wrap;
 }
 
 .comentarioAluno {
