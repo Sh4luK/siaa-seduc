@@ -155,36 +155,54 @@ export default function CorrigirEnvioPage() {
                 </div>
               </div>
 
-              <div className={styles.arquivoCabecalho}>
-                <div>
-                  <h2>Resposta enviada</h2>
-                  <a href={arquivoUrl} target="_blank" rel="noopener noreferrer">
-                    <i className="ti ti-download" aria-hidden="true" />
-                    {envio.arquivo_nome}
-                  </a>
-                </div>
-                <span className={styles.tipoArquivo}>
-                  {tipo === "pdf" ? "PDF" : tipo === "imagem" ? "Imagem" : "Arquivo"}
-                </span>
-              </div>
-
-              <div className={styles.visualizador}>
-                {tipo === "pdf" ? (
-                  <iframe src={arquivoUrl} title={`Arquivo enviado por ${envio.aluno}`} />
-                ) : tipo === "imagem" ? (
-                  <a href={arquivoUrl} target="_blank" rel="noopener noreferrer">
-                    <img src={arquivoUrl} alt={`Arquivo enviado por ${envio.aluno}`} />
-                  </a>
-                ) : (
-                  <div className={styles.semVisualizacao}>
-                    <i className="ti ti-file-description" aria-hidden="true" />
-                    <p>Este formato não pode ser exibido nesta página.</p>
-                    <a href={arquivoUrl} target="_blank" rel="noopener noreferrer" download>
-                      Baixar arquivo para revisar
-                    </a>
+              {arquivoUrl ? (
+                <>
+                  <div className={styles.arquivoCabecalho}>
+                    <div>
+                      <h2>Resposta enviada</h2>
+                      <a href={arquivoUrl} target="_blank" rel="noopener noreferrer">
+                        <i className="ti ti-download" aria-hidden="true" />
+                        {envio.arquivo_nome}
+                      </a>
+                    </div>
+                    <span className={styles.tipoArquivo}>
+                      {tipo === "pdf" ? "PDF" : tipo === "imagem" ? "Imagem" : "Arquivo"}
+                    </span>
                   </div>
-                )}
-              </div>
+
+                  <div className={styles.visualizador}>
+                    {tipo === "pdf" ? (
+                      <iframe src={arquivoUrl} title={`Arquivo enviado por ${envio.aluno}`} />
+                    ) : tipo === "imagem" ? (
+                      <a href={arquivoUrl} target="_blank" rel="noopener noreferrer">
+                        <img src={arquivoUrl} alt={`Arquivo enviado por ${envio.aluno}`} />
+                      </a>
+                    ) : (
+                      <div className={styles.semVisualizacao}>
+                        <i className="ti ti-file-description" aria-hidden="true" />
+                        <p>Este formato não pode ser exibido nesta página.</p>
+                        <a href={arquivoUrl} target="_blank" rel="noopener noreferrer" download>
+                          Baixar arquivo para revisar
+                        </a>
+                      </div>
+                    )}
+                  </div>
+                </>
+              ) : (
+                <p className={styles.semArquivo}>O aluno não anexou um arquivo.</p>
+              )}
+
+              {envio.respostas_livres?.length > 0 && (
+                <section className={styles.respostasLivres}>
+                  <h2>Respostas por questão</h2>
+                  {envio.respostas_livres.map((resposta, indice) => (
+                    <article className={styles.respostaLivre} key={`${indice}-${resposta.questao}`}>
+                      <strong>{resposta.questao}</strong>
+                      <p>{resposta.resposta}</p>
+                    </article>
+                  ))}
+                </section>
+              )}
 
               <section className={styles.comentarioAluno}>
                 <h2>Comentário do aluno</h2>
