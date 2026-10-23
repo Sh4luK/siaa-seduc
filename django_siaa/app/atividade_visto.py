@@ -18,7 +18,7 @@ from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
 from reportlab.lib.utils import ImageReader
 from reportlab.pdfgen import canvas
-from reportlab.platypus import Paragraph, SimpleDocTemplate, Spacer
+from reportlab.platypus import Flowable, Paragraph, SimpleDocTemplate, Spacer, Table, TableStyle
 from django.utils import timezone
 
 
@@ -434,6 +434,234 @@ def _gerar_pdf_imagens(conteudo):
     return saida.getvalue()
 
 
+def _gerar_pdf_texto(conteudo, arquivo_nome):
+    try:
+        texto = conteudo.decode("utf-8-sig")
+    except UnicodeDecodeError:
+        texto = conteudo.decode("cp1252", errors="replace")
+    texto = "".join(
+        caractere
+        for caractere in texto
+        if caractere in "\n\t" or ord(caractere) >= 32 and not 127 <= ord(caractere) <= 159
+    )
+    texto = texto.replace("\r\n", "\n").replace("\r", "\n").replace("\t", "    ")
+    texto = texto.encode("cp1252", errors="replace").decode("cp1252")
+
+    styles = getSampleStyleSheet()
+    styles.add(ParagraphStyle(
+        name="ArquivoTextoTituloSIAA",
+        parent=styles["Heading2"],
+        fontName="Helvetica-Bold",
+        fontSize=11,
+        leading=14,
+        textColor=colors.HexColor("#16345c"),
+        spaceAfter=12,
+    ))
+    styles.add(ParagraphStyle(
+        name="ArquivoTextoCorpoSIAA",
+        parent=styles["Code"],
+        fontName="Courier",
+        fontSize=8,
+        leading=10,
+        textColor=colors.HexColor("#1e293b"),
+        splitLongWords=True,
+        wordWrap="CJK",
+    ))
+
+    corpo = html.escape(texto).replace("\n", "<br/>") or " "
+    saida = BytesIO()
+    SimpleDocTemplate(
+        saida,
+        pagesize=A4,
+        rightMargin=48,
+        leftMargin=48,
+        topMargin=48,
+        bottomMargin=48,
+        title=f"Conteúdo - {arquivo_nome}",
+    ).build([
+        Paragraph("Correção da atividade", styles["ArquivoTextoTituloSIAA"]),
+        Paragraph(corpo, styles["ArquivoTextoCorpoSIAA"]),
+    ])
+    return saida.getvalue()
+
+
+class _MarcaCerto(Flowable):
+    def __init__(self):
+        super().__init__()
+        self.width = 10
+        self.height = 10
+
+    def wrap(self, _largura, _altura):
+        return self.width, self.height
+
+    def draw(self):
+        self.canv.setStrokeColor(colors.HexColor("#15803d"))
+        self.canv.setLineWidth(1.8)
+        caminho = self.canv.beginPath()
+        caminho.moveTo(1, 5)
+        caminho.lineTo(4, 2)
+        caminho.lineTo(9, 9)
+        self.canv.drawPath(caminho)
+
+
+def _gerar_pdf_correcao(correcao):
+    questoes = correcao.get("questoes") or []
+    respostas_livres = correcao.get("respostas_livres") or []
+    if not questoes and not respostas_livres:
+        return None
+
+    styles = getSampleStyleSheet()
+    styles.add(ParagraphStyle(
+        name="CorrecaoTituloSIAA",
+        parent=styles["Heading2"],
+        fontName="Helvetica-Bold",
+        fontSize=15,
+        leading=19,
+        textColor=colors.HexColor("#16345c"),
+        spaceAfter=14,
+    ))
+    styles.add(ParagraphStyle(
+        name="CorrecaoPerguntaSIAA",
+        parent=styles["BodyText"],
+        fontName="Helvetica-Bold",
+        fontSize=10,
+        leading=14,
+        textColor=colors.HexColor("#172554"),
+        spaceAfter=3,
+    ))
+    styles.add(ParagraphStyle(
+        name="CorrecaoRespostaSIAA",
+        parent=styles["BodyText"],
+        fontSize=9,
+        leading=13,
+        leftIndent=4,
+    ))
+    styles.add(ParagraphStyle(
+        name="CorrecaoAlternativaSIAA",
+        parent=styles["BodyText"],
+        fontSize=9,
+        leading=12,
+    ))
+
+    saida = BytesIO()
+    documento = SimpleDocTemplate(
+        saida,
+        pagesize=A4,
+        rightMargin=48,
+        leftMargin=48,
+        topMargin=48,
+        bottomMargin=48,
+        title="Correção da atividade",
+    )
+    story = [Paragraph("Correção da atividade", styles["CorrecaoTituloSIAA"])]
+
+    def adicionar_linha(texto, estilo, marca=False, recuo=0):
+        estilo_linha = (
+            ParagraphStyle(f"{estilo.name}Recuo{recuo}", parent=estilo, leftIndent=recuo)
+            if recuo else estilo
+        )
+        conteudo = Paragraph(texto, estilo_linha)
+        if marca:
+            linha = Table([[_MarcaCerto(), conteudo]], colWidths=[16, documento.width - 16])
+            linha.setStyle(TableStyle([
+                ("VALIGN", (0, 0), (-1, -1), "TOP"),
+                ("LEFTPADDING", (0, 0), (-1, -1), 0),
+                ("RIGHTPADDING", (0, 0), (-1, -1), 0),
+                ("TOPPADDING", (0, 0), (-1, -1), 0),
+                ("BOTTOMPADDING", (0, 0), (-1, -1), 2),
+            ]))
+            story.append(linha)
+        else:
+            story.append(conteudo)
+
+    for indice, questao in enumerate(questoes, start=1):
+        story.append(Spacer(1, 8))
+        adicionar_linha(
+            f"Questão {indice}: {_texto_pdf(questao.get('enunciado'))}",
+            styles["CorrecaoPerguntaSIAA"],
+            marca=questao.get("correta") is True,
+        )
+
+        for alternativa in questao.get("alternativas") or []:
+            resposta_aluno = alternativa.get("selecionada")
+            texto_alternativa = (
+                f"{_texto_pdf(alternativa.get('letra'))}) "
+                f"{_texto_pdf(alternativa.get('texto'))}"
+                f"{' — resposta do aluno' if resposta_aluno else ''}"
+            )
+            adicionar_linha(
+                texto_alternativa,
+                styles["CorrecaoAlternativaSIAA"],
+                marca=alternativa.get("correta") is True,
+                recuo=12,
+            )
+
+        resposta = questao.get("resposta_aluno") or "Não respondida."
+        adicionar_linha(
+            f"<b>Resposta do aluno:</b> {_texto_pdf(resposta)}",
+            styles["CorrecaoRespostaSIAA"],
+            recuo=4,
+        )
+
+    for indice, resposta in enumerate(respostas_livres, start=len(questoes) + 1):
+        story.append(Spacer(1, 8))
+        adicionar_linha(
+            f"Questão {indice}: {_texto_pdf(resposta.get('questao'))}",
+            styles["CorrecaoPerguntaSIAA"],
+        )
+        adicionar_linha(
+            f"<b>Resposta do aluno:</b> {_texto_pdf(resposta.get('resposta'))}",
+            styles["CorrecaoRespostaSIAA"],
+            recuo=4,
+        )
+
+    documento.build(story)
+    return saida.getvalue()
+
+
+def _snapshot_correcao(envio):
+    respostas = {
+        resposta.questao_id: resposta
+        for resposta in envio.respostas.select_related("alternativa").all()
+    }
+    questoes = []
+    for questao in envio.atividade.questoes.prefetch_related("alternativas").all():
+        resposta = respostas.get(questao.id)
+        alternativas = []
+        for alternativa in questao.alternativas.all():
+            alternativas.append({
+                "letra": alternativa.letra,
+                "texto": alternativa.texto,
+                "correta": alternativa.correta,
+                "selecionada": bool(resposta and resposta.alternativa_id == alternativa.id),
+            })
+
+        resposta_aluno = ""
+        correta = False
+        if questao.tipo == "OBJETIVA":
+            if resposta and resposta.alternativa:
+                resposta_aluno = f"{resposta.alternativa.letra}) {resposta.alternativa.texto}"
+                correta = resposta.alternativa.correta
+        elif resposta:
+            resposta_aluno = resposta.texto
+
+        questoes.append({
+            "enunciado": questao.enunciado,
+            "tipo": questao.tipo,
+            "alternativas": alternativas,
+            "resposta_aluno": resposta_aluno,
+            "correta": correta,
+        })
+
+    respostas_livres = envio.respostas_livres if isinstance(envio.respostas_livres, list) else []
+    respostas_livres = [
+        {"questao": str(item.get("questao") or ""), "resposta": str(item.get("resposta") or "")}
+        for item in respostas_livres
+        if isinstance(item, dict)
+    ]
+    return {"questoes": questoes, "respostas_livres": respostas_livres}
+
+
 def _montar_pdf_visto(conteudo_original, arquivo_nome, dados, assinatura, url_verificacao):
     resumo_pdf = PdfReader(BytesIO(_gerar_pdf_resumo(
         dados,
@@ -456,27 +684,39 @@ def _montar_pdf_visto(conteudo_original, arquivo_nome, dados, assinatura, url_ve
         except Exception as error:
             raise ValueError("Não foi possível ler o PDF enviado.") from error
     else:
-        try:
-            pdf_imagens = _gerar_pdf_imagens(conteudo_original)
-            for pagina in PdfReader(BytesIO(pdf_imagens)).pages:
-                writer.add_page(pagina)
-        except Exception:
-            mime = mimetypes.guess_type(arquivo_nome)[0] or "application/octet-stream"
-            story = BytesIO()
-            texto = getSampleStyleSheet()["BodyText"]
-            texto.alignment = TA_CENTER
-            SimpleDocTemplate(story, pagesize=A4).build([
-                Spacer(1, 180),
-                Paragraph(
-                    f"O arquivo <b>{_texto_pdf(arquivo_nome)}</b> "
-                    f"(tipo {html.escape(mime)}) foi anexado a este PDF, "
-                    "mas não pode ser visualizado como página.",
-                    texto,
-                ),
-            ])
-            for pagina in PdfReader(story).pages:
+        mime = mimetypes.guess_type(arquivo_nome)[0] or "application/octet-stream"
+        if mime.startswith("text/"):
+            pdf_texto = _gerar_pdf_texto(conteudo_original, arquivo_nome)
+            for pagina in PdfReader(BytesIO(pdf_texto)).pages:
                 writer.add_page(pagina)
             writer.add_attachment(arquivo_nome, conteudo_original)
+        else:
+            try:
+                pdf_imagens = _gerar_pdf_imagens(conteudo_original)
+                for pagina in PdfReader(BytesIO(pdf_imagens)).pages:
+                    writer.add_page(pagina)
+            except Exception:
+                mime = mimetypes.guess_type(arquivo_nome)[0] or "application/octet-stream"
+                story = BytesIO()
+                texto = getSampleStyleSheet()["BodyText"]
+                texto.alignment = TA_CENTER
+                SimpleDocTemplate(story, pagesize=A4).build([
+                    Spacer(1, 180),
+                    Paragraph(
+                        f"O arquivo <b>{_texto_pdf(arquivo_nome)}</b> "
+                        f"(tipo {html.escape(mime)}) foi anexado a este PDF, "
+                        "mas não pode ser visualizado como página.",
+                        texto,
+                    ),
+                ])
+                for pagina in PdfReader(story).pages:
+                    writer.add_page(pagina)
+                writer.add_attachment(arquivo_nome, conteudo_original)
+
+    pdf_correcao = _gerar_pdf_correcao(dados.get("correcao") or {})
+    if pdf_correcao:
+        for pagina in PdfReader(BytesIO(pdf_correcao)).pages:
+            writer.add_page(pagina)
 
     saida = BytesIO()
     writer.add_metadata({
@@ -505,7 +745,8 @@ def _conteudo_original_do_envio(envio):
         for r in envio.respostas.select_related("alternativa").all()
     }
     linhas = [f"Respostas do envio {envio.id} - {envio.atividade.titulo}", ""]
-    for numero, questao in enumerate(envio.atividade.questoes.all(), start=1):
+    questoes = list(envio.atividade.questoes.all())
+    for numero, questao in enumerate(questoes, start=1):
         linhas.append(f"{numero}. {questao.enunciado}")
         resposta = respostas.get(questao.id)
         if questao.tipo == "OBJETIVA":
@@ -513,6 +754,13 @@ def _conteudo_original_do_envio(envio):
             linhas.append(f"   Resposta: {alt.letra}) {alt.texto}" if alt else "   Resposta: (em branco)")
         else:
             linhas.append(f"   Resposta: {resposta.texto if resposta else '(em branco)'}")
+        linhas.append("")
+    respostas_livres = envio.respostas_livres if isinstance(envio.respostas_livres, list) else []
+    for numero, resposta in enumerate(respostas_livres, start=len(questoes) + 1):
+        if not isinstance(resposta, dict):
+            continue
+        linhas.append(f"{numero}. {resposta.get('questao') or ''}")
+        linhas.append(f"   Resposta: {resposta.get('resposta') or '(em branco)'}")
         linhas.append("")
     if envio.comentario:
         linhas += ["Comentário do aluno:", envio.comentario, ""]
@@ -528,7 +776,7 @@ def gerar_pdf_visto(envio, professor, parecer, chave, url_verificacao, nota=None
     disciplina = atividade.disciplina.nome_disciplina if atividade.disciplina else ""
     momento = timezone.now()
     dados = {
-        "versao": 1,
+        "versao": 2,
         "envio_id": envio.id,
         "aluno_id": envio.aluno_id,
         "aluno": envio.aluno.nome_completo or "",
@@ -545,66 +793,15 @@ def gerar_pdf_visto(envio, professor, parecer, chave, url_verificacao, nota=None
         "arquivo_sha256": arquivo_sha256,
         "comentario_aluno": envio.comentario,
         "parecer_professor": parecer,
+        "correcao": _snapshot_correcao(envio),
         # nota entra nos dados assinados: alterá-la depois invalida o visto
         "nota": None if nota is None else f"{nota:.2f}",
         "assinado_em": momento.isoformat(),
     }
     assinatura = assinatura_hmac(dados, chave)
     url_verificacao = url_verificacao.replace("__HASH__", assinatura)
-
-    resumo_pdf = PdfReader(BytesIO(_gerar_pdf_resumo(
-        dados,
-        parecer,
-        assinatura,
-        url_verificacao,
-    )))
-    writer = PdfWriter()
-    writer.append(resumo_pdf)
-
-    arquivo_pdf = None
-    if conteudo_original.startswith(b"%PDF-"):
-        try:
-            arquivo_pdf = PdfReader(BytesIO(conteudo_original), strict=False)
-            if arquivo_pdf.is_encrypted:
-                raise ValueError("O PDF enviado está protegido por senha e não pode ser incorporado.")
-            for pagina in arquivo_pdf.pages:
-                writer.add_page(pagina)
-        except ValueError:
-            raise
-        except Exception as error:
-            raise ValueError("Não foi possível ler o PDF enviado.") from error
-    else:
-        try:
-            pdf_imagens = _gerar_pdf_imagens(conteudo_original)
-            for pagina in PdfReader(BytesIO(pdf_imagens)).pages:
-                writer.add_page(pagina)
-        except Exception:
-            mime = mimetypes.guess_type(arquivo_nome)[0] or "application/octet-stream"
-            story = BytesIO()
-            texto = getSampleStyleSheet()["BodyText"]
-            texto.alignment = TA_CENTER
-            SimpleDocTemplate(story, pagesize=A4).build([
-                Spacer(1, 180),
-                Paragraph(
-                    f"O arquivo <b>{_texto_pdf(arquivo_nome)}</b> "
-                    f"(tipo {html.escape(mime)}) foi anexado a este PDF, "
-                    "mas não pode ser visualizado como página.",
-                    texto,
-                ),
-            ])
-            for pagina in PdfReader(story).pages:
-                writer.add_page(pagina)
-            writer.add_attachment(arquivo_nome, conteudo_original)
-
-    saida = BytesIO()
-    writer.add_metadata({
-        "/Title": f"Visto - {atividade.titulo}",
-        "/Author": professor.nome_completo or "SIAA-SEDUC",
-        "/Subject": f"Atividade {atividade.id}; envio {envio.id}",
-    })
-    writer.write(saida)
     return {
-        "pdf": saida.getvalue(),
+        "pdf": _montar_pdf_visto(conteudo_original, arquivo_nome, dados, assinatura, url_verificacao),
         "dados": dados,
         "assinatura": assinatura,
         "arquivo_sha256": arquivo_sha256,
