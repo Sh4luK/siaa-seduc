@@ -210,8 +210,8 @@ export default function DetalheEnvioAlunoPage({ params }) {
               <div className={styles.aviso} role="status">
                 <i className="ti ti-circle-check" aria-hidden="true" />
                 <p>O professor autorizou um novo envio. Você pode editar este envio.</p>
-                <Link href={`/aluno/atividades/${envio.id}`} className={styles.botaoEditar}>
-                  Editar envio
+                <Link href={`/aluno/atividades/${atividade.id}`} className={styles.botaoEditar}>
+                  Ver atividade
                 </Link>
               </div>
             )}
