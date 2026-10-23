@@ -1,5 +1,6 @@
 {
     "python.REPL.enableREPLSmartSend": false,
     "editor.tabSize": 2,
-    "python.defaultInterpreterPath": "${workspaceFolder}/venv/Scripts/python.exe"
+    "python.defaultInterpreterPath": "${workspaceFolder}/venv/Scripts/python.exe",
+    "python-envs.defaultEnvManager": "ms-python.python:venv"
 }

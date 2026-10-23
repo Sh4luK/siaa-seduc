@@ -158,10 +158,12 @@ CSRF_COOKIE_HTTPONLY = True
 # Frontend (Next.js) e backend ficam em domínios diferentes na Vercel.
 # Ex.: FRONTEND_ORIGINS=https://meu-front.vercel.app
 CORS_ALLOW_CREDENTIALS = True
-CORS_ALLOWED_ORIGINS = _env_list(
-    "FRONTEND_ORIGINS",
-    "http://localhost:3000,https://obscure-happiness-v67rpjq7p96vfxj4g-3000.app.github.dev",
-)
+CORS_ALLOWED_ORIGINS = list(dict.fromkeys([
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+    "https://obscure-happiness-v67rpjq7p96vfxj4g-3000.app.github.dev",
+    *_env_list("FRONTEND_ORIGINS"),
+]))
 CORS_ALLOWED_ORIGIN_REGEXES = _env_list("FRONTEND_ORIGIN_REGEXES")
 
 CSRF_TRUSTED_ORIGINS = [

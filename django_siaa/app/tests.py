@@ -6,7 +6,9 @@ from datetime import timedelta
 from io import BytesIO
 import json
 from decimal import Decimal
+from pathlib import Path
 import tempfile
+from types import SimpleNamespace
 from unittest.mock import patch
 from pypdf import PdfReader
 
@@ -23,7 +25,11 @@ from .models import (
     Sessao,
 )
 from .atividade_visto import gerar_pdf_visto, regenerar_pdf_visto
-from .views import _criar_sessao_e_setar_cookie, resolver_disciplina_da_turma
+from .views import (
+    _criar_sessao_e_setar_cookie,
+    caminho_relativo_arquivo,
+    resolver_disciplina_da_turma,
+)
 
 
 class NotaCalculationTests(TestCase):
@@ -162,6 +168,17 @@ class DisciplinaResolverTests(TestCase):
         self.assertEqual(resolver_disciplina_da_turma(turma), disciplina)
 
 
+class FrontendCorsTests(TestCase):
+    def test_local_frontend_origin_is_allowed_for_api_requests(self):
+        response = self.client.options(
+            "/api/students/auth",
+            HTTP_ORIGIN="http://localhost:3000",
+            HTTP_ACCESS_CONTROL_REQUEST_METHOD="GET",
+        )
+
+        self.assertEqual(response["access-control-allow-origin"], "http://localhost:3000")
+
+
 class AtividadeEnvioTests(TestCase):
     def setUp(self):
         # ignore_cleanup_errors: no Windows o arquivo lido no teste pode seguir aberto
@@ -198,6 +215,18 @@ class AtividadeEnvioTests(TestCase):
             referencia_id=self.professor.id,
             nome_completo=self.professor.nome_completo,
         )
+
+    def test_file_url_preserves_external_storage_host(self):
+        arquivo_externo = SimpleNamespace(
+            url="https://store.public.blob.vercel-storage.com/atividades/tarefa.pdf"
+        )
+        arquivo_local = SimpleNamespace(url="/media/atividades/tarefa.pdf")
+
+        self.assertEqual(
+            caminho_relativo_arquivo(arquivo_externo),
+            "https://store.public.blob.vercel-storage.com/atividades/tarefa.pdf",
+        )
+        self.assertEqual(caminho_relativo_arquivo(arquivo_local), "/media/atividades/tarefa.pdf")
 
     def test_visto_pdf_has_compact_header_and_stamp_on_summary_page(self):
         resposta = self.enviar_arquivo("atividade.txt", b"conteudo do envio")
@@ -404,6 +433,43 @@ class AtividadeEnvioTests(TestCase):
         self.assertIn("Correção da atividade", pdf_texto)
         self.assertIn("Como você resolveu?", pdf_texto)
         self.assertIn("Usei a fórmula apresentada.", pdf_texto)
+
+    def test_student_can_replace_uploaded_media_with_typed_answers(self):
+        self.assertEqual(self.enviar_arquivo("atividade.pdf", b"documento enviado").status_code, 200)
+        envio = AtividadeEnvio.objects.get()
+        arquivo_anterior = envio.arquivo.name
+        self.assertEqual(
+            self.client.post(
+                f"/api/students/atividades/{self.atividade.id}/solicitar-alteracao"
+            ).status_code,
+            200,
+        )
+        self.client.cookies["professor_session"] = self.sessao_professor.token
+        self.assertEqual(
+            self.client.post(
+                f"/api/teacher/atividades/{self.atividade.id}/envios/{envio.id}/solicitacao",
+                data=json.dumps({"acao": "aprovar"}),
+                content_type="application/json",
+            ).status_code,
+            200,
+        )
+
+        resposta = self.client.post(
+            f"/api/students/atividades/{self.atividade.id}/enviar",
+            {
+                "limpar_arquivo": "true",
+                "respostas_livres": json.dumps([
+                    {"questao": "Pergunta", "resposta": "Resposta"},
+                ]),
+            },
+        )
+
+        self.assertEqual(resposta.status_code, 200)
+        envio.refresh_from_db()
+        self.assertFalse(envio.arquivo)
+        self.assertEqual(envio.comentario, "")
+        self.assertEqual(envio.respostas_livres, [{"questao": "Pergunta", "resposta": "Resposta"}])
+        self.assertFalse((Path(self.media_dir.name) / arquivo_anterior).exists())
 
     def test_student_cannot_view_activity_from_another_class(self):
         outra_turma = AtravessaPor.objects.create(

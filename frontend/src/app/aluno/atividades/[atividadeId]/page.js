@@ -7,11 +7,24 @@ import { useRouter } from "next/navigation";
 import layoutStyles from "../../page.module.css";
 import styles from "./page.module.css";
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || "https://siaa-backend.vercel.app";
 
 function resolverUrl(url) {
   if (!url) return "";
-  return url.startsWith("http") ? url : `${API_BASE}${url}`;
+  const urlArquivo = new URL(url, `${API_BASE}/`);
+  const urlApi = new URL(API_BASE);
+  const hostLocal = ["localhost", "127.0.0.1", "::1"];
+
+  if (
+    hostLocal.includes(urlArquivo.hostname)
+    && !hostLocal.includes(urlApi.hostname)
+  ) {
+    urlArquivo.protocol = urlApi.protocol;
+    urlArquivo.hostname = urlApi.hostname;
+    urlArquivo.port = urlApi.port;
+  }
+
+  return urlArquivo.toString();
 }
 
 function tipoArquivo(nome = "") {
@@ -38,6 +51,7 @@ export default function AtividadeAlunoPage({ params }) {
   const [envio, setEnvio] = useState(null);
   const [respostas, setRespostas] = useState({});
   const [respostasLivres, setRespostasLivres] = useState([]);
+  const [modoResposta, setModoResposta] = useState("questao");
   const [enviando, setEnviando] = useState(false);
   const [solicitandoAlteracao, setSolicitandoAlteracao] = useState(false);
   const [erro, setErro] = useState("");
@@ -60,11 +74,11 @@ export default function AtividadeAlunoPage({ params }) {
         if (!res.ok) throw new Error(data.message || `Falha ao carregar atividade (status ${res.status})`);
         setAtividade(data.atividade);
         setEnvio(data.envio);
+        setModoResposta(data.envio?.arquivo_url ? "midia" : "questao");
         setRespostas(respostasIniciais(data.envio));
         setRespostasLivres(
           (data.envio?.respostas_livres || []).map((resposta) => ({
             id: crypto.randomUUID(),
-            questao: resposta.questao,
             resposta: resposta.resposta,
             confirmada: true,
           }))
@@ -89,23 +103,29 @@ export default function AtividadeAlunoPage({ params }) {
   function adicionarResposta() {
     setRespostasLivres((anteriores) => [
       ...anteriores,
-      { id: crypto.randomUUID(), questao: "", resposta: "", confirmada: false },
+      { id: crypto.randomUUID(), resposta: "", confirmada: false },
     ]);
   }
 
-  function atualizarRespostaLivre(id, campo, valor) {
+  function atualizarRespostaLivre(id, valor) {
     setRespostasLivres((anteriores) => anteriores.map((item) => (
-      item.id === id ? { ...item, [campo]: valor } : item
+      item.id === id ? { ...item, resposta: valor } : item
+    )));
+  }
+
+  function definirRespostaConfirmada(id, confirmada) {
+    setRespostasLivres((anteriores) => anteriores.map((item) => (
+      item.id === id ? { ...item, confirmada } : item
     )));
   }
 
   function confirmarResposta(id) {
     const item = respostasLivres.find((resposta) => resposta.id === id);
-    if (!item?.questao.trim() || !item.resposta.trim()) {
-      setErro("Preencha a questão e a resposta antes de confirmar.");
+    if (!item?.resposta.trim()) {
+      setErro("Preencha a resposta antes de confirmar.");
       return;
     }
-    atualizarRespostaLivre(id, "confirmada", true);
+    definirRespostaConfirmada(id, true);
     setErro("");
   }
 
@@ -116,6 +136,9 @@ export default function AtividadeAlunoPage({ params }) {
     setMensagem("");
 
     const questoes = atividade.questoes || [];
+    const permiteEscolherResposta = !questoes.length
+      && ["pdf", "imagem"].includes(tipoArquivo(atividade.arquivo_nome));
+    const usaRespostaEmMidia = permiteEscolherResposta && modoResposta === "midia";
     const pendentes = questoes.filter((questao) => (
       questao.tipo === "OBJETIVA"
         ? !respostas[questao.id]?.alternativa_id
@@ -125,13 +148,21 @@ export default function AtividadeAlunoPage({ params }) {
       setErro(`Responda todas as questões do professor antes de enviar (faltam ${pendentes.length}).`);
       return;
     }
-    if (respostasLivres.some((item) => !item.confirmada)) {
+    if (!questoes.length && !usaRespostaEmMidia && respostasLivres.some((item) => !item.confirmada)) {
       setErro("Confirme cada resposta adicional antes de enviar a atividade.");
       return;
     }
     const arquivoSelecionado = formElement.elements.namedItem("arquivo")?.files?.length > 0;
-    if (!questoes.length && !respostasLivres.length && !arquivoSelecionado) {
+    if (usaRespostaEmMidia && !arquivoSelecionado) {
+      setErro("Selecione o arquivo da sua resposta antes de enviar.");
+      return;
+    }
+    if (!questoes.length && !permiteEscolherResposta && !respostasLivres.length && !arquivoSelecionado) {
       setErro("Selecione um arquivo ou adicione ao menos uma resposta.");
+      return;
+    }
+    if (permiteEscolherResposta && !usaRespostaEmMidia && !respostasLivres.length) {
+      setErro("Adicione ao menos uma questão e confirme sua resposta.");
       return;
     }
 
@@ -149,10 +180,20 @@ export default function AtividadeAlunoPage({ params }) {
           )
         );
       }
-      formData.append(
-        "respostas_livres",
-        JSON.stringify(respostasLivres.map(({ questao, resposta }) => ({ questao, resposta })))
-      );
+      if (!questoes.length && !usaRespostaEmMidia) {
+        formData.append(
+          "respostas_livres",
+          JSON.stringify(
+            respostasLivres.map(({ resposta }, indice) => ({
+              questao: `Questão ${indice + 1}`,
+              resposta,
+            }))
+          )
+        );
+      }
+      if (envio?.arquivo_url && !usaRespostaEmMidia) {
+        formData.append("limpar_arquivo", "true");
+      }
 
       const res = await fetch(`${API_BASE}/api/students/atividades/${atividadeId}/enviar`, {
         method: "POST",
@@ -207,6 +248,9 @@ export default function AtividadeAlunoPage({ params }) {
   const podeEnviar = !envio || envio.alteracao_status === "APROVADA";
   const urlArquivo = resolverUrl(atividade?.arquivo_url);
   const tipo = tipoArquivo(atividade?.arquivo_nome);
+  const questoesDaAtividade = atividade?.questoes || [];
+  const possuiQuestoes = questoesDaAtividade.length > 0;
+  const permiteEscolherResposta = !possuiQuestoes && ["pdf", "imagem"].includes(tipo);
 
   return (
     <div className={layoutStyles.page}>
@@ -267,7 +311,7 @@ export default function AtividadeAlunoPage({ params }) {
               )}
             </section>
 
-            {envio?.arquivo_url && (
+            {!possuiQuestoes && envio?.arquivo_url && (
               <section className={styles.card}>
                 <div className={styles.secaoTitulo}>
                   <i className="ti ti-file-check" aria-hidden="true" />
@@ -288,14 +332,20 @@ export default function AtividadeAlunoPage({ params }) {
                   <i className="ti ti-pencil" aria-hidden="true" />
                   <div>
                     <h2>{envio ? "Enviar nova versão" : "Sua resposta"}</h2>
-                    <p>Responda às questões, anexe seu trabalho ou adicione respostas abaixo.</p>
+                    <p>
+                      {possuiQuestoes
+                        ? "Responda às questões da atividade."
+                        : permiteEscolherResposta
+                          ? "Escolha como deseja responder à atividade."
+                          : "Responda à atividade abaixo."}
+                    </p>
                   </div>
                 </div>
 
                 <form className={styles.formulario} onSubmit={enviarAtividade}>
-                  {(atividade.questoes || []).length > 0 && (
+                  {possuiQuestoes ? (
                     <ol className={styles.questoes}>
-                      {atividade.questoes.map((questao, indice) => (
+                      {questoesDaAtividade.map((questao, indice) => (
                         <li className={styles.questao} key={questao.id}>
                           <p className={styles.enunciado}>{indice + 1}. {questao.enunciado}</p>
                           {questao.tipo === "OBJETIVA" ? (
@@ -324,71 +374,120 @@ export default function AtividadeAlunoPage({ params }) {
                         </li>
                       ))}
                     </ol>
-                  )}
+                  ) : (
+                    <>
+                      {permiteEscolherResposta && (
+                        <fieldset className={styles.opcoesResposta}>
+                          <legend>Como deseja responder?</legend>
+                          <label className={styles.opcaoResposta}>
+                            <input
+                              type="radio"
+                              name="modo-resposta"
+                              value="questao"
+                              checked={modoResposta === "questao"}
+                              onChange={() => {
+                                setModoResposta("questao");
+                                setErro("");
+                              }}
+                            />
+                            <span>
+                              <strong>Digitar as respostas</strong>
+                              <small>Informe apenas a resposta de cada questão.</small>
+                            </span>
+                          </label>
+                          <label className={styles.opcaoResposta}>
+                            <input
+                              type="radio"
+                              name="modo-resposta"
+                              value="midia"
+                              checked={modoResposta === "midia"}
+                              onChange={() => {
+                                setModoResposta("midia");
+                                setErro("");
+                              }}
+                            />
+                            <span>
+                              <strong>Enviar uma mídia</strong>
+                              <small>Anexe um documento ou imagem e, se quiser, deixe um comentário.</small>
+                            </span>
+                          </label>
+                        </fieldset>
+                      )}
 
-                  <section className={styles.respostasLivres}>
-                    <div className={styles.respostasCabecalho}>
-                      <div>
-                        <h3>Respostas por questão</h3>
-                        <p>Adicione uma questão e escreva sua resposta para ela.</p>
-                      </div>
-                      <button type="button" className={styles.botaoSecundario} onClick={adicionarResposta}>
-                        <i className="ti ti-plus" aria-hidden="true" />
-                        Adicionar resposta
-                      </button>
-                    </div>
-
-                    {respostasLivres.map((item, indice) => (
-                      <div className={styles.respostaLivre} key={item.id}>
-                        <label htmlFor={`questao-livre-${item.id}`}>Questão {indice + 1}</label>
-                        <textarea
-                          id={`questao-livre-${item.id}`}
-                          rows={2}
-                          value={item.questao}
-                          readOnly={item.confirmada}
-                          onChange={(event) => atualizarRespostaLivre(item.id, "questao", event.target.value)}
-                          placeholder="Digite a questão..."
-                        />
-                        <label htmlFor={`resposta-livre-${item.id}`}>Sua resposta</label>
-                        <textarea
-                          id={`resposta-livre-${item.id}`}
-                          rows={4}
-                          value={item.resposta}
-                          readOnly={item.confirmada}
-                          onChange={(event) => atualizarRespostaLivre(item.id, "resposta", event.target.value)}
-                          placeholder="Digite sua resposta..."
-                        />
-                        {item.confirmada ? (
-                          <div className={styles.confirmacaoLinha}>
-                            <p className={styles.confirmada} role="status">
-                              <i className="ti ti-circle-check" aria-hidden="true" />
-                              Resposta confirmada
-                            </p>
-                            <button
-                              type="button"
-                              className={styles.botaoEditarResposta}
-                              onClick={() => atualizarRespostaLivre(item.id, "confirmada", false)}
-                            >
-                              Editar resposta
+                      {(!permiteEscolherResposta || modoResposta === "questao") && (
+                        <section className={styles.respostasLivres}>
+                          <div className={styles.respostasCabecalho}>
+                            <div>
+                              <h3>Respostas das questões</h3>
+                              <p>Digite a resposta de cada questão.</p>
+                            </div>
+                            <button type="button" className={styles.botaoSecundario} onClick={adicionarResposta}>
+                              <i className="ti ti-plus" aria-hidden="true" />
+                              Adicionar resposta
                             </button>
                           </div>
-                        ) : (
-                          <button type="button" className={styles.botaoConfirmar} onClick={() => confirmarResposta(item.id)}>
-                            Confirmar resposta
-                          </button>
-                        )}
-                      </div>
-                    ))}
-                  </section>
 
-                  <div className={styles.campo}>
-                    <label htmlFor="arquivo">Anexar arquivo <span>(opcional)</span></label>
-                    <input id="arquivo" name="arquivo" type="file" />
-                  </div>
-                  <div className={styles.campo}>
-                    <label htmlFor="comentario">Comentário <span>(opcional)</span></label>
-                    <textarea id="comentario" name="comentario" rows={3} defaultValue={envio?.comentario || ""} />
-                  </div>
+                          {respostasLivres.map((item, indice) => (
+                            <div className={styles.respostaLivre} key={item.id}>
+                              <label htmlFor={`resposta-livre-${item.id}`}>
+                                Questão {indice + 1} — sua resposta
+                              </label>
+                              <textarea
+                                id={`resposta-livre-${item.id}`}
+                                rows={4}
+                                value={item.resposta}
+                                readOnly={item.confirmada}
+                                onChange={(event) => atualizarRespostaLivre(item.id, event.target.value)}
+                                placeholder="Digite sua resposta..."
+                              />
+                              {item.confirmada ? (
+                                <div className={styles.confirmacaoLinha}>
+                                  <p className={styles.confirmada} role="status">
+                                    <i className="ti ti-circle-check" aria-hidden="true" />
+                                    Resposta confirmada
+                                  </p>
+                                  <button
+                                    type="button"
+                                    className={styles.botaoEditarResposta}
+                                    onClick={() => definirRespostaConfirmada(item.id, false)}
+                                  >
+                                    Editar resposta
+                                  </button>
+                                </div>
+                              ) : (
+                                <button type="button" className={styles.botaoConfirmar} onClick={() => confirmarResposta(item.id)}>
+                                  Confirmar resposta
+                                </button>
+                              )}
+                            </div>
+                          ))}
+                        </section>
+                      )}
+
+                      {(!permiteEscolherResposta || modoResposta === "midia") && (
+                        <>
+                          <div className={styles.campo}>
+                            <label htmlFor="arquivo">
+                              {permiteEscolherResposta ? "Documento ou imagem" : "Anexar arquivo"}
+                              {!permiteEscolherResposta && <span> (opcional)</span>}
+                            </label>
+                            <input
+                              id="arquivo"
+                              name="arquivo"
+                              type="file"
+                              accept={permiteEscolherResposta
+                                ? ".pdf,.doc,.docx,.odt,.txt,.jpg,.jpeg,.png,.gif,.webp,.bmp"
+                                : undefined}
+                            />
+                          </div>
+                          <div className={styles.campo}>
+                            <label htmlFor="comentario">Comentário <span>(opcional)</span></label>
+                            <textarea id="comentario" name="comentario" rows={3} defaultValue={envio?.comentario || ""} />
+                          </div>
+                        </>
+                      )}
+                    </>
+                  )}
                   <button className={styles.botaoEnviar} type="submit" disabled={enviando}>
                     <i className={`ti ${enviando ? "ti-loader-2" : "ti-send"}`} aria-hidden="true" />
                     {enviando ? "Enviando..." : "Enviar atividade"}
@@ -429,9 +528,9 @@ export default function AtividadeAlunoPage({ params }) {
                     {solicitandoAlteracao ? "Solicitando..." : "Solicitar novo envio"}
                   </button>
                 )}
-                {(envio?.respostas_livres || []).map((item, indice) => (
+                {!possuiQuestoes && (envio?.respostas_livres || []).map((item, indice) => (
                   <div className={styles.respostaRecebida} key={`${indice}-${item.questao}`}>
-                    <strong>{item.questao}</strong>
+                    <strong>Questão {indice + 1}</strong>
                     <p>{item.resposta}</p>
                   </div>
                 ))}

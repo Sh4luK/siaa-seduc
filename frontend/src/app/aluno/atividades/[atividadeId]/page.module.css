@@ -262,6 +262,58 @@
   gap: 0.8rem;
 }
 
+.opcoesResposta {
+  display: grid;
+  gap: 0.65rem;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.opcoesResposta legend {
+  margin-bottom: 0.65rem;
+  color: #1e293b;
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.opcaoResposta {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.7rem;
+  padding: 0.85rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 9px;
+  background: #f8fafc;
+  color: #1e293b;
+  cursor: pointer;
+}
+
+.opcaoResposta:has(input:checked) {
+  border-color: #0b4f9e;
+  background: #eff6ff;
+}
+
+.opcaoResposta input {
+  width: auto;
+  margin-top: 0.2rem;
+  accent-color: #0b4f9e;
+}
+
+.opcaoResposta span {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.opcaoResposta strong {
+  font-size: 0.84rem;
+}
+
+.opcaoResposta small {
+  color: #64748b;
+  font-size: 0.78rem;
+}
+
 .respostasCabecalho {
   display: flex;
   align-items: center;

@@ -1298,6 +1298,8 @@ def caminho_relativo_arquivo(arquivo_field):
 
     url = arquivo_field.url
     parsed = urlparse(url)
+    if parsed.scheme and parsed.netloc:
+        return url
     return parsed.path
 
 
@@ -2082,11 +2084,12 @@ def enviar_atividade_aluno(request, atividade_id):
         })
 
     arquivo = request.FILES.get("arquivo")
+    limpar_arquivo = request.POST.get("limpar_arquivo") == "true" and not arquivo
     if (
         not arquivo
         and not questoes
         and not respostas_livres_validadas
-        and not (envio and envio.arquivo)
+        and not (envio and envio.arquivo and not limpar_arquivo)
     ):
         return JsonResponse(
             {"message": "Envie um arquivo ou adicione ao menos uma resposta."},
@@ -2105,13 +2108,16 @@ def enviar_atividade_aluno(request, atividade_id):
         envio = AtividadeEnvio(atividade=atividade, aluno=aluno)
     if arquivo:
         envio.arquivo = arquivo
+    elif limpar_arquivo:
+        envio.arquivo = None
     envio.comentario = (request.POST.get("comentario") or "").strip()
     envio.respostas_livres = respostas_livres_validadas
     envio.alteracao_status = "NENHUMA"
     envio.alteracao_solicitada_em = None
     envio.save()
 
-    if arquivo and arquivo_anterior and arquivo_anterior != envio.arquivo.name:
+    arquivo_atual = envio.arquivo.name if envio.arquivo else None
+    if (arquivo or limpar_arquivo) and arquivo_anterior and arquivo_anterior != arquivo_atual:
         default_storage.delete(arquivo_anterior)
 
     if questoes:
