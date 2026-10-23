@@ -228,6 +228,13 @@ class AtividadeEnvioTests(TestCase):
         self.assertIn("Primeiro item", capa)
         self.assertNotIn("**Resposta", capa)
         self.assertNotIn("- Primeiro item", capa)
+        self.assertIn("conteudo do envio", pdf.pages[1].extract_text())
+        self.assertIn("Correção da atividade", pdf.pages[1].extract_text())
+        self.assertNotIn("Conteúdo do arquivo:", pdf.pages[1].extract_text())
+        self.assertNotIn(
+            "mas não pode ser visualizado como página",
+            "\n".join(pagina.extract_text() or "" for pagina in pdf.pages),
+        )
 
         envio.visto_emitido_em = timezone.now()
         envio.visto_assinatura = resultado["assinatura"]
@@ -358,6 +365,63 @@ class AtividadeEnvioTests(TestCase):
             self.client.get(f"/api/students/envios/{envio_id}").status_code,
             404,
         )
+
+    def test_student_can_submit_own_questions_and_teacher_receives_them(self):
+        self.client.cookies["aluno_session"] = self.sessao_aluno.token
+        respostas_livres = [
+            {"questao": "Como você resolveu?", "resposta": "Usei a fórmula apresentada."},
+        ]
+        envio_response = self.client.post(
+            f"/api/students/atividades/{self.atividade.id}/enviar",
+            {"respostas_livres": json.dumps(respostas_livres)},
+        )
+
+        self.assertEqual(envio_response.status_code, 200)
+        envio_id = envio_response.json()["envio"]["id"]
+        self.assertEqual(envio_response.json()["envio"]["respostas_livres"], respostas_livres)
+        self.assertEqual(AtividadeEnvio.objects.get(id=envio_id).respostas_livres, respostas_livres)
+
+        detalhe = self.client.get(f"/api/students/atividades/{self.atividade.id}")
+        self.assertEqual(detalhe.status_code, 200)
+        self.assertEqual(detalhe.json()["envio"]["respostas_livres"], respostas_livres)
+
+        self.client.cookies["professor_session"] = self.sessao_professor.token
+        recebimento = self.client.get(f"/api/teacher/atividades/{self.atividade.id}/envios")
+        self.assertEqual(recebimento.status_code, 200)
+        self.assertEqual(recebimento.json()["envios"][0]["respostas_livres"], respostas_livres)
+
+        pdf_resultado = gerar_pdf_visto(
+            envio=AtividadeEnvio.objects.get(id=envio_id),
+            professor=self.professor,
+            parecer="",
+            chave="x" * 32,
+            url_verificacao=f"https://siaa.example/api/vistos/{envio_id}/verificar?hash=__HASH__",
+        )
+        pdf_texto = "\n".join(
+            pagina.extract_text() or ""
+            for pagina in PdfReader(BytesIO(pdf_resultado["pdf"])).pages
+        )
+        self.assertIn("Correção da atividade", pdf_texto)
+        self.assertIn("Como você resolveu?", pdf_texto)
+        self.assertIn("Usei a fórmula apresentada.", pdf_texto)
+
+    def test_student_cannot_view_activity_from_another_class(self):
+        outra_turma = AtravessaPor.objects.create(
+            professor=self.professor,
+            turma="Turma B",
+        )
+        outra_atividade = Atividade.objects.create(
+            professor=self.professor,
+            turma=outra_turma,
+            disciplina=self.disciplina,
+            titulo="Atividade de outra turma",
+            data="2026-10-21",
+        )
+        self.client.cookies["aluno_session"] = self.sessao_aluno.token
+
+        response = self.client.get(f"/api/students/atividades/{outra_atividade.id}")
+
+        self.assertEqual(response.status_code, 404)
 
     def test_student_cannot_submit_for_an_activity_outside_their_class(self):
         outra_turma = AtravessaPor.objects.create(
@@ -518,14 +582,35 @@ class AtividadeQuestoesEDevolutivaTests(TestCase):
             self.assertEqual(envio.visto_dados["nota"], "8.50")
 
             with envio.visto_pdf.open("rb") as arquivo_pdf:
-                capa = PdfReader(arquivo_pdf).pages[0].extract_text()
+                pdf_visto = PdfReader(arquivo_pdf)
+                capa = pdf_visto.pages[0].extract_text()
+                conteudo = "\n".join(pagina.extract_text() or "" for pagina in pdf_visto.pages)
             self.assertIn("NOTA", capa)
             self.assertIn("8,5", capa)
+            self.assertIn("Correção da atividade", conteudo)
+            self.assertIn("Questão 1: Quanto é 2 + 2?", conteudo)
+            self.assertIn("A) 3", conteudo)
+            self.assertIn("B) 4", conteudo)
+            self.assertIn("Resposta do aluno: B) 4", conteudo)
+            self.assertTrue(envio.visto_dados["correcao"]["questoes"][0]["correta"])
+            self.assertIn("Juntando as quantidades.", conteudo)
+            self.assertNotIn("mas não pode ser visualizado como página", conteudo)
 
             verificacao = self.client.get(
                 f"/api/vistos/{envio.id}/verificar", {"hash": envio.visto_assinatura}
             )
             self.assertEqual(verificacao.json(), {"valido": True, "nota": 8.5})
+
+            pdf_regerado = regenerar_pdf_visto(
+                envio,
+                "x" * 32,
+                f"https://siaa.example/api/vistos/{envio.id}/verificar?hash=__HASH__",
+            )
+            conteudo_regerado = "\n".join(
+                pagina.extract_text() or "" for pagina in PdfReader(BytesIO(pdf_regerado)).pages
+            )
+            self.assertIn("B) 4", conteudo_regerado)
+            self.assertIn("Resposta do aluno: B) 4", conteudo_regerado)
 
             # nota alterada fora da correção: o visto deixa de valer
             AtividadeEnvio.objects.filter(id=envio.id).update(nota=Decimal("10"))
