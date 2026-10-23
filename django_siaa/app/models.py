@@ -295,6 +295,7 @@ class AtividadeEnvio(models.Model):
     # Opcional: o aluno pode só responder as questões da atividade na plataforma
     arquivo = models.FileField(upload_to="envios_atividades/%Y/%m/", null=True, blank=True)
     comentario = models.TextField(blank=True, default="")
+    respostas_livres = models.JSONField(blank=True, default=list)
     enviado_em = models.DateTimeField(auto_now=True)
     alteracao_status = models.CharField(
         max_length=10,
