@@ -308,6 +308,26 @@
   background: #16a34a;
 }
 
+.abrirAtividade {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 0.7rem;
+  padding: 0.55rem 0.85rem;
+  border: 1px solid #bfdbfe;
+  border-radius: 8px;
+  background: #eff6ff;
+  color: #1e40af;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.abrirAtividade:hover {
+  border-color: #93c5fd;
+  background: #dbeafe;
+}
+
 .meusEnvios {
   display: inline-flex;
   align-items: center;
