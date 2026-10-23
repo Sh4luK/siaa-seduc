@@ -5,11 +5,10 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
 
-    # Vem depois da 0053_atividade_questoes_e_devolutiva para manter uma sequência
-    # única de migrações. A remoção de aula.estrategia_metodologica foi tirada
-    # daqui porque a 0052_aula_unifica_estrategia já faz isso (e já rodou em produção).
+    # Esta migração já foi aplicada após 0051 em bancos existentes; mantê-la
+    # independente da migração de questões preserva esse histórico.
     dependencies = [
-        ('app', '0053_atividade_questoes_e_devolutiva'),
+        ('app', '0051_atividadeenvio'),
     ]
 
     operations = [
