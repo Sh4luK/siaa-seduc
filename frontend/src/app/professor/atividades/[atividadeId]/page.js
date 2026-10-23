@@ -208,6 +208,17 @@ export default function EnviosAtividadePage() {
                         <RespostasDoAluno questoes={questoes} respostas={envio.respostas || []} />
                       )}
 
+                      {envio.respostas_livres?.length > 0 && (
+                        <ol className={styles.respostas}>
+                          {envio.respostas_livres.map((resposta, indice) => (
+                            <li className={styles.resposta} key={`${indice}-${resposta.questao}`}>
+                              <p className={styles.enunciado}>{resposta.questao}</p>
+                              <p className={styles.respostaTexto}>{resposta.resposta}</p>
+                            </li>
+                          ))}
+                        </ol>
+                      )}
+
                       {envio.comentario && (
                         <div className={styles.comentario}>
                           <MarkdownContent content={envio.comentario} />
