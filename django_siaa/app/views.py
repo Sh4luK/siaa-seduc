@@ -1594,6 +1594,7 @@ def _serializar_envio_atividade(envio, atividade, com_gabarito):
             and timezone.localdate(envio.enviado_em) > atividade.data_entrega
         ),
         "respostas": respostas,
+        "respostas_livres": envio.respostas_livres,
         **({"acertos": acertos, "total_objetivas": total_objetivas} if mostrar_gabarito else {}),
         "feedback": envio.feedback,
         "nota": float(envio.nota) if envio.nota is not None else None,
@@ -1740,6 +1741,7 @@ def envios_atividade_professor(request, atividade_id):
                 "enviado_em": envio.enviado_em.isoformat(),
                 "arquivo_url": envio.arquivo.url if envio.arquivo else None,
                 "arquivo_nome": envio.arquivo.name.split("/")[-1] if envio.arquivo else None,
+                "respostas_livres": envio.respostas_livres,
                 "alteracao_status": envio.alteracao_status,
                 "alteracao_solicitada_em": (
                     envio.alteracao_solicitada_em.isoformat()
@@ -1788,6 +1790,7 @@ def correcao_envio_atividade_professor(request, atividade_id, envio_id):
             "enviado_em": envio.enviado_em.isoformat(),
             "arquivo_url": envio.arquivo.url if envio.arquivo else None,
             "arquivo_nome": envio.arquivo.name.split("/")[-1] if envio.arquivo else None,
+            "respostas_livres": envio.respostas_livres,
             "alteracao_status": envio.alteracao_status,
             "parecer_professor": envio.parecer_professor,
             "nota": float(envio.nota) if envio.nota is not None else None,
@@ -1931,6 +1934,51 @@ def verificar_visto_envio(request, envio_id):
 
 
 @csrf_exempt
+@require_http_methods(["GET"])
+def detalhe_atividade_aluno(request, atividade_id):
+    aluno = _aluno_logado(request)
+    if not aluno:
+        return JsonResponse({"detail": "Não autenticado."}, status=401)
+
+    atividade = Atividade.objects.filter(
+        id=atividade_id,
+        turma__in=buscar_atravessapor_por_turma(aluno.turma),
+    ).select_related("turma", "disciplina", "professor").first()
+    if not atividade:
+        return JsonResponse({"message": "Atividade não encontrada para esta turma."}, status=404)
+
+    envio = AtividadeEnvio.objects.filter(atividade=atividade, aluno=aluno).first()
+    dados_envio = None
+    if envio:
+        dados_envio = {
+            **_serializar_envio_atividade(envio, atividade, com_gabarito=False),
+            "comentario": envio.comentario,
+            "alteracao_status": envio.alteracao_status,
+            "alteracao_solicitada_em": (
+                envio.alteracao_solicitada_em.isoformat()
+                if envio.alteracao_solicitada_em else None
+            ),
+        }
+
+    disciplina = resolver_disciplina_da_turma(atividade.turma)
+    return JsonResponse({
+        "atividade": {
+            "id": atividade.id,
+            "titulo": atividade.titulo,
+            "descricao": atividade.descricao,
+            "disciplina": disciplina.nome_disciplina if disciplina else atividade.turma.disciplina_lecionada,
+            "turma": atividade.turma.turma,
+            "professor": atividade.professor.nome_completo,
+            "data_entrega": atividade.data_entrega.isoformat() if atividade.data_entrega else None,
+            "arquivo_url": caminho_relativo_arquivo(atividade.arquivo) if atividade.arquivo else None,
+            "arquivo_nome": atividade.arquivo.name.split("/")[-1] if atividade.arquivo else None,
+            "questoes": _serializar_questoes_atividade(atividade, com_gabarito=False),
+        },
+        "envio": dados_envio,
+    })
+
+
+@csrf_exempt
 @require_http_methods(["POST"])
 def enviar_atividade_aluno(request, atividade_id):
     aluno = _aluno_logado(request)
@@ -2011,9 +2059,39 @@ def enviar_atividade_aluno(request, atividade_id):
                 )
             respostas.append((questao, alternativa, texto))
 
+    try:
+        respostas_livres = json.loads(request.POST.get("respostas_livres") or "[]")
+    except json.JSONDecodeError:
+        return JsonResponse({"message": "Respostas adicionais em formato inválido."}, status=400)
+    if not isinstance(respostas_livres, list) or len(respostas_livres) > 100:
+        return JsonResponse({"message": "A lista de respostas adicionais é inválida."}, status=400)
+
+    respostas_livres_validadas = []
+    for indice, item in enumerate(respostas_livres, start=1):
+        if not isinstance(item, dict):
+            return JsonResponse({"message": f"A resposta adicional {indice} é inválida."}, status=400)
+        questao = item.get("questao")
+        texto = item.get("resposta")
+        if not isinstance(questao, str) or not questao.strip():
+            return JsonResponse({"message": f"Informe a questão da resposta adicional {indice}."}, status=400)
+        if not isinstance(texto, str) or not texto.strip():
+            return JsonResponse({"message": f"Informe a resposta da questão adicional {indice}."}, status=400)
+        respostas_livres_validadas.append({
+            "questao": questao.strip(),
+            "resposta": texto.strip(),
+        })
+
     arquivo = request.FILES.get("arquivo")
-    if not arquivo and not questoes:
-        return JsonResponse({"message": "O arquivo da atividade é obrigatório."}, status=400)
+    if (
+        not arquivo
+        and not questoes
+        and not respostas_livres_validadas
+        and not (envio and envio.arquivo)
+    ):
+        return JsonResponse(
+            {"message": "Envie um arquivo ou adicione ao menos uma resposta."},
+            status=400,
+        )
 
     envio = AtividadeEnvio.objects.filter(atividade=atividade, aluno=aluno).first()
     if envio and envio.alteracao_status != "APROVADA":
@@ -2028,6 +2106,7 @@ def enviar_atividade_aluno(request, atividade_id):
     if arquivo:
         envio.arquivo = arquivo
     envio.comentario = (request.POST.get("comentario") or "").strip()
+    envio.respostas_livres = respostas_livres_validadas
     envio.alteracao_status = "NENHUMA"
     envio.alteracao_solicitada_em = None
     envio.save()
@@ -2053,6 +2132,7 @@ def enviar_atividade_aluno(request, atividade_id):
             "enviado_em": envio.enviado_em.isoformat(),
             "arquivo_url": envio.arquivo.url if envio.arquivo else None,
             "arquivo_nome": envio.arquivo.name.split("/")[-1] if envio.arquivo else None,
+            "respostas_livres": envio.respostas_livres,
             "alteracao_status": envio.alteracao_status,
             "alteracao_solicitada_em": (
                 envio.alteracao_solicitada_em.isoformat()
@@ -2089,6 +2169,7 @@ def _serializar_envio_aluno(envio):
         "enviado_em": envio.enviado_em.isoformat(),
         "arquivo_url": envio.arquivo.url if envio.arquivo else None,
         "arquivo_nome": envio.arquivo.name.split("/")[-1] if envio.arquivo else None,
+        "respostas_livres": envio.respostas_livres,
         "alteracao_status": envio.alteracao_status,
         "alteracao_solicitada_em": (
             envio.alteracao_solicitada_em.isoformat()
