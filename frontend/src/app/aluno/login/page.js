@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import styles from "../page.module.css";
 import Image from "next/image";
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+const API_BASE = "/backend-api";
 
 export default function AlunoLoginPage() {
   const [fullName, setFullName] = useState("");
@@ -17,6 +17,11 @@ export default function AlunoLoginPage() {
   const [authenticated, setAuthenticated] = useState(null);
   const [loadingAuth, setLoadingAuth] = useState(true);
   const router = useRouter();
+
+  function destinoDepoisLogin() {
+    const destino = new URLSearchParams(window.location.search).get("next");
+    return destino && /^\/aluno\/atividades\/\d+$/.test(destino) ? destino : "/aluno";
+  }
 
   async function verify_full_name() {
     if (!fullName.trim()) {
@@ -75,7 +80,7 @@ export default function AlunoLoginPage() {
       });
       const data = await student_login.json();
       if (data.return === true) {
-        router.push("/aluno");
+        router.push(destinoDepoisLogin());
       } else {
         window.alert("Senha incorreta.");
       }
@@ -92,7 +97,7 @@ export default function AlunoLoginPage() {
 
         if (data.return === true) {
           setAuthenticated(true);
-          router.push("/aluno");
+          router.push(destinoDepoisLogin());
         } else {
           setAuthenticated(false);
         }
