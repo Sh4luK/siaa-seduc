@@ -7,7 +7,7 @@ import styles from "./page.module.css";
 import Image from "next/image";
 import Link from "next/link";
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+const API_BASE = "/backend-api";
 
 function formatarData(dataISO) {
   if (!dataISO) return "";
