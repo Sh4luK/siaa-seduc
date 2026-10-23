@@ -16,62 +16,6 @@ function formatarData(dataISO) {
   return `${dia}/${mes}/${ano}`;
 }
 
-function respostasIniciais(envio) {
-  return Object.fromEntries(
-    (envio?.respostas || []).map((r) => [r.questao_id, { alternativa_id: r.alternativa_id, texto: r.texto }])
-  );
-}
-
-// Questões da atividade respondidas na plataforma
-function Questoes({ atividadeId, questoes, respostas, onChange, correcao }) {
-  return (
-    <ol className={styles.questoes}>
-      {questoes.map((q) => {
-        const resposta = respostas[q.id] || {};
-        const resultado = correcao?.find((r) => r.questao_id === q.id);
-        return (
-          <li key={q.id} className={styles.questao}>
-            <p className={styles.enunciado}>{q.enunciado}</p>
-            {q.tipo === "OBJETIVA" ? (
-              <div className={styles.alternativas} role="radiogroup">
-                {q.alternativas.map((alt) => {
-                  const marcada = resposta.alternativa_id === alt.id;
-                  let classe = styles.alternativa;
-                  if (correcao && marcada) {
-                    classe += ` ${resultado?.correta ? styles.alternativaCerta : styles.alternativaErrada}`;
-                  }
-                  return (
-                    <label key={alt.id} className={classe}>
-                      <input
-                        type="radio"
-                        name={`q-${atividadeId}-${q.id}`}
-                        checked={marcada}
-                        disabled={Boolean(correcao)}
-                        onChange={() => onChange(q.id, { alternativa_id: alt.id })}
-                      />
-                      <span className={styles.letra}>{alt.letra})</span> {alt.texto}
-                    </label>
-                  );
-                })}
-              </div>
-            ) : (
-              <textarea
-                className={styles.respostaTexto}
-                rows={3}
-                aria-label="Sua resposta"
-                placeholder="Escreva sua resposta..."
-                value={resposta.texto || ""}
-                readOnly={Boolean(correcao)}
-                onChange={(e) => onChange(q.id, { texto: e.target.value })}
-              />
-            )}
-          </li>
-        );
-      })}
-    </ol>
-  );
-}
-
 export default function AtividadesAlunoPage() {
   const [authenticated, setAuthenticated] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -81,11 +25,8 @@ export default function AtividadesAlunoPage() {
   const [atividades, setAtividades] = useState([]);
   const [carregando, setCarregando] = useState(true);
   const [erros, setErros] = useState([]);
-  const [enviandoId, setEnviandoId] = useState(null);
   const [solicitandoAlteracaoId, setSolicitandoAlteracaoId] = useState(null);
   const [mensagensEnvio, setMensagensEnvio] = useState({});
-  // respostas[atividadeId][questaoId] = { alternativa_id } | { texto }
-  const [respostas, setRespostas] = useState({});
   const router = useRouter();
 
   useEffect(() => {
@@ -107,7 +48,6 @@ export default function AtividadesAlunoPage() {
         const data = await res.json();
         const lista = data.atividades || [];
         setAtividades(lista);
-        setRespostas(Object.fromEntries(lista.map((a) => [a.id, respostasIniciais(a.envio)])));
       } catch (error) {
         setErros([`Erro ao carregar atividades: ${error.message}`]);
       } finally {
@@ -117,62 +57,6 @@ export default function AtividadesAlunoPage() {
     }
     init();
   }, [router]);
-
-  function responder(atividadeId, questaoId, valor) {
-    setRespostas((prev) => ({
-      ...prev,
-      [atividadeId]: { ...(prev[atividadeId] || {}), [questaoId]: valor },
-    }));
-  }
-
-  async function enviarAtividade(event, atividade) {
-    event.preventDefault();
-    const atividadeId = atividade.id;
-    const formElement = event.currentTarget;
-    const minhas = respostas[atividadeId] || {};
-
-    const faltando = atividade.questoes.filter((q) => {
-      const r = minhas[q.id];
-      return q.tipo === "OBJETIVA" ? !r?.alternativa_id : !r?.texto?.trim();
-    });
-    if (faltando.length) {
-      setMensagensEnvio((prev) => ({
-        ...prev,
-        [atividadeId]: `Responda todas as questões antes de enviar (faltam ${faltando.length}).`,
-      }));
-      return;
-    }
-
-    setEnviandoId(atividadeId);
-    setMensagensEnvio((prev) => ({ ...prev, [atividadeId]: "" }));
-
-    try {
-      const formData = new FormData(formElement);
-      if (atividade.questoes.length) {
-        formData.append(
-          "respostas",
-          JSON.stringify(Object.entries(minhas).map(([questaoId, r]) => ({ questao_id: Number(questaoId), ...r })))
-        );
-      }
-      const res = await fetch(
-        `${API_BASE}/api/students/atividades/${atividadeId}/enviar`,
-        { method: "POST", credentials: "include", body: formData }
-      );
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message || data.detail || `Falha ao enviar (status ${res.status})`);
-
-      setAtividades((prev) => prev.map((atividade) => (
-        atividade.id === atividadeId
-          ? { ...atividade, envio: data.envio }
-          : atividade
-      )));
-      formElement.reset();
-    } catch (error) {
-      setMensagensEnvio((prev) => ({ ...prev, [atividadeId]: `Erro ao enviar: ${error.message}` }));
-    } finally {
-      setEnviandoId(null);
-    }
-  }
 
   async function solicitarAlteracao(atividadeId) {
     setSolicitandoAlteracaoId(atividadeId);
@@ -334,26 +218,15 @@ export default function AtividadesAlunoPage() {
                         <p className={styles.cardMeta}>Entrega: {formatarData(a.data_entrega)}</p>
                       )}
                       {a.arquivo && (
-                        <a href={a.arquivo} target="_blank" rel="noopener noreferrer" className={styles.arquivoLink}>
-                          <i className="ti ti-paperclip" aria-hidden="true" /> Abrir arquivo
-                        </a>
+                        <p className={styles.cardMeta}>
+                          <i className="ti ti-paperclip" aria-hidden="true" /> Material anexado pelo professor
+                        </p>
                       )}
                       {!a.envio ? (
-                        <form
-                          className={styles.formEnvio}
-                          onSubmit={(event) => enviarAtividade(event, a.id)}
-                        >
-                          <label htmlFor={`arquivo-${a.id}`}>Arquivo para envio</label>
-                          <input id={`arquivo-${a.id}`} name="arquivo" type="file" required />
-                          <label htmlFor={`comentario-${a.id}`}>Comentário (opcional)</label>
-                          <textarea id={`comentario-${a.id}`} name="comentario" rows={2} />
-                          <button type="submit" disabled={enviandoId === a.id}>
-                            {enviandoId === a.id ? "Enviando..." : "Enviar atividade"}
-                          </button>
-                          {mensagensEnvio[a.id] && (
-                            <p role="status">{mensagensEnvio[a.id]}</p>
-                          )}
-                        </form>
+                        <Link href={`/aluno/atividades/${a.id}`} className={styles.abrirAtividade}>
+                          <i className="ti ti-pencil" aria-hidden="true" />
+                          Abrir e responder atividade
+                        </Link>
                       ) : a.envio.alteracao_status === "APROVADA" ? (
                         <div className={`${styles.solicitacaoBox} ${styles.solicitacaoAprovada}`}>
                           <p className={styles.statusSolicitacao} role="status">
@@ -361,10 +234,10 @@ export default function AtividadesAlunoPage() {
                             O professor autorizou um novo envio.
                           </p>
                           <Link
-                            href={`/aluno/atividades/${a.envio.id}`}
+                            href={`/aluno/atividades/${a.id}`}
                             className={`${styles.solicitarBotao} ${styles.editarBotao}`}
                           >
-                            Editar
+                            Enviar nova versão
                           </Link>
                         </div>
                       ) : (
@@ -377,6 +250,9 @@ export default function AtividadesAlunoPage() {
                                 ? "O professor não autorizou o novo envio."
                                 : "Já existe um envio para esta atividade."}
                           </p>
+                          <Link href={`/aluno/atividades/${a.id}`} className={styles.abrirAtividade}>
+                            Ver atividade e envio
+                          </Link>
                           {a.envio.alteracao_status !== "SOLICITADA" && (
                             <button
                               type="button"
@@ -387,11 +263,9 @@ export default function AtividadesAlunoPage() {
                               {solicitandoAlteracaoId === a.id ? "Solicitando..." : "Solicitar Novo Envio"}
                             </button>
                           )}
-                          {mensagensEnvio[a.id] && (
-                            <p role="status">{mensagensEnvio[a.id]}</p>
-                          )}
                         </div>
                       )}
+                      {mensagensEnvio[a.id] && <p role="status">{mensagensEnvio[a.id]}</p>}
                     </div>
                   </li>
                 ))}
