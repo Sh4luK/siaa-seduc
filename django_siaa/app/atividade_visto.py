@@ -537,6 +537,27 @@ def _gerar_pdf_correcao(correcao):
         leftIndent=4,
     ))
     styles.add(ParagraphStyle(
+        name="CorrecaoResumoSIAA",
+        parent=styles["BodyText"],
+        fontSize=9,
+        leading=13,
+        textColor=colors.HexColor("#334155"),
+        backColor=colors.HexColor("#f1f5f9"),
+        borderColor=colors.HexColor("#cbd5e1"),
+        borderWidth=0.5,
+        borderPadding=8,
+        spaceAfter=6,
+    ))
+    styles.add(ParagraphStyle(
+        name="CorrecaoTipoSIAA",
+        parent=styles["BodyText"],
+        fontSize=8,
+        leading=11,
+        textColor=colors.HexColor("#475569"),
+        leftIndent=4,
+        spaceAfter=3,
+    ))
+    styles.add(ParagraphStyle(
         name="CorrecaoAlternativaSIAA",
         parent=styles["BodyText"],
         fontSize=9,
@@ -554,6 +575,33 @@ def _gerar_pdf_correcao(correcao):
         title="Correção da atividade",
     )
     story = [Paragraph("Correção da atividade", styles["CorrecaoTituloSIAA"])]
+    objetivas = [q for q in questoes if q.get("tipo") == "OBJETIVA"]
+    subjetivas = [q for q in questoes if q.get("tipo") == "SUBJETIVA"]
+    acertos = sum(q.get("correta") is True for q in objetivas)
+    discursivas_respondidas = sum(
+        bool(str(q.get("resposta_aluno") or "").strip()) for q in subjetivas
+    )
+    if questoes:
+        linhas_resumo = []
+        if objetivas:
+            linhas_resumo.append(
+                f"<b>Questões objetivas:</b> {acertos} de {len(objetivas)} correta(s)."
+            )
+        if subjetivas:
+            linhas_resumo.append(
+                f"<b>Discursivas:</b> {discursivas_respondidas} de {len(subjetivas)} "
+                "respondida(s); sem avaliação individual registrada."
+            )
+        story.append(Paragraph(
+            "<br/>".join(linhas_resumo),
+            styles["CorrecaoResumoSIAA"],
+        ))
+    if respostas_livres:
+        story.append(Paragraph(
+            f"<b>Questões discursivas:</b> {len(respostas_livres)} resposta(s); "
+            "sem avaliação individual registrada.",
+            styles["CorrecaoResumoSIAA"],
+        ))
 
     def adicionar_linha(texto, estilo, marca=False, recuo=0):
         estilo_linha = (
@@ -576,18 +624,40 @@ def _gerar_pdf_correcao(correcao):
 
     for indice, questao in enumerate(questoes, start=1):
         story.append(Spacer(1, 8))
+        resposta = questao.get("resposta_aluno") or "Não respondida."
+        tipo_questao = questao.get("tipo")
+        if tipo_questao == "OBJETIVA":
+            resultado = "Correta" if questao.get("correta") is True else (
+                "Não respondida" if resposta == "Não respondida." else "Incorreta"
+            )
+            tipo = "Objetiva"
+        else:
+            tipo = "Discursiva"
+            resultado = "Não respondida" if resposta == "Não respondida." else (
+                "Avaliação individual não registrada"
+            )
         adicionar_linha(
             f"Questão {indice}: {_texto_pdf(questao.get('enunciado'))}",
             styles["CorrecaoPerguntaSIAA"],
-            marca=questao.get("correta") is True,
+            marca=tipo_questao == "OBJETIVA" and questao.get("correta") is True,
+        )
+        adicionar_linha(
+            f"<b>Tipo:</b> {tipo} &nbsp; <b>Resultado:</b> {resultado}",
+            styles["CorrecaoTipoSIAA"],
         )
 
         for alternativa in questao.get("alternativas") or []:
             resposta_aluno = alternativa.get("selecionada")
+            marcadores = []
+            if alternativa.get("correta") is True:
+                marcadores.append("gabarito")
+            if resposta_aluno:
+                marcadores.append("resposta do aluno")
+            sufixo = f" — {' · '.join(marcadores)}" if marcadores else ""
             texto_alternativa = (
                 f"{_texto_pdf(alternativa.get('letra'))}) "
                 f"{_texto_pdf(alternativa.get('texto'))}"
-                f"{' — resposta do aluno' if resposta_aluno else ''}"
+                f"{sufixo}"
             )
             adicionar_linha(
                 texto_alternativa,
@@ -596,7 +666,6 @@ def _gerar_pdf_correcao(correcao):
                 recuo=12,
             )
 
-        resposta = questao.get("resposta_aluno") or "Não respondida."
         adicionar_linha(
             f"<b>Resposta do aluno:</b> {_texto_pdf(resposta)}",
             styles["CorrecaoRespostaSIAA"],
@@ -608,6 +677,11 @@ def _gerar_pdf_correcao(correcao):
         adicionar_linha(
             f"Questão {indice}: {_texto_pdf(resposta.get('questao'))}",
             styles["CorrecaoPerguntaSIAA"],
+        )
+        adicionar_linha(
+            "<b>Tipo:</b> Discursiva &nbsp; "
+            "<b>Resultado:</b> Avaliação individual não registrada",
+            styles["CorrecaoTipoSIAA"],
         )
         adicionar_linha(
             f"<b>Resposta do aluno:</b> {_texto_pdf(resposta.get('resposta'))}",
@@ -685,12 +759,21 @@ def _montar_pdf_visto(conteudo_original, arquivo_nome, dados, assinatura, url_ve
             raise ValueError("Não foi possível ler o PDF enviado.") from error
     else:
         mime = mimetypes.guess_type(arquivo_nome)[0] or "application/octet-stream"
-        if mime.startswith("text/"):
+        respostas_na_plataforma = dados.get("respostas_na_plataforma")
+        if respostas_na_plataforma is None:
+            respostas_na_plataforma = (
+                arquivo_nome == f"respostas_envio_{dados.get('envio_id')}.txt"
+                and bool(
+                    (dados.get("correcao") or {}).get("questoes")
+                    or (dados.get("correcao") or {}).get("respostas_livres")
+                )
+            )
+        if mime.startswith("text/") and not respostas_na_plataforma:
             pdf_texto = _gerar_pdf_texto(conteudo_original, arquivo_nome)
             for pagina in PdfReader(BytesIO(pdf_texto)).pages:
                 writer.add_page(pagina)
             writer.add_attachment(arquivo_nome, conteudo_original)
-        else:
+        elif not respostas_na_plataforma:
             try:
                 pdf_imagens = _gerar_pdf_imagens(conteudo_original)
                 for pagina in PdfReader(BytesIO(pdf_imagens)).pages:
@@ -790,6 +873,7 @@ def gerar_pdf_visto(envio, professor, parecer, chave, url_verificacao, nota=None
         "enviado_em": envio.enviado_em.isoformat(),
         "data_entrega": atividade.data_entrega.isoformat() if atividade.data_entrega else None,
         "arquivo_nome": arquivo_nome,
+        "respostas_na_plataforma": not bool(envio.arquivo),
         "arquivo_sha256": arquivo_sha256,
         "comentario_aluno": envio.comentario,
         "parecer_professor": parecer,
