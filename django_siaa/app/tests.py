@@ -1051,9 +1051,28 @@ class SessionCookieTests(TestCase):
 
         self.assertTrue(self.client.get("/api/teacher/auth").json()["return"])
         self.assertTrue(self.client.get("/api/session/status?tipo=PROFESSOR").json()["return"])
+        self.assertTrue(self.client.get("/api/teacher/session/status?tipo=PROFESSOR").json()["return"])
 
 
 class LogoutApiTests(TestCase):
+    def test_teacher_logout_route_deletes_session_and_clears_cookie(self):
+        sessao = Sessao.objects.create(
+            tipo="PROFESSOR",
+            referencia_id=1,
+            nome_completo="Professor Teste",
+        )
+        self.client.cookies["professor_session"] = sessao.token
+
+        response = self.client.post(
+            "/api/teacher/logout",
+            data=json.dumps({"tipo": "PROFESSOR"}),
+            content_type="application/json",
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(Sessao.objects.filter(pk=sessao.pk).exists())
+        self.assertEqual(response.cookies["professor_session"]["max-age"], 0)
+
     def test_logout_deletes_session_and_clears_profile_cookie(self):
         sessao = Sessao.objects.create(
             tipo="ALUNO",
