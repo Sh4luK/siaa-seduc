@@ -5,7 +5,8 @@ import { usePathname, useRouter } from "next/navigation";
 import styles from "./LogoutButton.module.css";
 import SessionTimer from "./SessionTimer";
 
-const API_BASE = "/backend-api";
+const API_BASE_PROXY = "/backend-api";
+const API_BASE_PROFESSOR = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
 const SESSOES = [
   { prefixo: "/aluno", tipo: "ALUNO", login: "/aluno/login" },
@@ -68,7 +69,9 @@ export default function LogoutButton() {
     setEnviando(true);
     setErro("");
     try {
-      const response = await fetch(`${API_BASE}/api/logout`, {
+      const apiBase = sessao.tipo === "PROFESSOR" ? API_BASE_PROFESSOR : API_BASE_PROXY;
+      const endpoint = sessao.tipo === "PROFESSOR" ? "/api/teacher/logout" : "/api/logout";
+      const response = await fetch(`${apiBase}${endpoint}`, {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },

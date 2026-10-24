@@ -3,7 +3,8 @@
 import { useEffect, useState } from "react";
 import styles from "./SessionTimer.module.css";
 
-const API_BASE = "/backend-api";
+const API_BASE_PROXY = "/backend-api";
+const API_BASE_PROFESSOR = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
 function formatarTempo(segundos) {
   const horas = Math.floor(segundos / 3600);
@@ -29,9 +30,12 @@ export default function SessionTimer({ tipo, visivel, onExpirou }) {
       onExpirou();
     };
 
-    fetch(`${API_BASE}/api/session/status?tipo=${encodeURIComponent(tipo)}`, {
+    const apiBase = tipo === "PROFESSOR" ? API_BASE_PROFESSOR : API_BASE_PROXY;
+    const endpoint = tipo === "PROFESSOR" ? "/api/teacher/session/status" : "/api/session/status";
+    fetch(`${apiBase}${endpoint}?tipo=${encodeURIComponent(tipo)}`, {
       credentials: "include",
       signal: controller.signal,
+      cache: "no-store",
     })
       .then((response) => {
         if (!response.ok) throw new Error("Não foi possível consultar a sessão.");
