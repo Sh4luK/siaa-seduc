@@ -5,7 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import styles from "./LogoutButton.module.css";
 import SessionTimer from "./SessionTimer";
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+const API_BASE = "/backend-api";
 
 const SESSOES = [
   { prefixo: "/aluno", tipo: "ALUNO", login: "/aluno/login" },
