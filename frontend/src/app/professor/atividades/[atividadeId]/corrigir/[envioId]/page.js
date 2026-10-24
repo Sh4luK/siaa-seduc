@@ -27,6 +27,49 @@ function tipoArquivo(nome) {
   return "outro";
 }
 
+function obterItensCorrecao(envio) {
+  const questoes = envio?.correcao?.questoes || [];
+  if (questoes.length) {
+    return questoes.map((questao, indice) => ({
+      chave: `questao:${questao.id}`,
+      titulo: `Questão ${indice + 1}`,
+      pergunta: questao.enunciado,
+      resposta: questao.resposta_aluno || "Não respondida.",
+    }));
+  }
+
+  const respostasLivres = envio?.correcao?.respostas_livres || envio?.respostas_livres || [];
+  if (respostasLivres.length) {
+    return respostasLivres.map((resposta, indice) => ({
+      chave: `resposta_livre:${indice}`,
+      titulo: `Resposta ${indice + 1} do aluno`,
+      pergunta: resposta.enunciado || "",
+      resposta: resposta.resposta || (resposta.pulado ? "Questão pulada." : "Sem resposta."),
+      alternativas: resposta.alternativas || [],
+      alternativaMarcada: resposta.alternativa_marcada || "",
+    }));
+  }
+
+  if (envio?.arquivo_nome) {
+    return [{
+      chave: "arquivo",
+      titulo: "Arquivo enviado pelo aluno",
+      resposta: envio.arquivo_nome,
+      url: resolverUrl(envio.arquivo_url),
+    }];
+  }
+
+  if (envio?.comentario) {
+    return [{
+      chave: "comentario",
+      titulo: "Resposta do aluno",
+      resposta: envio.comentario,
+    }];
+  }
+
+  return [];
+}
+
 export default function CorrigirEnvioPage() {
   const { atividadeId, envioId } = useParams();
   const router = useRouter();
@@ -36,6 +79,11 @@ export default function CorrigirEnvioPage() {
   const [envio, setEnvio] = useState(null);
   const [parecer, setParecer] = useState("");
   const [nota, setNota] = useState("");
+  const [correcoesQuestoes, setCorrecoesQuestoes] = useState({});
+  const [alternativasCorretas, setAlternativasCorretas] = useState({});
+  const [correcaoManualAberta, setCorrecaoManualAberta] = useState(false);
+  const [respostasPorQuestaoVisiveis, setRespostasPorQuestaoVisiveis] = useState(false);
+  const [notaVisivel, setNotaVisivel] = useState(false);
   const [erro, setErro] = useState("");
 
   useEffect(() => {
@@ -57,6 +105,22 @@ export default function CorrigirEnvioPage() {
         setAtividade(data.atividade);
         setEnvio(data.envio);
         setParecer(data.envio.parecer_professor || "");
+        setNota(data.envio.nota === null || data.envio.nota === undefined
+          ? ""
+          : String(data.envio.nota).replace(".", ","));
+        setNotaVisivel(data.envio.nota !== null && data.envio.nota !== undefined);
+        setCorrecoesQuestoes(Object.fromEntries(
+          (data.envio.correcao?.correcoes_questoes || [])
+            .map((correcao) => [correcao.chave, correcao.parecer])
+        ));
+        setAlternativasCorretas(Object.fromEntries(
+          (data.envio.correcao?.correcoes_questoes || [])
+            .filter((correcao) => correcao.alternativa_correta)
+            .map((correcao) => [correcao.chave, correcao.alternativa_correta])
+        ));
+        setCorrecaoManualAberta(
+          Boolean(data.envio.correcao?.respostas_livres?.some((resposta) => resposta.alternativas?.length))
+        );
       } catch (error) {
         setErro(`Não foi possível carregar o envio: ${error.message}`);
       } finally {
@@ -78,7 +142,15 @@ export default function CorrigirEnvioPage() {
           method: "POST",
           credentials: "include",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ parecer, nota }),
+          body: JSON.stringify({
+            parecer,
+            nota,
+            correcoes_questoes: obterItensCorrecao(envio).map(({ chave }) => ({
+              chave,
+              parecer: correcoesQuestoes[chave] || "",
+              alternativa_correta: alternativasCorretas[chave] || "",
+            })),
+          }),
         }
       );
       const data = await res.json();
@@ -114,6 +186,7 @@ export default function CorrigirEnvioPage() {
 
   const tipo = tipoArquivo(envio?.arquivo_nome);
   const arquivoUrl = resolverUrl(envio?.arquivo_url);
+  const itensCorrecao = obterItensCorrecao(envio);
 
   return (
     <div className={layoutStyles.page}>
@@ -193,15 +266,33 @@ export default function CorrigirEnvioPage() {
               )}
 
               {envio.respostas_livres?.length > 0 && (
-                <section className={styles.respostasLivres}>
-                  <h2>Respostas por questão</h2>
-                  {envio.respostas_livres.map((resposta, indice) => (
-                    <article className={styles.respostaLivre} key={`${indice}-${resposta.questao}`}>
-                      <strong>{resposta.questao}</strong>
-                      <p>{resposta.resposta}</p>
-                    </article>
-                  ))}
-                </section>
+                <>
+                  <button
+                    type="button"
+                    className={styles.botaoCorrecaoManual}
+                    aria-expanded={respostasPorQuestaoVisiveis}
+                    onClick={() => setRespostasPorQuestaoVisiveis((visiveis) => !visiveis)}
+                  >
+                    <i
+                      className={`ti ${respostasPorQuestaoVisiveis ? "ti-chevron-up" : "ti-eye"}`}
+                      aria-hidden="true"
+                    />
+                    {respostasPorQuestaoVisiveis
+                      ? "Ocultar respostas por questão"
+                      : "Ver Respostas por questão"}
+                  </button>
+                  {respostasPorQuestaoVisiveis && (
+                    <section className={styles.respostasLivres}>
+                      <h2>Respostas por questão</h2>
+                      {envio.respostas_livres.map((resposta, indice) => (
+                        <article className={styles.respostaLivre} key={`${indice}-${resposta.questao}`}>
+                          <strong>{resposta.questao}</strong>
+                          <p>{resposta.resposta || (resposta.pulado ? "Questão pulada." : "Sem resposta.")}</p>
+                        </article>
+                      ))}
+                    </section>
+                  )}
+                </>
               )}
 
               <section className={styles.comentarioAluno}>
@@ -259,6 +350,83 @@ export default function CorrigirEnvioPage() {
                   </div>
                 </div>
 
+                <button
+                  type="button"
+                  className={styles.botaoCorrecaoManual}
+                  aria-expanded={correcaoManualAberta}
+                  onClick={() => setCorrecaoManualAberta((aberta) => !aberta)}
+                >
+                  <i className={`ti ${correcaoManualAberta ? "ti-chevron-up" : "ti-edit"}`} aria-hidden="true" />
+                  {correcaoManualAberta ? "Ocultar correção manual" : "Corrigir manualmente"}
+                </button>
+
+                {correcaoManualAberta && (
+                  <section className={styles.correcaoManual} aria-label="Correção manual das respostas">
+                    <h3>Respostas do aluno e parecer por resposta</h3>
+                    {itensCorrecao.length ? itensCorrecao.map((item) => (
+                      <article className={styles.itemCorrecao} key={item.chave}>
+                        <h4>{item.titulo}</h4>
+                        {item.pergunta && <p className={styles.perguntaCorrecao}>{item.pergunta}</p>}
+                        <div className={styles.respostaCorrecao}>
+                          <span>Resposta do aluno</span>
+                          <p>
+                            {item.url ? (
+                              <a href={item.url} target="_blank" rel="noopener noreferrer">
+                                {item.resposta}
+                              </a>
+                            ) : item.resposta}
+                          </p>
+                        </div>
+                        {item.alternativas?.length > 0 && (
+                          <fieldset className={styles.alternativasCorrecao}>
+                            <legend>Marque a alternativa correta</legend>
+                            {item.alternativas.map((alternativa) => (
+                              <label key={alternativa.letra} className={styles.alternativaCorrecao}>
+                                <input
+                                  type="radio"
+                                  name={`gabarito-${item.chave}`}
+                                  value={alternativa.letra}
+                                  checked={alternativasCorretas[item.chave] === alternativa.letra}
+                                  onChange={() => setAlternativasCorretas((atuais) => ({
+                                    ...atuais,
+                                    [item.chave]: alternativa.letra,
+                                  }))}
+                                />
+                                <span>{alternativa.letra}) {alternativa.texto}</span>
+                              </label>
+                            ))}
+                            <p className={styles.resultadoAlternativa} role="status">
+                              {alternativasCorretas[item.chave]
+                                ? !item.alternativaMarcada
+                                  ? "O aluno pulou esta questão; ela será registrada como não respondida."
+                                  : alternativasCorretas[item.chave] === item.alternativaMarcada
+                                  ? "A alternativa marcada pelo aluno está correta."
+                                  : "A alternativa marcada pelo aluno está incorreta."
+                                : "Selecione a alternativa correta para avaliar a resposta."}
+                            </p>
+                          </fieldset>
+                        )}
+                        <label htmlFor={`parecer-${item.chave}`}>Correção do professor</label>
+                        <textarea
+                          id={`parecer-${item.chave}`}
+                          value={correcoesQuestoes[item.chave] || ""}
+                          onChange={(event) => setCorrecoesQuestoes((atuais) => ({
+                            ...atuais,
+                            [item.chave]: event.target.value,
+                          }))}
+                          rows={3}
+                          maxLength={5000}
+                          placeholder="Escreva um parecer específico para esta resposta."
+                        />
+                      </article>
+                    )) : (
+                      <p className={styles.semRespostasCorrecao}>
+                        Nenhuma resposta enviada para correção manual.
+                      </p>
+                    )}
+                  </section>
+                )}
+
                 <form className={styles.formulario} onSubmit={registrarVisto}>
                   <label htmlFor="parecer">Parecer ou comentário de correção</label>
                   <textarea
@@ -268,23 +436,39 @@ export default function CorrigirEnvioPage() {
                     rows={5}
                     placeholder="Registre observações sobre o trabalho. Este parecer ficará incluído no PDF assinado."
                   />
-                  <label htmlFor="nota">
-                    Nota <span className={styles.opcional}>(0 a 10, opcional)</span>
-                  </label>
-                  <input
-                    id="nota"
-                    type="text"
-                    inputMode="decimal"
-                    className={styles.notaInput}
-                    placeholder="Ex.: 8,5"
-                    value={nota}
-                    onChange={(event) => {
-                      const valor = event.target.value;
-                      if (valor === "" || (/^\d{0,2}([.,]\d{0,2})?$/.test(valor) && Number(valor.replace(",", ".")) <= 10)) {
-                        setNota(valor);
-                      }
+                  <button
+                    type="button"
+                    className={styles.botaoInserirNota}
+                    aria-expanded={notaVisivel}
+                    onClick={() => {
+                      if (notaVisivel) setNota("");
+                      setNotaVisivel((visivel) => !visivel);
                     }}
-                  />
+                  >
+                    <i className="ti ti-plus" aria-hidden="true" />
+                    {notaVisivel ? "Remover campo de nota" : "Inserir Nota"}
+                  </button>
+                  {notaVisivel && (
+                    <>
+                      <label htmlFor="nota">
+                        Nota <span className={styles.opcional}>(0 a 10, opcional)</span>
+                      </label>
+                      <input
+                        id="nota"
+                        type="text"
+                        inputMode="decimal"
+                        className={styles.notaInput}
+                        placeholder="Ex.: 8,5"
+                        value={nota}
+                        onChange={(event) => {
+                          const valor = event.target.value;
+                          if (valor === "" || (/^\d{0,2}([.,]\d{0,2})?$/.test(valor) && Number(valor.replace(",", ".")) <= 10)) {
+                            setNota(valor);
+                          }
+                        }}
+                      />
+                    </>
+                  )}
                   <p className={styles.avisoAssinatura}>
                     <i className="ti ti-shield-lock" aria-hidden="true" />
                     Ao emitir o visto, o parecer, a nota e o arquivo ficam registrados e não poderão ser alterados.

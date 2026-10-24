@@ -4,16 +4,19 @@ import html
 import json
 import mimetypes
 import os
+import re
+import zipfile
 from html.parser import HTMLParser
 from io import BytesIO
 from datetime import datetime
 from urllib.parse import urlparse
+from xml.etree import ElementTree
 
 import markdown
 from PIL import Image, ImageSequence
 from pypdf import PdfReader, PdfWriter
 from reportlab.lib import colors
-from reportlab.lib.enums import TA_CENTER
+from reportlab.lib.enums import TA_CENTER, TA_RIGHT
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
 from reportlab.lib.utils import ImageReader
@@ -168,6 +171,156 @@ def formatar_nota(nota):
         return None
     texto = f"{float(nota):.2f}".rstrip("0").rstrip(".")
     return texto.replace(".", ",")
+
+
+def _enunciados_numerados(texto):
+    marcadores = list(re.finditer(
+        r"(?im)^[ \t]*(?:quest(?:ão|ao)\s*)?(\d{1,3})\s*[.)\-:]\s+(?=\S)",
+        texto,
+    ))
+    enunciados = []
+    for indice, marcador in enumerate(marcadores):
+        numero = int(marcador.group(1))
+        if numero > 100:
+            continue
+        inicio = marcador.end()
+        fim = marcadores[indice + 1].start() if indice + 1 < len(marcadores) else len(texto)
+        corpo = texto[inicio:fim]
+        linhas = [
+            re.sub(r"_+", " ", linha).strip()
+            for linha in corpo.splitlines()
+            if linha.strip() and not re.fullmatch(r"[\s_]+", linha)
+        ]
+        corpo = re.sub(r"\s+", " ", " ".join(linhas)).strip()
+        if corpo:
+            enunciados.append(corpo[:5000])
+        if len(enunciados) >= 100:
+            break
+    return enunciados
+
+
+def _questoes_numeradas(texto):
+    marcadores = list(re.finditer(
+        r"(?im)^[ \t]*(?:quest(?:ão|ao)\s*)?(\d{1,3})\s*[.)\-:]\s+(?=\S)",
+        texto,
+    ))
+    questoes = []
+    marcador_alternativa = re.compile(
+        r"(?<!\w)(?:\(([A-J])\)|([A-J])\s*[).:\-])\s+",
+        re.IGNORECASE,
+    )
+    for indice, marcador in enumerate(marcadores):
+        numero = int(marcador.group(1))
+        if numero > 100:
+            continue
+        inicio = marcador.end()
+        fim = marcadores[indice + 1].start() if indice + 1 < len(marcadores) else len(texto)
+        linhas = [
+            re.sub(r"_+", " ", linha).strip()
+            for linha in texto[inicio:fim].splitlines()
+            if linha.strip() and not re.fullmatch(r"[\s_]+", linha)
+        ]
+        enunciado = []
+        alternativas = []
+        alternativa_atual = None
+        for linha in linhas:
+            marcadores_alt = list(marcador_alternativa.finditer(linha))
+            prefixo_linha = linha[:marcadores_alt[0].start()].strip() if marcadores_alt else ""
+            parece_alternativa = bool(
+                marcadores_alt
+                and (
+                    len(marcadores_alt) > 1
+                    or not prefixo_linha
+                    or prefixo_linha.endswith(("?", ":"))
+                )
+            )
+            if parece_alternativa:
+                prefixo = prefixo_linha
+                if prefixo:
+                    enunciado.append(prefixo)
+                for indice_alt, marcador_alt in enumerate(marcadores_alt):
+                    fim_alt = (
+                        marcadores_alt[indice_alt + 1].start()
+                        if indice_alt + 1 < len(marcadores_alt)
+                        else len(linha)
+                    )
+                    texto_alt = linha[marcador_alt.end():fim_alt].strip()
+                    letra = marcador_alt.group(1) or marcador_alt.group(2)
+                    alternativa_atual = {
+                        "letra": letra.upper(),
+                        "texto": texto_alt,
+                    }
+                    alternativas.append(alternativa_atual)
+            elif alternativa_atual:
+                alternativa_atual["texto"] = (
+                    f"{alternativa_atual['texto']} {linha}".strip()
+                )
+            else:
+                enunciado.append(linha)
+
+        if len(alternativas) < 2:
+            enunciado = linhas
+            alternativas = []
+        enunciado_texto = re.sub(r"\s+", " ", " ".join(enunciado)).strip()
+        if not enunciado_texto:
+            continue
+        numero_questao = len(questoes) + 1
+        questoes.append({
+            "id": f"pdf-{numero_questao}",
+            "ordem": numero_questao,
+            "enunciado": enunciado_texto[:5000],
+            "tipo": "OBJETIVA" if alternativas else "SUBJETIVA",
+            "alternativas": [
+                {"letra": item["letra"], "texto": item["texto"][:1000]}
+                for item in alternativas
+            ],
+        })
+        if len(questoes) >= 100:
+            break
+    return questoes
+
+
+def _extrair_questoes_arquivo(conteudo, arquivo_nome):
+    if os.path.splitext(arquivo_nome)[1].lower() != ".pdf":
+        return []
+    leitor = PdfReader(BytesIO(conteudo), strict=False)
+    texto = "\n".join(
+        pagina.extract_text(extraction_mode="layout") or ""
+        for pagina in leitor.pages[:200]
+    )
+    return _questoes_numeradas(texto)
+
+
+def _extrair_enunciados_arquivo(conteudo, arquivo_nome):
+    extensao = os.path.splitext(arquivo_nome)[1].lower()
+    texto = ""
+    if conteudo.startswith(b"%PDF-") or extensao == ".pdf":
+        leitor = PdfReader(BytesIO(conteudo), strict=False)
+        texto = "\n".join(
+            pagina.extract_text(extraction_mode="layout") or ""
+            for pagina in leitor.pages[:200]
+        )
+    elif extensao in {".docx", ".odt"}:
+        documento_xml = "word/document.xml" if extensao == ".docx" else "content.xml"
+        try:
+            with zipfile.ZipFile(BytesIO(conteudo)) as arquivo_zip:
+                raiz = ElementTree.fromstring(arquivo_zip.read(documento_xml))
+        except (KeyError, zipfile.BadZipFile, ElementTree.ParseError):
+            return []
+        texto = "\n".join(
+            " ".join(elemento.text or "" for elemento in paragrafo.iter())
+            for paragrafo in raiz.iter()
+            if paragrafo.tag.endswith("}p")
+        )
+    elif extensao in {".txt", ".md", ".csv"} or mimetypes.guess_type(arquivo_nome)[0] == "text/plain":
+        try:
+            texto = conteudo.decode("utf-8-sig")
+        except UnicodeDecodeError:
+            texto = conteudo.decode("cp1252", errors="replace")
+    else:
+        return []
+
+    return _enunciados_numerados(texto)
 
 
 def _gerar_pdf_resumo(dados, parecer, assinatura, url_verificacao):
@@ -507,7 +660,24 @@ class _MarcaCerto(Flowable):
 def _gerar_pdf_correcao(correcao):
     questoes = correcao.get("questoes") or []
     respostas_livres = correcao.get("respostas_livres") or []
-    if not questoes and not respostas_livres:
+    enunciados_arquivo = correcao.get("enunciados_arquivo") or []
+    correcoes_por_chave = {
+        item.get("chave"): item
+        for item in correcao.get("correcoes_questoes") or []
+        if isinstance(item, dict) and isinstance(item.get("chave"), str)
+    }
+    correcoes_questoes = {
+        item.get("chave"): item.get("parecer", "")
+        for item in correcoes_por_chave.values()
+        if isinstance(item.get("parecer"), str) and item["parecer"].strip()
+    }
+    questoes_pdf_objetivas = [
+        (indice, resposta)
+        for indice, resposta in enumerate(respostas_livres)
+        if resposta.get("tipo") == "OBJETIVA"
+        and isinstance(resposta.get("alternativas"), list)
+    ]
+    if not questoes and not respostas_livres and not correcoes_questoes and not enunciados_arquivo:
         return None
 
     styles = getSampleStyleSheet()
@@ -515,55 +685,76 @@ def _gerar_pdf_correcao(correcao):
         name="CorrecaoTituloSIAA",
         parent=styles["Heading2"],
         fontName="Helvetica-Bold",
-        fontSize=15,
-        leading=19,
+        fontSize=18,
+        leading=23,
         textColor=colors.HexColor("#16345c"),
+        spaceAfter=4,
+    ))
+    styles.add(ParagraphStyle(
+        name="CorrecaoSubtituloSIAA",
+        parent=styles["BodyText"],
+        fontSize=8,
+        leading=11,
+        textColor=colors.HexColor("#64748b"),
         spaceAfter=14,
     ))
     styles.add(ParagraphStyle(
         name="CorrecaoPerguntaSIAA",
         parent=styles["BodyText"],
         fontName="Helvetica-Bold",
-        fontSize=10,
+        fontSize=9.5,
         leading=14,
         textColor=colors.HexColor("#172554"),
-        spaceAfter=3,
+        spaceAfter=0,
     ))
     styles.add(ParagraphStyle(
         name="CorrecaoRespostaSIAA",
         parent=styles["BodyText"],
-        fontSize=9,
-        leading=13,
-        leftIndent=4,
+        fontSize=8.5,
+        leading=12,
+        textColor=colors.HexColor("#334155"),
     ))
     styles.add(ParagraphStyle(
         name="CorrecaoResumoSIAA",
         parent=styles["BodyText"],
-        fontSize=9,
-        leading=13,
+        fontSize=8,
+        leading=12,
         textColor=colors.HexColor("#334155"),
-        backColor=colors.HexColor("#f1f5f9"),
-        borderColor=colors.HexColor("#cbd5e1"),
-        borderWidth=0.5,
-        borderPadding=8,
-        spaceAfter=6,
+        alignment=TA_CENTER,
+        spaceAfter=0,
     ))
     styles.add(ParagraphStyle(
         name="CorrecaoTipoSIAA",
         parent=styles["BodyText"],
-        fontSize=8,
-        leading=11,
+        fontName="Helvetica-Bold",
+        fontSize=7,
+        leading=9,
         textColor=colors.HexColor("#475569"),
-        leftIndent=4,
-        spaceAfter=3,
     ))
     styles.add(ParagraphStyle(
         name="CorrecaoAlternativaSIAA",
         parent=styles["BodyText"],
-        fontSize=9,
-        leading=12,
+        fontSize=8,
+        leading=11,
+        textColor=colors.HexColor("#334155"),
     ))
-
+    styles.add(ParagraphStyle(
+        name="CorrecaoRotuloSIAA",
+        parent=styles["BodyText"],
+        fontName="Helvetica-Bold",
+        fontSize=6.5,
+        leading=8,
+        textColor=colors.HexColor("#64748b"),
+        spaceAfter=3,
+    ))
+    styles.add(ParagraphStyle(
+        name="CorrecaoCabecalhoSIAA",
+        parent=styles["BodyText"],
+        fontName="Helvetica-Bold",
+        fontSize=8,
+        leading=10,
+        textColor=colors.white,
+    ))
     saida = BytesIO()
     documento = SimpleDocTemplate(
         saida,
@@ -574,34 +765,72 @@ def _gerar_pdf_correcao(correcao):
         bottomMargin=48,
         title="Correção da atividade",
     )
-    story = [Paragraph("Correção da atividade", styles["CorrecaoTituloSIAA"])]
+    story = [
+        Paragraph("Correção da atividade", styles["CorrecaoTituloSIAA"]),
+        Paragraph(
+            "RELATÓRIO DE RESPOSTAS E AVALIAÇÃO",
+            styles["CorrecaoSubtituloSIAA"],
+        ),
+    ]
     objetivas = [q for q in questoes if q.get("tipo") == "OBJETIVA"]
     subjetivas = [q for q in questoes if q.get("tipo") == "SUBJETIVA"]
     acertos = sum(q.get("correta") is True for q in objetivas)
     discursivas_respondidas = sum(
         bool(str(q.get("resposta_aluno") or "").strip()) for q in subjetivas
     )
-    if questoes:
-        linhas_resumo = []
-        if objetivas:
-            linhas_resumo.append(
-                f"<b>Questões objetivas:</b> {acertos} de {len(objetivas)} correta(s)."
-            )
-        if subjetivas:
-            linhas_resumo.append(
-                f"<b>Discursivas:</b> {discursivas_respondidas} de {len(subjetivas)} "
-                "respondida(s); sem avaliação individual registrada."
-            )
-        story.append(Paragraph(
-            "<br/>".join(linhas_resumo),
-            styles["CorrecaoResumoSIAA"],
+    indicadores = []
+    if objetivas:
+        indicadores.append((
+            "Questões objetivas",
+            f"{acertos} de {len(objetivas)} correta(s).",
         ))
-    if respostas_livres:
-        story.append(Paragraph(
-            f"<b>Questões discursivas:</b> {len(respostas_livres)} resposta(s); "
+    if subjetivas:
+        indicadores.append((
+            "Discursivas",
+            f"{discursivas_respondidas} de {len(subjetivas)} respondida(s); "
             "sem avaliação individual registrada.",
-            styles["CorrecaoResumoSIAA"],
         ))
+    total_discursivas_pdf = sum(
+        resposta.get("tipo") != "OBJETIVA" for resposta in respostas_livres
+    )
+    if total_discursivas_pdf:
+        indicadores.append((
+            "Questões discursivas do PDF",
+            f"{total_discursivas_pdf} resposta(s); sem avaliação individual registrada.",
+        ))
+    if questoes_pdf_objetivas:
+        acertos_pdf = sum(
+            correcoes_por_chave.get(f"resposta_livre:{indice}", {}).get("correta") is True
+            for indice, _ in questoes_pdf_objetivas
+        )
+        indicadores.append((
+            "Questões objetivas do PDF",
+            f"{acertos_pdf} de {len(questoes_pdf_objetivas)} correta(s).",
+        ))
+    if indicadores:
+        largura_indicador = documento.width / len(indicadores)
+        resumo = Table(
+            [[
+                Paragraph(
+                    f"<b>{_texto_pdf(rotulo)}:</b> {_texto_pdf(valor)}",
+                    styles["CorrecaoResumoSIAA"],
+                )
+                for rotulo, valor in indicadores
+            ]],
+            colWidths=[largura_indicador] * len(indicadores),
+        )
+        resumo.setStyle(TableStyle([
+            ("BACKGROUND", (0, 0), (-1, -1), colors.HexColor("#f1f5f9")),
+            ("BOX", (0, 0), (-1, -1), 0.6, colors.HexColor("#cbd5e1")),
+            ("INNERGRID", (0, 0), (-1, -1), 0.5, colors.HexColor("#dbe3ec")),
+            ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
+            ("ALIGN", (0, 0), (-1, -1), "CENTER"),
+            ("LEFTPADDING", (0, 0), (-1, -1), 8),
+            ("RIGHTPADDING", (0, 0), (-1, -1), 8),
+            ("TOPPADDING", (0, 0), (-1, -1), 8),
+            ("BOTTOMPADDING", (0, 0), (-1, -1), 8),
+        ]))
+        story.extend([resumo, Spacer(1, 14)])
 
     def adicionar_linha(texto, estilo, marca=False, recuo=0):
         estilo_linha = (
@@ -622,13 +851,179 @@ def _gerar_pdf_correcao(correcao):
         else:
             story.append(conteudo)
 
+    def adicionar_card_questao(
+        indice,
+        enunciado,
+        tipo,
+        resultado,
+        resposta_aluno,
+        alternativas=None,
+        alternativa_correta="",
+        alternativa_marcada="",
+        parecer="",
+        pulada=False,
+    ):
+        story.append(Spacer(1, 7))
+        paleta_status = {
+            "Correta": ("#166534", "#dcfce7"),
+            "Incorreta": ("#991b1b", "#fee2e2"),
+            "Não respondida": ("#475569", "#e2e8f0"),
+            "Avaliação individual não registrada": ("#854d0e", "#fef3c7"),
+        }
+        cor_status, fundo_status = paleta_status.get(
+            resultado,
+            ("#475569", "#e2e8f0"),
+        )
+        cabecalho = Table(
+            [[Paragraph(f"QUESTÃO {indice:02d}", styles["CorrecaoCabecalhoSIAA"])]],
+            colWidths=[documento.width],
+        )
+        cabecalho.setStyle(TableStyle([
+            ("BACKGROUND", (0, 0), (-1, -1), colors.HexColor("#16345c")),
+            ("LEFTPADDING", (0, 0), (-1, -1), 9),
+            ("RIGHTPADDING", (0, 0), (-1, -1), 9),
+            ("TOPPADDING", (0, 0), (-1, -1), 7),
+            ("BOTTOMPADDING", (0, 0), (-1, -1), 7),
+        ]))
+        story.append(cabecalho)
+        metadados_questao = Table(
+            [[Paragraph(
+                f"<font color='{cor_status}'>Tipo: {_texto_pdf(tipo)}"
+                f" &nbsp; · &nbsp; Resultado: {_texto_pdf(resultado)}</font>",
+                styles["CorrecaoTipoSIAA"],
+            )]],
+            colWidths=[documento.width],
+        )
+        metadados_questao.setStyle(TableStyle([
+            ("BACKGROUND", (0, 0), (-1, -1), colors.HexColor(fundo_status)),
+            ("LEFTPADDING", (0, 0), (-1, -1), 9),
+            ("RIGHTPADDING", (0, 0), (-1, -1), 9),
+            ("TOPPADDING", (0, 0), (-1, -1), 5),
+            ("BOTTOMPADDING", (0, 0), (-1, -1), 5),
+        ]))
+        story.append(metadados_questao)
+
+        enunciado_bloco = Table(
+            [[Paragraph(
+                f"<b>Questão {indice}:</b> {_texto_pdf(enunciado)}",
+                styles["CorrecaoPerguntaSIAA"],
+            )]],
+            colWidths=[documento.width],
+        )
+        enunciado_bloco.setStyle(TableStyle([
+            ("BACKGROUND", (0, 0), (-1, -1), colors.HexColor("#f8fafc")),
+            ("BOX", (0, 0), (-1, -1), 0.5, colors.HexColor("#dbe3ec")),
+            ("LEFTPADDING", (0, 0), (-1, -1), 9),
+            ("RIGHTPADDING", (0, 0), (-1, -1), 9),
+            ("TOPPADDING", (0, 0), (-1, -1), 8),
+            ("BOTTOMPADDING", (0, 0), (-1, -1), 8),
+        ]))
+        story.append(enunciado_bloco)
+
+        if alternativas:
+            linhas_alternativas = [[
+                Paragraph("ALTERNATIVA", styles["CorrecaoRotuloSIAA"]),
+                Paragraph("MARCAÇÃO", styles["CorrecaoRotuloSIAA"]),
+            ]]
+            comandos_alternativas = [
+                ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#eef2f7")),
+                ("LINEBELOW", (0, 0), (-1, 0), 0.5, colors.HexColor("#cbd5e1")),
+                ("VALIGN", (0, 0), (-1, -1), "TOP"),
+                ("LEFTPADDING", (0, 0), (-1, -1), 7),
+                ("RIGHTPADDING", (0, 0), (-1, -1), 7),
+                ("TOPPADDING", (0, 0), (-1, -1), 5),
+                ("BOTTOMPADDING", (0, 0), (-1, -1), 5),
+                ("LINEBELOW", (0, 1), (-1, -1), 0.35, colors.HexColor("#e2e8f0")),
+            ]
+            for indice_alternativa, alternativa in enumerate(alternativas, start=1):
+                letra = alternativa.get("letra")
+                correta = letra == alternativa_correta or alternativa.get("correta") is True
+                marcada = letra == alternativa_marcada or alternativa.get("selecionada") is True
+                marcacoes = []
+                if correta:
+                    marcacoes.append("gabarito")
+                if marcada:
+                    marcacoes.append("resposta do aluno")
+                linhas_alternativas.append([
+                    Paragraph(
+                        f"<b>{_texto_pdf(letra)})</b> "
+                        f"{_texto_pdf(alternativa.get('texto'))}",
+                        styles["CorrecaoAlternativaSIAA"],
+                    ),
+                    Paragraph(
+                        _texto_pdf(" · ".join(marcacoes) if marcacoes else "—"),
+                        styles["CorrecaoAlternativaSIAA"],
+                    ),
+                ])
+                if correta and marcada:
+                    fundo = colors.HexColor("#dcfce7")
+                elif correta:
+                    fundo = colors.HexColor("#ecfdf5")
+                elif marcada:
+                    fundo = colors.HexColor("#eff6ff")
+                else:
+                    fundo = colors.white if indice_alternativa % 2 else colors.HexColor("#f8fafc")
+                comandos_alternativas.append(
+                    ("BACKGROUND", (0, indice_alternativa), (-1, indice_alternativa), fundo)
+                )
+            tabela_alternativas = Table(
+                linhas_alternativas,
+                colWidths=[
+                    documento.width * 0.7,
+                    documento.width * 0.3,
+                ],
+                repeatRows=1,
+            )
+            tabela_alternativas.setStyle(TableStyle(comandos_alternativas))
+            story.extend([Spacer(1, 5), tabela_alternativas])
+
+        texto_resposta = (
+            "Questão pulada."
+            if pulada
+            else resposta_aluno or "Não respondida."
+        )
+        resposta_bloco = Table(
+            [[Paragraph(
+                f"<b>Resposta do aluno:</b> {_texto_pdf(texto_resposta)}",
+                styles["CorrecaoRespostaSIAA"],
+            )]],
+            colWidths=[documento.width],
+        )
+        resposta_bloco.setStyle(TableStyle([
+            ("BACKGROUND", (0, 0), (-1, -1), colors.HexColor("#eff6ff")),
+            ("LINEBEFORE", (0, 0), (0, -1), 3, colors.HexColor("#60a5fa")),
+            ("LEFTPADDING", (0, 0), (-1, -1), 9),
+            ("RIGHTPADDING", (0, 0), (-1, -1), 9),
+            ("TOPPADDING", (0, 0), (-1, -1), 7),
+            ("BOTTOMPADDING", (0, 0), (-1, -1), 7),
+        ]))
+        story.extend([Spacer(1, 6), resposta_bloco])
+        if parecer:
+            parecer_bloco = Table(
+                [[Paragraph(
+                    f"<b>Correção do professor:</b> {_texto_pdf(parecer)}",
+                    styles["CorrecaoRespostaSIAA"],
+                )]],
+                colWidths=[documento.width],
+            )
+            parecer_bloco.setStyle(TableStyle([
+                ("BACKGROUND", (0, 0), (-1, -1), colors.HexColor("#f0fdf4")),
+                ("LINEBEFORE", (0, 0), (0, -1), 3, colors.HexColor("#4ade80")),
+                ("LEFTPADDING", (0, 0), (-1, -1), 9),
+                ("RIGHTPADDING", (0, 0), (-1, -1), 9),
+                ("TOPPADDING", (0, 0), (-1, -1), 7),
+                ("BOTTOMPADDING", (0, 0), (-1, -1), 7),
+            ]))
+            story.extend([Spacer(1, 5), parecer_bloco])
+
     for indice, questao in enumerate(questoes, start=1):
-        story.append(Spacer(1, 8))
         resposta = questao.get("resposta_aluno") or "Não respondida."
         tipo_questao = questao.get("tipo")
         if tipo_questao == "OBJETIVA":
-            resultado = "Correta" if questao.get("correta") is True else (
-                "Não respondida" if resposta == "Não respondida." else "Incorreta"
+            resultado = (
+                "Não respondida"
+                if questao.get("pulado") or resposta == "Não respondida."
+                else "Correta" if questao.get("correta") is True else "Incorreta"
             )
             tipo = "Objetiva"
         else:
@@ -636,55 +1031,101 @@ def _gerar_pdf_correcao(correcao):
             resultado = "Não respondida" if resposta == "Não respondida." else (
                 "Avaliação individual não registrada"
             )
-        adicionar_linha(
-            f"Questão {indice}: {_texto_pdf(questao.get('enunciado'))}",
-            styles["CorrecaoPerguntaSIAA"],
-            marca=tipo_questao == "OBJETIVA" and questao.get("correta") is True,
+        parecer_questao = correcoes_questoes.get(f"questao:{questao.get('id')}", "")
+        adicionar_card_questao(
+            indice=indice,
+            enunciado=questao.get("enunciado"),
+            tipo=tipo,
+            resultado=resultado,
+            resposta_aluno=resposta,
+            alternativas=questao.get("alternativas") or [],
+            parecer=parecer_questao,
+            pulada=questao.get("pulado") is True,
         )
+
+    for indice, resposta in enumerate(respostas_livres, start=len(questoes) + 1):
+        indice_resposta = indice - len(questoes) - 1
+        chave_resposta = f"resposta_livre:{indice_resposta}"
+        correcao_resposta = correcoes_por_chave.get(chave_resposta, {})
+        objetiva_pdf = (
+            resposta.get("tipo") == "OBJETIVA"
+            and isinstance(resposta.get("alternativas"), list)
+        )
+        if objetiva_pdf:
+            correta = correcao_resposta.get("correta")
+            resultado = (
+                "Não respondida"
+                if resposta.get("pulado")
+                else "Correta" if correta is True else "Incorreta"
+            )
+            tipo_resposta = "Objetiva"
+        else:
+            resultado = (
+                "Não respondida"
+                if resposta.get("pulado")
+                else "Avaliação individual não registrada"
+            )
+            tipo_resposta = "Discursiva"
+        parecer_resposta = correcoes_questoes.get(chave_resposta, "")
+        adicionar_card_questao(
+            indice=indice,
+            enunciado=resposta.get("enunciado") or resposta.get("questao"),
+            tipo=tipo_resposta,
+            resultado=resultado,
+            resposta_aluno=resposta.get("resposta"),
+            alternativas=resposta.get("alternativas") if objetiva_pdf else None,
+            alternativa_correta=correcao_resposta.get("alternativa_correta", ""),
+            alternativa_marcada=resposta.get("alternativa_marcada", ""),
+            parecer=parecer_resposta,
+            pulada=resposta.get("pulado") is True,
+        )
+
+    if enunciados_arquivo:
+        story.append(Spacer(1, 12))
         adicionar_linha(
-            f"<b>Tipo:</b> {tipo} &nbsp; <b>Resultado:</b> {resultado}",
+            "Enunciados identificados no arquivo da atividade"
+            if correcao.get("origem_enunciados") == "atividade"
+            else "Enunciados identificados no arquivo enviado",
+            styles["CorrecaoTituloSIAA"],
+        )
+        for indice, enunciado in enumerate(enunciados_arquivo, start=1):
+            adicionar_linha(
+                f"<b>Questão {indice}:</b> {_texto_pdf(enunciado)}",
+                styles["CorrecaoRespostaSIAA"],
+            )
+    elif correcao.get("arquivo") or correcao.get("arquivo_atividade"):
+        story.append(Spacer(1, 8))
+        adicionar_linha(
+            "Não foi possível localizar enunciados numerados como texto no arquivo. "
+            "PDFs digitalizados ou imagens podem exigir OCR; o arquivo original "
+            "permanece incluído neste documento.",
             styles["CorrecaoTipoSIAA"],
         )
 
-        for alternativa in questao.get("alternativas") or []:
-            resposta_aluno = alternativa.get("selecionada")
-            marcadores = []
-            if alternativa.get("correta") is True:
-                marcadores.append("gabarito")
-            if resposta_aluno:
-                marcadores.append("resposta do aluno")
-            sufixo = f" — {' · '.join(marcadores)}" if marcadores else ""
-            texto_alternativa = (
-                f"{_texto_pdf(alternativa.get('letra'))}) "
-                f"{_texto_pdf(alternativa.get('texto'))}"
-                f"{sufixo}"
-            )
-            adicionar_linha(
-                texto_alternativa,
-                styles["CorrecaoAlternativaSIAA"],
-                marca=alternativa.get("correta") is True,
-                recuo=12,
-            )
-
+    if correcao.get("arquivo") and "arquivo" in correcoes_questoes:
+        story.append(Spacer(1, 8))
         adicionar_linha(
-            f"<b>Resposta do aluno:</b> {_texto_pdf(resposta)}",
+            f"Arquivo enviado: {_texto_pdf(correcao['arquivo'])}",
+            styles["CorrecaoPerguntaSIAA"],
+        )
+        adicionar_linha(
+            f"<b>Correção do professor:</b> "
+            f"{_texto_pdf(correcoes_questoes['arquivo']) or 'Sem observações.'}",
             styles["CorrecaoRespostaSIAA"],
             recuo=4,
         )
 
-    for indice, resposta in enumerate(respostas_livres, start=len(questoes) + 1):
+    if correcao.get("comentario_aluno") and "comentario" in correcoes_questoes:
         story.append(Spacer(1, 8))
+        adicionar_linha("Comentário do aluno", styles["CorrecaoPerguntaSIAA"])
         adicionar_linha(
-            f"Questão {indice}: {_texto_pdf(resposta.get('questao'))}",
-            styles["CorrecaoPerguntaSIAA"],
+            f"<b>Resposta:</b> {_texto_pdf(correcao['comentario_aluno'])}",
+            styles["CorrecaoRespostaSIAA"],
+            recuo=4,
         )
         adicionar_linha(
-            "<b>Tipo:</b> Discursiva &nbsp; "
-            "<b>Resultado:</b> Avaliação individual não registrada",
-            styles["CorrecaoTipoSIAA"],
-        )
-        adicionar_linha(
-            f"<b>Resposta do aluno:</b> {_texto_pdf(resposta.get('resposta'))}",
+            f"<b>Correção do professor:</b> "
+            f"{_texto_pdf(correcoes_questoes['comentario']) or 'Sem observações.'}",
             styles["CorrecaoRespostaSIAA"],
             recuo=4,
         )
@@ -720,6 +1161,7 @@ def _snapshot_correcao(envio):
             resposta_aluno = resposta.texto
 
         questoes.append({
+            "id": questao.id,
             "enunciado": questao.enunciado,
             "tipo": questao.tipo,
             "alternativas": alternativas,
@@ -729,11 +1171,45 @@ def _snapshot_correcao(envio):
 
     respostas_livres = envio.respostas_livres if isinstance(envio.respostas_livres, list) else []
     respostas_livres = [
-        {"questao": str(item.get("questao") or ""), "resposta": str(item.get("resposta") or "")}
+        {
+            "questao": str(item.get("questao") or ""),
+            "resposta": str(item.get("resposta") or ""),
+            **(
+                {
+                    "questao_id": str(item["questao_id"]),
+                    "pulado": item.get("pulado") is True,
+                }
+                if item.get("questao_id")
+                else {"pulado": item.get("pulado") is True}
+            ),
+            **(
+                {"enunciado": str(item.get("enunciado") or ""), "tipo": item.get("tipo")}
+                if item.get("tipo") in {"OBJETIVA", "SUBJETIVA"}
+                else {}
+            ),
+            **(
+                {
+                    "alternativas": item.get("alternativas"),
+                    "alternativa_marcada": item.get("alternativa_marcada"),
+                }
+                if item.get("tipo") == "OBJETIVA"
+                and isinstance(item.get("alternativas"), list)
+                else {}
+            ),
+        }
         for item in respostas_livres
         if isinstance(item, dict)
     ]
-    return {"questoes": questoes, "respostas_livres": respostas_livres}
+    return {
+        "questoes": questoes,
+        "respostas_livres": respostas_livres,
+        "arquivo": os.path.basename(envio.arquivo.name) if envio.arquivo else None,
+        "arquivo_atividade": (
+            os.path.basename(envio.atividade.arquivo.name)
+            if envio.atividade.arquivo else None
+        ),
+        "comentario_aluno": envio.comentario,
+    }
 
 
 def _montar_pdf_visto(conteudo_original, arquivo_nome, dados, assinatura, url_verificacao):
@@ -852,12 +1328,37 @@ def _conteudo_original_do_envio(envio):
     return "\n".join(linhas).encode("utf-8"), f"respostas_envio_{envio.id}.txt"
 
 
-def gerar_pdf_visto(envio, professor, parecer, chave, url_verificacao, nota=None):
+def gerar_pdf_visto(
+    envio,
+    professor,
+    parecer,
+    chave,
+    url_verificacao,
+    nota=None,
+    correcoes_questoes=None,
+):
     conteudo_original, arquivo_nome = _conteudo_original_do_envio(envio)
     arquivo_sha256 = hashlib.sha256(conteudo_original).hexdigest()
     atividade = envio.atividade
     disciplina = atividade.disciplina.nome_disciplina if atividade.disciplina else ""
     momento = timezone.now()
+    snapshot_correcao = _snapshot_correcao(envio)
+    enunciados_arquivo = []
+    origem_enunciados = ""
+    if atividade.arquivo:
+        with atividade.arquivo.open("rb") as arquivo_atividade:
+            enunciados_arquivo = _extrair_enunciados_arquivo(
+                arquivo_atividade.read(),
+                os.path.basename(atividade.arquivo.name),
+            )
+        if enunciados_arquivo:
+            origem_enunciados = "atividade"
+    if not enunciados_arquivo and envio.arquivo:
+        enunciados_arquivo = _extrair_enunciados_arquivo(conteudo_original, arquivo_nome)
+        if enunciados_arquivo:
+            origem_enunciados = "envio"
+    snapshot_correcao["enunciados_arquivo"] = enunciados_arquivo
+    snapshot_correcao["origem_enunciados"] = origem_enunciados
     dados = {
         "versao": 2,
         "envio_id": envio.id,
@@ -877,7 +1378,10 @@ def gerar_pdf_visto(envio, professor, parecer, chave, url_verificacao, nota=None
         "arquivo_sha256": arquivo_sha256,
         "comentario_aluno": envio.comentario,
         "parecer_professor": parecer,
-        "correcao": _snapshot_correcao(envio),
+        "correcao": {
+            **snapshot_correcao,
+            "correcoes_questoes": correcoes_questoes or [],
+        },
         # nota entra nos dados assinados: alterá-la depois invalida o visto
         "nota": None if nota is None else f"{nota:.2f}",
         "assinado_em": momento.isoformat(),

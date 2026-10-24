@@ -11,10 +11,12 @@ import tempfile
 from types import SimpleNamespace
 from unittest.mock import patch
 from pypdf import PdfReader
+from reportlab.pdfgen import canvas
 
 from .models import (
     Atividade,
     AtividadeEnvio,
+    AtividadeResposta,
     AtravessaPor,
     Comunicado,
     Conteudo,
@@ -287,6 +289,203 @@ class AtividadeEnvioTests(TestCase):
                 "comentario": "Segue minha atividade.",
             },
         )
+
+    def test_uploaded_file_can_receive_manual_correction_in_signed_pdf(self):
+        self.assertEqual(self.enviar_arquivo("atividade.txt", b"Resposta anexada.").status_code, 200)
+        envio = AtividadeEnvio.objects.get()
+        self.client.cookies["professor_session"] = self.sessao_professor.token
+        detalhe = self.client.get(
+            f"/api/teacher/atividades/{self.atividade.id}/envios/{envio.id}/correcao"
+        )
+        self.assertEqual(detalhe.status_code, 200)
+        self.assertEqual(detalhe.json()["envio"]["correcao"]["arquivo"], "atividade.txt")
+
+        with override_settings(SIAA_VISTO_SECRET="x" * 32):
+            resposta = self.client.post(
+                f"/api/teacher/atividades/{self.atividade.id}/envios/{envio.id}/corrigir",
+                data=json.dumps({
+                    "parecer": "",
+                    "correcoes_questoes": [
+                        {"chave": "arquivo", "parecer": "A resposta precisa de mais detalhes."},
+                    ],
+                }),
+                content_type="application/json",
+            )
+
+        self.assertEqual(resposta.status_code, 200, resposta.content)
+        envio.refresh_from_db()
+        with envio.visto_pdf.open("rb") as arquivo_pdf:
+            texto_pdf = "\n".join(
+                pagina.extract_text() or "" for pagina in PdfReader(arquivo_pdf).pages
+            )
+        self.assertIn("Arquivo enviado: atividade.txt", texto_pdf)
+        self.assertIn("Correção do professor: A resposta precisa de mais detalhes.", texto_pdf)
+
+    def test_signed_pdf_extracts_numbered_questions_from_uploaded_pdf(self):
+        documento = BytesIO()
+        pdf = canvas.Canvas(documento)
+        pdf.drawString(72, 770, "1. Explique a diferenca entre força e movimento.")
+        pdf.drawString(72, 740, "2. Como a energia se transforma durante a atividade?")
+        pdf.save()
+        self.atividade.arquivo.save(
+            "enunciado.pdf",
+            SimpleUploadedFile(
+                "enunciado.pdf",
+                documento.getvalue(),
+                content_type="application/pdf",
+            ),
+            save=True,
+        )
+
+        respostas = BytesIO()
+        pdf_respostas = canvas.Canvas(respostas)
+        pdf_respostas.drawString(72, 770, "1. Minha resposta enviada pelo aluno.")
+        pdf_respostas.save()
+        self.assertEqual(
+            self.enviar_arquivo("respostas.pdf", respostas.getvalue()).status_code,
+            200,
+        )
+        envio = AtividadeEnvio.objects.get()
+        self.client.cookies["professor_session"] = self.sessao_professor.token
+
+        with override_settings(SIAA_VISTO_SECRET="x" * 32):
+            resposta = self.client.post(
+                f"/api/teacher/atividades/{self.atividade.id}/envios/{envio.id}/corrigir",
+                data=json.dumps({"parecer": ""}),
+                content_type="application/json",
+            )
+
+        self.assertEqual(resposta.status_code, 200, resposta.content)
+        envio.refresh_from_db()
+        enunciados = envio.visto_dados["correcao"]["enunciados_arquivo"]
+        self.assertEqual(envio.visto_dados["correcao"]["origem_enunciados"], "atividade")
+        self.assertEqual(len(enunciados), 2)
+        self.assertIn("Explique a diferenca entre força e movimento.", enunciados[0])
+        with envio.visto_pdf.open("rb") as arquivo_pdf:
+            texto_pdf = "\n".join(
+                pagina.extract_text() or "" for pagina in PdfReader(arquivo_pdf).pages
+            )
+        self.assertIn("Enunciados identificados no arquivo da atividade", texto_pdf)
+        self.assertIn("Como a energia se transforma durante a atividade?", texto_pdf)
+
+    def test_pdf_questions_can_be_answered_and_corrected_as_a_quiz(self):
+        documento = BytesIO()
+        pdf = canvas.Canvas(documento)
+        pdf.drawString(72, 770, "1. Qual alternativa indica a capital do Brasil?")
+        pdf.drawString(90, 740, "A) Rio de Janeiro")
+        pdf.drawString(90, 710, "B) Brasilia")
+        pdf.drawString(72, 670, "2. Explique sua resposta.")
+        pdf.drawString(72, 640, "1. Quanto é 2 + 2?")
+        pdf.drawString(90, 610, "A) 4")
+        pdf.drawString(90, 580, "B) 5")
+        pdf.save()
+        self.atividade.arquivo.save(
+            "questionario.pdf",
+            SimpleUploadedFile(
+                "questionario.pdf",
+                documento.getvalue(),
+                content_type="application/pdf",
+            ),
+            save=True,
+        )
+
+        self.client.cookies["aluno_session"] = self.sessao_aluno.token
+        detalhe = self.client.get(f"/api/students/atividades/{self.atividade.id}")
+        self.assertEqual(detalhe.status_code, 200, detalhe.content)
+        questoes_pdf = detalhe.json()["atividade"]["questoes_pdf"]
+        self.assertEqual(len(questoes_pdf), 3)
+        self.assertEqual(
+            [questao["id"] for questao in questoes_pdf],
+            ["pdf-1", "pdf-2", "pdf-3"],
+        )
+        self.assertEqual(questoes_pdf[0]["tipo"], "OBJETIVA")
+        self.assertEqual(
+            [alternativa["letra"] for alternativa in questoes_pdf[0]["alternativas"]],
+            ["A", "B"],
+        )
+        self.assertEqual(questoes_pdf[1]["tipo"], "SUBJETIVA")
+        self.assertEqual(questoes_pdf[2]["tipo"], "OBJETIVA")
+
+        envio = self.client.post(
+            f"/api/students/atividades/{self.atividade.id}/enviar",
+            {
+                "respostas_pdf": json.dumps([
+                    {"questao_id": "pdf-1", "alternativa_marcada": "B"},
+                    {"questao_id": "pdf-2", "resposta": "A capital é Brasília."},
+                    {"questao_id": "pdf-3", "pular": True},
+                ]),
+            },
+        )
+        self.assertEqual(envio.status_code, 200, envio.content)
+        envio_id = envio.json()["envio"]["id"]
+        self.assertEqual(
+            envio.json()["envio"]["respostas_livres"][0]["resposta"],
+            "B) Brasilia",
+        )
+
+        self.client.cookies["professor_session"] = self.sessao_professor.token
+        correcao_url = (
+            f"/api/teacher/atividades/{self.atividade.id}/envios/{envio_id}/correcao"
+        )
+        detalhe_correcao = self.client.get(correcao_url)
+        self.assertEqual(detalhe_correcao.status_code, 200, detalhe_correcao.content)
+        resposta_pdf = detalhe_correcao.json()["envio"]["correcao"]["respostas_livres"][0]
+        self.assertEqual(resposta_pdf["alternativa_marcada"], "B")
+        self.assertEqual(len(resposta_pdf["alternativas"]), 2)
+        self.assertTrue(
+            detalhe_correcao.json()["envio"]["correcao"]["respostas_livres"][2]["pulado"]
+        )
+
+        url_corrigir = (
+            f"/api/teacher/atividades/{self.atividade.id}/envios/{envio_id}/corrigir"
+        )
+        with override_settings(SIAA_VISTO_SECRET="x" * 32):
+            sem_gabarito = self.client.post(
+                url_corrigir,
+                data=json.dumps({"parecer": ""}),
+                content_type="application/json",
+            )
+            self.assertEqual(sem_gabarito.status_code, 400)
+
+            resposta_correcao = self.client.post(
+                url_corrigir,
+                data=json.dumps({
+                    "parecer": "",
+                    "correcoes_questoes": [
+                        {
+                            "chave": "resposta_livre:0",
+                            "parecer": "",
+                            "alternativa_correta": "B",
+                        },
+                        {
+                            "chave": "resposta_livre:1",
+                            "parecer": "Boa justificativa.",
+                            "alternativa_correta": "",
+                        },
+                        {
+                            "chave": "resposta_livre:2",
+                            "parecer": "",
+                            "alternativa_correta": "B",
+                        },
+                    ],
+                }),
+                content_type="application/json",
+            )
+        self.assertEqual(resposta_correcao.status_code, 200, resposta_correcao.content)
+
+        envio_obj = AtividadeEnvio.objects.get(id=envio_id)
+        correcao_assinada = envio_obj.visto_dados["correcao"]["correcoes_questoes"]
+        self.assertTrue(correcao_assinada[0]["correta"])
+        self.assertFalse(correcao_assinada[2]["correta"])
+        self.assertTrue(envio_obj.visto_dados["correcao"]["respostas_livres"][2]["pulado"])
+        with envio_obj.visto_pdf.open("rb") as arquivo_pdf:
+            texto_pdf = "\n".join(
+                pagina.extract_text() or "" for pagina in PdfReader(arquivo_pdf).pages
+            )
+        self.assertIn("Questões objetivas do PDF: 1 de 2 correta(s).", texto_pdf)
+        self.assertIn("Resposta do aluno: B) Brasilia", texto_pdf)
+        self.assertIn("Resultado: Não respondida", texto_pdf)
+        self.assertIn("gabarito", texto_pdf)
 
     def test_student_needs_teacher_approval_before_replacing_submission(self):
         primeira_resposta = self.enviar_arquivo("primeira.txt", b"primeira versao")
@@ -582,6 +781,24 @@ class AtividadeQuestoesEDevolutivaTests(TestCase):
         self.assertEqual(response.status_code, 400)
         self.assertFalse(Atividade.objects.exists())
 
+    def test_student_can_skip_questions(self):
+        self.criar_atividade(self.questoes_padrao())
+        atividade = Atividade.objects.get(turma=self.turma_a)
+        questao_objetiva = atividade.questoes.get(tipo="OBJETIVA")
+        questao_subjetiva = atividade.questoes.get(tipo="SUBJETIVA")
+
+        envio = self.enviar_respostas(atividade, [
+            {"questao_id": questao_objetiva.id, "pular": True},
+            {"questao_id": questao_subjetiva.id, "pular": True},
+        ])
+
+        self.assertEqual(envio.status_code, 200, envio.content)
+        self.assertEqual(AtividadeResposta.objects.filter(envio_id=envio.json()["envio"]["id"]).count(), 2)
+        self.assertTrue(all(
+            resposta.alternativa_id is None and not resposta.texto
+            for resposta in AtividadeResposta.objects.filter(envio_id=envio.json()["envio"]["id"])
+        ))
+
     def test_student_answers_on_platform_and_teacher_sees_answers(self):
         self.criar_atividade(self.questoes_padrao())
         atividade = Atividade.objects.get(turma=self.turma_a)
@@ -608,6 +825,15 @@ class AtividadeQuestoesEDevolutivaTests(TestCase):
 
         envio = AtividadeEnvio.objects.get()
         self.client.cookies["professor_session"] = self.sessao_professor.token
+        correcao = self.client.get(
+            f"/api/teacher/atividades/{atividade.id}/envios/{envio.id}/correcao"
+        )
+        self.assertEqual(correcao.status_code, 200)
+        self.assertEqual(correcao.json()["envio"]["correcao"]["questoes"][0]["id"], objetiva.id)
+        self.assertEqual(
+            correcao.json()["envio"]["correcao"]["questoes"][0]["resposta_aluno"],
+            "B) 4",
+        )
         envios = self.client.get(f"/api/teacher/atividades/{atividade.id}/envios").json()["envios"]
         self.assertEqual(envios[0]["id"], envio.id)
         self.assertEqual(envios[0]["acertos"], 1)
@@ -637,7 +863,14 @@ class AtividadeQuestoesEDevolutivaTests(TestCase):
 
             correcao = self.client.post(
                 url,
-                json.dumps({"parecer": "Muito bem!", "nota": "8,5"}),
+                json.dumps({
+                    "parecer": "Muito bem!",
+                    "nota": "8,5",
+                    "correcoes_questoes": [
+                        {"chave": f"questao:{objetiva.id}", "parecer": "Cálculo correto."},
+                        {"chave": f"questao:{subjetiva.id}", "parecer": "Boa explicação."},
+                    ],
+                }),
                 content_type="application/json",
             )
             self.assertEqual(correcao.status_code, 200, correcao.content)
@@ -666,6 +899,8 @@ class AtividadeQuestoesEDevolutivaTests(TestCase):
             self.assertIn("gabarito", conteudo)
             self.assertIn("resposta do aluno", conteudo)
             self.assertIn("Resposta do aluno: B) 4", conteudo)
+            self.assertIn("Correção do professor: Cálculo correto.", conteudo)
+            self.assertIn("Correção do professor: Boa explicação.", conteudo)
             self.assertIn("Avaliação individual não registrada", conteudo)
             self.assertTrue(envio.visto_dados["correcao"]["questoes"][0]["correta"])
             self.assertIn("Juntando as quantidades.", conteudo)

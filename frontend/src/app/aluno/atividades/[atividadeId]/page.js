@@ -45,6 +45,9 @@ export default function AtividadeAlunoPage({ params }) {
   const [atividade, setAtividade] = useState(null);
   const [envio, setEnvio] = useState(null);
   const [respostas, setRespostas] = useState({});
+  const [respostasPdf, setRespostasPdf] = useState({});
+  const [questoesPuladas, setQuestoesPuladas] = useState({});
+  const [indiceQuestaoAtual, setIndiceQuestaoAtual] = useState(0);
   const [respostasLivres, setRespostasLivres] = useState([]);
   const [modoResposta, setModoResposta] = useState("questao");
   const [enviando, setEnviando] = useState(false);
@@ -69,9 +72,34 @@ export default function AtividadeAlunoPage({ params }) {
         const data = await res.json();
         if (!res.ok) throw new Error(data.message || `Falha ao carregar atividade (status ${res.status})`);
         setAtividade(data.atividade);
+        setIndiceQuestaoAtual(0);
         setEnvio(data.envio);
         setModoResposta(data.envio?.arquivo_url ? "midia" : "questao");
         setRespostas(respostasIniciais(data.envio));
+        const respostasEnviadas = data.envio?.respostas || [];
+        const respostasPdfEnviadas = data.envio?.respostas_livres || [];
+        setQuestoesPuladas(Object.fromEntries([
+          ...(data.atividade.questoes || [])
+            .filter((questao) => {
+              const resposta = respostasEnviadas.find((item) => item.questao_id === questao.id);
+              return resposta && !resposta.alternativa_id && !resposta.texto?.trim();
+            })
+            .map((questao) => [questao.id, true]),
+          ...respostasPdfEnviadas
+            .filter((resposta) => resposta.questao_id && resposta.pulado)
+            .map((resposta) => [resposta.questao_id, true]),
+        ]));
+        setRespostasPdf(Object.fromEntries(
+          (data.envio?.respostas_livres || [])
+            .filter((resposta) => resposta.questao_id)
+            .map((resposta) => [
+              resposta.questao_id,
+              {
+                alternativa_marcada: resposta.alternativa_marcada || "",
+                resposta: resposta.tipo === "SUBJETIVA" ? resposta.resposta : "",
+              },
+            ])
+        ));
         setRespostasLivres(
           (data.envio?.respostas_livres || []).map((resposta) => ({
             id: crypto.randomUUID(),
@@ -90,10 +118,89 @@ export default function AtividadeAlunoPage({ params }) {
   }, [atividadeId, router]);
 
   function atualizarResposta(questaoId, valor) {
+    setQuestoesPuladas((anteriores) => ({ ...anteriores, [questaoId]: false }));
     setRespostas((anteriores) => ({
       ...anteriores,
       [questaoId]: { ...(anteriores[questaoId] || {}), ...valor },
     }));
+  }
+
+  function respostaEstaPreenchida(questao) {
+    if (questoesPuladas[questao.id]) return true;
+    if (questao.origem === "PDF") {
+      return questao.tipo === "OBJETIVA"
+        ? Boolean(respostasPdf[questao.id]?.alternativa_marcada)
+        : Boolean(respostasPdf[questao.id]?.resposta?.trim());
+    }
+    return questao.tipo === "OBJETIVA"
+      ? Boolean(respostas[questao.id]?.alternativa_id)
+      : Boolean(respostas[questao.id]?.texto?.trim());
+  }
+
+  function navegarQuestao(direcao) {
+    const questoes = atividade?.questoes?.length
+      ? atividade.questoes
+      : atividade?.questoes_pdf?.map((questao) => ({ ...questao, origem: "PDF" }));
+    const questaoAtual = questoes?.[indiceQuestaoAtual];
+    if (direcao > 0 && questaoAtual && !respostaEstaPreenchida(questaoAtual)) {
+      setErro("Responda esta questão antes de continuar.");
+      return;
+    }
+    setErro("");
+    setIndiceQuestaoAtual((indice) => Math.max(
+      0,
+      Math.min(indice + direcao, (questoes?.length || 1) - 1)
+    ));
+  }
+
+  function cancelarRespostaAtual() {
+    const questoes = atividade?.questoes?.length
+      ? atividade.questoes
+      : atividade?.questoes_pdf?.map((item) => ({ ...item, origem: "PDF" }));
+    const questao = questoes?.[indiceQuestaoAtual];
+    if (!questao) return;
+    setQuestoesPuladas((anteriores) => ({ ...anteriores, [questao.id]: false }));
+    if (questao.origem === "PDF") {
+      setRespostasPdf((anteriores) => ({
+        ...anteriores,
+        [questao.id]: { alternativa_marcada: "", resposta: "" },
+      }));
+      setErro("");
+      return;
+    }
+    setRespostas((anteriores) => ({
+      ...anteriores,
+      [questao.id]: questao.tipo === "OBJETIVA"
+        ? { ...(anteriores[questao.id] || {}), alternativa_id: null }
+        : { ...(anteriores[questao.id] || {}), texto: "" },
+    }));
+    setErro("");
+  }
+
+  function pularQuestaoAtual() {
+    const questoes = atividade?.questoes?.length
+      ? atividade.questoes
+      : atividade?.questoes_pdf?.map((questao) => ({ ...questao, origem: "PDF" }));
+    const questao = questoes?.[indiceQuestaoAtual];
+    if (!questao) return;
+    setQuestoesPuladas((anteriores) => ({ ...anteriores, [questao.id]: true }));
+    if (questao.origem === "PDF") {
+      setRespostasPdf((anteriores) => ({
+        ...anteriores,
+        [questao.id]: { alternativa_marcada: "", resposta: "" },
+      }));
+    } else {
+      setRespostas((anteriores) => ({
+        ...anteriores,
+        [questao.id]: questao.tipo === "OBJETIVA"
+          ? { ...(anteriores[questao.id] || {}), alternativa_id: null }
+          : { ...(anteriores[questao.id] || {}), texto: "" },
+      }));
+    }
+    setErro("");
+    if (indiceQuestaoAtual < questoes.length - 1) {
+      setIndiceQuestaoAtual((indice) => indice + 1);
+    }
   }
 
   function adicionarResposta() {
@@ -132,13 +239,17 @@ export default function AtividadeAlunoPage({ params }) {
     setMensagem("");
 
     const questoes = atividade.questoes || [];
+    const questoesPdf = questoes.length ? [] : (atividade.questoes_pdf || []);
     const permiteEscolherResposta = !questoes.length
+      && !questoesPdf.length
       && ["pdf", "imagem"].includes(tipoArquivo(atividade.arquivo_nome));
     const usaRespostaEmMidia = permiteEscolherResposta && modoResposta === "midia";
-    const pendentes = questoes.filter((questao) => (
-      questao.tipo === "OBJETIVA"
-        ? !respostas[questao.id]?.alternativa_id
-        : !respostas[questao.id]?.texto?.trim()
+    const questoesQuestionario = [
+      ...questoes,
+      ...questoesPdf.map((questao) => ({ ...questao, origem: "PDF" })),
+    ];
+    const pendentes = questoesQuestionario.filter((questao) => (
+      !respostaEstaPreenchida(questao)
     ));
     if (pendentes.length) {
       setErro(`Responda todas as questões do professor antes de enviar (faltam ${pendentes.length}).`);
@@ -153,7 +264,13 @@ export default function AtividadeAlunoPage({ params }) {
       setErro("Selecione o arquivo da sua resposta antes de enviar.");
       return;
     }
-    if (!questoes.length && !permiteEscolherResposta && !respostasLivres.length && !arquivoSelecionado) {
+    if (
+      !questoes.length
+      && !questoesPdf.length
+      && !permiteEscolherResposta
+      && !respostasLivres.length
+      && !arquivoSelecionado
+    ) {
       setErro("Selecione um arquivo ou adicione ao menos uma resposta.");
       return;
     }
@@ -171,12 +288,25 @@ export default function AtividadeAlunoPage({ params }) {
           JSON.stringify(
             Object.entries(respostas).map(([questaoId, resposta]) => ({
               questao_id: Number(questaoId),
+              pular: Boolean(questoesPuladas[questaoId]),
               ...resposta,
             }))
           )
         );
       }
-      if (!questoes.length && !usaRespostaEmMidia) {
+      if (questoesPdf.length) {
+        formData.append(
+          "respostas_pdf",
+          JSON.stringify(
+            questoesPdf.map((questao) => ({
+              questao_id: questao.id,
+              pular: Boolean(questoesPuladas[questao.id]),
+              ...respostasPdf[questao.id],
+            }))
+          )
+        );
+      }
+      if (!questoes.length && !questoesPdf.length && !usaRespostaEmMidia) {
         formData.append(
           "respostas_livres",
           JSON.stringify(
@@ -245,7 +375,12 @@ export default function AtividadeAlunoPage({ params }) {
   const urlArquivo = resolverUrl(atividade?.arquivo_url);
   const tipo = tipoArquivo(atividade?.arquivo_nome);
   const questoesDaAtividade = atividade?.questoes || [];
-  const possuiQuestoes = questoesDaAtividade.length > 0;
+  const questoesPdf = questoesDaAtividade.length ? [] : (atividade?.questoes_pdf || []);
+  const questoesQuiz = questoesDaAtividade.length
+    ? questoesDaAtividade
+    : questoesPdf.map((questao) => ({ ...questao, origem: "PDF" }));
+  const possuiQuestoes = questoesQuiz.length > 0;
+  const questaoAtual = questoesQuiz[indiceQuestaoAtual];
   const permiteEscolherResposta = !possuiQuestoes && ["pdf", "imagem"].includes(tipo);
 
   return (
@@ -340,19 +475,56 @@ export default function AtividadeAlunoPage({ params }) {
 
                 <form className={styles.formulario} onSubmit={enviarAtividade}>
                   {possuiQuestoes ? (
-                    <ol className={styles.questoes}>
-                      {questoesDaAtividade.map((questao, indice) => (
-                        <li className={styles.questao} key={questao.id}>
-                          <p className={styles.enunciado}>{indice + 1}. {questao.enunciado}</p>
-                          {questao.tipo === "OBJETIVA" ? (
+                    <>
+                      <div className={styles.progressoQuestoes} aria-live="polite">
+                        <span>Questão {indiceQuestaoAtual + 1} de {questoesQuiz.length}</span>
+                        <div
+                          className={styles.progressoTrilho}
+                          role="progressbar"
+                          aria-valuemin={1}
+                          aria-valuemax={questoesQuiz.length}
+                          aria-valuenow={indiceQuestaoAtual + 1}
+                          aria-label="Progresso das questões"
+                        >
+                          <span
+                            style={{
+                              width: `${((indiceQuestaoAtual + 1) / questoesQuiz.length) * 100}%`,
+                            }}
+                          />
+                        </div>
+                      </div>
+                      {questaoAtual && (
+                        <article className={styles.questao} key={questaoAtual.id}>
+                          <p className={styles.enunciado}>
+                            {indiceQuestaoAtual + 1}. {questaoAtual.enunciado}
+                          </p>
+                          {questaoAtual.tipo === "OBJETIVA" ? (
                             <div className={styles.alternativas}>
-                              {questao.alternativas.map((alternativa) => (
-                                <label key={alternativa.id} className={styles.alternativa}>
+                              {questaoAtual.alternativas.map((alternativa) => (
+                                <label key={alternativa.id || alternativa.letra} className={styles.alternativa}>
                                   <input
                                     type="radio"
-                                    name={`questao-${questao.id}`}
-                                    checked={respostas[questao.id]?.alternativa_id === alternativa.id}
-                                    onChange={() => atualizarResposta(questao.id, { alternativa_id: alternativa.id })}
+                                    name={`questao-${questaoAtual.id}`}
+                                    checked={questaoAtual.origem === "PDF"
+                                      ? respostasPdf[questaoAtual.id]?.alternativa_marcada === alternativa.letra
+                                      : respostas[questaoAtual.id]?.alternativa_id === alternativa.id}
+                                    onChange={() => {
+                                      setQuestoesPuladas((anteriores) => ({
+                                        ...anteriores,
+                                        [questaoAtual.id]: false,
+                                      }));
+                                      if (questaoAtual.origem === "PDF") {
+                                        setRespostasPdf((anteriores) => ({
+                                          ...anteriores,
+                                          [questaoAtual.id]: {
+                                            ...(anteriores[questaoAtual.id] || {}),
+                                            alternativa_marcada: alternativa.letra,
+                                          },
+                                        }));
+                                      } else {
+                                        atualizarResposta(questaoAtual.id, { alternativa_id: alternativa.id });
+                                      }
+                                    }}
                                   />
                                   {alternativa.letra}) {alternativa.texto}
                                 </label>
@@ -360,16 +532,78 @@ export default function AtividadeAlunoPage({ params }) {
                             </div>
                           ) : (
                             <textarea
-                              rows={4}
-                              value={respostas[questao.id]?.texto || ""}
-                              onChange={(event) => atualizarResposta(questao.id, { texto: event.target.value })}
+                              rows={5}
+                              value={questaoAtual.origem === "PDF"
+                                ? respostasPdf[questaoAtual.id]?.resposta || ""
+                                : respostas[questaoAtual.id]?.texto || ""}
+                              onChange={(event) => {
+                                setQuestoesPuladas((anteriores) => ({
+                                  ...anteriores,
+                                  [questaoAtual.id]: false,
+                                }));
+                                if (questaoAtual.origem === "PDF") {
+                                  setRespostasPdf((anteriores) => ({
+                                    ...anteriores,
+                                    [questaoAtual.id]: {
+                                      ...(anteriores[questaoAtual.id] || {}),
+                                      resposta: event.target.value,
+                                    },
+                                  }));
+                                } else {
+                                  atualizarResposta(questaoAtual.id, { texto: event.target.value });
+                                }
+                              }}
                               placeholder="Escreva sua resposta..."
-                              aria-label={`Resposta da questão ${indice + 1}`}
+                              aria-label={`Resposta da questão ${indiceQuestaoAtual + 1}`}
                             />
                           )}
-                        </li>
-                      ))}
-                    </ol>
+                        </article>
+                      )}
+                      <div className={styles.navegacaoQuestoes}>
+                        <button
+                          type="button"
+                          className={styles.botaoCancelarQuestao}
+                          onClick={cancelarRespostaAtual}
+                          disabled={
+                            !respostaEstaPreenchida(questaoAtual || {})
+                            || Boolean(questoesPuladas[questaoAtual?.id])
+                          }
+                        >
+                          Cancelar
+                        </button>
+                        <div className={styles.acoesQuestoes}>
+                          <button
+                            type="button"
+                            className={styles.botaoPularQuestao}
+                            onClick={pularQuestaoAtual}
+                            disabled={Boolean(questoesPuladas[questaoAtual?.id]) || enviando}
+                          >
+                            Pular
+                          </button>
+                          <button
+                            type="button"
+                            className={styles.botaoSecundario}
+                            onClick={() => navegarQuestao(-1)}
+                            disabled={indiceQuestaoAtual === 0}
+                          >
+                            Voltar
+                          </button>
+                          {indiceQuestaoAtual < questoesQuiz.length - 1 ? (
+                            <button
+                              type="button"
+                              className={styles.botaoProximo}
+                              onClick={() => navegarQuestao(1)}
+                            >
+                              Próximo
+                            </button>
+                          ) : (
+                            <button className={styles.botaoEnviar} type="submit" disabled={enviando}>
+                              {enviando ? "Enviando..." : "Confirmar"}
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    </>
                   ) : (
                     <>
                       {permiteEscolherResposta && (
@@ -484,10 +718,12 @@ export default function AtividadeAlunoPage({ params }) {
                       )}
                     </>
                   )}
-                  <button className={styles.botaoEnviar} type="submit" disabled={enviando}>
-                    <i className={`ti ${enviando ? "ti-loader-2" : "ti-send"}`} aria-hidden="true" />
-                    {enviando ? "Enviando..." : "Enviar atividade"}
-                  </button>
+                  {!possuiQuestoes && (
+                    <button className={styles.botaoEnviar} type="submit" disabled={enviando}>
+                      <i className={`ti ${enviando ? "ti-loader-2" : "ti-send"}`} aria-hidden="true" />
+                      {enviando ? "Enviando..." : "Enviar atividade"}
+                    </button>
+                  )}
                 </form>
               </section>
             ) : (
@@ -500,7 +736,20 @@ export default function AtividadeAlunoPage({ params }) {
                       : "Sua atividade já foi enviada. Se precisar corrigir, solicite autorização ao professor."}
                   </p>
                 </div>
-                {(atividade.questoes || []).map((questao, indice) => {
+                {questoesQuiz.map((questao, indice) => {
+                  if (questao.origem === "PDF") {
+                    const respostaPdf = envio?.respostas_livres?.find(
+                      (item) => item.questao_id === questao.id
+                    );
+                    return (
+                      <div className={styles.respostaRecebida} key={questao.id}>
+                        <strong>{indice + 1}. {questao.enunciado}</strong>
+                        <p>
+                          {respostaPdf?.resposta || (respostaPdf?.pulado ? "Questão pulada." : "Sem resposta.")}
+                        </p>
+                      </div>
+                    );
+                  }
                   const resposta = envio?.respostas?.find((item) => item.questao_id === questao.id);
                   const alternativa = questao.alternativas.find((item) => item.id === resposta?.alternativa_id);
                   return (

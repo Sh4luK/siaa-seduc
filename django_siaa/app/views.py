@@ -70,7 +70,12 @@ from django.utils.text import slugify
 from django.views.decorators.http import require_http_methods
 from django.db.models import Avg, Count, Q
 import json
-from .atividade_visto import assinatura_hmac, gerar_pdf_visto
+from .atividade_visto import (
+    _extrair_questoes_arquivo,
+    _snapshot_correcao,
+    assinatura_hmac,
+    gerar_pdf_visto,
+)
 
 
 
@@ -1604,6 +1609,16 @@ def _serializar_envio_atividade(envio, atividade, com_gabarito):
     }
 
 
+def _questoes_pdf_atividade(atividade):
+    if not atividade.arquivo or not atividade.arquivo.name.lower().endswith(".pdf"):
+        return []
+    with atividade.arquivo.open("rb") as arquivo:
+        return _extrair_questoes_arquivo(
+            arquivo.read(),
+            os.path.basename(atividade.arquivo.name),
+        )
+
+
 @csrf_exempt
 def criar_atividade(request):
     if request.method != "POST":
@@ -1784,6 +1799,11 @@ def correcao_envio_atividade_professor(request, atividade_id, envio_id):
         return JsonResponse({"message": "Envio não encontrado."}, status=404)
 
     atividade = envio.atividade
+    correcao = (
+        envio.visto_dados.get("correcao")
+        if envio.visto_emitido_em and isinstance(envio.visto_dados, dict)
+        else None
+    ) or _snapshot_correcao(envio)
     return JsonResponse({
         "envio": {
             "id": envio.id,
@@ -1796,6 +1816,7 @@ def correcao_envio_atividade_professor(request, atividade_id, envio_id):
             "alteracao_status": envio.alteracao_status,
             "parecer_professor": envio.parecer_professor,
             "nota": float(envio.nota) if envio.nota is not None else None,
+            "correcao": correcao,
             "visto_emitido_em": (
                 envio.visto_emitido_em.isoformat()
                 if envio.visto_emitido_em else None
@@ -1862,6 +1883,83 @@ def corrigir_envio_atividade_professor(request, atividade_id, envio_id):
                 status=409,
             )
 
+        snapshot_correcao = _snapshot_correcao(envio)
+        if snapshot_correcao["questoes"]:
+            chaves_correcao = {
+                f"questao:{questao['id']}" for questao in snapshot_correcao["questoes"]
+            }
+        elif snapshot_correcao["respostas_livres"]:
+            chaves_correcao = {
+                f"resposta_livre:{indice}"
+                for indice, _ in enumerate(snapshot_correcao["respostas_livres"])
+            }
+        elif snapshot_correcao["arquivo"]:
+            chaves_correcao = {"arquivo"}
+        elif snapshot_correcao["comentario_aluno"]:
+            chaves_correcao = {"comentario"}
+        else:
+            chaves_correcao = set()
+        questoes_pdf_objetivas = {
+            f"resposta_livre:{indice}": resposta
+            for indice, resposta in enumerate(snapshot_correcao["respostas_livres"])
+            if resposta.get("tipo") == "OBJETIVA"
+            and isinstance(resposta.get("alternativas"), list)
+        }
+
+        correcoes_brutas = body.get("correcoes_questoes", [])
+        if not isinstance(correcoes_brutas, list) or len(correcoes_brutas) > 100:
+            return JsonResponse({"message": "Correções por resposta inválidas."}, status=400)
+        correcoes_questoes = []
+        chaves_recebidas = set()
+        for item in correcoes_brutas:
+            if not isinstance(item, dict):
+                return JsonResponse({"message": "Correção por resposta inválida."}, status=400)
+            chave_correcao = item.get("chave")
+            parecer_questao = item.get("parecer", "")
+            alternativa_correta = item.get("alternativa_correta", "")
+            if (
+                not isinstance(chave_correcao, str)
+                or chave_correcao not in chaves_correcao
+                or chave_correcao in chaves_recebidas
+                or not isinstance(parecer_questao, str)
+                or len(parecer_questao) > 5000
+                or not isinstance(alternativa_correta, str)
+            ):
+                return JsonResponse({"message": "Correção por resposta inválida."}, status=400)
+            if chave_correcao in questoes_pdf_objetivas:
+                resposta_aluno = questoes_pdf_objetivas[chave_correcao]
+                alternativas_validas = {
+                    alternativa.get("letra")
+                    for alternativa in resposta_aluno["alternativas"]
+                    if isinstance(alternativa, dict)
+                }
+                if alternativa_correta not in alternativas_validas:
+                    return JsonResponse(
+                        {"message": "Marque a alternativa correta de cada questão objetiva."},
+                        status=400,
+                    )
+            elif alternativa_correta:
+                return JsonResponse({"message": "Alternativa correta inválida."}, status=400)
+            chaves_recebidas.add(chave_correcao)
+            correcao_questao = {
+                "chave": chave_correcao,
+                "parecer": parecer_questao.strip(),
+            }
+            if chave_correcao in questoes_pdf_objetivas:
+                correcao_questao.update({
+                    "alternativa_correta": alternativa_correta,
+                    "correta": (
+                        alternativa_correta
+                        == questoes_pdf_objetivas[chave_correcao].get("alternativa_marcada")
+                    ),
+                })
+            correcoes_questoes.append(correcao_questao)
+        if not set(questoes_pdf_objetivas).issubset(chaves_recebidas):
+            return JsonResponse(
+                {"message": "Marque a alternativa correta de cada questão objetiva."},
+                status=400,
+            )
+
         url_verificacao = request.build_absolute_uri(
             reverse("verificar_visto_envio", args=[envio.id])
         )
@@ -1873,6 +1971,7 @@ def corrigir_envio_atividade_professor(request, atividade_id, envio_id):
                 chave=chave,
                 url_verificacao=f"{url_verificacao}?{urlencode({'hash': '__HASH__'})}",
                 nota=nota,
+                correcoes_questoes=correcoes_questoes,
             )
         except ValueError as error:
             return JsonResponse({"message": str(error)}, status=400)
@@ -1975,6 +2074,11 @@ def detalhe_atividade_aluno(request, atividade_id):
             "arquivo_url": caminho_relativo_arquivo(atividade.arquivo) if atividade.arquivo else None,
             "arquivo_nome": atividade.arquivo.name.split("/")[-1] if atividade.arquivo else None,
             "questoes": _serializar_questoes_atividade(atividade, com_gabarito=False),
+            "questoes_pdf": (
+                _questoes_pdf_atividade(atividade)
+                if not atividade.questoes.exists()
+                else []
+            ),
         },
         "envio": dados_envio,
     })
@@ -2002,6 +2106,7 @@ def enviar_atividade_aluno(request, atividade_id):
         )
 
     questoes = list(atividade.questoes.prefetch_related("alternativas").all())
+    questoes_pdf = _questoes_pdf_atividade(atividade) if not questoes else []
     respostas = []
     if questoes:
         try:
@@ -2029,6 +2134,9 @@ def enviar_atividade_aluno(request, atividade_id):
 
         for questao in questoes:
             resposta = respostas_por_id[questao.id]
+            pulada = resposta.get("pular", False)
+            if not isinstance(pulada, bool):
+                return JsonResponse({"message": "Indicação de questão pulada inválida."}, status=400)
             alternativa = None
             texto = resposta.get("texto") or ""
             if not isinstance(texto, str):
@@ -2039,7 +2147,7 @@ def enviar_atividade_aluno(request, atividade_id):
             texto = texto.strip()
             if questao.tipo == "OBJETIVA":
                 try:
-                    alternativa_id = int(resposta.get("alternativa_id"))
+                    alternativa_id = int(resposta.get("alternativa_id")) if not pulada else None
                 except (TypeError, ValueError):
                     return JsonResponse(
                         {"message": f"Selecione uma alternativa para a questão {questao.ordem + 1}."},
@@ -2048,18 +2156,97 @@ def enviar_atividade_aluno(request, atividade_id):
                 alternativa = next(
                     (alt for alt in questao.alternativas.all() if alt.id == alternativa_id),
                     None,
-                )
-                if not alternativa:
+                ) if alternativa_id else None
+                if not alternativa and not pulada:
                     return JsonResponse(
                         {"message": f"Alternativa inválida para a questão {questao.ordem + 1}."},
                         status=400,
                     )
-            elif not texto:
+            elif not texto and not pulada:
                 return JsonResponse(
                     {"message": f"Responda a questão {questao.ordem + 1}."},
                     status=400,
                 )
             respostas.append((questao, alternativa, texto))
+
+    respostas_pdf = []
+    if questoes_pdf:
+        try:
+            respostas_recebidas = json.loads(request.POST.get("respostas_pdf") or "[]")
+        except json.JSONDecodeError:
+            return JsonResponse({"message": "Respostas do questionário em formato inválido."}, status=400)
+        if not isinstance(respostas_recebidas, list):
+            return JsonResponse({"message": "Respostas do questionário em formato inválido."}, status=400)
+        questionario_nao_respondido = (
+            not respostas_recebidas and bool(request.FILES.get("arquivo"))
+        )
+        questoes_por_id = {questao["id"]: questao for questao in questoes_pdf}
+        respostas_por_id = {}
+        for resposta in respostas_recebidas:
+            if not isinstance(resposta, dict):
+                return JsonResponse({"message": "Resposta do questionário inválida."}, status=400)
+            questao_id = resposta.get("questao_id")
+            if (
+                not isinstance(questao_id, str)
+                or questao_id not in questoes_por_id
+                or questao_id in respostas_por_id
+            ):
+                return JsonResponse({"message": "Questão inválida nas respostas do questionário."}, status=400)
+            respostas_por_id[questao_id] = resposta
+        if set(respostas_por_id) != set(questoes_por_id) and not questionario_nao_respondido:
+            return JsonResponse({"message": "Responda todas as questões antes de enviar."}, status=400)
+
+        for questao in ([] if questionario_nao_respondido else questoes_pdf):
+            resposta = respostas_por_id[questao["id"]]
+            pulada = resposta.get("pular", False)
+            if not isinstance(pulada, bool):
+                return JsonResponse({"message": "Indicação de questão pulada inválida."}, status=400)
+            item = {
+                "questao_id": questao["id"],
+                "questao": f"Questão {questao['ordem']}",
+                "enunciado": questao["enunciado"],
+                "tipo": questao["tipo"],
+                "alternativas": questao["alternativas"],
+                "pulado": pulada,
+            }
+            if questao["tipo"] == "OBJETIVA":
+                alternativa_marcada = resposta.get("alternativa_marcada")
+                alternativa = next(
+                    (
+                        item_alt for item_alt in questao["alternativas"]
+                        if item_alt["letra"] == alternativa_marcada
+                    ),
+                    None,
+                )
+                if not alternativa and not pulada:
+                    return JsonResponse(
+                        {"message": f"Selecione uma alternativa para a questão {questao['ordem']}."},
+                        status=400,
+                    )
+                item["alternativa_marcada"] = alternativa["letra"] if alternativa else ""
+                item["resposta"] = (
+                    f"{alternativa['letra']}) {alternativa['texto']}"
+                    if alternativa else ""
+                )
+            else:
+                texto = resposta.get("resposta")
+                if not isinstance(texto, str):
+                    return JsonResponse(
+                        {"message": f"Resposta inválida para a questão {questao['ordem']}."},
+                        status=400,
+                    )
+                if not texto.strip() and not pulada:
+                    return JsonResponse(
+                        {"message": f"Responda a questão {questao['ordem']}."},
+                        status=400,
+                    )
+                if len(texto) > 10000:
+                    return JsonResponse(
+                        {"message": f"A resposta da questão {questao['ordem']} é muito longa."},
+                        status=400,
+                    )
+                item["resposta"] = texto.strip()
+            respostas_pdf.append(item)
 
     try:
         respostas_livres = json.loads(request.POST.get("respostas_livres") or "[]")
@@ -2082,6 +2269,7 @@ def enviar_atividade_aluno(request, atividade_id):
             "questao": questao.strip(),
             "resposta": texto.strip(),
         })
+    respostas_livres_validadas.extend(respostas_pdf)
 
     arquivo = request.FILES.get("arquivo")
     limpar_arquivo = request.POST.get("limpar_arquivo") == "true" and not arquivo

@@ -62,6 +62,7 @@ export default function EnviosAtividadePage() {
   const [loading, setLoading] = useState(true);
   const [atividade, setAtividade] = useState(null);
   const [envios, setEnvios] = useState([]);
+  const [respostasVisiveis, setRespostasVisiveis] = useState({});
   const [erro, setErro] = useState("");
   const [respondendoId, setRespondendoId] = useState(null);
 
@@ -204,19 +205,46 @@ export default function EnviosAtividadePage() {
                         )}
                       </p>
 
-                      {questoes.length > 0 && (
-                        <RespostasDoAluno questoes={questoes} respostas={envio.respostas || []} />
-                      )}
+                      {(questoes.length > 0 || envio.respostas_livres?.length > 0) && (
+                        <>
+                          <button
+                            type="button"
+                            className={styles.botaoVerRespostas}
+                            aria-expanded={Boolean(respostasVisiveis[envio.id])}
+                            onClick={() => setRespostasVisiveis((atuais) => ({
+                              ...atuais,
+                              [envio.id]: !atuais[envio.id],
+                            }))}
+                          >
+                            <i
+                              className={`ti ${respostasVisiveis[envio.id] ? "ti-chevron-up" : "ti-eye"}`}
+                              aria-hidden="true"
+                            />
+                            {respostasVisiveis[envio.id] ? "Ocultar respostas" : "Ver Respostas"}
+                          </button>
+                          {respostasVisiveis[envio.id] && (
+                            <div className={styles.respostasEnvio}>
+                              {questoes.length > 0 && (
+                                <RespostasDoAluno questoes={questoes} respostas={envio.respostas || []} />
+                              )}
 
-                      {envio.respostas_livres?.length > 0 && (
-                        <ol className={styles.respostas}>
-                          {envio.respostas_livres.map((resposta, indice) => (
-                            <li className={styles.resposta} key={`${indice}-${resposta.questao}`}>
-                              <p className={styles.enunciado}>{resposta.questao}</p>
-                              <p className={styles.respostaTexto}>{resposta.resposta}</p>
-                            </li>
-                          ))}
-                        </ol>
+                              {envio.respostas_livres?.length > 0 && (
+                                <ol className={styles.respostas}>
+                                  {envio.respostas_livres.map((resposta, indice) => (
+                                    <li className={styles.resposta} key={`${indice}-${resposta.questao}`}>
+                                      <p className={styles.enunciado}>
+                                        {resposta.enunciado || resposta.questao}
+                                      </p>
+                                      <p className={styles.respostaTexto}>
+                                        {resposta.resposta || (resposta.pulado ? "Questão pulada." : "Sem resposta.")}
+                                      </p>
+                                    </li>
+                                  ))}
+                                </ol>
+                              )}
+                            </div>
+                          )}
+                        </>
                       )}
 
                       {envio.comentario && (
