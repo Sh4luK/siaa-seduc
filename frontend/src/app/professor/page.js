@@ -13,6 +13,7 @@ const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 export default function Professor() {
   const [authenticated, setAuthenticated] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [authError, setAuthError] = useState("")
   const [nomeCompleto, setNomeCompleto] = useState("")
   const [menuOpen, setMenuOpen] = useState(false)
   const [turmasAgrupadas, setTurmasAgrupadas] = useState([])
@@ -23,7 +24,10 @@ export default function Professor() {
     async function verifyAuthentication() {
       try {
         const url = `${API_BASE}/api/teacher/auth`;
-        const response = await fetch(url, { credentials: "include" });
+        const response = await fetch(url, { credentials: "include", cache: "no-store" });
+        if (!response.ok) {
+          throw new Error(`Falha ao verificar sessão (status ${response.status})`);
+        }
         const data = await response.json();
 
         if (data.return === true) {
@@ -34,7 +38,7 @@ export default function Professor() {
         }
       } catch (error) {
         setAuthenticated(false);
-        router.push("/professor/login");
+        setAuthError("Não foi possível verificar sua sessão. Verifique sua conexão e tente novamente.");
       } finally {
         setLoading(false);
       }
@@ -43,7 +47,7 @@ export default function Professor() {
     async function getData() {
       try {
         const urlAuth = `${API_BASE}/api/teacher/auth`;
-        const authResponse = await fetch(urlAuth, { credentials: "include" });
+        const authResponse = await fetch(urlAuth, { credentials: "include", cache: "no-store" });
         if (!authResponse.ok) {
           throw new Error();
         }
@@ -104,7 +108,7 @@ export default function Professor() {
     }
 
     init();
-  }, []);
+  }, [router]);
 
   if (loading) {
     return (
@@ -116,6 +120,19 @@ export default function Professor() {
           </div>
           <p className={layoutStyles.loadingText}>Verificando credenciais…</p>
         </div>
+      </div>
+    );
+  }
+
+  if (authError) {
+    return (
+      <div className={layoutStyles.page}>
+        <main className={layoutStyles.main}>
+          <p role="alert">{authError}</p>
+          <button type="button" onClick={() => window.location.reload()}>
+            Tentar novamente
+          </button>
+        </main>
       </div>
     );
   }
