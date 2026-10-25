@@ -100,7 +100,7 @@ COOKIE_POR_TIPO = {
     "COORDENADOR": "coordenacao_session",
     "ADMIN": "admin_session",
 }
-COOKIE_MAX_AGE = 60 * 60 * 3
+COOKIE_MAX_AGE = 60 * 60 * 24  # 24 horas
 
 
 def _expiracao_sessao(sessao):
