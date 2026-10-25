@@ -56,6 +56,12 @@
   margin-bottom: 1.5rem;
 }
 
+.headerButtons {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
 .title {
   font-size: 1.5rem;
   font-weight: 700;
@@ -271,6 +277,28 @@
   cursor: not-allowed;
 }
 
+.botaoSalvarTopo {
+  padding: 0.6rem 1.2rem;
+  background: #0b4f9e;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.botaoSalvarTopo:hover {
+  background: #0a2f5c;
+}
+
+.botaoSalvarTopo:disabled {
+  background: #cbd5e1;
+  color: #64748b;
+  cursor: not-allowed;
+}
+
 /* ===== Específico de avaliações ===== */
 
 .textarea {
@@ -358,6 +386,326 @@
   font-weight: 600;
   color: #5b6b85;
   min-width: 1.2rem;
+}
+
+.adicionarAlternativaBotao {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #0b4f9e;
+  background: transparent;
+  border: 1px dashed rgba(11, 79, 158, 0.35);
+  border-radius: 6px;
+  padding: 0.5rem 0.9rem;
+  cursor: pointer;
+  margin-top: 0.4rem;
+}
+
+.adicionarAlternativaBotao:hover {
+  background: rgba(11, 79, 158, 0.06);
+}
+
+.removerAlternativaBotao {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #b91c1c;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0 0.3rem;
+  line-height: 1;
+}
+
+.removerAlternativaBotao:hover {
+  background: rgba(220, 38, 38, 0.06);
+  border-radius: 4px;
+}
+
+.modoToggle {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.modoBotao,
+.modoAtivo {
+  font-size: 0.8rem;
+  font-weight: 600;
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  border: 1px solid #e2e8f0;
+  background: #ffffff;
+  color: #1a2942;
+}
+
+.modoAtivo {
+  background: #0b4f9e;
+  color: #ffffff;
+  border-color: #0b4f9e;
+}
+
+.arquivoUpload {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border: 1px dashed rgba(11, 79, 158, 0.35);
+  border-radius: 8px;
+  padding: 1rem;
+  color: #0b4f9e;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  width: fit-content;
+}
+
+.arquivoUpload:hover {
+  background: rgba(11, 79, 158, 0.06);
+}
+
+.arquivoInput {
+  display: none;
+}
+
+.processarArquivoBotao {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #ffffff;
+  background: #0b4f9e;
+  border: none;
+  border-radius: 8px;
+  padding: 0.6rem 1.2rem;
+  cursor: pointer;
+  margin-top: 0.5rem;
+}
+
+.processarArquivoBotao:hover {
+  background: #0a2f5c;
+}
+
+.subquestoesHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.adicionarSubquestaoBotao {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #0b4f9e;
+  background: transparent;
+  border: 1px dashed rgba(11, 79, 158, 0.35);
+  border-radius: 6px;
+  padding: 0.4rem 0.8rem;
+  cursor: pointer;
+}
+
+.adicionarSubquestaoBotao:hover {
+  background: rgba(11, 79, 158, 0.06);
+}
+
+.subquestoesContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  margin-top: 0.8rem;
+}
+
+.subquestaoCard {
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 0.8rem;
+}
+
+.subquestaoHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 0.6rem;
+}
+
+.subquestaoLetra {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #0b4f9e;
+  min-width: 1.5rem;
+}
+
+.removerSubquestaoBotao {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #b91c1c;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0 0.3rem;
+  line-height: 1;
+  margin-left: auto;
+}
+
+.removerSubquestaoBotao:hover {
+  background: rgba(220, 38, 38, 0.06);
+  border-radius: 4px;
+}
+
+.alternativasSubquestao {
+  margin-top: 0.6rem;
+  padding-left: 0.4rem;
+}
+
+.previewToggle {
+  margin-top: 1rem;
+}
+
+.previewBotao {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #0b4f9e;
+  background: transparent;
+  border: 1px solid #0b4f9e;
+  border-radius: 8px;
+  padding: 0.6rem 1.2rem;
+  cursor: pointer;
+}
+
+.previewBotao:hover {
+  background: rgba(11, 79, 158, 0.06);
+}
+
+.previewContainer {
+  margin-top: 1.5rem;
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  background: #ffffff;
+  padding: 2rem;
+}
+
+.previewHeader {
+  border-bottom: 2px solid #1a1a1a;
+  padding-bottom: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.previewTitle {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0;
+}
+
+.previewContent {
+  font-family: "Helvetica", "Arial", sans-serif;
+  color: #1a1a1a;
+  font-size: 11pt;
+  line-height: 1.5;
+}
+
+.previewDados {
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background: #f8fafc;
+  border-radius: 8px;
+}
+
+.previewDados p {
+  margin: 0.3rem 0;
+  font-size: 10pt;
+}
+
+.previewTitulo {
+  text-align: center;
+  font-size: 14pt;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  margin: 1.5rem 0 2rem;
+  border-top: 1px solid #ccc;
+  border-bottom: 1px solid #ccc;
+  padding: 10px 0;
+}
+
+.previewTextoIntro {
+  margin: 18px 0 24px;
+  padding: 12px;
+  background: #f8fafc;
+  border-left: 3px solid #0b4f9e;
+  font-size: 10pt;
+  line-height: 1.6;
+  white-space: pre-wrap;
+}
+
+.previewTopico {
+  margin: 20px 0 12px;
+  padding: 8px 12px;
+  background: #e0e7ff;
+  border-left: 4px solid #0b4f9e;
+  font-size: 11pt;
+  font-weight: bold;
+  color: #0b4f9e;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.previewQuestao {
+  margin-bottom: 2rem;
+  page-break-inside: avoid;
+}
+
+.previewQuestaoCompleto {
+  margin: 0 0 0.8rem;
+  white-space: pre-wrap;
+  font-size: 11pt;
+}
+
+.previewQuestaoNumero {
+  font-weight: bold;
+  margin-right: 0.3rem;
+}
+
+.previewEnunciado {
+  margin: 0 0 0.8rem;
+  white-space: pre-wrap;
+  font-size: 11pt;
+}
+
+.previewAlternativas {
+  margin-left: 4px;
+}
+
+.previewAlternativa {
+  margin: 0 0 0.3rem;
+  font-size: 11pt;
+}
+
+.previewLinhas {
+  margin-top: 0.5rem;
+}
+
+.previewLinha {
+  border-bottom: 1px solid #999;
+  height: 22px;
+  margin-bottom: 4px;
+}
+
+.previewSubquestoes {
+  margin-top: 1rem;
+  margin-left: 12px;
+  padding-left: 12px;
+  border-left: 2px solid #e2e8f0;
+}
+
+.previewSubquestao {
+  margin-bottom: 1rem;
+}
+
+.previewSubquestaoEnunciado {
+  margin: 0 0 0.5rem;
+  font-size: 10pt;
+}
+
+.previewSubquestaoLetra {
+  font-weight: bold;
+  color: #444;
 }
 
 @media (max-width: 600px) {
