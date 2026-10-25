@@ -204,12 +204,85 @@ def _questoes_numeradas(texto):
         r"(?im)^[ \t]*(?:quest(?:ão|ao)\s*)?(\d{1,3})\s*[.)\-:]\s+(?=\S)",
         texto,
     ))
+
+    # Detectar tópicos (Situação A, Tópico 1, Caso 1, etc. ou bullet points)
+    marcador_topico = re.compile(
+        r"(?im)^[ \t]*(?:situação|tópico|caso|parte|seção|case|section)\s*([A-Za-z0-9]+)\s*[:\-]?\s*(?=\S)",
+        re.IGNORECASE,
+    )
+    marcador_bullet = re.compile(
+        r"(?im)^[ \t]*[●•○●]\s*(.+?)\s*$",
+    )
+    topicos_encontrados = list(marcador_topico.finditer(texto))
+    bullets_encontrados = list(marcador_bullet.finditer(texto))
+
+    # Extrair texto introdutório antes da primeira questão (apenas instruções úteis)
+    texto_introdutorio = ""
+    if marcadores:
+        primeiro_questao = marcadores[0].start()
+        texto_antes = texto[:primeiro_questao]
+        linhas_antes = [
+            re.sub(r"_+", " ", linha).strip()
+            for linha in texto_antes.splitlines()
+            if linha.strip() and not re.fullmatch(r"[\s_]+", linha)
+        ]
+        # Filtrar linhas de cabeçalho (nomes de campos, disciplinas, etc.)
+        linhas_filtradas = []
+        palavras_chave_cabecalho = [
+            "turma", "aluno", "professor", "disciplina", "ensino médio",
+            "recuperação", "trimestre", "siaa", "seduc", "ano"
+        ]
+        for linha in linhas_antes:
+            # Ignorar linhas que parecem ser campos de formulário ou cabeçalho
+            if any(palavra.lower() in linha.lower() for palavra in palavras_chave_cabecalho):
+                continue
+            # Ignorar linhas muito curtas (provavelmente campos)
+            if len(linha) < 20:
+                continue
+            # Ignorar linhas com muitos underscores
+            if linha.count("_") > 3:
+                continue
+            linhas_filtradas.append(linha)
+
+        if linhas_filtradas:
+            texto_introdutorio = " ".join(linhas_filtradas)
+            # Limpar espaços excessivos
+            texto_introdutorio = re.sub(r"\s+", " ", texto_introdutorio).strip()
+
     questoes = []
     marcador_alternativa = re.compile(
         r"(?<!\w)(?:\(([A-J])\)|([A-J])\s*[).:\-])\s+",
         re.IGNORECASE,
     )
+    marcador_subquestao = re.compile(
+        r"(?im)^[ \t]*([a-z])\s*[).:\-]\s+(?=\S)",
+    )
+
+    # Determinar o tópico de cada questão
+    topico_atual = None
     for indice, marcador in enumerate(marcadores):
+        # Verificar se há um tópico ou bullet antes desta questão
+        posicao_questao = marcador.start()
+
+        # Verificar bullets primeiro (têm prioridade)
+        for bullet in bullets_encontrados:
+            if bullet.start() < posicao_questao and (topico_atual is None or bullet.start() > topico_atual["posicao"]):
+                topico_atual = {
+                    "nome": bullet.group(1).strip(),
+                    "tipo": "bullet",
+                    "posicao": bullet.start(),
+                }
+
+        # Verificar tópicos textuais (caso não tenha bullet)
+        for topico in topicos_encontrados:
+            if topico.start() < posicao_questao and (topico_atual is None or topico.start() > topico_atual["posicao"]):
+                topico_atual = {
+                    "nome": topico.group(0).strip(),
+                    "identificador": topico.group(1),
+                    "tipo": "texto",
+                    "posicao": topico.start(),
+                }
+
         numero = int(marcador.group(1))
         if numero > 100:
             continue
@@ -220,10 +293,74 @@ def _questoes_numeradas(texto):
             for linha in texto[inicio:fim].splitlines()
             if linha.strip() and not re.fullmatch(r"[\s_]+", linha)
         ]
+        # Garantir que linhas seja sempre uma lista
+        if not isinstance(linhas, list):
+            linhas = []
         enunciado = []
         alternativas = []
         alternativa_atual = None
+        subquestoes = []
+        subquestao_atual = None
+        topico_questao = None
+
+        # Detectar se a primeira linha é um título/tópico da questão
+        if linhas and len(linhas) > 0:
+            primeira_linha = linhas[0]
+            # Padrões de título: linhas em MAIÚSCULAS, com mais de 5 palavras, ou com palavras como DESAFIO, QUESTÃO, etc.
+            if (primeira_linha.isupper() and len(primeira_linha.split()) >= 3) or \
+               re.search(r"(?:DESAFIO|QUESTÃO|PROVA|ATIVIDADE|TESTE|EXERCÍCIO)", primeira_linha, re.IGNORECASE):
+                topico_questao = primeira_linha
+                linhas = linhas[1:] if len(linhas) > 1 else []  # Remover a primeira linha das linhas a processar
+
         for linha in linhas:
+            # Verificar se é um bullet (tópico dentro da questão)
+            match_bullet = marcador_bullet.match(linha)
+            if match_bullet:
+                texto_bullet = match_bullet.group(1).strip()
+                # Adicionar bullet ao enunciado como parte do contexto
+                enunciado.append(f"● {texto_bullet}")
+                continue
+
+            # Verificar se é uma subquestão (a, b, c, etc.)
+            match_sub = marcador_subquestao.match(linha)
+            if match_sub and not linha.startswith(tuple("ABCDEFGHIJ")):
+                # Salvar subquestão anterior se existir
+                if subquestao_atual:
+                    subquestoes.append(subquestao_atual)
+                # Criar nova subquestão
+                letra = match_sub.group(1).lower()
+                texto_sub = linha[match_sub.end():].strip()
+                subquestao_atual = {
+                    "letra": letra,
+                    "enunciado": texto_sub,
+                    "tipo": "SUBJETIVA",
+                    "alternativas": [],
+                }
+                continue
+
+            # Se estiver em uma subquestão, adicionar linha ao enunciado
+            if subquestao_atual:
+                # Verificar se é alternativa da subquestão
+                marcadores_alt = list(marcador_alternativa.finditer(linha))
+                if marcadores_alt:
+                    for indice_alt, marcador_alt in enumerate(marcadores_alt):
+                        fim_alt = (
+                            marcadores_alt[indice_alt + 1].start()
+                            if indice_alt + 1 < len(marcadores_alt)
+                            else len(linha)
+                        )
+                        texto_alt = linha[marcador_alt.end():fim_alt].strip()
+                        letra = marcador_alt.group(1) or marcador_alt.group(2)
+                        subquestao_atual["alternativas"].append({
+                            "letra": letra.upper(),
+                            "texto": texto_alt,
+                        })
+                        subquestao_atual["tipo"] = "OBJETIVA"
+                else:
+                    subquestao_atual["enunciado"] = f"{subquestao_atual['enunciado']} {linha}".strip()
+                continue
+
+            # Processamento normal da questão principal
             marcadores_alt = list(marcador_alternativa.finditer(linha))
             prefixo_linha = linha[:marcadores_alt[0].start()].strip() if marcadores_alt else ""
             parece_alternativa = bool(
@@ -258,14 +395,18 @@ def _questoes_numeradas(texto):
             else:
                 enunciado.append(linha)
 
-        if len(alternativas) < 2:
+        # Salvar última subquestão se existir
+        if subquestao_atual:
+            subquestoes.append(subquestao_atual)
+
+        if len(alternativas) < 2 and not subquestoes:
             enunciado = linhas
             alternativas = []
         enunciado_texto = re.sub(r"\s+", " ", " ".join(enunciado)).strip()
         if not enunciado_texto:
             continue
         numero_questao = len(questoes) + 1
-        questoes.append({
+        questao = {
             "id": f"pdf-{numero_questao}",
             "ordem": numero_questao,
             "enunciado": enunciado_texto[:5000],
@@ -274,10 +415,25 @@ def _questoes_numeradas(texto):
                 {"letra": item["letra"], "texto": item["texto"][:1000]}
                 for item in alternativas
             ],
-        })
+            "subquestoes": subquestoes if subquestoes else [],
+            "topico": topico_questao or (topico_atual["nome"] if topico_atual else None),
+        }
+        questoes.append(questao)
         if len(questoes) >= 100:
             break
-    return questoes
+    # Organizar questões por tópicos
+    topicos_organizados = {}
+    for questao in questoes:
+        topico = questao.get("topico") or "Sem tópico"
+        if topico not in topicos_organizados:
+            topicos_organizados[topico] = []
+        topicos_organizados[topico].append(questao)
+
+    return {
+        "texto_introdutorio": texto_introdutorio,
+        "questoes": questoes,
+        "topicos": topicos_organizados,
+    }
 
 
 def _extrair_questoes_arquivo(conteudo, arquivo_nome):
