@@ -134,6 +134,8 @@ urlpatterns = [
     path('api/coordenacao/notas/turma/<int:vinculo_id>', app.views.notas_turma_coordenacao),
     path('api/admin/login', app.views.admin_login),
     path('api/admin/auth', app.views.admin_auth),
+    path('api/admin/escolas', app.views.admin_escolas),
+    path('api/admin/escolas/<int:escola_id>', app.views.admin_escola_excluir),
     path('api/admin/escolas/opcoes', app.views.admin_escolas_opcoes),
     path('api/admin/coordenadores', app.views.admin_coordenadores),
     path('api/admin/coordenadores/<int:coordenador_id>', app.views.admin_coordenador_excluir),
