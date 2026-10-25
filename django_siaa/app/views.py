@@ -136,8 +136,8 @@ def _criar_sessao_e_setar_cookie(response, tipo, referencia_id, nome_completo):
         COOKIE_POR_TIPO[tipo], sessao.token,
         max_age=COOKIE_MAX_AGE,
         httponly=True,
-        samesite="None",
-        secure=True,  # obrigatório com samesite=None sobre HTTPS (Codespaces já é HTTPS)
+        samesite="Lax",
+        secure=False,  # False para funcionar em ambientes sem HTTPS
     )
     return sessao
 
@@ -2622,11 +2622,16 @@ def auth_coordenacao(request):
         else:
             return JsonResponse({
                 "return": True,
-                "coordenador": model_to_dict(coordenador)
+                "coordenador": {
+                    "id": coordenador.id,
+                    "nome_completo": coordenador.nome_completo,
+                    "escola": coordenador.escola
+                }
             })
-    except:
+    except Exception as e:
+        print(f"Erro em auth_coordenacao: {e}")
         return JsonResponse({
-            "return": None,
+            "return": False,
             "message": "error"
         })
 
