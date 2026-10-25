@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import styles from "./page.module.css";
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+const API_BASE = "/backend-api";
 
 const STATUS_LABEL = { PENDENTE: "Pendente", APROVADO: "Aprovado", RECUSADO: "Recusado" };
 

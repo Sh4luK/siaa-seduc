@@ -9,7 +9,7 @@ import logo from "../../../assets/logo.png";
 import Image from "next/image";
 
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+const API_BASE = "/backend-api";
 
 export default function ProfessoresCoordenacaoPage() {
   const [authenticated, setAuthenticated] = useState(null);

@@ -8,7 +8,7 @@ import logo from "@/assets/logo.png";
 import styles from "./page.module.css";
 import ImportarPlanilha from "../ImportarPlanilha";
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+const API_BASE = "/backend-api";
 
 export default function DisciplinasCoordenacaoPage() {
   const [authenticated, setAuthenticated] = useState(null);

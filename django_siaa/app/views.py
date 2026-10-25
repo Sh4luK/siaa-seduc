@@ -2613,25 +2613,18 @@ def login_coordenacao(request):
 @csrf_exempt
 def auth_coordenacao(request):
     coordenador = _coordenador_logado(request)
-
-    try:
-        if coordenador is None:
-            return JsonResponse({
-                "return": False
-            })
-        else:
-            return JsonResponse({
-                "return": True,
-                "coordenador": {
-                    "id": coordenador.id,
-                    "nome_completo": coordenador.nome_completo,
-                    "escola": coordenador.escola
-                }
-            })
-    except Exception as e:
-        print(f"Erro em auth_coordenacao: {e}")
+    if coordenador is None:
         return JsonResponse({
-            "return": False,
+            "return": False
+        })
+    try:
+        return JsonResponse({
+            "return": True,
+            "coordenador": model_to_dict(coordenador)
+        })
+    except:
+        return JsonResponse({
+            "return": None,
             "message": "error"
         })
 
