@@ -1,0 +1,401 @@
+.pageLoading {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f5f7fa;
+  color: #1a2942;
+  font-family: "IBM Plex Sans", "Inter", "Segoe UI", system-ui, sans-serif;
+}
+
+.cardLoading {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  max-width: 420px;
+  width: 100%;
+  padding: 2.5rem;
+  text-align: center;
+}
+
+.headerLoading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.loadingLogo {
+  width: 60px;
+  height: auto;
+}
+
+.subtituloLoading {
+  font-size: 0.9rem;
+  color: #5b6b85;
+  margin: 0;
+}
+
+.page {
+  min-height: 100vh;
+  background-color: #f5f7fa;
+  color: #1a2942;
+  font-family: "IBM Plex Sans", "Inter", "Segoe UI", system-ui, sans-serif;
+}
+
+.shell {
+  display: flex;
+  min-height: 100vh;
+}
+
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 240px;
+  background: #0a2f5c;
+  color: #cfe0f5;
+  display: flex;
+  flex-direction: column;
+  z-index: 30;
+  transition: transform 0.2s ease;
+}
+
+.sidebarOpen {
+  transform: translateX(0);
+}
+
+.sidebarHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 1.25rem 1.25rem 1rem;
+  border-bottom: 1px solid rgba(207, 224, 245, 0.15);
+}
+
+.sidebarLogo {
+  width: 32px;
+  height: auto;
+}
+
+.sidebarBrand {
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: #ffffff;
+}
+
+.nav {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0.5rem 0 1rem;
+}
+
+.navLink,
+.navLinkActive {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.6rem 1rem;
+  color: #cfe0f5;
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 500;
+  border-radius: 6px;
+  transition: all 0.15s ease;
+}
+
+.navLink:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+}
+
+.navLinkActive {
+  background: rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.sidebarFooter {
+  padding: 1rem 1.25rem;
+  border-top: 1px solid rgba(207, 224, 245, 0.15);
+}
+
+.adminName {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+  color: #ffffff;
+}
+
+.adminRole {
+  display: block;
+  font-size: 0.75rem;
+  opacity: 0.7;
+  color: #cfe0f5;
+}
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 25;
+}
+
+.content {
+  flex: 1;
+  margin-left: 240px;
+  display: flex;
+  flex-direction: column;
+}
+
+.topbar {
+  background: white;
+  padding: 1rem 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  border-bottom: 1px solid #e2e8f0;
+  position: sticky;
+  top: 0;
+  z-index: 20;
+}
+
+.menuButton {
+  display: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #1a2942;
+  padding: 0.5rem;
+}
+
+.topbarTitle {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #1a2942;
+}
+
+.main {
+  flex: 1;
+  padding: 1.5rem;
+  max-width: 1400px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.greeting {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1a2942;
+  margin: 0 0 0.5rem 0;
+}
+
+.subtitle {
+  font-size: 0.95rem;
+  color: #5b6b85;
+  margin: 0 0 1.5rem 0;
+}
+
+.statsRow {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.statCard {
+  background: white;
+  border-radius: 8px;
+  padding: 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e2e8f0;
+}
+
+.statIcon {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+}
+
+.statIconCiano {
+  background: #06b6d4;
+}
+
+.statIconRoxo {
+  background: #667eea;
+}
+
+.statIconAzul {
+  background: #0b4f9e;
+}
+
+.statIconVerde {
+  background: #10b981;
+}
+
+.statIconLaranja {
+  background: #f59e0b;
+}
+
+.statValor {
+  display: block;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1a2942;
+}
+
+.statLabel {
+  display: block;
+  font-size: 0.8rem;
+  color: #5b6b85;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1rem;
+}
+
+.card {
+  background: white;
+  border-radius: 8px;
+  padding: 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e2e8f0;
+  text-decoration: none;
+  transition: all 0.15s ease;
+  position: relative;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-color: #0a2f5c;
+}
+
+.iconCircle {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  background: #0a2f5c;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+}
+
+.cardBody {
+  flex: 1;
+}
+
+.cardLabel {
+  display: block;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #1a2942;
+  margin-bottom: 0.25rem;
+}
+
+.cardDescription {
+  display: block;
+  font-size: 0.8rem;
+  color: #5b6b85;
+}
+
+.cardArrow {
+  color: #0a2f5c;
+}
+
+.footer {
+  background: white;
+  border-top: 1px solid #e2e8f0;
+  padding: 1.25rem 1.5rem;
+  margin-top: auto;
+}
+
+.footerContent {
+  max-width: 1400px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.footerLogos {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.footerLogoSiaa {
+  width: 40px;
+  height: auto;
+}
+
+.footerSeparator {
+  color: #e2e8f0;
+  font-size: 1.25rem;
+  font-weight: 300;
+}
+
+.footerSeduc {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #0a2f5c;
+  letter-spacing: 0.05em;
+}
+
+.footerText {
+  font-size: 0.8rem;
+  color: #5b6b85;
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    transform: translateX(-100%);
+  }
+
+  .sidebarOpen {
+    transform: translateX(0);
+  }
+
+  .content {
+    margin-left: 0;
+  }
+
+  .menuButton {
+    display: block;
+  }
+
+  .main {
+    padding: 1rem;
+  }
+
+  .statsRow {
+    grid-template-columns: 1fr;
+  }
+
+  .grid {
+    grid-template-columns: 1fr;
+  }
+
+  .footerContent {
+    flex-direction: column;
+    text-align: center;
+  }
+}
