@@ -425,6 +425,7 @@ class Avaliacao(models.Model):
     disciplina = models.ForeignKey(Disciplina, on_delete=models.CASCADE)
     titulo = models.CharField(max_length=200)
     descricao = models.TextField(blank=True, null=True)
+    texto_introdutorio = models.TextField(blank=True, default="", help_text="Texto introdutório da avaliação (ex: 'Leia o texto para responder as questões de 1-10')")
     data = models.DateField()
     ano_letivo = models.IntegerField()
     data_criacao = models.DateTimeField(auto_now_add=True)
@@ -440,10 +441,14 @@ class Questao(models.Model):
     ]
 
     avaliacao = models.ForeignKey(Avaliacao, on_delete=models.CASCADE, related_name="questoes")
+    questao_pai = models.ForeignKey('self', on_delete=models.CASCADE, related_name='subquestoes', null=True, blank=True)
+    letra_subquestao = models.CharField(max_length=1, null=True, blank=True, help_text="Letra da subquestão (a, b, c, etc.)")
     ordem = models.PositiveIntegerField(default=0)
     enunciado = models.TextField()
     tipo = models.CharField(max_length=10, choices=TIPO_CHOICES, default="OBJETIVA")
     imagem = models.ImageField(upload_to="avaliacoes/questoes/", blank=True, null=True)
+    linhas_resposta = models.PositiveIntegerField(default=2, help_text="Número de linhas para resposta em questões subjetivas")
+    topico = models.CharField(max_length=100, blank=True, null=True, help_text="Tópico da questão (ex: Situação A, Tópico 1)")
 
     class Meta:
         ordering = ["ordem", "id"]
