@@ -48,6 +48,7 @@ from .models import Curtida
 from .models import Comentario
 from .models import Post
 from .models import Admin
+from .models import Escola
 from .models import EstudoProgramado
 from django.core.files.storage import default_storage
 from .models import Avaliacao, Questao, Alternativa
@@ -5793,6 +5794,69 @@ def admin_escolas_opcoes(request):
             valores.add(_nome_escola(v))
 
     return JsonResponse({"escolas": sorted(valores)})
+
+
+@csrf_exempt
+@require_http_methods(["GET", "POST"])
+def admin_escolas(request):
+    if not _admin_logado(request):
+        return JsonResponse({"detail": "Não autenticado."}, status=401)
+
+    if request.method == "GET":
+        escolas = Escola.objects.all().order_by("nome")
+        return JsonResponse([
+            {
+                "id": e.id,
+                "nome": e.nome,
+                "inep": e.inep,
+                "endereco": e.endereco,
+                "contato": e.contato,
+                "criado_em": e.criado_em.isoformat() if e.criado_em else None,
+                "atualizado_em": e.atualizado_em.isoformat() if e.atualizado_em else None,
+            }
+            for e in escolas
+        ], safe=False)
+
+    # POST - Criar nova escola
+    body = json.loads(request.body or "{}")
+    nome = (body.get("nome") or "").strip()
+    inep = (body.get("inep") or "").strip()
+    endereco = (body.get("endereco") or "").strip()
+    contato = (body.get("contato") or "").strip()
+    
+    if not nome:
+        return JsonResponse({"detail": "nome é obrigatório."}, status=400)
+    
+    try:
+        escola = Escola.objects.create(
+            nome=nome,
+            inep=inep if inep else None,
+            endereco=endereco,
+            contato=contato
+        )
+        return JsonResponse({
+            "id": escola.id,
+            "nome": escola.nome,
+            "inep": escola.inep,
+            "endereco": escola.endereco,
+            "contato": escola.contato
+        }, status=201)
+    except Exception as e:
+        return JsonResponse({"detail": str(e)}, status=400)
+
+
+@csrf_exempt
+@require_http_methods(["DELETE"])
+def admin_escola_excluir(request, escola_id):
+    if not _admin_logado(request):
+        return JsonResponse({"detail": "Não autenticado."}, status=401)
+
+    escola = Escola.objects.filter(id=escola_id).first()
+    if not escola:
+        return JsonResponse({"detail": "Escola não encontrada."}, status=404)
+
+    escola.delete()
+    return JsonResponse({"detail": "Excluída."})
 
 
 @csrf_exempt
