@@ -5153,23 +5153,66 @@ def _gerar_pdf_avaliacao(avaliacao):
     aluno_da_turma = Estudante.objects.filter(turma=avaliacao.turma).first()
     curso = aluno_da_turma.curso if aluno_da_turma else "—"
 
-    logo_path = os.path.join(settings.BASE_DIR, "app", "static", "logo.png")
-    logo_url = f"file://{logo_path}"
+    # URLs dos logos usando settings.BASE_DIR
+    logo_siaa_path = os.path.join(settings.BASE_DIR, "app", "static", "logo.png")
+    logo_siaa_url = f"file://{logo_siaa_path}"
+    
+    logo_seduc_path = os.path.join(settings.BASE_DIR, "app", "static", "Seduc_PI_logo.png")
+    logo_seduc_url = f"file://{logo_seduc_path}"
+
+    # Data e hora atual com fuso horário local
+    from datetime import datetime
+    from django.utils import timezone
+    data_hora = timezone.now()
 
     questoes_contexto = []
-    for q in avaliacao.questoes.all().order_by("ordem"):
+    topicos_exibidos = set()
+    topico_atual = None
+    contador_questoes = 0
+    
+    for q in avaliacao.questoes.filter(questao_pai__isnull=True).order_by("ordem"):
+        subquestoes_data = []
+        for sq in q.subquestoes.all().order_by("letra_subquestao"):
+            subquestoes_data.append({
+                "letra": sq.letra_subquestao,
+                "enunciado": sq.enunciado,
+                "tipo": sq.tipo,
+                "tipo_label": "Objetiva" if sq.tipo == "OBJETIVA" else "Subjetiva",
+                "linhas_resposta": sq.linhas_resposta,
+                "linhas_resposta_range": range(sq.linhas_resposta or 2),
+                "alternativas": sq.alternativas.all() if sq.tipo == "OBJETIVA" else [],
+            })
+
+        # Adicionar separador de tópico se mudou
+        if q.topico and q.topico != topico_atual:
+            topico_atual = q.topico
+            if q.topico not in topicos_exibidos:
+                topicos_exibidos.add(q.topico)
+                questoes_contexto.append({
+                    "tipo": "separador_topico",
+                    "topico": q.topico,
+                })
+
+        contador_questoes += 1
         questoes_contexto.append({
             "enunciado": q.enunciado,
             "tipo": q.tipo,
             "tipo_label": "Objetiva" if q.tipo == "OBJETIVA" else "Subjetiva",
             "imagem_url": q.imagem.url if q.imagem else None,
+            "linhas_resposta": q.linhas_resposta,
+            "linhas_resposta_range": range(q.linhas_resposta or 2),
             "alternativas": q.alternativas.all() if q.tipo == "OBJETIVA" else [],
+            "subquestoes": subquestoes_data,
+            "topico": q.topico,
+            "numero": contador_questoes,
         })
 
     contexto = {
         "avaliacao": avaliacao,
         "curso": curso,
-        "logo_url": logo_url,
+        "logo_siaa_url": logo_siaa_url,
+        "logo_seduc_url": logo_seduc_url,
+        "data_hora": data_hora,
         "questoes": questoes_contexto,
     }
 
@@ -5260,6 +5303,36 @@ def get_avaliacoes_professor(request):
 
 
 @csrf_exempt
+def extrair_questoes_arquivo(request):
+    if request.method != "POST":
+        return JsonResponse({"message": "Método não permitido."}, status=405)
+
+    professor = _professor_logado(request)
+    if not professor:
+        return JsonResponse({"message": "Professor não autenticado."}, status=401)
+
+    if "arquivo" not in request.FILES:
+        return JsonResponse({"message": "Nenhum arquivo enviado."}, status=400)
+
+    arquivo = request.FILES["arquivo"]
+    if not arquivo.name.lower().endswith(".pdf"):
+        return JsonResponse({"message": "Apenas arquivos PDF são suportados."}, status=400)
+
+    try:
+        conteudo = arquivo.read()
+        resultado = _extrair_questoes_arquivo(conteudo, arquivo.name)
+        questoes = resultado.get("questoes", []) if isinstance(resultado, dict) else resultado
+        texto_introdutorio = resultado.get("texto_introdutorio", "") if isinstance(resultado, dict) else ""
+        return JsonResponse({
+            "questoes": questoes,
+            "texto_introdutorio": texto_introdutorio,
+            "total": len(questoes)
+        })
+    except Exception as e:
+        return JsonResponse({"message": f"Erro ao processar arquivo: {str(e)}"}, status=500)
+
+
+@csrf_exempt
 def criar_avaliacao(request):
     if request.method != "POST":
         return JsonResponse({"message": "Método não permitido."}, status=405)
@@ -5274,21 +5347,27 @@ def criar_avaliacao(request):
         return JsonResponse({"message": "JSON inválido."}, status=400)
 
     titulo = (body.get("titulo") or "").strip()
-    curso = (body.get("curso") or "").strip()
-    turma_id = body.get("turma")
+    turma_nome = body.get("turma")
+    disciplina_nome = body.get("disciplina")
     data_str = body.get("data")
     questoes_input = body.get("questoes", [])
 
     if not titulo:
         return JsonResponse({"message": "O título é obrigatório."}, status=400)
-    if not turma_id:
+    if not turma_nome:
         return JsonResponse({"message": "Selecione a turma."}, status=400)
+    if not disciplina_nome:
+        return JsonResponse({"message": "Selecione a disciplina."}, status=400)
     if not questoes_input:
         return JsonResponse({"message": "Adicione ao menos uma questão."}, status=400)
 
-    turma = AtravessaPor.objects.filter(id=turma_id, professor=professor).first()
+    turma = AtravessaPor.objects.filter(turma=turma_nome, professor=professor).first()
     if not turma:
         return JsonResponse({"message": "Turma não encontrada."}, status=404)
+
+    disciplina = Disciplina.objects.filter(nome_disciplina=disciplina_nome).first()
+    if not disciplina:
+        return JsonResponse({"message": "Disciplina não encontrada."}, status=404)
 
     data_avaliacao = date.today()
     if data_str:
@@ -5301,7 +5380,7 @@ def criar_avaliacao(request):
     for i, q in enumerate(questoes_input):
         tipo = q.get("tipo")
         enunciado = (q.get("enunciado") or "").strip()
-        if tipo not in ("DISSERTATIVA", "OBJETIVA"):
+        if tipo not in ("SUBJETIVA", "OBJETIVA"):
             erros.append(f"Questão {i + 1}: tipo inválido.")
         if not enunciado:
             erros.append(f"Questão {i + 1}: enunciado obrigatório.")
@@ -5315,10 +5394,12 @@ def criar_avaliacao(request):
 
     avaliacao = Avaliacao.objects.create(
         professor=professor,
-        turma=turma,
+        turma=turma_nome,
+        disciplina=disciplina,
         titulo=titulo,
-        curso=curso,
         data=data_avaliacao,
+        ano_letivo=data_avaliacao.year,
+        texto_introdutorio=body.get("texto_introdutorio", ""),
     )
 
     for i, q in enumerate(questoes_input):
@@ -5327,6 +5408,8 @@ def criar_avaliacao(request):
             ordem=i,
             tipo=q["tipo"],
             enunciado=q["enunciado"].strip(),
+            linhas_resposta=q.get("linhas_resposta", 2),
+            topico=q.get("topico", ""),
         )
 
         if q["tipo"] == "OBJETIVA":
@@ -5334,6 +5417,24 @@ def criar_avaliacao(request):
                 texto_alt = (texto_alt or "").strip()
                 if texto_alt:
                     Alternativa.objects.create(questao=questao, ordem=j, texto=texto_alt)
+
+        # Criar subquestões
+        for sq_data in q.get("subquestoes", []):
+            subquestao = Questao.objects.create(
+                avaliacao=avaliacao,
+                questao_pai=questao,
+                letra_subquestao=sq_data.get("letra", ""),
+                ordem=i,
+                tipo=sq_data.get("tipo", "SUBJETIVA"),
+                enunciado=sq_data.get("enunciado", "").strip(),
+                linhas_resposta=sq_data.get("linhas_resposta", 2),
+            )
+
+            if sq_data.get("tipo") == "OBJETIVA":
+                for j, alt_data in enumerate(sq_data.get("alternativas", [])):
+                    texto_alt = alt_data.get("texto", "").strip()
+                    if texto_alt:
+                        Alternativa.objects.create(questao=subquestao, ordem=j, texto=texto_alt)
 
     return JsonResponse({
         "message": "Avaliação criada com sucesso.",
