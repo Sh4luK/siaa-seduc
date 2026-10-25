@@ -5,36 +5,127 @@
 <style>
   @page {
     size: A4;
-    margin: 2.2cm 2cm;
+    margin: 2cm 1.8cm;
   }
   body {
     font-family: "Helvetica", "Arial", sans-serif;
     color: #1a1a1a;
     font-size: 11pt;
     line-height: 1.5;
-  }
-  table.header {
-    width: 100%;
-    border-bottom: 2px solid #1a1a1a;
-    margin-bottom: 20px;
-  }
-  table.header td { padding: 0 14px 10px 0; vertical-align: top; }
-  .header .logo { width: 60px; height: 60px; }
-  .header .sistema {
-    font-size: 10pt;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    color: #444;
-    margin: 4px 0 2px;
-  }
-  .header .professor {
-    font-size: 10pt;
-    color: #1a1a1a;
+    padding: 0;
     margin: 0;
+  }
+  .rodape-imagens {
+    margin-top: 32px;
+    padding: 16px 28px;
+    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+    border-top: 2px solid #0b4f9e;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .rodape-logos {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+  }
+  .rodape-logo {
+    height: 30px;
+    width: auto;
+    object-fit: contain;
+  }
+  .rodape-logo-seduc {
+    height: 25px;
+    width: auto;
+    object-fit: contain;
+  }
+  .rodape-texto {
+    font-size: 8pt;
+    color: #5b6b85;
+    text-align: right;
+  }
+  .cabecalho {
+    background: linear-gradient(135deg, #0b4f9e 0%, #1a2942 100%);
+    color: white;
+    padding: 16px 28px;
+    position: relative;
+    overflow: hidden;
+  }
+  .cabecalho::before {
+    content: "";
+    position: absolute;
+    top: -50%;
+    right: -10%;
+    width: 200px;
+    height: 200px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+  }
+  .cabecalho::after {
+    content: "";
+    position: absolute;
+    bottom: -30%;
+    right: 20%;
+    width: 150px;
+    height: 150px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 50%;
+  }
+  .cabecalho-topo {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+    z-index: 1;
+  }
+  .cabecalho-texto {
+    flex: 1;
+  }
+  .cabecalho-titulo {
+    font-size: 18pt;
     font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin: 0 0 6px 0;
+  }
+  .cabecalho-subtitulo {
+    font-size: 10pt;
+    opacity: 0.9;
+    margin: 0;
+  }
+  .cabecalho-linha {
+    height: 2px;
+    background: linear-gradient(90deg, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0) 100%);
+    margin: 12px 0 0 0;
+  }
+  .cabecalho-logos {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-left: 20px;
+    position: relative;
+    z-index: 1;
+  }
+  .cabecalho-logo {
+    height: 40px;
+    width: auto;
+    object-fit: contain;
+  }
+  .cabecalho-logo-seduc {
+    height: 35px;
+    width: auto;
+    object-fit: contain;
+  }
+  .conteudo {
+    padding: 0;
   }
   .dados-avaliacao {
-    margin-bottom: 18px;
+    margin-bottom: 24px;
+    padding: 20px;
+    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+    border-left: 5px solid #0b4f9e;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
   }
   table.linha { width: 100%; margin-bottom: 6px; }
   table.linha td { padding: 0 24px 0 0; vertical-align: bottom; }
@@ -51,9 +142,32 @@
     border-bottom: 1px solid #ccc;
     padding: 10px 0;
   }
+  .texto-introdutorio {
+    margin: 18px 0 24px;
+    padding: 12px;
+    background: #f8fafc;
+    border-left: 3px solid #0b4f9e;
+    font-size: 10pt;
+    line-height: 1.6;
+    white-space: pre-wrap;
+  }
+  .topico-separador {
+    margin: 24px 0 16px;
+    padding: 8px 12px;
+    background: #e0e7ff;
+    border-left: 4px solid #0b4f9e;
+    font-size: 11pt;
+    font-weight: bold;
+    color: #0b4f9e;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
   .questao {
     margin-bottom: 22px;
     page-break-inside: avoid;
+    max-width: 100%;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
   }
   .questao-numero {
     font-weight: bold;
@@ -85,6 +199,21 @@
     height: 22px;
     margin-bottom: 4px;
   }
+  .subquestoes {
+    margin-top: 12px;
+    margin-left: 8px;
+  }
+  .subquestao {
+    margin-bottom: 10px;
+  }
+  .subquestao-enunciado {
+    margin: 0 0 6px;
+    font-size: 10pt;
+  }
+  .subquestao-letra {
+    font-weight: bold;
+    color: #444;
+  }
   .rodape {
     margin-top: 32px;
     text-align: center;
@@ -94,17 +223,18 @@
 </style>
 </head>
 <body>
-  <table class="header">
-    <tr>
-      <td width="64"><img src="{{ logo_url }}" class="logo" /></td>
-      <td>
-        <p class="sistema">SIAA · Sistema Integrado de Acompanhamento Acadêmico</p>
-        <p class="professor">Professor(a): {{ avaliacao.professor.nome_completo }}</p>
-      </td>
-    </tr>
-  </table>
+  <div class="cabecalho">
+    <div class="cabecalho-topo">
+      <div class="cabecalho-texto">
+        <h1 class="cabecalho-titulo">Avaliação</h1>
+        <p class="cabecalho-subtitulo">Sistema Integrado de Avaliação e Acompanhamento</p>
+        <div class="cabecalho-linha"></div>
+      </div>
+    </div>
+  </div>
 
-  <div class="dados-avaliacao">
+  <div class="conteudo">
+    <div class="dados-avaliacao">
     <table class="linha">
       <tr>
         <td><span class="label">Disciplina:</span>{{ avaliacao.disciplina.nome_disciplina }}</td>
@@ -127,31 +257,76 @@
 
   <h1 class="titulo-avaliacao">{{ avaliacao.titulo }}</h1>
 
-  {% for questao in questoes %}
+  {% if avaliacao.texto_introdutorio %}
+  <div class="texto-introdutorio">
+    {{ avaliacao.texto_introdutorio }}
+  </div>
+  {% endif %}
+
+  {% for item in questoes %}
+  {% if item.tipo == "separador_topico" %}
+  <div class="topico-separador">{{ item.topico }}</div>
+  {% else %}
   <div class="questao">
     <p class="questao-numero">
-      Questão {{ forloop.counter }}
-      <span class="questao-tipo">({{ questao.tipo_label }})</span>
+      Questão <span class="questao-counter">{{ item.numero }}</span>
+      <span class="questao-tipo">({{ item.tipo_label }})</span>
     </p>
-    <p class="questao-enunciado">{{ questao.enunciado }}</p>
+    <p class="questao-enunciado">{{ item.enunciado }}</p>
 
-    {% if questao.imagem_url %}
-      <img src="{{ questao.imagem_url }}" class="questao-imagem" />
+    {% if item.imagem_url %}
+      <img src="{{ item.imagem_url }}" class="questao-imagem" />
     {% endif %}
 
-    {% if questao.tipo == "OBJETIVA" %}
+    {% if item.tipo == "OBJETIVA" %}
       <div class="alternativas">
-        {% for alt in questao.alternativas %}
+        {% for alt in item.alternativas %}
           <p class="alternativa">{{ alt.letra }}) {{ alt.texto }}</p>
         {% endfor %}
       </div>
     {% else %}
-      <div class="linha-resposta"></div>
-      <div class="linha-resposta"></div>
+      {% for i in item.linhas_resposta_range %}
+        <div class="linha-resposta"></div>
+      {% endfor %}
+    {% endif %}
+
+    {% if item.subquestoes %}
+      <div class="subquestoes">
+        {% for subquestao in item.subquestoes %}
+          <div class="subquestao">
+            <p class="subquestao-enunciado">
+              <span class="subquestao-letra">{{ subquestao.letra }})</span> {{ subquestao.enunciado }}
+            </p>
+            {% if subquestao.tipo == "OBJETIVA" %}
+              <div class="alternativas">
+                {% for alt in subquestao.alternativas %}
+                  <p class="alternativa">{{ alt.letra }}) {{ alt.texto }}</p>
+                {% endfor %}
+              </div>
+            {% else %}
+              {% for i in subquestao.linhas_resposta_range %}
+                <div class="linha-resposta"></div>
+              {% endfor %}
+            {% endif %}
+          </div>
+        {% endfor %}
+      </div>
     {% endif %}
   </div>
+  {% endif %}
   {% endfor %}
 
-  <p class="rodape">Documento emitido pelo SIAA em {{ avaliacao.data|date:"d/m/Y" }}.</p>
+  <p class="rodape">Documento emitido pelo SIAA em {{ data_hora|date:"d/m/Y" }} às {{ data_hora|date:"H:i" }}.</p>
+  </div>
+
+  <div class="rodape-imagens">
+    <div class="rodape-logos">
+      <img src="{{ logo_siaa_url }}" alt="Logo SIAA" class="rodape-logo" />
+      <img src="{{ logo_seduc_url }}" alt="Logo SEDUC" class="rodape-logo-seduc" />
+    </div>
+    <div class="rodape-texto">
+      Sistema Integrado de Avaliação e Acompanhamento
+    </div>
+  </div>
 </body>
 </html>
