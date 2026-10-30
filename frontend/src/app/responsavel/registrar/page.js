@@ -7,15 +7,15 @@ import Image from "next/image";
 import logo from "../../../assets/logo.png";
 import styles from "../page.module.css";
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+const API_BASE = "/backend-api";
 
 export default function ResponsavelRegistrarPage() {
   const router = useRouter();
   const [nomeCompleto, setNomeCompleto] = useState("");
-  const [cpf, setCpf] = useState("");
-  const [telefone, setTelefone] = useState("");
   const [senha, setSenha] = useState("");
   const [confirmarSenha, setConfirmarSenha] = useState("");
+  const [mostrarSenha, setMostrarSenha] = useState(false);
+  const [mostrarConfirmarSenha, setMostrarConfirmarSenha] = useState(false);
 
   const [buscaAluno, setBuscaAluno] = useState("");
   const [dropdownAberto, setDropdownAberto] = useState(false);
@@ -106,8 +106,6 @@ export default function ResponsavelRegistrarPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           nome_completo: nomeCompleto.trim(),
-          cpf: cpf.trim(),
-          telefone: telefone.trim(),
           senha: senha.trim(),
           aluno_id: alunoSelecionado?.id || null,
           parentesco: parentesco.trim(),
@@ -178,42 +176,67 @@ export default function ResponsavelRegistrarPage() {
             </div>
 
             <div className={styles.field}>
-              <label className={styles.label}>CPF (opcional)</label>
-              <input type="text" className={styles.input} value={cpf} onChange={(e) => setCpf(e.target.value)} />
-            </div>
-
-            <div className={styles.field}>
-              <label className={styles.label}>Telefone (opcional)</label>
-              <input
-                type="text"
-                className={styles.input}
-                value={telefone}
-                onChange={(e) => setTelefone(e.target.value)}
-              />
-            </div>
-
-            <div className={styles.field}>
               <label className={styles.label}>
                 Senha <span className={styles.required}>*</span>
               </label>
-              <input
-                type="password"
-                className={styles.input}
-                value={senha}
-                onChange={(e) => setSenha(e.target.value)}
-              />
+              <div className={styles.passwordWrapper}>
+                <input
+                  type={mostrarSenha ? "text" : "password"}
+                  className={styles.input}
+                  value={senha}
+                  onChange={(e) => setSenha(e.target.value)}
+                />
+                <button
+                  type="button"
+                  className={styles.togglePassword}
+                  onClick={() => setMostrarSenha(!mostrarSenha)}
+                  aria-label={mostrarSenha ? "Ocultar senha" : "Mostrar senha"}
+                >
+                  {mostrarSenha ? (
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 5c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 8.18m-6.72-1.07a3 3 0 1 1-4.24-4.24 3 3 0 0 1 4.24 4.24Z" />
+                      <line x1="1" y1="1" x2="23" y2="23" />
+                    </svg>
+                  ) : (
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" />
+                      <circle cx="12" cy="12" r="3" />
+                    </svg>
+                  )}
+                </button>
+              </div>
             </div>
 
             <div className={styles.field}>
               <label className={styles.label}>
                 Confirmar senha <span className={styles.required}>*</span>
               </label>
-              <input
-                type="password"
-                className={styles.input}
-                value={confirmarSenha}
-                onChange={(e) => setConfirmarSenha(e.target.value)}
-              />
+              <div className={styles.passwordWrapper}>
+                <input
+                  type={mostrarConfirmarSenha ? "text" : "password"}
+                  className={styles.input}
+                  value={confirmarSenha}
+                  onChange={(e) => setConfirmarSenha(e.target.value)}
+                />
+                <button
+                  type="button"
+                  className={styles.togglePassword}
+                  onClick={() => setMostrarConfirmarSenha(!mostrarConfirmarSenha)}
+                  aria-label={mostrarConfirmarSenha ? "Ocultar senha" : "Mostrar senha"}
+                >
+                  {mostrarConfirmarSenha ? (
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 5c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 8.18m-6.72-1.07a3 3 0 1 1-4.24-4.24 3 3 0 0 1 4.24 4.24Z" />
+                      <line x1="1" y1="1" x2="23" y2="23" />
+                    </svg>
+                  ) : (
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" />
+                      <circle cx="12" cy="12" r="3" />
+                    </svg>
+                  )}
+                </button>
+              </div>
             </div>
 
             <div className={styles.field} ref={wrapperRef}>

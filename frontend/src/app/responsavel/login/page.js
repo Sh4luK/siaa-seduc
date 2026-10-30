@@ -7,7 +7,7 @@ import Image from "next/image";
 import logo from "../../../assets/logo.png";
 import styles from "../page.module.css";
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+const API_BASE = "/backend-api";
 
 export default function ResponsavelLoginPage() {
   const router = useRouter();
@@ -17,6 +17,7 @@ export default function ResponsavelLoginPage() {
   const [senha, setSenha] = useState("");
   const [erro, setErro] = useState(null);
   const [enviando, setEnviando] = useState(false);
+  const [etapa, setEtapa] = useState(1); // 1 = nome, 2 = senha
 
   useEffect(() => {
     async function verificar() {

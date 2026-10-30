@@ -535,8 +535,6 @@ class EstudoProgramado(models.Model):
 
 class Responsavel(models.Model):
     nome_completo = models.CharField(max_length=255)
-    cpf = models.CharField(max_length=20, blank=True, default="")
-    telefone = models.CharField(max_length=30, blank=True, default="")
     senha = models.CharField(max_length=255, blank=True, default="")
     ip = models.CharField(max_length=45, null=True, blank=True)
 
