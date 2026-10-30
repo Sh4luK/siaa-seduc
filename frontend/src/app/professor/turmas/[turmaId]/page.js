@@ -9,7 +9,7 @@ import { useEffect, useState } from "react";
 import layoutStyles from "../../page.module.css"
 import styles from "./turma.module.css"
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+const API_BASE = "/backend-api";
 
 export default function TurmaPage() {
   const [authenticated, setAuthenticated] = useState(null)

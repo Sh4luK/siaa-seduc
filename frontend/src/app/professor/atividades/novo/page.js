@@ -8,7 +8,7 @@ import Image from "next/image";
 import logo from "@/assets/logo.png";
 import SeletorTurmas from "../../SeletorTurmas";
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+const API_BASE = "/backend-api";
 const LETRAS = "ABCDEFGHIJ";
 
 function hojeISO() {

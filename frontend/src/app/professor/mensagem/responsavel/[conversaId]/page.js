@@ -8,7 +8,7 @@ import { useEffect, useState, useCallback, useRef } from "react";
 import layoutStyles from "../../../page.module.css";
 import styles from "../../[conversaId]/page.module.css";
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+const API_BASE = "/backend-api";
 
 function formatarHora(iso) { return new Date(iso).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" }); }
 function formatarDataSeparador(iso) { return new Date(iso).toLocaleDateString("pt-BR", { day: "2-digit", month: "long", year: "numeric" }); }

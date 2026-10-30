@@ -8,7 +8,7 @@ import { useEffect, useState } from "react";
 import layoutStyles from "../page.module.css";
 import styles from "./page.module.css";
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+const API_BASE = "/backend-api";
 
 const DIAS = ["SEG", "TER", "QUA", "QUI", "SEX"];
 const DIAS_LABEL = { SEG: "Segunda", TER: "Terça", QUA: "Quarta", QUI: "Quinta", SEX: "Sexta" };

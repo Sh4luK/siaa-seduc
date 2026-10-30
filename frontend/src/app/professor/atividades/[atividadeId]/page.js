@@ -9,7 +9,7 @@ import logo from "../../../../assets/logo.png";
 import layoutStyles from "../../page.module.css";
 import styles from "./page.module.css";
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+const API_BASE = "/backend-api";
 
 function formatarDataHora(dataISO) {
   return new Date(dataISO).toLocaleString("pt-BR");
