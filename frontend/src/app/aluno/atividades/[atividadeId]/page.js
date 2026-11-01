@@ -31,7 +31,7 @@ function tipoArquivo(nome = "") {
 
 function respostasIniciais(envio) {
   return Object.fromEntries(
-    (envio?.respostas || []).map((resposta) => [
+    (Array.isArray(envio?.respostas) ? envio.respostas : []).map((resposta) => [
       resposta.questao_id,
       { alternativa_id: resposta.alternativa_id, texto: resposta.texto || "" },
     ])
@@ -79,18 +79,18 @@ export default function AtividadeAlunoPage({ params }) {
         const respostasEnviadas = data.envio?.respostas || [];
         const respostasPdfEnviadas = data.envio?.respostas_livres || [];
         setQuestoesPuladas(Object.fromEntries([
-          ...(data.atividade.questoes || [])
+          ...(Array.isArray(data.atividade.questoes) ? data.atividade.questoes : [])
             .filter((questao) => {
               const resposta = respostasEnviadas.find((item) => item.questao_id === questao.id);
               return resposta && !resposta.alternativa_id && !resposta.texto?.trim();
             })
             .map((questao) => [questao.id, true]),
-          ...respostasPdfEnviadas
+          ...(Array.isArray(respostasPdfEnviadas) ? respostasPdfEnviadas : [])
             .filter((resposta) => resposta.questao_id && resposta.pulado)
             .map((resposta) => [resposta.questao_id, true]),
         ]));
         setRespostasPdf(Object.fromEntries(
-          (data.envio?.respostas_livres || [])
+          (Array.isArray(data.envio?.respostas_livres) ? data.envio.respostas_livres : [])
             .filter((resposta) => resposta.questao_id)
             .map((resposta) => [
               resposta.questao_id,
@@ -101,7 +101,7 @@ export default function AtividadeAlunoPage({ params }) {
             ])
         ));
         setRespostasLivres(
-          (data.envio?.respostas_livres || []).map((resposta) => ({
+          (Array.isArray(data.envio?.respostas_livres) ? data.envio.respostas_livres : []).map((resposta) => ({
             id: crypto.randomUUID(),
             resposta: resposta.resposta,
             confirmada: true,
@@ -140,7 +140,7 @@ export default function AtividadeAlunoPage({ params }) {
   function navegarQuestao(direcao) {
     const questoes = atividade?.questoes?.length
       ? atividade.questoes
-      : atividade?.questoes_pdf?.map((questao) => ({ ...questao, origem: "PDF" }));
+      : (Array.isArray(atividade?.questoes_pdf) ? atividade.questoes_pdf.map((questao) => ({ ...questao, origem: "PDF" })) : []);
     const questaoAtual = questoes?.[indiceQuestaoAtual];
     if (direcao > 0 && questaoAtual && !respostaEstaPreenchida(questaoAtual)) {
       setErro("Responda esta questão antes de continuar.");
@@ -156,7 +156,7 @@ export default function AtividadeAlunoPage({ params }) {
   function cancelarRespostaAtual() {
     const questoes = atividade?.questoes?.length
       ? atividade.questoes
-      : atividade?.questoes_pdf?.map((item) => ({ ...item, origem: "PDF" }));
+      : (Array.isArray(atividade?.questoes_pdf) ? atividade.questoes_pdf.map((item) => ({ ...item, origem: "PDF" })) : []);
     const questao = questoes?.[indiceQuestaoAtual];
     if (!questao) return;
     setQuestoesPuladas((anteriores) => ({ ...anteriores, [questao.id]: false }));
@@ -180,7 +180,7 @@ export default function AtividadeAlunoPage({ params }) {
   function pularQuestaoAtual() {
     const questoes = atividade?.questoes?.length
       ? atividade.questoes
-      : atividade?.questoes_pdf?.map((questao) => ({ ...questao, origem: "PDF" }));
+      : (Array.isArray(atividade?.questoes_pdf) ? atividade.questoes_pdf.map((questao) => ({ ...questao, origem: "PDF" })) : []);
     const questao = questoes?.[indiceQuestaoAtual];
     if (!questao) return;
     setQuestoesPuladas((anteriores) => ({ ...anteriores, [questao.id]: true }));
@@ -239,7 +239,7 @@ export default function AtividadeAlunoPage({ params }) {
     setMensagem("");
 
     const questoes = atividade.questoes || [];
-    const questoesPdf = questoes.length ? [] : (atividade.questoes_pdf || []);
+    const questoesPdf = questoes.length ? [] : (Array.isArray(atividade.questoes_pdf) ? atividade.questoes_pdf : []);
     const permiteEscolherResposta = !questoes.length
       && !questoesPdf.length
       && ["pdf", "imagem"].includes(tipoArquivo(atividade.arquivo_nome));
@@ -375,7 +375,7 @@ export default function AtividadeAlunoPage({ params }) {
   const urlArquivo = resolverUrl(atividade?.arquivo_url);
   const tipo = tipoArquivo(atividade?.arquivo_nome);
   const questoesDaAtividade = atividade?.questoes || [];
-  const questoesPdf = questoesDaAtividade.length ? [] : (atividade?.questoes_pdf || []);
+  const questoesPdf = questoesDaAtividade.length ? [] : (Array.isArray(atividade?.questoes_pdf) ? atividade.questoes_pdf : []);
   const questoesQuiz = questoesDaAtividade.length
     ? questoesDaAtividade
     : questoesPdf.map((questao) => ({ ...questao, origem: "PDF" }));
@@ -500,7 +500,7 @@ export default function AtividadeAlunoPage({ params }) {
                           </p>
                           {questaoAtual.tipo === "OBJETIVA" ? (
                             <div className={styles.alternativas}>
-                              {questaoAtual.alternativas.map((alternativa) => (
+                              {(Array.isArray(questaoAtual.alternativas) ? questaoAtual.alternativas : []).map((alternativa) => (
                                 <label key={alternativa.id || alternativa.letra} className={styles.alternativa}>
                                   <input
                                     type="radio"
@@ -763,7 +763,7 @@ export default function AtividadeAlunoPage({ params }) {
                     </div>
                   );
                 })}
-                {envio?.alteracao_status !== "SOLICITADA" && !envio?.corrigido_em && (
+                {envio?.alteracao_status !== "SOLICITADA" && !envio?.corrigido_em && !envio?.visto_emitido_em && (
                   <button
                     type="button"
                     className={styles.botaoSecundario}
@@ -773,16 +773,48 @@ export default function AtividadeAlunoPage({ params }) {
                     {solicitandoAlteracao ? "Solicitando..." : "Solicitar novo envio"}
                   </button>
                 )}
-                {!possuiQuestoes && (envio?.respostas_livres || []).map((item, indice) => (
+                {!possuiQuestoes && (Array.isArray(envio?.respostas_livres) ? envio.respostas_livres : []).map((item, indice) => (
                   <div className={styles.respostaRecebida} key={`${indice}-${item.questao}`}>
                     <strong>Questão {indice + 1}</strong>
                     <p>{item.resposta}</p>
                   </div>
                 ))}
-                {envio?.nota !== null && envio?.nota !== undefined && (
-                  <p className={styles.nota}>Nota: {String(envio.nota).replace(".", ",")} / 10</p>
+                {envio?.visto_emitido_em && (
+                  <section className={`${styles.card} ${styles.cardCorrigida}`}>
+                    <div className={styles.correcaoCabecalho}>
+                      <i className="ti ti-rosette-discount-check" aria-hidden="true" />
+                      <div>
+                        <h2>Correção registrada pelo professor</h2>
+                        <p>Corrigida em {new Date(envio.visto_emitido_em).toLocaleString("pt-BR")}</p>
+                      </div>
+                      {envio.nota !== null && envio.nota !== undefined && (
+                        <span className={styles.notaSelo}>
+                          Nota {String(envio.nota).replace(".", ",")}
+                        </span>
+                      )}
+                    </div>
+                    {envio.parecer_professor && (
+                      <div className={styles.parecerProfessor}>
+                        <span>Parecer do professor</span>
+                        <p>{envio.parecer_professor}</p>
+                      </div>
+                    )}
+                    <p className={styles.hashVerificacao}>
+                      Hash de verificação (HMAC-SHA256): <code>{envio.visto_assinatura}</code>
+                    </p>
+                    {envio.visto_pdf_url && (
+                      <a
+                        href={resolverUrl(envio.visto_pdf_url)}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={styles.botaoPdfVisto}
+                      >
+                        <i className="ti ti-file-type-pdf" aria-hidden="true" />
+                        Abrir PDF com visto/correção
+                      </a>
+                    )}
+                  </section>
                 )}
-                {envio?.parecer_professor && <p className={styles.parecer}>{envio.parecer_professor}</p>}
               </section>
             )}
 
