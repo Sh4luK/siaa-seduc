@@ -116,19 +116,17 @@ class Nota(models.Model):
     def calcular(self):
         for t in (1, 2, 3):
             notas = [getattr(self, f"nm{i}_t{t}") for i in (1, 2, 3)]
-            # MT: média das três notas, antes da recuperação
+            # MT: média das três notas (NM1 + NM2 + NM3)/3
             mt = self._media(notas)
             mtf = mt
 
-            # MTF: a RPT substitui a NM3 quando a NM3 ou a MT ficam abaixo de 6.
+            # MTF: a RPT substitui a MT quando MT < 6 e RPT >= MT.
+            # Quando substitui, tanto MT quanto MTF ficam iguais à RPT.
+            # Se RPT < MT, não substitui e mantém MT.
             # A NM3 original continua gravada; a troca vale só para a MTF.
-            nm3 = notas[2]
             rpt = getattr(self, f"rpt_t{t}")
-            if rpt is not None and (
-                (nm3 is not None and nm3 < Decimal("6"))
-                or (mt is not None and mt < Decimal("6"))
-            ):
-                mtf = self._media([notas[0], notas[1], rpt])
+            if rpt is not None and mt is not None and mt < Decimal("6") and rpt >= mt:
+                mtf = rpt
 
             setattr(self, f"mt_t{t}", mt)
             setattr(self, f"mtf_t{t}", mtf)
