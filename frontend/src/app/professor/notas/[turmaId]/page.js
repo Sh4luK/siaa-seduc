@@ -1,6 +1,6 @@
 "use client";
 
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, useEffect, useState, useCallback, useRef } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import layoutStyles from "../../../page.module.css";
@@ -38,16 +38,21 @@ function media(valores) {
 
 // Mesmo cálculo de Nota.calcular() no backend, para o professor ver as
 // médias atualizarem enquanto digita.
-// MT: média das três notas. MTF: a RPT substitui a NM3 quando a NM3 ou a MT
-// ficam abaixo de 6. MA: média das MTFs. MAF = (MA × 6 + PF × 4) / 10.
+// MT: média das três notas (NM1 + NM2 + NM3)/3. 
+// MTF: a RPT substitui a MT quando MT < 6 e RPT >= MT.
+// Quando substitui, tanto MT quanto MTF ficam iguais à RPT.
+// Se RPT < MT, não substitui e mantém MT.
+// MA: média das MTFs. MAF = (MA × 6 + PF × 4) / 10.
 function calcularMedias(notas) {
   const trimestres = [1, 2, 3].map((t) => {
     const nms = [1, 2, 3].map((n) => paraNumero(notas[`nm${n}_t${t}`]));
     const rpt = paraNumero(notas[`rpt_t${t}`]);
     const mt = media(nms);
     let mtf = mt;
-    if (rpt !== null && ((nms[2] !== null && nms[2] < 6) || (mt !== null && mt < 6))) {
-      mtf = media([nms[0], nms[1], rpt]);
+    // RPT substitui MT apenas se MT < 6 e RPT >= MT
+    // Quando substitui, tanto MT quanto MTF ficam iguais à RPT
+    if (rpt !== null && mt !== null && mt < 6 && rpt >= mt) {
+      mtf = rpt;
     }
     return { mt, mtf };
   });
@@ -81,15 +86,17 @@ export default function NotasTurmaPage() {
   const router = useRouter();
 
   const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
+  const [autoSaving, setAutoSaving] = useState(false);
+  const [saveSuccess, setSaveSuccess] = useState(false);
   const [professorId, setProfessorId] = useState(null);
   const [nomeTurma, setNomeTurma] = useState("");
   const [disciplinasDisponiveis, setDisciplinasDisponiveis] = useState([]);
   const [disciplinaEscolhida, setDisciplinaEscolhida] = useState(null);
   const [carregandoNotas, setCarregandoNotas] = useState(false);
   const [alunos, setAlunos] = useState([]);
-  const [mensagem, setMensagem] = useState(null);
   const [erros, setErros] = useState([]);
+
+  const saveTimeoutRef = useRef(null);
 
   useEffect(() => {
     async function init() {
@@ -122,6 +129,7 @@ export default function NotasTurmaPage() {
         setLoading(false);
       }
     }
+
     init();
   }, [turmaId, router]);
 
@@ -131,7 +139,6 @@ export default function NotasTurmaPage() {
     async function carregarNotas() {
       setCarregandoNotas(true);
       setErros([]);
-      setMensagem(null);
 
       try {
         const listaRes = await fetch(
@@ -152,25 +159,11 @@ export default function NotasTurmaPage() {
     carregarNotas();
   }, [disciplinaEscolhida, professorId]);
 
-  function handleChange(alunoId, campo, valor) {
-    if (campo !== "tgf" && campo !== "rf") {
-      if (!(valor === "" || (/^\d{0,2}(\.\d{0,2})?$/.test(valor) && Number(valor) <= 10))) {
-        return;
-      }
-    }
+  const salvarNotas = useCallback(async () => {
+    if (!disciplinaEscolhida || !professorId || alunos.length === 0) return;
 
-    setAlunos((prev) =>
-      prev.map((a) =>
-        a.aluno_id === alunoId
-          ? { ...a, notas: { ...a.notas, [campo]: valor } }
-          : a
-      )
-    );
-  }
-
-  async function handleSalvarTudo() {
-    setSaving(true);
-    setMensagem(null);
+    setAutoSaving(true);
+    setSaveSuccess(false);
     setErros([]);
 
     const lancamentos = alunos.map((a) => ({
@@ -207,7 +200,8 @@ export default function NotasTurmaPage() {
       if (todosErros.length) {
         setErros(todosErros);
       } else {
-        setMensagem("Notas de toda a turma salvas com sucesso.");
+        setSaveSuccess(true);
+        setTimeout(() => setSaveSuccess(false), 2000);
       }
 
       setAlunos((prev) =>
@@ -219,9 +213,60 @@ export default function NotasTurmaPage() {
     } catch (error) {
       setErros([`Erro ao salvar notas da turma: ${error.message}`]);
     } finally {
-      setSaving(false);
+      setAutoSaving(false);
     }
+  }, [disciplinaEscolhida, professorId, alunos]);
+
+  function handleChange(alunoId, campo, valor) {
+    if (campo !== "tgf") {
+      if (!(valor === "" || (/^\d{0,2}(\.\d{0,2})?$/.test(valor) && Number(valor) <= 10))) {
+        return;
+      }
+    }
+
+    setAlunos((prev) =>
+      prev.map((a) => {
+        if (a.aluno_id !== alunoId) return a;
+
+        const novasNotas = { ...a.notas, [campo]: valor };
+        const { maf } = calcularMedias(novasNotas);
+
+        // RF é calculado automaticamente: AP se MAF >= 6, RE caso contrário
+        if (maf !== null) {
+          novasNotas.rf = maf >= 6 ? "AP" : "RE";
+        } else {
+          novasNotas.rf = "CUR";
+        }
+
+        return { ...a, notas: novasNotas };
+      })
+    );
+
+    // Limpa timeout anterior e agenda novo salvamento automático
+    if (saveTimeoutRef.current) {
+      clearTimeout(saveTimeoutRef.current);
+    }
+
+    saveTimeoutRef.current = setTimeout(() => {
+      salvarNotas();
+    }, 1500); // Salva após 1.5 segundos sem alterações
   }
+
+  async function handleSalvarManual() {
+    if (saveTimeoutRef.current) {
+      clearTimeout(saveTimeoutRef.current);
+    }
+    await salvarNotas();
+  }
+
+  // Limpa timeout ao desmontar
+  useEffect(() => {
+    return () => {
+      if (saveTimeoutRef.current) {
+        clearTimeout(saveTimeoutRef.current);
+      }
+    };
+  }, []);
 
   if (loading) {
     return (
@@ -286,19 +331,27 @@ export default function NotasTurmaPage() {
                     <span className={styles.heroChip}>{disciplinaEscolhida.disciplina}</span>
                   </div>
 
-                  {disciplinasDisponiveis.length > 1 && (
+                  <div className={styles.heroActions}>
+                    {disciplinasDisponiveis.length > 1 && (
+                      <button
+                        className={styles.trocarBotao}
+                        onClick={() => {
+                          setDisciplinaEscolhida(null);
+                          setAlunos([]);
+                          setErros([]);
+                        }}
+                      >
+                        Trocar disciplina
+                      </button>
+                    )}
                     <button
-                      className={styles.trocarBotao}
-                      onClick={() => {
-                        setDisciplinaEscolhida(null);
-                        setAlunos([]);
-                        setMensagem(null);
-                        setErros([]);
-                      }}
+                      onClick={handleSalvarManual}
+                      disabled={autoSaving || alunos.length === 0}
+                      className={styles.botaoSalvar}
                     >
-                      Trocar disciplina
+                      {autoSaving ? "Salvando..." : saveSuccess ? "Salvo!" : "Salvar"}
                     </button>
-                  )}
+                  </div>
                 </div>
 
                 {erros.length > 0 && (
@@ -308,7 +361,7 @@ export default function NotasTurmaPage() {
                     ))}
                   </ul>
                 )}
-                {mensagem && <p className={styles.mensagemSucesso}>{mensagem}</p>}
+                {saveSuccess && <p className={styles.mensagemSucesso}>Notas salvas automaticamente.</p>}
 
                 {carregandoNotas ? (
                   <p className={styles.subtitle}>Carregando alunos...</p>
@@ -353,7 +406,7 @@ export default function NotasTurmaPage() {
                                 <Fragment key={t}>
                                   <th>NM1</th><th>NM2</th><th>NM3</th><th>RPT</th>
                                   <th title="Média trimestral">MT</th>
-                                  <th title="Média trimestral final (com recuperação)">MTF</th>
+                                  <th title="Média trimestral final (RPT substitui MT se MT < 6 e RPT >= MT)">MTF</th>
                                 </Fragment>
                               ))}
                             </tr>
@@ -429,15 +482,9 @@ export default function NotasTurmaPage() {
                                   </span>
                                 </td>
                                 <td>
-                                  <select
-                                    className={styles.select}
-                                    value={aluno.notas.rf ?? "CUR"}
-                                    onChange={(e) => handleChange(aluno.aluno_id, "rf", e.target.value)}
-                                  >
-                                    {RF_OPCOES.map(([valor]) => (
-                                      <option key={valor} value={valor}>{valor}</option>
-                                    ))}
-                                  </select>
+                                  <span className={styles.calculadoBadge}>
+                                    {aluno.notas.rf ?? "CUR"}
+                                  </span>
                                 </td>
                               </tr>
                               );
@@ -446,14 +493,6 @@ export default function NotasTurmaPage() {
                         </table>
                       </div>
                     )}
-
-                    <button
-                      onClick={handleSalvarTudo}
-                      disabled={saving || alunos.length === 0}
-                      className={styles.botaoSalvar}
-                    >
-                      {saving ? "Salvando..." : "Salvar notas da turma"}
-                    </button>
 
                     <a
                       href={`${API_BASE}/api/teacher/notas/turma/${disciplinaEscolhida.turma_id}/ficha-pdf?professor=${professorId}`}

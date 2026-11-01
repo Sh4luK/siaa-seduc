@@ -1,18 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
 import layoutStyles from "../../../../page.module.css";
 import styles from "./notas.module.css";
 
 const API_BASE = "/backend-api";
-
-const RF_OPCOES = [
-  ["CUR", "Cursando"], ["AP", "Aprovado"], ["RE", "Reprovado"],
-  ["DE", "Desistente"], ["FA", "Falecido"], ["AB", "Abandono"],
-  ["TR", "Transferido"], ["CA", "Cancelado"], ["TT", "Troca de Turma"],
-  ["TO", "Transferido Outros"], ["PP", "Para Progressão"], ["ND", "Não Definido"],
-];
 
 const NOTAS_INICIAIS = {
   nm1_t1: "", nm2_t1: "", nm3_t1: "", rpt_t1: "", mt_t1: null, mtf_t1: null,
@@ -21,12 +14,53 @@ const NOTAS_INICIAIS = {
   ma: null, pf: "", maf: null, rcf: "", tgf: "0", rf: "CUR",
 };
 
+function paraNumero(valor) {
+  return valor === "" || valor === null || valor === undefined ? null : Number(valor);
+}
+
+function arredondar(valor) {
+  const escalado = Number((valor * 10).toFixed(6));
+  const piso = Math.floor(escalado);
+  const diferenca = escalado - piso;
+  let inteiro;
+  if (diferenca > 0.5) inteiro = piso + 1;
+  else if (diferenca < 0.5) inteiro = piso;
+  else inteiro = piso % 2 === 0 ? piso : piso + 1;
+  return inteiro / 10;
+}
+
+function media(valores) {
+  const validas = valores.filter((valor) => valor !== null);
+  if (validas.length === 0) return null;
+  return arredondar(validas.reduce((soma, nota) => soma + nota, 0) / validas.length);
+}
+
+const calcularMedias = useCallback((notas) => {
+  const trimestres = [1, 2, 3].map((t) => {
+    const nms = [1, 2, 3].map((n) => paraNumero(notas[`nm${n}_t${t}`]));
+    const rpt = paraNumero(notas[`rpt_t${t}`]);
+    const mt = media(nms);
+    let mtf = mt;
+    if (rpt !== null && mt !== null && mt < 6 && rpt >= mt) {
+      mtf = rpt;
+    }
+    return { mt, mtf };
+  });
+
+  const ma = media(trimestres.map((t) => t.mtf));
+  const pf = paraNumero(notas.pf);
+  let maf = null;
+  if (ma !== null) maf = pf === null ? ma : arredondar((ma * 6 + pf * 4) / 10);
+
+  return { trimestres, ma, maf };
+}, []);
+
 // Campos que aparecem como value de <input>/<select> — nunca podem ser null/undefined
 const CAMPOS_EDITAVEIS = [
   "nm1_t1", "nm2_t1", "nm3_t1", "rpt_t1",
   "nm1_t2", "nm2_t2", "nm3_t2", "rpt_t2",
   "nm1_t3", "nm2_t3", "nm3_t3", "rpt_t3",
-  "pf", "rcf", "tgf", "rf",
+  "pf", "rcf", "tgf",
 ];
 
 // Normaliza o objeto de notas vindo da API: campos editáveis viram sempre
@@ -41,11 +75,11 @@ function normalizarNotas(notasApi) {
     if (CAMPOS_EDITAVEIS.includes(chave)) {
       if (chave === "tgf") {
         resultado[chave] = valorApi ?? "0";
-      } else if (chave === "rf") {
-        resultado[chave] = valorApi ?? "CUR";
       } else {
         resultado[chave] = valorApi === null || valorApi === undefined ? "" : String(valorApi);
       }
+    } else if (chave === "rf") {
+      resultado[chave] = valorApi ?? "CUR";
     } else {
       resultado[chave] = valorApi === undefined ? null : valorApi;
     }
@@ -140,10 +174,27 @@ export default function LancarNotasPage() {
     carregarNotas();
   }, [disciplinaEscolhida, professorId, alunoId]);
 
-  function handleChange(campo, valor) {
-    if (valor === "" || (/^\d{0,2}(\.\d{0,2})?$/.test(valor) && Number(valor) <= 10)) {
-      setNotas((prev) => ({ ...prev, [campo]: valor }));
+  // Atualiza RF automaticamente quando as notas mudam
+  useEffect(() => {
+    const { maf } = calcularMedias(notas);
+    if (maf !== null) {
+      setNotas((prev) => ({
+        ...prev,
+        rf: maf >= 6 ? "AP" : "RE",
+      }));
     }
+  }, [notas.nm1_t1, notas.nm2_t1, notas.nm3_t1, notas.rpt_t1,
+      notas.nm1_t2, notas.nm2_t2, notas.nm3_t2, notas.rpt_t2,
+      notas.nm1_t3, notas.nm2_t3, notas.nm3_t3, notas.rpt_t3,
+      notas.pf, calcularMedias]);
+
+  function handleChange(campo, valor) {
+    if (campo !== "tgf") {
+      if (!(valor === "" || (/^\d{0,2}(\.\d{0,2})?$/.test(valor) && Number(valor) <= 10))) {
+        return;
+      }
+    }
+    setNotas((prev) => ({ ...prev, [campo]: valor }));
   }
 
   async function handleSalvar() {
@@ -361,15 +412,9 @@ export default function LancarNotasPage() {
 
                           <div className={styles.resultadoItem}>
                             <span className={styles.resultadoLabel}>RF</span>
-                            <select
-                              className={styles.select}
-                              value={notas.rf}
-                              onChange={(e) => setNotas((prev) => ({ ...prev, rf: e.target.value }))}
-                            >
-                              {RF_OPCOES.map(([valor, label]) => (
-                                <option key={valor} value={valor}>{label}</option>
-                              ))}
-                            </select>
+                            <span className={styles.calculadoBadge}>
+                              {notas.rf ?? "CUR"}
+                            </span>
                           </div>
                         </div>
                       </div>
