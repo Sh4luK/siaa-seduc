@@ -326,7 +326,16 @@ export default function AtividadeAlunoPage({ params }) {
         credentials: "include",
         body: formData,
       });
-      const data = await res.json();
+
+      let data;
+      const contentType = res.headers.get("content-type");
+      if (contentType && contentType.includes("application/json")) {
+        data = await res.json();
+      } else {
+        const text = await res.text();
+        data = { message: text || "Erro desconhecido ao enviar atividade." };
+      }
+
       if (!res.ok) throw new Error(data.message || data.detail || `Falha ao enviar (status ${res.status})`);
       setEnvio(data.envio);
       setMensagem(data.message || "Atividade enviada com sucesso.");

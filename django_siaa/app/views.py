@@ -2092,258 +2092,265 @@ def detalhe_atividade_aluno(request, atividade_id):
 @csrf_exempt
 @require_http_methods(["POST"])
 def enviar_atividade_aluno(request, atividade_id):
-    aluno = _aluno_logado(request)
-    if not aluno:
-        return JsonResponse({"detail": "Não autenticado."}, status=401)
+    try:
+        aluno = _aluno_logado(request)
+        if not aluno:
+            return JsonResponse({"detail": "Não autenticado."}, status=401)
 
-    atividade = Atividade.objects.filter(
-        id=atividade_id,
-        turma__in=buscar_atravessapor_por_turma(aluno.turma),
-    ).first()
-    if not atividade:
-        return JsonResponse({"message": "Atividade não encontrada para esta turma."}, status=404)
+        atividade = Atividade.objects.filter(
+            id=atividade_id,
+            turma__in=buscar_atravessapor_por_turma(aluno.turma),
+        ).first()
+        if not atividade:
+            return JsonResponse({"message": "Atividade não encontrada para esta turma."}, status=404)
 
-    envio = AtividadeEnvio.objects.filter(atividade=atividade, aluno=aluno).first()
-    if envio and envio.corrigido_em:
-        return JsonResponse(
-            {"message": "Esta atividade já foi corrigida pelo professor e não pode ser reenviada."},
-            status=400,
-        )
+        envio = AtividadeEnvio.objects.filter(atividade=atividade, aluno=aluno).first()
+        if envio and envio.corrigido_em:
+            return JsonResponse(
+                {"message": "Esta atividade já foi corrigida pelo professor e não pode ser reenviada."},
+                status=400,
+            )
 
-    questoes = list(atividade.questoes.prefetch_related("alternativas").all())
-    questoes_pdf = _questoes_pdf_atividade(atividade) if not questoes else []
-    respostas = []
-    if questoes:
-        try:
-            respostas_recebidas = json.loads(request.POST.get("respostas") or "[]")
-        except json.JSONDecodeError:
-            return JsonResponse({"message": "Respostas em formato inválido."}, status=400)
-        if not isinstance(respostas_recebidas, list):
-            return JsonResponse({"message": "Respostas em formato inválido."}, status=400)
-
-        questoes_por_id = {questao.id: questao for questao in questoes}
-        respostas_por_id = {}
-        for resposta in respostas_recebidas:
-            if not isinstance(resposta, dict):
-                return JsonResponse({"message": "Resposta em formato inválido."}, status=400)
+        questoes = list(atividade.questoes.prefetch_related("alternativas").all())
+        questoes_pdf = _questoes_pdf_atividade(atividade) if not questoes else []
+        respostas = []
+        if questoes:
             try:
-                questao_id = int(resposta.get("questao_id"))
-            except (TypeError, ValueError):
-                return JsonResponse({"message": "Questão inválida nas respostas."}, status=400)
-            if questao_id not in questoes_por_id or questao_id in respostas_por_id:
-                return JsonResponse({"message": "Questão inválida nas respostas."}, status=400)
-            respostas_por_id[questao_id] = resposta
+                respostas_recebidas = json.loads(request.POST.get("respostas") or "[]")
+            except json.JSONDecodeError:
+                return JsonResponse({"message": "Respostas em formato inválido."}, status=400)
+            if not isinstance(respostas_recebidas, list):
+                return JsonResponse({"message": "Respostas em formato inválido."}, status=400)
 
-        if set(respostas_por_id) != set(questoes_por_id):
-            return JsonResponse({"message": "Responda todas as questões antes de enviar."}, status=400)
-
-        for questao in questoes:
-            resposta = respostas_por_id[questao.id]
-            pulada = resposta.get("pular", False)
-            if not isinstance(pulada, bool):
-                return JsonResponse({"message": "Indicação de questão pulada inválida."}, status=400)
-            alternativa = None
-            texto = resposta.get("texto") or ""
-            if not isinstance(texto, str):
-                return JsonResponse(
-                    {"message": f"Resposta inválida para a questão {questao.ordem + 1}."},
-                    status=400,
-                )
-            texto = texto.strip()
-            if questao.tipo == "OBJETIVA":
+            questoes_por_id = {questao.id: questao for questao in questoes}
+            respostas_por_id = {}
+            for resposta in respostas_recebidas:
+                if not isinstance(resposta, dict):
+                    return JsonResponse({"message": "Resposta em formato inválido."}, status=400)
                 try:
-                    alternativa_id = int(resposta.get("alternativa_id")) if not pulada else None
+                    questao_id = int(resposta.get("questao_id"))
                 except (TypeError, ValueError):
-                    return JsonResponse(
-                        {"message": f"Selecione uma alternativa para a questão {questao.ordem + 1}."},
-                        status=400,
-                    )
-                alternativa = next(
-                    (alt for alt in questao.alternativas.all() if alt.id == alternativa_id),
-                    None,
-                ) if alternativa_id else None
-                if not alternativa and not pulada:
-                    return JsonResponse(
-                        {"message": f"Alternativa inválida para a questão {questao.ordem + 1}."},
-                        status=400,
-                    )
-            elif not texto and not pulada:
-                return JsonResponse(
-                    {"message": f"Responda a questão {questao.ordem + 1}."},
-                    status=400,
-                )
-            respostas.append((questao, alternativa, texto))
+                    return JsonResponse({"message": "Questão inválida nas respostas."}, status=400)
+                if questao_id not in questoes_por_id or questao_id in respostas_por_id:
+                    return JsonResponse({"message": "Questão inválida nas respostas."}, status=400)
+                respostas_por_id[questao_id] = resposta
 
-    respostas_pdf = []
-    if questoes_pdf:
-        try:
-            respostas_recebidas = json.loads(request.POST.get("respostas_pdf") or "[]")
-        except json.JSONDecodeError:
-            return JsonResponse({"message": "Respostas do questionário em formato inválido."}, status=400)
-        if not isinstance(respostas_recebidas, list):
-            return JsonResponse({"message": "Respostas do questionário em formato inválido."}, status=400)
-        questionario_nao_respondido = (
-            not respostas_recebidas and bool(request.FILES.get("arquivo"))
-        )
-        questoes_por_id = {questao["id"]: questao for questao in questoes_pdf}
-        respostas_por_id = {}
-        for resposta in respostas_recebidas:
-            if not isinstance(resposta, dict):
-                return JsonResponse({"message": "Resposta do questionário inválida."}, status=400)
-            questao_id = resposta.get("questao_id")
-            if (
-                not isinstance(questao_id, str)
-                or questao_id not in questoes_por_id
-                or questao_id in respostas_por_id
-            ):
-                return JsonResponse({"message": "Questão inválida nas respostas do questionário."}, status=400)
-            respostas_por_id[questao_id] = resposta
-        if set(respostas_por_id) != set(questoes_por_id) and not questionario_nao_respondido:
-            return JsonResponse({"message": "Responda todas as questões antes de enviar."}, status=400)
+            if set(respostas_por_id) != set(questoes_por_id):
+                return JsonResponse({"message": "Responda todas as questões antes de enviar."}, status=400)
 
-        for questao in ([] if questionario_nao_respondido else questoes_pdf):
-            resposta = respostas_por_id[questao["id"]]
-            pulada = resposta.get("pular", False)
-            if not isinstance(pulada, bool):
-                return JsonResponse({"message": "Indicação de questão pulada inválida."}, status=400)
-            item = {
-                "questao_id": questao["id"],
-                "questao": f"Questão {questao['ordem']}",
-                "enunciado": questao["enunciado"],
-                "tipo": questao["tipo"],
-                "alternativas": questao["alternativas"],
-                "pulado": pulada,
-            }
-            if questao["tipo"] == "OBJETIVA":
-                alternativa_marcada = resposta.get("alternativa_marcada")
-                alternativa = next(
-                    (
-                        item_alt for item_alt in questao["alternativas"]
-                        if item_alt["letra"] == alternativa_marcada
-                    ),
-                    None,
-                )
-                if not alternativa and not pulada:
-                    return JsonResponse(
-                        {"message": f"Selecione uma alternativa para a questão {questao['ordem']}."},
-                        status=400,
-                    )
-                item["alternativa_marcada"] = alternativa["letra"] if alternativa else ""
-                item["resposta"] = (
-                    f"{alternativa['letra']}) {alternativa['texto']}"
-                    if alternativa else ""
-                )
-            else:
-                texto = resposta.get("resposta")
+            for questao in questoes:
+                resposta = respostas_por_id[questao.id]
+                pulada = resposta.get("pular", False)
+                if not isinstance(pulada, bool):
+                    return JsonResponse({"message": "Indicação de questão pulada inválida."}, status=400)
+                alternativa = None
+                texto = resposta.get("texto") or ""
                 if not isinstance(texto, str):
                     return JsonResponse(
-                        {"message": f"Resposta inválida para a questão {questao['ordem']}."},
+                        {"message": f"Resposta inválida para a questão {questao.ordem + 1}."},
                         status=400,
                     )
-                if not texto.strip() and not pulada:
+                texto = texto.strip()
+                if questao.tipo == "OBJETIVA":
+                    try:
+                        alternativa_id = int(resposta.get("alternativa_id")) if not pulada else None
+                    except (TypeError, ValueError):
+                        return JsonResponse(
+                            {"message": f"Selecione uma alternativa para a questão {questao.ordem + 1}."},
+                            status=400,
+                        )
+                    alternativa = next(
+                        (alt for alt in questao.alternativas.all() if alt.id == alternativa_id),
+                        None,
+                    ) if alternativa_id else None
+                    if not alternativa and not pulada:
+                        return JsonResponse(
+                            {"message": f"Alternativa inválida para a questão {questao.ordem + 1}."},
+                            status=400,
+                        )
+                elif not texto and not pulada:
                     return JsonResponse(
-                        {"message": f"Responda a questão {questao['ordem']}."},
+                        {"message": f"Responda a questão {questao.ordem + 1}."},
                         status=400,
                     )
-                if len(texto) > 10000:
-                    return JsonResponse(
-                        {"message": f"A resposta da questão {questao['ordem']} é muito longa."},
-                        status=400,
+                respostas.append((questao, alternativa, texto))
+
+        respostas_pdf = []
+        if questoes_pdf:
+            try:
+                respostas_recebidas = json.loads(request.POST.get("respostas_pdf") or "[]")
+            except json.JSONDecodeError:
+                return JsonResponse({"message": "Respostas do questionário em formato inválido."}, status=400)
+            if not isinstance(respostas_recebidas, list):
+                return JsonResponse({"message": "Respostas do questionário em formato inválido."}, status=400)
+            questionario_nao_respondido = (
+                not respostas_recebidas and bool(request.FILES.get("arquivo"))
+            )
+            questoes_por_id = {questao["id"]: questao for questao in questoes_pdf}
+            respostas_por_id = {}
+            for resposta in respostas_recebidas:
+                if not isinstance(resposta, dict):
+                    return JsonResponse({"message": "Resposta do questionário inválida."}, status=400)
+                questao_id = resposta.get("questao_id")
+                if (
+                    not isinstance(questao_id, str)
+                    or questao_id not in questoes_por_id
+                    or questao_id in respostas_por_id
+                ):
+                    return JsonResponse({"message": "Questão inválida nas respostas do questionário."}, status=400)
+                respostas_por_id[questao_id] = resposta
+            if set(respostas_por_id) != set(questoes_por_id) and not questionario_nao_respondido:
+                return JsonResponse({"message": "Responda todas as questões antes de enviar."}, status=400)
+
+            for questao in ([] if questionario_nao_respondido else questoes_pdf):
+                resposta = respostas_por_id[questao["id"]]
+                pulada = resposta.get("pular", False)
+                if not isinstance(pulada, bool):
+                    return JsonResponse({"message": "Indicação de questão pulada inválida."}, status=400)
+                item = {
+                    "questao_id": questao["id"],
+                    "questao": f"Questão {questao['ordem']}",
+                    "enunciado": questao["enunciado"],
+                    "tipo": questao["tipo"],
+                    "alternativas": questao["alternativas"],
+                    "pulado": pulada,
+                }
+                if questao["tipo"] == "OBJETIVA":
+                    alternativa_marcada = resposta.get("alternativa_marcada")
+                    alternativa = next(
+                        (
+                            item_alt for item_alt in questao["alternativas"]
+                            if item_alt["letra"] == alternativa_marcada
+                        ),
+                        None,
                     )
-                item["resposta"] = texto.strip()
-            respostas_pdf.append(item)
+                    if not alternativa and not pulada:
+                        return JsonResponse(
+                            {"message": f"Selecione uma alternativa para a questão {questao['ordem']}."},
+                            status=400,
+                        )
+                    item["alternativa_marcada"] = alternativa["letra"] if alternativa else ""
+                    item["resposta"] = (
+                        f"{alternativa['letra']}) {alternativa['texto']}"
+                        if alternativa else ""
+                    )
+                else:
+                    texto = resposta.get("resposta")
+                    if not isinstance(texto, str):
+                        return JsonResponse(
+                            {"message": f"Resposta inválida para a questão {questao['ordem']}."},
+                            status=400,
+                        )
+                    if not texto.strip() and not pulada:
+                        return JsonResponse(
+                            {"message": f"Responda a questão {questao['ordem']}."},
+                            status=400,
+                        )
+                    if len(texto) > 10000:
+                        return JsonResponse(
+                            {"message": f"A resposta da questão {questao['ordem']} é muito longa."},
+                            status=400,
+                        )
+                    item["resposta"] = texto.strip()
+                respostas_pdf.append(item)
 
-    try:
-        respostas_livres = json.loads(request.POST.get("respostas_livres") or "[]")
-    except json.JSONDecodeError:
-        return JsonResponse({"message": "Respostas adicionais em formato inválido."}, status=400)
-    if not isinstance(respostas_livres, list) or len(respostas_livres) > 100:
-        return JsonResponse({"message": "A lista de respostas adicionais é inválida."}, status=400)
+        try:
+            respostas_livres = json.loads(request.POST.get("respostas_livres") or "[]")
+        except json.JSONDecodeError:
+            return JsonResponse({"message": "Respostas adicionais em formato inválido."}, status=400)
+        if not isinstance(respostas_livres, list) or len(respostas_livres) > 100:
+            return JsonResponse({"message": "A lista de respostas adicionais é inválida."}, status=400)
 
-    respostas_livres_validadas = []
-    for indice, item in enumerate(respostas_livres, start=1):
-        if not isinstance(item, dict):
-            return JsonResponse({"message": f"A resposta adicional {indice} é inválida."}, status=400)
-        questao = item.get("questao")
-        texto = item.get("resposta")
-        if not isinstance(questao, str) or not questao.strip():
-            return JsonResponse({"message": f"Informe a questão da resposta adicional {indice}."}, status=400)
-        if not isinstance(texto, str) or not texto.strip():
-            return JsonResponse({"message": f"Informe a resposta da questão adicional {indice}."}, status=400)
-        respostas_livres_validadas.append({
-            "questao": questao.strip(),
-            "resposta": texto.strip(),
+        respostas_livres_validadas = []
+        for indice, item in enumerate(respostas_livres, start=1):
+            if not isinstance(item, dict):
+                return JsonResponse({"message": f"A resposta adicional {indice} é inválida."}, status=400)
+            questao = item.get("questao")
+            texto = item.get("resposta")
+            if not isinstance(questao, str) or not questao.strip():
+                return JsonResponse({"message": f"Informe a questão da resposta adicional {indice}."}, status=400)
+            if not isinstance(texto, str) or not texto.strip():
+                return JsonResponse({"message": f"Informe a resposta da questão adicional {indice}."}, status=400)
+            respostas_livres_validadas.append({
+                "questao": questao.strip(),
+                "resposta": texto.strip(),
+            })
+        respostas_livres_validadas.extend(respostas_pdf)
+
+        arquivo = request.FILES.get("arquivo")
+        limpar_arquivo = request.POST.get("limpar_arquivo") == "true" and not arquivo
+        if (
+            not arquivo
+            and not questoes
+            and not respostas_livres_validadas
+            and not (envio and envio.arquivo and not limpar_arquivo)
+        ):
+            return JsonResponse(
+                {"message": "Envie um arquivo ou adicione ao menos uma resposta."},
+                status=400,
+            )
+
+        envio = AtividadeEnvio.objects.filter(atividade=atividade, aluno=aluno).first()
+        if envio and envio.alteracao_status != "APROVADA":
+            return JsonResponse(
+                {"message": "Você já enviou esta atividade. Solicite uma alteração ao professor para enviar novamente."},
+                status=409,
+            )
+
+        arquivo_anterior = envio.arquivo.name if envio and envio.arquivo else None
+        if not envio:
+            envio = AtividadeEnvio(atividade=atividade, aluno=aluno)
+        if arquivo:
+            envio.arquivo = arquivo
+        elif limpar_arquivo:
+            envio.arquivo = None
+        envio.comentario = (request.POST.get("comentario") or "").strip()
+        envio.respostas_livres = respostas_livres_validadas
+        envio.alteracao_status = "NENHUMA"
+        envio.alteracao_solicitada_em = None
+        envio.save()
+
+        arquivo_atual = envio.arquivo.name if envio.arquivo else None
+        if (arquivo or limpar_arquivo) and arquivo_anterior and arquivo_anterior != arquivo_atual:
+            default_storage.delete(arquivo_anterior)
+
+        if questoes:
+            envio.respostas.all().delete()
+            AtividadeResposta.objects.bulk_create([
+                AtividadeResposta(envio=envio, questao=q, alternativa=alt, texto=texto)
+                for q, alt, texto in respostas
+            ])
+
+        respostas_serializadas = _serializar_envio_atividade(
+            envio, atividade, com_gabarito=False
+        )["respostas"]
+        return JsonResponse({
+            "message": "Atividade enviada com sucesso.",
+            "envio": {
+                "id": envio.id,
+                "comentario": envio.comentario,
+                "enviado_em": envio.enviado_em.isoformat(),
+                "arquivo_url": envio.arquivo.url if envio.arquivo else None,
+                "arquivo_nome": envio.arquivo.name.split("/")[-1] if envio.arquivo else None,
+                "respostas_livres": envio.respostas_livres,
+                "alteracao_status": envio.alteracao_status,
+                "alteracao_solicitada_em": (
+                    envio.alteracao_solicitada_em.isoformat()
+                    if envio.alteracao_solicitada_em else None
+                ),
+                "atrasado": bool(
+                    atividade.data_entrega
+                    and timezone.localdate(envio.enviado_em) > atividade.data_entrega
+                ),
+                "respostas": respostas_serializadas,
+            },
         })
-    respostas_livres_validadas.extend(respostas_pdf)
-
-    arquivo = request.FILES.get("arquivo")
-    limpar_arquivo = request.POST.get("limpar_arquivo") == "true" and not arquivo
-    if (
-        not arquivo
-        and not questoes
-        and not respostas_livres_validadas
-        and not (envio and envio.arquivo and not limpar_arquivo)
-    ):
+    except Exception as e:
+        import traceback
         return JsonResponse(
-            {"message": "Envie um arquivo ou adicione ao menos uma resposta."},
-            status=400,
+            {"message": f"Erro ao processar envio: {str(e)}"},
+            status=500
         )
-
-    envio = AtividadeEnvio.objects.filter(atividade=atividade, aluno=aluno).first()
-    if envio and envio.alteracao_status != "APROVADA":
-        return JsonResponse(
-            {"message": "Você já enviou esta atividade. Solicite uma alteração ao professor para enviar novamente."},
-            status=409,
-        )
-
-    arquivo_anterior = envio.arquivo.name if envio and envio.arquivo else None
-    if not envio:
-        envio = AtividadeEnvio(atividade=atividade, aluno=aluno)
-    if arquivo:
-        envio.arquivo = arquivo
-    elif limpar_arquivo:
-        envio.arquivo = None
-    envio.comentario = (request.POST.get("comentario") or "").strip()
-    envio.respostas_livres = respostas_livres_validadas
-    envio.alteracao_status = "NENHUMA"
-    envio.alteracao_solicitada_em = None
-    envio.save()
-
-    arquivo_atual = envio.arquivo.name if envio.arquivo else None
-    if (arquivo or limpar_arquivo) and arquivo_anterior and arquivo_anterior != arquivo_atual:
-        default_storage.delete(arquivo_anterior)
-
-    if questoes:
-        envio.respostas.all().delete()
-        AtividadeResposta.objects.bulk_create([
-            AtividadeResposta(envio=envio, questao=q, alternativa=alt, texto=texto)
-            for q, alt, texto in respostas
-        ])
-
-    respostas_serializadas = _serializar_envio_atividade(
-        envio, atividade, com_gabarito=False
-    )["respostas"]
-    return JsonResponse({
-        "message": "Atividade enviada com sucesso.",
-        "envio": {
-            "id": envio.id,
-            "comentario": envio.comentario,
-            "enviado_em": envio.enviado_em.isoformat(),
-            "arquivo_url": envio.arquivo.url if envio.arquivo else None,
-            "arquivo_nome": envio.arquivo.name.split("/")[-1] if envio.arquivo else None,
-            "respostas_livres": envio.respostas_livres,
-            "alteracao_status": envio.alteracao_status,
-            "alteracao_solicitada_em": (
-                envio.alteracao_solicitada_em.isoformat()
-                if envio.alteracao_solicitada_em else None
-            ),
-            "atrasado": bool(
-                atividade.data_entrega
-                and timezone.localdate(envio.enviado_em) > atividade.data_entrega
-            ),
-            "respostas": respostas_serializadas,
-        },
-    })
 
 
 @csrf_exempt
