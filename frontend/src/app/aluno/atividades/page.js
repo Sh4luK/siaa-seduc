@@ -253,7 +253,7 @@ export default function AtividadesAlunoPage() {
                           <Link href={`/aluno/atividades/${a.id}`} className={styles.abrirAtividade}>
                             Ver atividade e envio
                           </Link>
-                          {a.envio.alteracao_status !== "SOLICITADA" && (
+                          {a.envio.alteracao_status !== "SOLICITADA" && !a.envio.visto_emitido_em && (
                             <button
                               type="button"
                               className={styles.solicitarBotao}
