@@ -101,7 +101,7 @@ COOKIE_POR_TIPO = {
     "COORDENADOR": "coordenacao_session",
     "ADMIN": "admin_session",
 }
-COOKIE_MAX_AGE = 60 * 60 * 24  # 24 horas
+COOKIE_MAX_AGE = 60 * 60 * 3  #3 horas
 
 
 def _expiracao_sessao(sessao):
@@ -1607,6 +1607,10 @@ def _serializar_envio_atividade(envio, atividade, com_gabarito):
         "feedback": envio.feedback,
         "nota": float(envio.nota) if envio.nota is not None else None,
         "corrigido_em": envio.corrigido_em.isoformat() if envio.corrigido_em else None,
+        "visto_emitido_em": envio.visto_emitido_em.isoformat() if envio.visto_emitido_em else None,
+        "visto_assinatura": envio.visto_assinatura,
+        "visto_pdf_url": caminho_relativo_arquivo(envio.visto_pdf) if envio.visto_pdf else None,
+        "parecer_professor": envio.parecer_professor,
     }
 
 
@@ -6110,21 +6114,11 @@ def atividades_aluno(request):
             "status": status,
             "questoes": _serializar_questoes_atividade(a, com_gabarito=False),
             "envio": {
-                # respostas às questões da plataforma (sem gabarito para o aluno)
                 **_serializar_envio_atividade(envio, a, com_gabarito=False),
-                "id": envio.id,
-                "comentario": envio.comentario,
-                "enviado_em": envio.enviado_em.isoformat(),
-                # o envio pode ter só respostas, sem arquivo
-                "arquivo_url": caminho_relativo_arquivo(envio.arquivo) if envio.arquivo else None,
-                "arquivo_nome": envio.arquivo.name.split("/")[-1] if envio.arquivo else None,
                 "alteracao_status": envio.alteracao_status,
                 "alteracao_solicitada_em": (
                     envio.alteracao_solicitada_em.isoformat()
                     if envio.alteracao_solicitada_em else None
-                ),
-                "atrasado": bool(
-                    a.data_entrega and timezone.localdate(envio.enviado_em) > a.data_entrega
                 ),
             } if envio else None,
         })
