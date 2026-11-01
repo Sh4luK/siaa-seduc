@@ -1618,10 +1618,14 @@ def _questoes_pdf_atividade(atividade):
     if not atividade.arquivo or not atividade.arquivo.name.lower().endswith(".pdf"):
         return []
     with atividade.arquivo.open("rb") as arquivo:
-        return _extrair_questoes_arquivo(
+        resultado = _extrair_questoes_arquivo(
             arquivo.read(),
             os.path.basename(atividade.arquivo.name),
         )
+        # _extrair_questoes_arquivo retorna um dict com "questoes", mas precisamos apenas da lista
+        if isinstance(resultado, dict) and "questoes" in resultado:
+            return resultado["questoes"]
+        return resultado if isinstance(resultado, list) else []
 
 
 @csrf_exempt
