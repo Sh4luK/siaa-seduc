@@ -8,6 +8,11 @@ import logo from "@/assets/logo.png";
 
 const API_BASE = "/backend-api";
 
+function urlImagem(src) {
+  if (!src) return src;
+  return src.startsWith("/media/") ? `${API_BASE}${src}` : src;
+}
+
 export default function VisualizarAvaliacaoPage() {
   const { avaliacaoId } = useParams();
   const router = useRouter();
@@ -17,11 +22,15 @@ export default function VisualizarAvaliacaoPage() {
   const [erros, setErros] = useState([]);
   const [confirmandoExclusao, setConfirmandoExclusao] = useState(false);
   const [excluindo, setExcluindo] = useState(false);
+  const [mostrarGabarito, setMostrarGabarito] = useState(false);
 
   useEffect(() => {
     async function init() {
       try {
-        const authRes = await fetch(`${API_BASE}/api/teacher/auth`, { credentials: "include" });
+        const [authRes, res] = await Promise.all([
+          fetch(`${API_BASE}/api/teacher/auth`, { credentials: "include" }),
+          fetch(`${API_BASE}/api/teacher/avaliacoes/${avaliacaoId}`, { credentials: "include" }),
+        ]);
         const authData = await authRes.json();
 
         if (!authData.return) {
@@ -29,7 +38,6 @@ export default function VisualizarAvaliacaoPage() {
           return;
         }
 
-        const res = await fetch(`${API_BASE}/api/teacher/avaliacoes/${avaliacaoId}`, { credentials: "include" });
         if (!res.ok) {
           const corpoErro = await res.text();
           let msg = `Falha ao carregar avaliação (status ${res.status})`;
@@ -145,6 +153,20 @@ export default function VisualizarAvaliacaoPage() {
             Editar
           </button>
 
+          <button
+            className={styles.acaoBotaoSecundario}
+            onClick={() => setMostrarGabarito((v) => !v)}
+          >
+            {mostrarGabarito ? "Ocultar gabarito" : "Ver gabarito"}
+          </button>
+
+          <button
+            className={styles.acaoBotaoSecundario}
+            onClick={() => router.push(`/professor/avaliacoes/${avaliacaoId}/corrigir`)}
+          >
+            Corrigir
+          </button>
+
           {!confirmandoExclusao ? (
             <button className={styles.removerVinculoBotao} onClick={() => setConfirmandoExclusao(true)}>
               Excluir
@@ -161,6 +183,51 @@ export default function VisualizarAvaliacaoPage() {
             </div>
           )}
         </div>
+
+        {mostrarGabarito && avaliacao && (
+          <div className={styles.vinculoCard}>
+            <div className={styles.vinculoHeader}>
+              <span className={styles.vinculoNumero}>Gabarito</span>
+            </div>
+            <table className={styles.gabaritoTabela}>
+              <thead>
+                <tr>
+                  <th>Questão</th>
+                  <th>Gabarito</th>
+                </tr>
+              </thead>
+              <tbody>
+                {avaliacao.questoes.flatMap((q, index) => {
+                  const linhas = [];
+                  const corretas = (q.alternativas || []).filter((a) => a.correta).map((a) => a.letra);
+                  linhas.push({
+                    key: `q-${q.id}`,
+                    rotulo: `${index + 1}`,
+                    resposta: q.tipo === "OBJETIVA"
+                      ? corretas.length > 0 ? corretas.join(", ") : "—"
+                      : "Subjetiva",
+                  });
+                  (q.subquestoes || []).forEach((sq) => {
+                    const subCorretas = (sq.alternativas || []).filter((a) => a.correta).map((a) => a.letra);
+                    linhas.push({
+                      key: `sq-${sq.id}`,
+                      rotulo: `${index + 1}.${sq.letra_subquestao || sq.letra || ""}`,
+                      resposta: sq.tipo === "OBJETIVA"
+                        ? subCorretas.length > 0 ? subCorretas.join(", ") : "—"
+                        : "Subjetiva",
+                    });
+                  });
+                  return linhas;
+                }).map((linha) => (
+                  <tr key={linha.key}>
+                    <td>{linha.rotulo}</td>
+                    <td>{linha.resposta}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
 
         <div className={styles.secaoDivisor}>
           <h2 className={styles.secaoTitulo}>Questões</h2>
@@ -179,7 +246,7 @@ export default function VisualizarAvaliacaoPage() {
             <p className={styles.enunciadoTexto}>{q.enunciado}</p>
 
             {q.imagem && (
-              <img src={q.imagem} alt="" className={styles.imagemPreview} />
+              <img src={urlImagem(q.imagem)} alt="" className={styles.imagemPreview} />
             )}
 
             {q.tipo === "OBJETIVA" && (
@@ -195,6 +262,27 @@ export default function VisualizarAvaliacaoPage() {
                 ))}
               </div>
             )}
+
+            {(q.subquestoes || []).map((sq) => (
+              <div key={sq.id} className={styles.subquestaoView}>
+                <p className={styles.enunciadoTexto}>
+                  <strong>{sq.letra})</strong> {sq.enunciado}
+                </p>
+                {sq.tipo === "OBJETIVA" && sq.alternativas.length > 0 && (
+                  <div className={styles.alternativas}>
+                    {sq.alternativas.map((alt) => (
+                      <div
+                        key={alt.letra}
+                        className={alt.correta ? styles.alternativaCorreta : styles.alternativaLinhaView}
+                      >
+                        <span className={styles.alternativaLetra}>{alt.letra})</span>
+                        <span>{alt.texto}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ))}
           </div>
         ))}
       </div>

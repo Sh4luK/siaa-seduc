@@ -432,6 +432,21 @@ class Avaliacao(models.Model):
         return f"{self.titulo} - {self.turma}"
 
 
+class AvaliacaoCorrecao(models.Model):
+    avaliacao = models.ForeignKey(Avaliacao, on_delete=models.CASCADE, related_name="correcoes")
+    aluno = models.ForeignKey(Estudante, on_delete=models.CASCADE, related_name="correcoes_avaliacoes")
+    imagem = models.ImageField(upload_to="avaliacoes/correcoes/", blank=True, null=True)
+    nota = models.DecimalField(max_digits=4, decimal_places=2, null=True, blank=True)
+    criado_em = models.DateTimeField(auto_now_add=True)
+    atualizado_em = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        unique_together = ("avaliacao", "aluno")
+
+    def __str__(self):
+        return f"{self.aluno} - {self.avaliacao}"
+
+
 class Questao(models.Model):
     TIPO_CHOICES = [
         ("OBJETIVA", "Objetiva"),

@@ -54,6 +54,7 @@ export default function AtividadeAlunoPage({ params }) {
   const [solicitandoAlteracao, setSolicitandoAlteracao] = useState(false);
   const [erro, setErro] = useState("");
   const [mensagem, setMensagem] = useState("");
+  const [verTodasQuestoes, setVerTodasQuestoes] = useState(false);
 
   useEffect(() => {
     async function carregarAtividade() {
@@ -485,24 +486,61 @@ export default function AtividadeAlunoPage({ params }) {
                 <form className={styles.formulario} onSubmit={enviarAtividade}>
                   {possuiQuestoes ? (
                     <>
-                      <div className={styles.progressoQuestoes} aria-live="polite">
-                        <span>Questão {indiceQuestaoAtual + 1} de {questoesQuiz.length}</span>
-                        <div
-                          className={styles.progressoTrilho}
-                          role="progressbar"
-                          aria-valuemin={1}
-                          aria-valuemax={questoesQuiz.length}
-                          aria-valuenow={indiceQuestaoAtual + 1}
-                          aria-label="Progresso das questões"
-                        >
-                          <span
-                            style={{
-                              width: `${((indiceQuestaoAtual + 1) / questoesQuiz.length) * 100}%`,
-                            }}
-                          />
+                      {envio && (
+                        <div className={styles.progressoQuestoes} aria-live="polite">
+                          <button
+                            type="button"
+                            className={styles.botaoVerTodas}
+                            onClick={() => setVerTodasQuestoes((prev) => !prev)}
+                          >
+                            {verTodasQuestoes ? "Ocultar questões" : "Ver questões"}
+                          </button>
                         </div>
-                      </div>
-                      {questaoAtual && (
+                      )}
+                      {verTodasQuestoes && (
+                        <div className={styles.todasQuestoes}>
+                          {questoesQuiz.map((questao, index) => (
+                            <article className={styles.questao} key={questao.id}>
+                              <p className={styles.enunciado}>
+                                {index + 1}. {questao.enunciado}
+                              </p>
+                              {questao.tipo === "OBJETIVA" ? (
+                                <div className={styles.alternativas}>
+                                  {(Array.isArray(questao.alternativas) ? questao.alternativas : []).map((alternativa) => (
+                                    <label key={alternativa.id || alternativa.letra} className={styles.alternativa}>
+                                      <input
+                                        type="radio"
+                                        name={`questao-${questao.id}`}
+                                        checked={questao.origem === "PDF"
+                                          ? respostasPdf[questao.id]?.alternativa_marcada === alternativa.letra
+                                          : respostas[questao.id]?.alternativa_id === alternativa.id}
+                                        disabled
+                                      />
+                                      {alternativa.letra}) {alternativa.texto}
+                                    </label>
+                                  ))}
+                                </div>
+                              ) : (
+                                <textarea
+                                  rows={5}
+                                  value={questao.origem === "PDF"
+                                    ? respostasPdf[questao.id]?.resposta || ""
+                                    : respostas[questao.id]?.texto || ""}
+                                  disabled
+                                  placeholder="Escreva sua resposta..."
+                                  aria-label={`Resposta da questão ${index + 1}`}
+                                />
+                              )}
+                            </article>
+                          ))}
+                        </div>
+                      )}
+                      {!verTodasQuestoes && envio && (
+                        <p className={styles.questoesOcultas}>
+                          Clique em "Ver questões" para visualizar as questões e suas respostas.
+                        </p>
+                      )}
+                      {!verTodasQuestoes && !envio && (
                         <article className={styles.questao} key={questaoAtual.id}>
                           <p className={styles.enunciado}>
                             {indiceQuestaoAtual + 1}. {questaoAtual.enunciado}
@@ -568,7 +606,8 @@ export default function AtividadeAlunoPage({ params }) {
                           )}
                         </article>
                       )}
-                      <div className={styles.navegacaoQuestoes}>
+                      {!verTodasQuestoes && !envio && (
+                        <div className={styles.navegacaoQuestoes}>
                         <button
                           type="button"
                           className={styles.botaoCancelarQuestao}

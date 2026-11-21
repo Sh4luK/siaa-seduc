@@ -222,6 +222,40 @@
   color: #475569;
   font-size: 0.78rem;
   font-weight: 700;
+  grid-template-columns: auto auto 1fr;
+  align-items: center;
+}
+
+.botaoVerTodas {
+  padding: 0.4rem 0.7rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  background: #ffffff;
+  color: #0b4f9e;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  justify-self: start;
+}
+
+.botaoVerTodas:hover {
+  background: #f1f5f9;
+  border-color: #94a3b8;
+}
+
+.todasQuestoes {
+  display: grid;
+  gap: 1rem;
+}
+
+.questoesOcultas {
+  margin: 1rem 0;
+  padding: 1rem;
+  border-radius: 9px;
+  background: #f8fafc;
+  color: #64748b;
+  font-size: 0.85rem;
+  text-align: center;
 }
 
 .progressoTrilho {

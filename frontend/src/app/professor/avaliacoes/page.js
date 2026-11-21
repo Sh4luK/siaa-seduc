@@ -23,7 +23,10 @@ export default function AvaliacoesPage() {
   useEffect(() => {
     async function init() {
       try {
-        const authRes = await fetch(`${API_BASE}/api/teacher/auth`, { credentials: "include" });
+        const [authRes, res] = await Promise.all([
+          fetch(`${API_BASE}/api/teacher/auth`, { credentials: "include" }),
+          fetch(`${API_BASE}/api/teacher/avaliacoes`, { credentials: "include" }),
+        ]);
         const authData = await authRes.json();
 
         if (!authData.return) {
@@ -35,7 +38,6 @@ export default function AvaliacoesPage() {
         setAuthenticated(true);
         setNomeCompleto(authData.teacher?.nome_completo || "");
 
-        const res = await fetch(`${API_BASE}/api/teacher/avaliacoes`, { credentials: "include" });
         if (!res.ok) {
           const corpoErro = await res.text();
           let msg = `Falha ao buscar avaliações (status ${res.status})`;

@@ -68,7 +68,10 @@ export default function NovaAvaliacaoPage() {
   useEffect(() => {
     async function init() {
       try {
-        const authRes = await fetch(`${API_BASE}/api/teacher/auth`, { credentials: "include" });
+        const [authRes, opcoesRes] = await Promise.all([
+          fetch(`${API_BASE}/api/teacher/auth`, { credentials: "include" }),
+          fetch(`${API_BASE}/api/teacher/opcoes-avaliacao`, { credentials: "include" }),
+        ]);
         const authData = await authRes.json();
 
         if (!authData.return) {
@@ -76,7 +79,6 @@ export default function NovaAvaliacaoPage() {
           return;
         }
 
-        const opcoesRes = await fetch(`${API_BASE}/api/teacher/opcoes-avaliacao`, { credentials: "include" });
         if (!opcoesRes.ok) throw new Error(`Falha ao buscar opções (status ${opcoesRes.status})`);
         const opcoesData = await opcoesRes.json();
 
@@ -399,10 +401,36 @@ export default function NovaAvaliacaoPage() {
         throw new Error(msg);
       }
 
-      setMensagem("Avaliação criada com sucesso.");
-      const { id } = await res.json();
+      const resposta = await res.json();
+      const questaoIds = (resposta.questoes || []).map((q) => q.id);
+
+      let avisoImagens = false;
+      try {
+        await Promise.all(
+          questoes.map(async (q, i) => {
+            const questaoId = questaoIds[i];
+            if (!q.imagemFile || !questaoId) return;
+            const formData = new FormData();
+            formData.append("imagem", q.imagemFile);
+            const imgRes = await fetch(`${API_BASE}/api/teacher/avaliacoes/questoes/${questaoId}/imagem`, {
+              method: "POST",
+              credentials: "include",
+              body: formData,
+            });
+            if (!imgRes.ok) avisoImagens = true;
+          })
+        );
+      } catch {
+        avisoImagens = true;
+      }
+
+      setMensagem(
+        avisoImagens
+          ? "Avaliação criada com sucesso, mas algumas imagens não puderam ser enviadas."
+          : "Avaliação criada com sucesso."
+      );
       setTimeout(() => {
-        router.push(`/professor/avaliacoes/${id}`);
+        router.push(`/professor/avaliacoes/${resposta.id}`);
       }, 900);
     } catch (error) {
       setErros([`Erro ao criar avaliação: ${error.message}`]);

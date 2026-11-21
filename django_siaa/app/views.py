@@ -51,7 +51,7 @@ from .models import Admin
 from .models import Escola
 from .models import EstudoProgramado
 from django.core.files.storage import default_storage
-from .models import Avaliacao, Questao, Alternativa
+from .models import Avaliacao, Questao, Alternativa, AvaliacaoCorrecao
 from .models import MensagemChat
 from .models import Conversa
 from .models import VinculoResponsavel
@@ -4956,7 +4956,11 @@ def avaliacoes_list_create(request):
 
     if request.method == "GET":
         turma = request.GET.get("turma")
-        qs = Avaliacao.objects.filter(professor=professor)
+        qs = (
+            Avaliacao.objects.filter(professor=professor)
+            .select_related("disciplina")
+            .annotate(_total_questoes=models.Count("questoes"))
+        )
         if turma:
             qs = qs.filter(turma=turma)
         data = [{
@@ -4966,7 +4970,7 @@ def avaliacoes_list_create(request):
             "disciplina": a.disciplina.nome_disciplina,
             "data": a.data.isoformat(),
             "ano_letivo": a.ano_letivo,
-            "total_questoes": a.questoes.count(),
+            "total_questoes": a._total_questoes,
         } for a in qs.order_by("-data")]
         return JsonResponse({"avaliacoes": data}, status=200)
 
@@ -4985,26 +4989,132 @@ def avaliacoes_list_create(request):
                 descricao=body.get("descricao", ""),
                 data=body["data"],
                 ano_letivo=body["ano_letivo"],
+                texto_introdutorio=body.get("texto_introdutorio", ""),
             )
+            questoes_criadas = []
             for i, q in enumerate(body.get("questoes", [])):
                 questao = Questao.objects.create(
                     avaliacao=avaliacao,
                     ordem=i,
                     enunciado=q["enunciado"],
                     tipo=q["tipo"],
+                    linhas_resposta=q.get("linhas_resposta") or 2,
+                    topico=q.get("topico") or "",
                 )
-                for alt in q.get("alternativas", []):
-                    Alternativa.objects.create(
-                        questao=questao,
-                        letra=alt["letra"],
-                        texto=alt["texto"],
-                        correta=alt.get("correta", False),
-                    )
-            return JsonResponse({"id": avaliacao.id}, status=201)
+                questoes_criadas.append({"id": questao.id})
+                _sincronizar_alternativas_questao(questao, q.get("alternativas", []))
+                _sincronizar_subquestoes(questao, q.get("subquestoes"), i)
+            return JsonResponse({"id": avaliacao.id, "questoes": questoes_criadas}, status=201)
         except Exception as e:
             return JsonResponse({"message": str(e)}, status=400)
 
     return JsonResponse({"message": "Método não permitido"}, status=405)
+
+
+def _serializar_questao_avaliacao(questao, incluir_subquestoes=False):
+    dados = {
+        "id": questao.id,
+        "ordem": questao.ordem,
+        "letra": questao.letra_subquestao,
+        "enunciado": questao.enunciado,
+        "tipo": questao.tipo,
+        "imagem": questao.imagem.url if questao.imagem else None,
+        "linhas_resposta": questao.linhas_resposta,
+        "topico": questao.topico,
+        "alternativas": [
+            {"letra": a.letra, "texto": a.texto, "correta": a.correta}
+            for a in questao.alternativas.all()
+        ] if questao.tipo == "OBJETIVA" else [],
+    }
+    if incluir_subquestoes:
+        dados["subquestoes"] = [
+            _serializar_questao_avaliacao(sq)
+            for sq in sorted(
+                questao.subquestoes.all(),
+                key=lambda s: (s.letra_subquestao or "", s.id),
+            )
+        ]
+    return dados
+
+
+def _sincronizar_alternativas_questao(questao, alternativas_input):
+    questao.alternativas.all().delete()
+    for j, alt in enumerate(alternativas_input or []):
+        if isinstance(alt, dict):
+            texto = (alt.get("texto") or "").strip()
+            letra = alt.get("letra") or "ABCDEFGHIJKLMNOPQRSTUVWXYZ"[j]
+            correta = bool(alt.get("correta"))
+        else:
+            texto = (alt or "").strip()
+            letra = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"[j]
+            correta = False
+        if texto:
+            Alternativa.objects.create(questao=questao, letra=letra, texto=texto, correta=correta)
+
+
+def _sincronizar_subquestoes(questao_pai, subquestoes_input, ordem_pai):
+    existentes = {sq.id: sq for sq in questao_pai.subquestoes.all()}
+    ids_mantidos = set()
+    for sq_data in subquestoes_input or []:
+        tipo = sq_data.get("tipo")
+        enunciado = (sq_data.get("enunciado") or "").strip()
+        if tipo not in ("OBJETIVA", "SUBJETIVA"):
+            raise ValueError("Subquestão com tipo inválido.")
+        if not enunciado:
+            raise ValueError("Subquestão sem enunciado.")
+
+        sq_id = sq_data.get("id")
+        subquestao = existentes.get(sq_id) if isinstance(sq_id, int) else None
+        if subquestao is None:
+            subquestao = Questao(avaliacao=questao_pai.avaliacao, questao_pai=questao_pai)
+        subquestao.letra_subquestao = sq_data.get("letra", "")
+        subquestao.ordem = ordem_pai
+        subquestao.tipo = tipo
+        subquestao.enunciado = enunciado
+        subquestao.linhas_resposta = sq_data.get("linhas_resposta") or 2
+        subquestao.save()
+        ids_mantidos.add(subquestao.id)
+
+        _sincronizar_alternativas_questao(subquestao, sq_data.get("alternativas"))
+
+    questao_pai.subquestoes.exclude(id__in=ids_mantidos).delete()
+
+
+def _sincronizar_questoes_avaliacao(avaliacao, questoes_input):
+    existentes = {
+        q.id: q for q in avaliacao.questoes.filter(questao_pai__isnull=True)
+    }
+    ids_mantidos = set()
+    questoes_resultado = []
+
+    for i, q_data in enumerate(questoes_input):
+        tipo = q_data.get("tipo")
+        enunciado = (q_data.get("enunciado") or "").strip()
+        if tipo not in ("OBJETIVA", "SUBJETIVA"):
+            raise ValueError(f"Questão {i + 1}: tipo inválido.")
+        if not enunciado:
+            raise ValueError(f"Questão {i + 1}: enunciado obrigatório.")
+
+        q_id = q_data.get("id")
+        questao = existentes.get(q_id) if isinstance(q_id, int) else None
+        if questao is None:
+            questao = Questao(avaliacao=avaliacao)
+        questao.ordem = i
+        questao.tipo = tipo
+        questao.enunciado = enunciado
+        questao.linhas_resposta = q_data.get("linhas_resposta") or 2
+        questao.topico = q_data.get("topico") or ""
+        if q_data.get("remover_imagem"):
+            questao.imagem = None
+        questao.save()
+        ids_mantidos.add(questao.id)
+        questoes_resultado.append(questao)
+
+        _sincronizar_alternativas_questao(questao, q_data.get("alternativas"))
+        _sincronizar_subquestoes(questao, q_data.get("subquestoes"), i)
+
+    avaliacao.questoes.filter(questao_pai__isnull=True).exclude(id__in=ids_mantidos).delete()
+    return questoes_resultado
 
 
 @csrf_exempt
@@ -5014,24 +5124,25 @@ def avaliacao_detail(request, avaliacao_id):
         return JsonResponse({"message": "Não autenticado"}, status=401)
 
     try:
-        avaliacao = Avaliacao.objects.get(id=avaliacao_id, professor=professor)
+        avaliacao = (
+            Avaliacao.objects.select_related("disciplina")
+            .prefetch_related(
+                "questoes__alternativas",
+                "questoes__subquestoes__alternativas",
+            )
+            .get(id=avaliacao_id, professor=professor)
+        )
     except Avaliacao.DoesNotExist:
         return JsonResponse({"message": "Avaliação não encontrada"}, status=404)
 
     if request.method == "GET":
-        questoes = []
-        for q in avaliacao.questoes.all():
-            questoes.append({
-                "id": q.id,
-                "ordem": q.ordem,
-                "enunciado": q.enunciado,
-                "tipo": q.tipo,
-                "imagem": q.imagem.url if q.imagem else None,
-                "alternativas": [
-                    {"letra": a.letra, "texto": a.texto, "correta": a.correta}
-                    for a in q.alternativas.all()
-                ] if q.tipo == "OBJETIVA" else [],
-            })
+        questoes = [
+            _serializar_questao_avaliacao(q, incluir_subquestoes=True)
+            for q in sorted(
+                (q for q in avaliacao.questoes.all() if q.questao_pai_id is None),
+                key=lambda q: (q.ordem, q.id),
+            )
+        ]
         return JsonResponse({
             "id": avaliacao.id,
             "titulo": avaliacao.titulo,
@@ -5040,19 +5151,67 @@ def avaliacao_detail(request, avaliacao_id):
             "disciplina": avaliacao.disciplina.nome_disciplina,
             "data": avaliacao.data.isoformat(),
             "ano_letivo": avaliacao.ano_letivo,
+            "texto_introdutorio": avaliacao.texto_introdutorio,
             "questoes": questoes,
         }, status=200)
 
     if request.method in ("PUT", "PATCH"):
         try:
             body = json.loads(request.body)
-            avaliacao.titulo = body.get("titulo", avaliacao.titulo)
-            avaliacao.descricao = body.get("descricao", avaliacao.descricao)
-            avaliacao.data = body.get("data", avaliacao.data)
-            avaliacao.save()
-            return JsonResponse({"message": "Atualizado"}, status=200)
+        except json.JSONDecodeError:
+            return JsonResponse({"message": "JSON inválido."}, status=400)
+
+        try:
+            with transaction.atomic():
+                titulo = (body.get("titulo") or "").strip()
+                if not titulo:
+                    raise ValueError("O título é obrigatório.")
+
+                questoes_input = body.get("questoes")
+                if not questoes_input:
+                    raise ValueError("Adicione ao menos uma questão.")
+
+                data_avaliacao = avaliacao.data
+                data_str = body.get("data")
+                if data_str:
+                    try:
+                        data_avaliacao = date.fromisoformat(data_str)
+                    except ValueError:
+                        raise ValueError("Formato de data inválido. Use AAAA-MM-DD.")
+
+                disciplina = avaliacao.disciplina
+                disciplina_nome = body.get("disciplina")
+                if disciplina_nome:
+                    disciplina = Disciplina.objects.filter(nome_disciplina=disciplina_nome).first()
+                    if not disciplina:
+                        raise ValueError(f"Disciplina '{disciplina_nome}' não encontrada.")
+
+                turma_nome = body.get("turma") or avaliacao.turma
+                if turma_nome != avaliacao.turma and not AtravessaPor.objects.filter(
+                    turma=turma_nome, professor=professor
+                ).exists():
+                    raise ValueError("Turma não encontrada.")
+
+                avaliacao.titulo = titulo
+                avaliacao.descricao = body.get("descricao", avaliacao.descricao)
+                avaliacao.turma = turma_nome
+                avaliacao.disciplina = disciplina
+                avaliacao.data = data_avaliacao
+                avaliacao.ano_letivo = data_avaliacao.year
+                avaliacao.texto_introdutorio = body.get("texto_introdutorio", avaliacao.texto_introdutorio)
+                avaliacao.save()
+
+                questoes_resultado = _sincronizar_questoes_avaliacao(avaliacao, questoes_input)
+        except ValueError as e:
+            return JsonResponse({"message": str(e)}, status=400)
         except Exception as e:
             return JsonResponse({"message": str(e)}, status=400)
+
+        return JsonResponse({
+            "message": "Atualizado",
+            "id": avaliacao.id,
+            "questoes": [{"id": q.id} for q in questoes_resultado],
+        }, status=200)
 
     if request.method == "DELETE":
         avaliacao.delete()
@@ -5063,12 +5222,120 @@ def avaliacao_detail(request, avaliacao_id):
 
 @csrf_exempt
 def avaliacao_upload_imagem(request, questao_id):
-    questao = Questao.objects.get(id=questao_id)
+    professor = _professor_atual(request)
+    if not professor:
+        return JsonResponse({"message": "Não autenticado"}, status=401)
+
+    try:
+        questao = Questao.objects.select_related("avaliacao__professor").get(id=questao_id)
+    except Questao.DoesNotExist:
+        return JsonResponse({"message": "Questão não encontrada"}, status=404)
+
+    if questao.avaliacao.professor_id != professor.id:
+        return JsonResponse({"message": "Não autorizado"}, status=403)
+
     if request.method == "POST" and request.FILES.get("imagem"):
         questao.imagem = request.FILES["imagem"]
         questao.save()
         return JsonResponse({"url": questao.imagem.url}, status=200)
     return JsonResponse({"message": "Nenhuma imagem enviada"}, status=400)
+
+
+def _avaliacao_do_professor(avaliacao_id, professor):
+    try:
+        return Avaliacao.objects.get(id=avaliacao_id, professor=professor)
+    except Avaliacao.DoesNotExist:
+        return None
+
+
+def _serializar_aluno_resumido(aluno):
+    return {
+        "id": aluno.id,
+        "nome_completo": aluno.nome_completo,
+        "escola": aluno.escola,
+        "serie": aluno.serie,
+        "periodo": aluno.periodo,
+        "curso": aluno.curso,
+        "turma": aluno.turma,
+        "modo_de_ensino": aluno.modo_de_ensino,
+        "data_cadastro": aluno.data_cadastro.isoformat() if aluno.data_cadastro else None,
+    }
+
+
+@csrf_exempt
+def avaliacao_correcoes(request, avaliacao_id):
+    professor = _professor_atual(request)
+    if not professor:
+        return JsonResponse({"message": "Não autenticado"}, status=401)
+
+    avaliacao = _avaliacao_do_professor(avaliacao_id, professor)
+    if not avaliacao:
+        return JsonResponse({"message": "Avaliação não encontrada"}, status=404)
+
+    if request.method == "GET":
+        alunos = buscar_alunos_por_turma(avaliacao.turma)
+        correcoes = {
+            c.aluno_id: c
+            for c in AvaliacaoCorrecao.objects.filter(avaliacao=avaliacao).select_related("aluno")
+        }
+        resultado = []
+        for aluno in alunos:
+            correcao = correcoes.get(aluno.id)
+            resultado.append({
+                "aluno": _serializar_aluno_resumido(aluno),
+                "correcao": {
+                    "id": correcao.id,
+                    "imagem_url": correcao.imagem.url if correcao.imagem else None,
+                    "nota": float(correcao.nota) if correcao.nota is not None else None,
+                    "atualizado_em": correcao.atualizado_em.isoformat(),
+                } if correcao else None,
+            })
+        return JsonResponse({"alunos": resultado}, status=200)
+
+    return JsonResponse({"message": "Método não permitido"}, status=405)
+
+
+@csrf_exempt
+def avaliacao_correcao_salvar(request, avaliacao_id):
+    professor = _professor_atual(request)
+    if not professor:
+        return JsonResponse({"message": "Não autenticado"}, status=401)
+
+    avaliacao = _avaliacao_do_professor(avaliacao_id, professor)
+    if not avaliacao:
+        return JsonResponse({"message": "Avaliação não encontrada"}, status=404)
+
+    if request.method != "POST":
+        return JsonResponse({"message": "Método não permitido"}, status=405)
+
+    aluno_id = request.POST.get("aluno_id")
+    nota_raw = request.POST.get("nota")
+    imagem = request.FILES.get("imagem")
+
+    try:
+        aluno = Estudante.objects.get(id=aluno_id)
+    except (Estudante.DoesNotExist, ValueError, TypeError):
+        return JsonResponse({"message": "Aluno não encontrado"}, status=404)
+
+    nota = None
+    if nota_raw not in (None, ""):
+        try:
+            nota = Decimal(str(nota_raw).replace(",", "."))
+        except InvalidOperation:
+            return JsonResponse({"message": "Nota inválida"}, status=400)
+
+    correcao, _ = AvaliacaoCorrecao.objects.get_or_create(avaliacao=avaliacao, aluno=aluno)
+    if imagem:
+        correcao.imagem = imagem
+    if nota is not None:
+        correcao.nota = nota
+    correcao.save()
+
+    return JsonResponse({
+        "id": correcao.id,
+        "imagem_url": correcao.imagem.url if correcao.imagem else None,
+        "nota": float(correcao.nota) if correcao.nota is not None else None,
+    }, status=200)
 
 
 def avaliacao_emitir_pdf(request, avaliacao_id):
@@ -5136,7 +5403,11 @@ def get_avaliacoes_coordenacao(request):
     turma = request.GET.get("turma")
     professor_id = request.GET.get("professor")
 
-    qs = Avaliacao.objects.select_related("professor", "disciplina").all()
+    qs = (
+        Avaliacao.objects.select_related("professor", "disciplina")
+        .annotate(_total_questoes=models.Count("questoes"))
+        .all()
+    )
 
     if turma:
         qs = qs.filter(turma=turma)
@@ -5153,7 +5424,7 @@ def get_avaliacoes_coordenacao(request):
             "professor_id": a.professor_id,
             "data": a.data.isoformat(),
             "ano_letivo": a.ano_letivo,
-            "total_questoes": a.questoes.count(),
+            "total_questoes": a._total_questoes,
         }
         for a in qs.order_by("-data")
     ]
@@ -5179,14 +5450,27 @@ def _gerar_pdf_avaliacao(avaliacao):
     from django.utils import timezone
     data_hora = timezone.now()
 
+    gabarito_linhas = []
+    letras_gabarito = set()
+
+    def _linha_gabarito(rotulo, tipo, alternativas):
+        if tipo == "OBJETIVA":
+            letras = [a.letra for a in alternativas]
+            letras_gabarito.update(letras)
+            return {"rotulo": rotulo, "tipo": "OBJETIVA", "letras": letras}
+        return {"rotulo": rotulo, "tipo": "SUBJETIVA", "letras": []}
+
     questoes_contexto = []
     topicos_exibidos = set()
     topico_atual = None
     contador_questoes = 0
-    
+
     for q in avaliacao.questoes.filter(questao_pai__isnull=True).order_by("ordem"):
         subquestoes_data = []
+        alternativas_q = list(q.alternativas.all()) if q.tipo == "OBJETIVA" else []
+        contador_sub = 0
         for sq in q.subquestoes.all().order_by("letra_subquestao"):
+            alternativas_sq = list(sq.alternativas.all()) if sq.tipo == "OBJETIVA" else []
             subquestoes_data.append({
                 "letra": sq.letra_subquestao,
                 "enunciado": sq.enunciado,
@@ -5194,8 +5478,10 @@ def _gerar_pdf_avaliacao(avaliacao):
                 "tipo_label": "Objetiva" if sq.tipo == "OBJETIVA" else "Subjetiva",
                 "linhas_resposta": sq.linhas_resposta,
                 "linhas_resposta_range": range(sq.linhas_resposta or 2),
-                "alternativas": sq.alternativas.all() if sq.tipo == "OBJETIVA" else [],
+                "alternativas": alternativas_sq,
             })
+            contador_sub += 1
+            gabarito_linhas.append(_linha_gabarito(f"{contador_questoes}.{sq.letra_subquestao}", sq.tipo, alternativas_sq))
 
         # Adicionar separador de tópico se mudou
         if q.topico and q.topico != topico_atual:
@@ -5208,6 +5494,7 @@ def _gerar_pdf_avaliacao(avaliacao):
                 })
 
         contador_questoes += 1
+        gabarito_linhas.insert(len(gabarito_linhas) - contador_sub, _linha_gabarito(str(contador_questoes), q.tipo, alternativas_q))
         questoes_contexto.append({
             "enunciado": q.enunciado,
             "tipo": q.tipo,
@@ -5228,6 +5515,8 @@ def _gerar_pdf_avaliacao(avaliacao):
         "logo_seduc_url": logo_seduc_url,
         "data_hora": data_hora,
         "questoes": questoes_contexto,
+        "gabarito_linhas": gabarito_linhas,
+        "gabarito_letras": sorted(letras_gabarito),
     }
 
     html_string = render_to_string("avaliacoes/pdf.html", contexto)
@@ -5241,12 +5530,14 @@ def avaliacao_detalhe_coordenacao(request, avaliacao_id):
         return JsonResponse({"message": "Não autenticado"}, status=401)
 
     try:
-        avaliacao = Avaliacao.objects.select_related("disciplina", "professor").get(id=avaliacao_id)
+        avaliacao = Avaliacao.objects.select_related("disciplina", "professor").prefetch_related(
+            "questoes__alternativas"
+        ).get(id=avaliacao_id)
     except Avaliacao.DoesNotExist:
         return JsonResponse({"message": "Avaliação não encontrada"}, status=404)
 
     questoes = []
-    for q in avaliacao.questoes.all().order_by("ordem"):
+    for q in sorted(avaliacao.questoes.all(), key=lambda q: (q.ordem, q.id)):
         questoes.append({
             "id": q.id,
             "ordem": q.ordem,

@@ -5,20 +5,20 @@
 <style>
   @page {
     size: A4;
-    margin: 2cm 1.8cm;
+    margin: 0.5cm 1.8cm 0.5cm 1.8cm;
   }
   body {
     font-family: "Helvetica", "Arial", sans-serif;
     color: #1a1a1a;
-    font-size: 11pt;
-    line-height: 1.5;
+    font-size: 10pt;
+    line-height: 1.4;
     padding: 0;
     margin: 0;
   }
   .rodape-imagens {
     margin-top: 32px;
     padding: 16px 28px;
-    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+    background: #f1f5f9;
     border-top: 2px solid #0b4f9e;
     display: flex;
     justify-content: space-between;
@@ -45,31 +45,14 @@
     text-align: right;
   }
   .cabecalho {
-    background: linear-gradient(135deg, #0b4f9e 0%, #1a2942 100%);
+    background: #0b4f9e;
     color: white;
-    padding: 16px 28px;
-    position: relative;
-    overflow: hidden;
+    padding: 14px 28px;
   }
-  .cabecalho::before {
-    content: "";
-    position: absolute;
-    top: -50%;
-    right: -10%;
-    width: 200px;
-    height: 200px;
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 50%;
-  }
-  .cabecalho::after {
-    content: "";
-    position: absolute;
-    bottom: -30%;
-    right: 20%;
-    width: 150px;
-    height: 150px;
-    background: rgba(255, 255, 255, 0.05);
-    border-radius: 50%;
+  .linha-azul {
+    border: none;
+    border-top: 2px solid #0b4f9e;
+    margin: 0 0 14px 0;
   }
   .cabecalho-topo {
     display: flex;
@@ -95,7 +78,7 @@
   }
   .cabecalho-linha {
     height: 2px;
-    background: linear-gradient(90deg, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0) 100%);
+    background: #dbe7f5;
     margin: 12px 0 0 0;
   }
   .cabecalho-logos {
@@ -120,9 +103,9 @@
     padding: 0;
   }
   .dados-avaliacao {
-    margin-bottom: 24px;
-    padding: 20px;
-    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+    margin-bottom: 16px;
+    padding: 14px;
+    background: #f1f5f9;
     border-left: 5px solid #0b4f9e;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.05);
@@ -133,18 +116,18 @@
   td.linha-preencher { border-bottom: 1px solid #1a1a1a; width: 80%; }
   .titulo-avaliacao {
     text-align: center;
-    font-size: 14pt;
+    font-size: 13pt;
     font-weight: bold;
     text-transform: uppercase;
     letter-spacing: 0.03em;
-    margin: 20px 0 24px;
+    margin: 14px 0 16px;
     border-top: 1px solid #ccc;
     border-bottom: 1px solid #ccc;
-    padding: 10px 0;
+    padding: 8px 0;
   }
   .texto-introdutorio {
-    margin: 18px 0 24px;
-    padding: 12px;
+    margin: 12px 0 16px;
+    padding: 10px;
     background: #f8fafc;
     border-left: 3px solid #0b4f9e;
     font-size: 10pt;
@@ -152,18 +135,18 @@
     white-space: pre-wrap;
   }
   .topico-separador {
-    margin: 24px 0 16px;
-    padding: 8px 12px;
+    margin: 16px 0 10px;
+    padding: 6px 10px;
     background: #e0e7ff;
     border-left: 4px solid #0b4f9e;
-    font-size: 11pt;
+    font-size: 10pt;
     font-weight: bold;
     color: #0b4f9e;
     text-transform: uppercase;
     letter-spacing: 0.05em;
   }
   .questao {
-    margin-bottom: 22px;
+    margin-bottom: 14px;
     page-break-inside: avoid;
     max-width: 100%;
     word-wrap: break-word;
@@ -171,7 +154,7 @@
   }
   .questao-numero {
     font-weight: bold;
-    margin: 0 0 6px;
+    margin: 0 0 4px;
   }
   .questao-tipo {
     font-weight: normal;
@@ -179,7 +162,7 @@
     font-size: 9pt;
   }
   .questao-enunciado {
-    margin: 0 0 10px;
+    margin: 0 0 8px;
     white-space: pre-wrap;
   }
   .questao-imagem {
@@ -192,27 +175,71 @@
     margin-left: 4px;
   }
   .alternativa {
-    margin: 0 0 5px;
+    margin: 0 0 4px;
   }
   .linha-resposta {
     border-bottom: 1px solid #999;
-    height: 22px;
-    margin-bottom: 4px;
+    height: 20px;
+    margin-bottom: 3px;
   }
   .subquestoes {
-    margin-top: 12px;
-    margin-left: 8px;
+    margin-top: 8px;
+    margin-left: 6px;
   }
   .subquestao {
-    margin-bottom: 10px;
+    margin-bottom: 8px;
   }
   .subquestao-enunciado {
-    margin: 0 0 6px;
-    font-size: 10pt;
+    margin: 0 0 4px;
+    font-size: 9.5pt;
   }
   .subquestao-letra {
     font-weight: bold;
     color: #444;
+  }
+  .gabarito-tabela {
+    margin-top: 24px;
+    page-break-inside: avoid;
+  }
+  .gabarito-titulo {
+    font-size: 12pt;
+    font-weight: bold;
+    text-transform: uppercase;
+    margin: 0 0 10px;
+    color: #0b4f9e;
+  }
+  table.gabarito {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 9pt;
+  }
+  table.gabarito th,
+  table.gabarito td {
+    border: 1px solid #94a3b8;
+    padding: 6px 8px;
+    text-align: center;
+  }
+  table.gabarito th {
+    background: #e2e8f0;
+    font-weight: bold;
+  }
+  .gabarito-col-questao {
+    text-align: left !important;
+    font-weight: bold;
+  }
+  .gabarito-celula {
+    text-align: center;
+  }
+  .gabarito-circulo {
+    display: inline-block;
+    width: 13px;
+    height: 13px;
+    border: 1.5px solid #000;
+    border-radius: 50%;
+  }
+  .gabarito-subjetiva {
+    font-style: italic;
+    color: #555;
   }
   .rodape {
     margin-top: 32px;
@@ -223,16 +250,6 @@
 </style>
 </head>
 <body>
-  <div class="cabecalho">
-    <div class="cabecalho-topo">
-      <div class="cabecalho-texto">
-        <h1 class="cabecalho-titulo">Avaliação</h1>
-        <p class="cabecalho-subtitulo">Sistema Integrado de Avaliação e Acompanhamento</p>
-        <div class="cabecalho-linha"></div>
-      </div>
-    </div>
-  </div>
-
   <div class="conteudo">
     <div class="dados-avaliacao">
     <table class="linha">
@@ -255,7 +272,7 @@
     </table>
   </div>
 
-  <h1 class="titulo-avaliacao">{{ avaliacao.titulo }}</h1>
+  <hr class="linha-azul" />
 
   {% if avaliacao.texto_introdutorio %}
   <div class="texto-introdutorio">
@@ -315,6 +332,36 @@
   </div>
   {% endif %}
   {% endfor %}
+
+  {% if gabarito_linhas %}
+  <div class="gabarito-tabela">
+    <h2 class="gabarito-titulo">Gabarito</h2>
+    <table class="gabarito">
+      <thead>
+        <tr>
+          <th class="gabarito-col-questao">Questão</th>
+          {% for letra in gabarito_letras %}
+          <th>{{ letra }}</th>
+          {% endfor %}
+        </tr>
+      </thead>
+      <tbody>
+        {% for linha in gabarito_linhas %}
+        <tr>
+          <td class="gabarito-col-questao">{{ linha.rotulo }}</td>
+          {% if linha.tipo == "OBJETIVA" %}
+            {% for letra in gabarito_letras %}
+            <td class="gabarito-celula"><span class="gabarito-circulo"></span></td>
+            {% endfor %}
+          {% else %}
+            <td class="gabarito-subjetiva" colspan="{{ gabarito_letras|length }}">Subjetiva</td>
+          {% endif %}
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% endif %}
 
   <p class="rodape">Documento emitido pelo SIAA em {{ data_hora|date:"d/m/Y" }} às {{ data_hora|date:"H:i" }}.</p>
   </div>

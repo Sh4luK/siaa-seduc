@@ -116,6 +116,8 @@ urlpatterns = [
     path("api/teacher/avaliacoes", app.views.avaliacoes_list_create),
     path("api/teacher/avaliacoes/<int:avaliacao_id>", app.views.avaliacao_detail),
     path("api/teacher/avaliacoes/<int:avaliacao_id>/pdf", app.views.avaliacao_emitir_pdf),
+    path("api/teacher/avaliacoes/<int:avaliacao_id>/correcoes", app.views.avaliacao_correcoes),
+    path("api/teacher/avaliacoes/<int:avaliacao_id>/correcoes/salvar", app.views.avaliacao_correcao_salvar),
     path("api/teacher/avaliacoes/questoes/<int:questao_id>/imagem", app.views.avaliacao_upload_imagem),
     path("api/teacher/avaliacoes/extrair-questoes", app.views.extrair_questoes_arquivo),
     path("api/teacher/opcoes-avaliacao", app.views.opcoes_avaliacao),
