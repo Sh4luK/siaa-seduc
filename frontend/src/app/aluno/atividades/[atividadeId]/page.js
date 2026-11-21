@@ -651,6 +651,7 @@ export default function AtividadeAlunoPage({ params }) {
                           )}
                         </div>
                       </div>
+                      )}
                     </>
                   ) : (
                     <>
