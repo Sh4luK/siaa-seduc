@@ -40,10 +40,10 @@ export default function AvaliacoesCoordenacaoPage() {
 
   async function carregarAvaliacoes(turma = "") {
     try {
-      const url = new URL(`${API_BASE}/api/coordenacao/avaliacoes`);
-      if (turma) url.searchParams.set("turma", turma);
-
-      const res = await fetch(url, { credentials: "include" });
+      const params = new URLSearchParams();
+      if (turma) params.set("turma", turma);
+      const qs = params.toString();
+      const res = await fetch(`${API_BASE}/api/coordenacao/avaliacoes${qs ? `?${qs}` : ""}`, { credentials: "include" });
       if (!res.ok) throw new Error(`Falha ao buscar avaliações (status ${res.status})`);
 
       const data = await res.json();
