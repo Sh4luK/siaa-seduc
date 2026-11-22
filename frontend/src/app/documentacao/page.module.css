@@ -1,0 +1,212 @@
+.page {
+  min-height: 100vh;
+  background: #f5f7fa;
+  font-family: "IBM Plex Sans", "Inter", "Segoe UI", system-ui, sans-serif;
+  color: #1a2942;
+}
+
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.9rem 1.5rem;
+  background: #0b4f9e;
+  color: #fff;
+}
+
+.menuButton {
+  display: none;
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 1.4rem;
+  cursor: pointer;
+  padding: 0.2rem 0.5rem;
+}
+
+.title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.subtitle {
+  font-size: 0.78rem;
+  opacity: 0.85;
+  margin: 0;
+}
+
+.downloads {
+  margin-left: auto;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.downloadBtn {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #0b4f9e;
+  background: #fff;
+  border-radius: 6px;
+  padding: 0.35rem 0.8rem;
+  text-decoration: none;
+}
+
+.downloadBtn:hover { background: #e2e8f0; }
+
+.layout {
+  display: flex;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.sidebar {
+  width: 260px;
+  flex-shrink: 0;
+  padding: 1.5rem 0.5rem;
+  position: sticky;
+  top: 59px;
+  height: calc(100vh - 59px);
+  overflow-y: auto;
+}
+
+.sidebar nav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.navItem,
+.navAtivo {
+  text-align: left;
+  background: none;
+  border: none;
+  font-size: 0.85rem;
+  color: #334155;
+  padding: 0.45rem 0.8rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.navItem:hover { background: #e2e8f0; }
+
+.navAtivo {
+  background: rgba(11, 79, 158, 0.1);
+  color: #0b4f9e;
+  font-weight: 600;
+}
+
+.overlay {
+  display: none;
+}
+
+.conteudo {
+  flex: 1;
+  min-width: 0;
+  padding: 2rem 2.5rem 4rem;
+}
+
+.loading {
+  color: #5b6b85;
+  text-align: center;
+  padding: 3rem;
+}
+
+.markdown {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 2rem 2.5rem;
+  font-size: 0.92rem;
+  line-height: 1.65;
+}
+
+.markdown h1 {
+  color: #0b4f9e;
+  font-size: 1.5rem;
+  border-bottom: 2px solid #0b4f9e;
+  padding-bottom: 0.4rem;
+}
+
+.markdown h2 {
+  color: #0b4f9e;
+  font-size: 1.2rem;
+  margin-top: 2rem;
+}
+
+.markdown h3 { color: #334155; font-size: 1rem; }
+
+.markdown table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 1rem 0;
+  font-size: 0.85rem;
+}
+
+.markdown th,
+.markdown td {
+  border: 1px solid #cbd5e1;
+  padding: 0.45rem 0.7rem;
+  text-align: left;
+}
+
+.markdown th { background: #f1f5f9; }
+
+.markdown code {
+  background: #f1f5f9;
+  padding: 0.1rem 0.35rem;
+  border-radius: 4px;
+  font-size: 0.85em;
+}
+
+.markdown pre {
+  background: #0f172a;
+  color: #e2e8f0;
+  padding: 1rem;
+  border-radius: 10px;
+  overflow-x: auto;
+}
+
+.markdown pre code {
+  background: none;
+  color: inherit;
+  padding: 0;
+}
+
+.markdown blockquote {
+  border-left: 3px solid #0b4f9e;
+  margin: 1rem 0;
+  padding: 0.3rem 1rem;
+  color: #475569;
+}
+
+@media (max-width: 860px) {
+  .menuButton { display: block; }
+  .sidebar {
+    position: fixed;
+    left: 0;
+    top: 59px;
+    bottom: 0;
+    background: #fff;
+    z-index: 45;
+    transform: translateX(-100%);
+    transition: transform 0.2s;
+    box-shadow: 2px 0 12px rgba(0,0,0,0.1);
+  }
+  .sidebarOpen { transform: translateX(0); }
+  .overlay {
+    display: block;
+    position: fixed;
+    inset: 59px 0 0 0;
+    background: rgba(15,23,42,0.4);
+    z-index: 44;
+    border: none;
+    cursor: pointer;
+  }
+  .conteudo { padding: 1rem; }
+  .markdown { padding: 1.25rem; }
+}
