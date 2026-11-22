@@ -96,11 +96,27 @@ Acesse a aplicação no navegador em [http://localhost:3000](http://localhost:30
 
 ## 📖 Documentação Completa
 
-Para detalhes sobre modelos de dados, endpoints da API e fluxos de tela, consulte o arquivo [DOCUMENTATION.md](./DOCUMENTATION.md).
+A documentação técnica-acadêmica completa do projeto está disponível em múltiplos formatos:
+
+| Formato | Localização |
+|---|---|
+| Markdown (fonte) | [docs/DOCUMENTACAO.md](./docs/DOCUMENTACAO.md) e seções em [docs/secoes/](./docs/secoes/) |
+| HTML | [docs/DOCUMENTACAO.html](./docs/DOCUMENTACAO.html) |
+| PDF | [docs/DOCUMENTACAO.pdf](./docs/DOCUMENTACAO.pdf) |
+| Na aplicação | Rota `/documentacao` (disponível em `frontend/public/docs/`) |
+
+Para detalhes sobre modelos de dados, endpoints da API e fluxos de tela, consulte a documentação completa em [docs/DOCUMENTACAO.md](./docs/DOCUMENTACAO.md).
 
 ---
 
 ## 👥 Contribuidores
+
+Desenvolvido por bolsistas **Seduc Tec** no programa FAPEPI/SEDUC-PI:
+
+- **José Cipriano (iiraildess)** — joseiraildesciprianoribeiro2@gmail.com
+- **Fábio Galvão (Sh4luK)** — galvaofabio2019@gmail.com
+- **João Pedro Azevedo** — joaopedrodasilvaazevedo387@gmail.com
+- **Ronald (devorador)** — ronaldraimundobarros@gmail.com
 
 Agradecemos a todos os bolsistas e colaboradores envolvidos no desenvolvimento do projeto:
 
