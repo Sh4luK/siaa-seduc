@@ -141,6 +141,16 @@ export default function CorrigirAvaliacaoPage() {
     setEnviando(false);
   }
 
+  const todasObjetivas = (() => {
+    const qs = avaliacao?.questoes || [];
+    if (qs.length === 0) return false;
+    return qs.every((q) => {
+      if (q.tipo !== "OBJETIVA") return false;
+      const subs = q.subquestoes || [];
+      return subs.every((sq) => sq.tipo === "OBJETIVA");
+    });
+  })();
+
   if (loading) {
     return (
       <div className={styles.pageLoading}>
@@ -221,29 +231,38 @@ export default function CorrigirAvaliacaoPage() {
                 )}
 
                 <div className={styles.cardCorpo}>
-                  <div className={styles.quadroGabarito}>
-                    <p className={styles.rotuloQuadro}>Gabarito fotografado</p>
-                    <input
-                      type="file"
-                      accept="image/*"
-                      capture="environment"
-                      ref={(el) => { fileInputs.current[aluno.id] = el; }}
-                      style={{ display: "none" }}
-                      onChange={(e) => selecionarImagem(aluno.id, e.target.files?.[0])}
-                    />
-                    <button
-                      className={styles.botaoCorrigir}
-                      onClick={() => fileInputs.current[aluno.id]?.click()}
-                    >
-                      Corrigir Avaliação
-                    </button>
-                    {card.preview && (
-                      <div className={styles.previewWrap}>
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img src={card.preview} alt={`Gabarito de ${aluno.nome_completo}`} className={styles.previewImg} />
-                      </div>
-                    )}
-                  </div>
+                  {todasObjetivas ? (
+                    <div className={styles.quadroGabarito}>
+                      <p className={styles.rotuloQuadro}>Gabarito fotografado</p>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        capture="environment"
+                        ref={(el) => { fileInputs.current[aluno.id] = el; }}
+                        style={{ display: "none" }}
+                        onChange={(e) => selecionarImagem(aluno.id, e.target.files?.[0])}
+                      />
+                      <button
+                        className={styles.botaoCorrigir}
+                        onClick={() => fileInputs.current[aluno.id]?.click()}
+                      >
+                        Corrigir Avaliação
+                      </button>
+                      {card.preview && (
+                        <div className={styles.previewWrap}>
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img src={card.preview} alt={`Gabarito de ${aluno.nome_completo}`} className={styles.previewImg} />
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <div className={styles.quadroGabarito}>
+                      <p className={styles.rotuloQuadro}>Correção manual</p>
+                      <p className={styles.correcaoManualTexto}>
+                        Esta avaliação possui questões subjetivas. A correção é feita de forma manual — informe a nota abaixo.
+                      </p>
+                    </div>
+                  )}
 
                   <div className={styles.quadroNota}>
                     <p className={styles.rotuloNota}>Nota</p>
