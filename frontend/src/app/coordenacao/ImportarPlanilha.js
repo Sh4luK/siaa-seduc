@@ -107,6 +107,11 @@ export default function ImportarPlanilha({ tipo, onImportado }) {
             {config.dica} Linhas com um <strong>id</strong> que já existe atualizam o registro; as demais
             são cadastradas, e nomes já cadastrados são ignorados.
           </p>
+          {config.colunas.includes("ip") && (
+            <p className={styles.texto}>
+              NOTA: O <code className={styles.colunas}>ip</code> pode ser dado como Nulo(NULL).
+            </p>
+          )}
 
           <div className={styles.acoes}>
             <input
