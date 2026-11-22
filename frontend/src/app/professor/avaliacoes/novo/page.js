@@ -614,6 +614,10 @@ export default function NovaAvaliacaoPage() {
             </div>
           </div>
 
+          <p className={styles.avisoQuestoes}>
+            Aconselhamos que a avaliação tenha de 15 a 20 questões, para evitar erros no gabarito.
+          </p>
+
           {modoQuestoes === "midia" && (
             <div className={styles.campo}>
               <label className={styles.label} htmlFor="arquivo-questoes">
