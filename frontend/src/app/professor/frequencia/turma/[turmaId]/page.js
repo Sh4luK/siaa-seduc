@@ -48,6 +48,14 @@ export default function FrequenciaTurmaPage() {
   const [alunos, setAlunos] = useState([]);
   const [mensagem, setMensagem] = useState(null);
   const [erros, setErros] = useState([]);
+  // Regras de prazo vindas do backend: o professor só altera no dia da aula,
+  // a não ser que a coordenação reabra a edição.
+  const [controle, setControle] = useState({
+    pode_editar: true,
+    motivo_bloqueio: "",
+    confirmada: false,
+    liberada_ate: null,
+  });
 
   useEffect(() => {
     async function init() {
@@ -113,6 +121,12 @@ export default function FrequenciaTurmaPage() {
         setAlunos(data.alunos || []);
         setConteudoAbordado(data.conteudo_abordado || data.assunto || "");
         setEstrategiaAbordada(data.estrategia_abordada || "");
+        setControle({
+          pode_editar: data.pode_editar !== false,
+          motivo_bloqueio: data.motivo_bloqueio || "",
+          confirmada: Boolean(data.confirmada),
+          liberada_ate: data.liberada_ate || null,
+        });
       } catch (error) {
         setErros([`Erro ao carregar frequência: ${error.message}`]);
       } finally {
@@ -161,8 +175,8 @@ export default function FrequenciaTurmaPage() {
       });
 
       if (!res.ok) {
-        const corpoErro = await res.text();
-        throw new Error(`Falha ao salvar (status ${res.status}) - ${corpoErro}`);
+        const corpoErro = await res.json().catch(() => null);
+        throw new Error(corpoErro?.message || corpoErro?.detail || `Falha ao salvar (status ${res.status})`);
       }
 
       const data = await res.json();
@@ -255,6 +269,7 @@ export default function FrequenciaTurmaPage() {
                     <input
                       type="date"
                       className={styles.dataInput}
+                      max={hojeISO()}
                       value={dataSelecionada}
                       onChange={(e) => setDataSelecionada(e.target.value)}
                     />
@@ -269,6 +284,19 @@ export default function FrequenciaTurmaPage() {
                   <p className={styles.subtitle}>Carregando alunos...</p>
                 ) : (
                   <>
+                    {!controle.pode_editar && (
+                      <p className={styles.avisoBloqueio}>{controle.motivo_bloqueio}</p>
+                    )}
+                    {controle.pode_editar && controle.liberada_ate && (
+                      <p className={styles.avisoInfo}>
+                        A coordenação reabriu a edição desta frequência até o fim do dia.
+                      </p>
+                    )}
+                    {controle.confirmada && controle.pode_editar && (
+                      <p className={styles.avisoInfo}>Esta aula já foi confirmada pela coordenação.</p>
+                    )}
+
+                    <fieldset disabled={!controle.pode_editar} className={styles.camposFrequencia}>
                     <div className={styles.assuntoBloco}>
                       <label className={styles.assuntoLabel} htmlFor="conteudo-abordado">
                         Conteúdo Abordado
@@ -343,11 +371,12 @@ export default function FrequenciaTurmaPage() {
 
                     <button
                       onClick={handleSalvar}
-                      disabled={saving || alunos.length === 0}
+                      disabled={saving || alunos.length === 0 || !controle.pode_editar}
                       className={styles.botaoSalvar}
                     >
                       {saving ? "Salvando..." : "Salvar frequência"}
                     </button>
+                    </fieldset>
                   </>
                 )}
               </>

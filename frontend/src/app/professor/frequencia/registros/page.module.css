@@ -172,3 +172,26 @@
   margin-bottom: 1.25rem;
   font-size: 0.85rem;
 }
+.registroSituacao {
+  display: inline-block;
+  margin-top: 0.5rem;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.situacaoEditavel {
+  background: #f0fdf4;
+  color: #15803d;
+}
+
+.situacaoBloqueada {
+  background: #f1f5f9;
+  color: #475569;
+}
+
+.situacaoConfirmada {
+  background: #eff6ff;
+  color: #1e40af;
+}

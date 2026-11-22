@@ -120,12 +120,10 @@ class Nota(models.Model):
             mt = self._media(notas)
             mtf = mt
 
-            # MTF: a RPT substitui a MT quando MT < 6 e RPT >= MT.
-            # Quando substitui, tanto MT quanto MTF ficam iguais à RPT.
-            # Se RPT < MT, não substitui e mantém MT.
-            # A NM3 original continua gravada; a troca vale só para a MTF.
+            # MTF: a RPT substitui a MT sempre que for maior que ela
+            # (MTF = maior valor entre MT e RPT). A MT continua gravada.
             rpt = getattr(self, f"rpt_t{t}")
-            if rpt is not None and mt is not None and mt < Decimal("6") and rpt >= mt:
+            if rpt is not None and mt is not None and rpt > mt:
                 mtf = rpt
 
             setattr(self, f"mt_t{t}", mt)
@@ -158,6 +156,18 @@ class Aula(models.Model):
     data = models.DateField()
     assunto = models.TextField(blank=True, default="")
     estrategia_abordada = models.TextField(blank=True, default="")
+
+    # O professor só altera a frequência no próprio dia da aula. Depois disso,
+    # a coordenação pode reabrir a edição até a data em "liberada_ate".
+    liberada_ate = models.DateField(null=True, blank=True)
+
+    # Confirmação, pela coordenação, de que a aula foi dada.
+    confirmada = models.BooleanField(default=False, db_default=False)
+    confirmada_em = models.DateTimeField(null=True, blank=True)
+    confirmada_por = models.ForeignKey(
+        "app.Coordenador", on_delete=models.SET_NULL, null=True, blank=True,
+        related_name="aulas_confirmadas",
+    )
 
     atualizado_em = models.DateTimeField(auto_now=True)
 

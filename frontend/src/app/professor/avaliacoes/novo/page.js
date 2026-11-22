@@ -5,8 +5,19 @@ import { useRouter } from "next/navigation";
 import styles from "./page.module.css";
 import Image from "next/image";
 import logo from "@/assets/logo.png";
+import SeletorTurmas from "../../SeletorTurmas";
 
 const API_BASE = "/backend-api";
+
+// Agrupa os vínculos (turma + disciplina) por turma, no formato do SeletorTurmas.
+function agruparVinculos(vinculos) {
+  const grupos = {};
+  for (const v of vinculos) {
+    if (!grupos[v.turma]) grupos[v.turma] = { nomeTurma: v.turma, opcoes: [] };
+    grupos[v.turma].opcoes.push({ id: v.id, disciplina_lecionada: v.disciplina_lecionada });
+  }
+  return Object.values(grupos);
+}
 
 function gerarLetra(index) {
   const letras = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -48,13 +59,13 @@ export default function NovaAvaliacaoPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [professorNome, setProfessorNome] = useState("");
-  const [turmas, setTurmas] = useState([]);
-  const [disciplinasPorTurma, setDisciplinasPorTurma] = useState({});
+  const [vinculos, setVinculos] = useState([]);
 
   const [titulo, setTitulo] = useState("");
   const [data, setData] = useState("");
-  const [turma, setTurma] = useState("");
-  const [disciplina, setDisciplina] = useState("");
+  // ids (AtravessaPor) das turmas/disciplinas marcadas: uma avaliação é
+  // criada para cada uma, todas com as mesmas questões.
+  const [vinculosSelecionados, setVinculosSelecionados] = useState([]);
   const [questoes, setQuestoes] = useState([novaQuestao()]);
   const [modoQuestoes, setModoQuestoes] = useState("manual");
   const [arquivoQuestoes, setArquivoQuestoes] = useState(null);
@@ -83,8 +94,7 @@ export default function NovaAvaliacaoPage() {
         const opcoesData = await opcoesRes.json();
 
         setProfessorNome(opcoesData.professor?.nome_completo || "");
-        setTurmas(opcoesData.turmas || []);
-        setDisciplinasPorTurma(opcoesData.disciplinas_por_turma || {});
+        setVinculos(opcoesData.vinculos || []);
       } catch (error) {
         setErros([`Erro ao carregar dados: ${error.message}`]);
       } finally {
@@ -94,11 +104,6 @@ export default function NovaAvaliacaoPage() {
 
     init();
   }, [router]);
-
-  function handleTurmaChange(novaTurma) {
-    setTurma(novaTurma);
-    setDisciplina("");
-  }
 
   function atualizarQuestao(id, campo, valor) {
     setQuestoes((prev) =>
@@ -345,8 +350,7 @@ export default function NovaAvaliacaoPage() {
     const errosValidacao = [];
     if (!titulo.trim()) errosValidacao.push("O título da avaliação é obrigatório.");
     if (!data) errosValidacao.push("A data é obrigatória.");
-    if (!turma) errosValidacao.push("Selecione a turma.");
-    if (!disciplina) errosValidacao.push("Selecione a disciplina.");
+    if (vinculosSelecionados.length === 0) errosValidacao.push("Selecione pelo menos uma turma.");
 
     questoes.forEach((q, i) => {
       if (!q.enunciado.trim()) errosValidacao.push(`Questão ${i + 1}: o enunciado é obrigatório.`);
@@ -368,8 +372,7 @@ export default function NovaAvaliacaoPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           titulo: titulo.trim(),
-          turma,
-          disciplina,
+          vinculos: vinculosSelecionados.map(Number),
           data,
           ano_letivo: new Date(data).getFullYear(),
           modo_questoes: modoQuestoes,
@@ -402,35 +405,43 @@ export default function NovaAvaliacaoPage() {
       }
 
       const resposta = await res.json();
-      const questaoIds = (resposta.questoes || []).map((q) => q.id);
+      const criadas = resposta.avaliacoes || [{ id: resposta.id, questoes: resposta.questoes }];
 
+      // Cada avaliação criada tem suas próprias questões: a mesma imagem é
+      // enviada para a questão correspondente de cada uma.
       let avisoImagens = false;
       try {
         await Promise.all(
-          questoes.map(async (q, i) => {
-            const questaoId = questaoIds[i];
-            if (!q.imagemFile || !questaoId) return;
-            const formData = new FormData();
-            formData.append("imagem", q.imagemFile);
-            const imgRes = await fetch(`${API_BASE}/api/teacher/avaliacoes/questoes/${questaoId}/imagem`, {
-              method: "POST",
-              credentials: "include",
-              body: formData,
-            });
-            if (!imgRes.ok) avisoImagens = true;
-          })
+          criadas.flatMap((avaliacao) =>
+            questoes.map(async (q, i) => {
+              const questaoId = (avaliacao.questoes || [])[i]?.id;
+              if (!q.imagemFile || !questaoId) return;
+              const formData = new FormData();
+              formData.append("imagem", q.imagemFile);
+              const imgRes = await fetch(`${API_BASE}/api/teacher/avaliacoes/questoes/${questaoId}/imagem`, {
+                method: "POST",
+                credentials: "include",
+                body: formData,
+              });
+              if (!imgRes.ok) avisoImagens = true;
+            })
+          )
         );
       } catch {
         avisoImagens = true;
       }
 
+      const textoCriadas =
+        criadas.length > 1
+          ? `${criadas.length} avaliações criadas com sucesso (uma por turma).`
+          : "Avaliação criada com sucesso.";
       setMensagem(
         avisoImagens
-          ? "Avaliação criada com sucesso, mas algumas imagens não puderam ser enviadas."
-          : "Avaliação criada com sucesso."
+          ? `${textoCriadas} Algumas imagens não puderam ser enviadas.`
+          : textoCriadas
       );
       setTimeout(() => {
-        router.push(`/professor/avaliacoes/${resposta.id}`);
+        router.push(criadas.length > 1 ? "/professor/avaliacoes" : `/professor/avaliacoes/${criadas[0].id}`);
       }, 900);
     } catch (error) {
       setErros([`Erro ao criar avaliação: ${error.message}`]);
@@ -452,7 +463,8 @@ export default function NovaAvaliacaoPage() {
     );
   }
 
-  const disciplinasDisponiveis = disciplinasPorTurma[turma] || [];
+  const turmasAgrupadas = agruparVinculos(vinculos);
+  const vinculosEscolhidos = vinculos.filter((v) => vinculosSelecionados.includes(String(v.id)));
 
   return (
     <div className={styles.page}>
@@ -532,41 +544,20 @@ export default function NovaAvaliacaoPage() {
             </div>
           </div>
 
-          <div className={styles.linhaDupla}>
-            <div className={styles.campo}>
-              <label className={styles.label}>
-                Turma <span className={styles.obrigatorio}>*</span>
-              </label>
-              <select
-                className={styles.select}
-                value={turma}
-                onChange={(e) => handleTurmaChange(e.target.value)}
-              >
-                <option value="" disabled>Selecione a turma</option>
-                {turmas.map((t) => (
-                  <option key={t} value={t}>{t}</option>
-                ))}
-              </select>
-            </div>
-
-            <div className={styles.campo}>
-              <label className={styles.label}>
-                Disciplina <span className={styles.obrigatorio}>*</span>
-              </label>
-              <select
-                className={styles.select}
-                value={disciplina}
-                onChange={(e) => setDisciplina(e.target.value)}
-                disabled={!turma}
-              >
-                <option value="" disabled>
-                  {turma ? "Selecione a disciplina" : "Selecione a turma primeiro"}
-                </option>
-                {disciplinasDisponiveis.map((d) => (
-                  <option key={d} value={d}>{d}</option>
-                ))}
-              </select>
-            </div>
+          <div className={styles.campo}>
+            <span className={styles.label}>
+              Turmas e disciplinas <span className={styles.obrigatorio}>*</span>
+            </span>
+            <SeletorTurmas
+              turmasAgrupadas={turmasAgrupadas}
+              selecionadas={vinculosSelecionados}
+              onChange={setVinculosSelecionados}
+            />
+            {vinculosSelecionados.length > 1 && (
+              <p className={styles.avisoVariasTurmas} role="status">
+                Serão criadas {vinculosSelecionados.length} avaliações, uma para cada turma/disciplina marcada, todas com as mesmas questões.
+              </p>
+            )}
           </div>
 
           <div className={styles.campo}>
@@ -919,8 +910,16 @@ export default function NovaAvaliacaoPage() {
               </div>
               <div className={styles.previewContent}>
                 <div className={styles.previewDados}>
-                  <p><strong>Disciplina:</strong> {disciplina}</p>
-                  <p><strong>Turma:</strong> {turma}</p>
+                  <p>
+                    <strong>Disciplina:</strong>{" "}
+                    {[...new Set(vinculosEscolhidos.map((v) => v.disciplina_lecionada))].join(", ") || "—"}
+                  </p>
+                  <p>
+                    <strong>Turma:</strong>{" "}
+                    {vinculosEscolhidos.length > 1
+                      ? `${vinculosEscolhidos.length} turmas selecionadas (uma avaliação para cada)`
+                      : vinculosEscolhidos[0]?.turma || "—"}
+                  </p>
                   <p><strong>Data:</strong> {data}</p>
                   <p><strong>Nome do aluno:</strong> ___________________________</p>
                 </div>

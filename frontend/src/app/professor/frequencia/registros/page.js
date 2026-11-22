@@ -15,6 +15,26 @@ function formatarData(dataISO) {
   return `${dia}/${mes}/${ano}`;
 }
 
+// Situação da frequência para o professor: editável só no dia da aula,
+// depois apenas se a coordenação reabrir.
+function SituacaoRegistro({ registro }) {
+  let texto = "Prazo de alteração encerrado";
+  let classe = styles.situacaoBloqueada;
+
+  if (registro.pode_editar && registro.liberada_ate) {
+    texto = "Reaberta pela coordenação";
+    classe = styles.situacaoEditavel;
+  } else if (registro.pode_editar) {
+    texto = "Pode alterar até o fim do dia";
+    classe = styles.situacaoEditavel;
+  } else if (registro.confirmada) {
+    texto = "Confirmada pela coordenação";
+    classe = styles.situacaoConfirmada;
+  }
+
+  return <span className={`${styles.registroSituacao} ${classe}`}>{texto}</span>;
+}
+
 export default function RegistrosFrequenciaPage() {
   const [authenticated, setAuthenticated] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -62,7 +82,7 @@ export default function RegistrosFrequenciaPage() {
     if (!termo) return registros;
 
     return registros.filter((r) => {
-      const alvo = [r.nome_turma, r.disciplina, r.assunto, r.estrategia_metodologica, formatarData(r.data)]
+      const alvo = [r.nome_turma, r.disciplina, r.assunto, r.estrategia_abordada, formatarData(r.data)]
         .filter(Boolean)
         .join(" ")
         .toLowerCase();
@@ -247,6 +267,7 @@ export default function RegistrosFrequenciaPage() {
 
                       <p className={styles.registroTurma}>{registro.nome_turma}</p>
                       <p className={styles.registroDisciplina}>{registro.disciplina}</p>
+                      <SituacaoRegistro registro={registro} />
 
                       {registro.assunto && (
                         <p className={styles.registroAssunto} title={registro.assunto}>
@@ -254,9 +275,9 @@ export default function RegistrosFrequenciaPage() {
                         </p>
                       )}
 
-                      {registro.estrategia_metodologica && (
-                        <p className={styles.registroAssunto} title={registro.estrategia_metodologica}>
-                          <strong>Estratégia:</strong> {registro.estrategia_metodologica}
+                      {registro.estrategia_abordada && (
+                        <p className={styles.registroAssunto} title={registro.estrategia_abordada}>
+                          <strong>Estratégia:</strong> {registro.estrategia_abordada}
                         </p>
                       )}
 

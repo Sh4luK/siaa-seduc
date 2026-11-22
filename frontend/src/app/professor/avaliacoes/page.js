@@ -212,7 +212,7 @@ export default function AvaliacoesPage() {
                       <div className={styles.cardHeader}>
                         <h3 className={styles.cardTitulo}>{a.titulo}</h3>
                         <span className={styles.cardData}>
-                          {new Date(a.data).toLocaleDateString("pt-BR")}
+                          {String(a.data).slice(0, 10).split("-").reverse().join("/")}
                         </span>
                       </div>
                       <p className={styles.cardLinha}>

@@ -159,18 +159,18 @@ export default function BoletimAlunoPage() {
                     <thead>
                       <tr>
                         <th className={styles.stickyCol} rowSpan={2}>Disciplina</th>
-                        <th colSpan={4}>1º Trimestre</th>
-                        <th colSpan={4}>2º Trimestre</th>
-                        <th colSpan={4}>3º Trimestre</th>
+                        <th colSpan={6}>1º Trimestre</th>
+                        <th colSpan={6}>2º Trimestre</th>
+                        <th colSpan={6}>3º Trimestre</th>
                         <th rowSpan={2}>MA</th>
                         <th rowSpan={2}>PF</th>
                         <th rowSpan={2}>MAF</th>
                         <th rowSpan={2}>RF</th>
                       </tr>
                       <tr>
-                        <th>NM1</th><th>NM2</th><th>NM3</th><th>MT</th>
-                        <th>NM1</th><th>NM2</th><th>NM3</th><th>MT</th>
-                        <th>NM1</th><th>NM2</th><th>NM3</th><th>MT</th>
+                        <th>NM1</th><th>NM2</th><th>NM3</th><th>MT</th><th>RPT</th><th>MTF</th>
+                        <th>NM1</th><th>NM2</th><th>NM3</th><th>MT</th><th>RPT</th><th>MTF</th>
+                        <th>NM1</th><th>NM2</th><th>NM3</th><th>MT</th><th>RPT</th><th>MTF</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -181,14 +181,20 @@ export default function BoletimAlunoPage() {
                           <td className={corDaNota(n.nm2_t1)}>{n.nm2_t1 ?? "—"}</td>
                           <td className={corDaNota(n.nm3_t1)}>{n.nm3_t1 ?? "—"}</td>
                           <td className={corDaNota(n.mt_t1)}>{n.mt_t1 ?? "—"}</td>
+                          <td className={corDaNota(n.rpt_t1)}>{n.rpt_t1 ?? "—"}</td>
+                          <td className={corDaNota(n.mtf_t1)}>{n.mtf_t1 ?? "—"}</td>
                           <td className={corDaNota(n.nm1_t2)}>{n.nm1_t2 ?? "—"}</td>
                           <td className={corDaNota(n.nm2_t2)}>{n.nm2_t2 ?? "—"}</td>
                           <td className={corDaNota(n.nm3_t2)}>{n.nm3_t2 ?? "—"}</td>
                           <td className={corDaNota(n.mt_t2)}>{n.mt_t2 ?? "—"}</td>
+                          <td className={corDaNota(n.rpt_t2)}>{n.rpt_t2 ?? "—"}</td>
+                          <td className={corDaNota(n.mtf_t2)}>{n.mtf_t2 ?? "—"}</td>
                           <td className={corDaNota(n.nm1_t3)}>{n.nm1_t3 ?? "—"}</td>
                           <td className={corDaNota(n.nm2_t3)}>{n.nm2_t3 ?? "—"}</td>
                           <td className={corDaNota(n.nm3_t3)}>{n.nm3_t3 ?? "—"}</td>
                           <td className={corDaNota(n.mt_t3)}>{n.mt_t3 ?? "—"}</td>
+                          <td className={corDaNota(n.rpt_t3)}>{n.rpt_t3 ?? "—"}</td>
+                          <td className={corDaNota(n.mtf_t3)}>{n.mtf_t3 ?? "—"}</td>
                           <td>
                             <span className={`${styles.calculadoBadge} ${corDaNota(n.ma)}`}>{n.ma ?? "—"}</span>
                           </td>

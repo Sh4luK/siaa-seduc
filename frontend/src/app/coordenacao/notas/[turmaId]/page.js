@@ -8,9 +8,9 @@ import styles from "./page.module.css";
 const API_BASE = "/backend-api";
 
 const CAMPOS = [
-  "nm1_t1", "nm2_t1", "nm3_t1", "rpt_t1",
-  "nm1_t2", "nm2_t2", "nm3_t2", "rpt_t2",
-  "nm1_t3", "nm2_t3", "nm3_t3", "rpt_t3",
+  "nm1_t1", "nm2_t1", "nm3_t1", "mt_t1", "rpt_t1", "mtf_t1",
+  "nm1_t2", "nm2_t2", "nm3_t2", "mt_t2", "rpt_t2", "mtf_t2",
+  "nm1_t3", "nm2_t3", "nm3_t3", "mt_t3", "rpt_t3", "mtf_t3",
 ];
 
 function corDaNota(valor) {
@@ -116,9 +116,9 @@ export default function NotasTurmaCoordenacaoPage() {
                     <tr>
                       <th className={styles.stickyColNum} rowSpan={2}>Nº</th>
                       <th className={styles.stickyCol} rowSpan={2}>Aluno</th>
-                      <th colSpan={4}>1º Trimestre</th>
-                      <th colSpan={4}>2º Trimestre</th>
-                      <th colSpan={4}>3º Trimestre</th>
+                      <th colSpan={6}>1º Trimestre</th>
+                      <th colSpan={6}>2º Trimestre</th>
+                      <th colSpan={6}>3º Trimestre</th>
                       <th rowSpan={2}>MA</th>
                       <th rowSpan={2}>PF</th>
                       <th rowSpan={2}>MAF</th>
@@ -127,9 +127,9 @@ export default function NotasTurmaCoordenacaoPage() {
                       <th rowSpan={2}>RF</th>
                     </tr>
                     <tr>
-                      <th>NM1</th><th>NM2</th><th>NM3</th><th>RPT</th>
-                      <th>NM1</th><th>NM2</th><th>NM3</th><th>RPT</th>
-                      <th>NM1</th><th>NM2</th><th>NM3</th><th>RPT</th>
+                      <th>NM1</th><th>NM2</th><th>NM3</th><th>MT</th><th>RPT</th><th>MTF</th>
+                      <th>NM1</th><th>NM2</th><th>NM3</th><th>MT</th><th>RPT</th><th>MTF</th>
+                      <th>NM1</th><th>NM2</th><th>NM3</th><th>MT</th><th>RPT</th><th>MTF</th>
                     </tr>
                   </thead>
                   <tbody>

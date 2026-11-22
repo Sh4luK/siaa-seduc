@@ -91,7 +91,7 @@ export default function AvaliacaoDetalheCoordenacaoPage() {
             <h1 className={styles.title}>{avaliacao.titulo}</h1>
             <p className={styles.subtitle}>
               {avaliacao.disciplina} — Turma {avaliacao.turma} · Prof(a). {avaliacao.professor} ·{" "}
-              {new Date(avaliacao.data).toLocaleDateString("pt-BR")}
+              {String(avaliacao.data).slice(0, 10).split("-").reverse().join("/")}
             </p>
           </div>
           <button

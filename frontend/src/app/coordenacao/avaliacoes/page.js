@@ -14,6 +14,7 @@ export default function AvaliacoesCoordenacaoPage() {
   const [loading, setLoading] = useState(true);
   const [avaliacoes, setAvaliacoes] = useState([]);
   const [filtroTurma, setFiltroTurma] = useState("");
+  const [turmasDisponiveis, setTurmasDisponiveis] = useState([]);
   const [erros, setErros] = useState([]);
 
   useEffect(() => {
@@ -47,15 +48,25 @@ export default function AvaliacoesCoordenacaoPage() {
       if (!res.ok) throw new Error(`Falha ao buscar avaliações (status ${res.status})`);
 
       const data = await res.json();
-      setAvaliacoes(data.avaliacoes || []);
+      const lista = data.avaliacoes || [];
+      setAvaliacoes(lista);
+
+      // Sem filtro a lista traz todas as avaliações: as turmas delas viram as
+      // opções da caixa de seleção (só turmas que têm alguma avaliação).
+      if (!turma) {
+        const turmas = [...new Set(lista.map((a) => a.turma).filter(Boolean))];
+        turmas.sort((a, b) => a.localeCompare(b, "pt-BR"));
+        setTurmasDisponiveis(turmas);
+      }
     } catch (error) {
       setErros([`Erro ao carregar avaliações: ${error.message}`]);
     }
   }
 
-  function handleFiltrar(e) {
-    e.preventDefault();
-    carregarAvaliacoes(filtroTurma.trim());
+  function handleSelecionarTurma(e) {
+    const turma = e.target.value;
+    setFiltroTurma(turma);
+    carregarAvaliacoes(turma);
   }
 
   if (loading) {
@@ -98,17 +109,20 @@ export default function AvaliacoesCoordenacaoPage() {
           </ul>
         )}
 
-        <form className={styles.filtroForm} onSubmit={handleFiltrar}>
-          <input
-            type="text"
+        <div className={styles.filtroForm}>
+          <select
             className={styles.input}
-            placeholder="Filtrar por turma"
+            aria-label="Filtrar por turma"
             value={filtroTurma}
-            onChange={(e) => setFiltroTurma(e.target.value)}
-          />
-          <button type="submit" className={styles.filtrarBotao}>
-            Filtrar
-          </button>
+            onChange={handleSelecionarTurma}
+          >
+            <option value="">Todas as turmas</option>
+            {turmasDisponiveis.map((turma) => (
+              <option key={turma} value={turma}>
+                {turma}
+              </option>
+            ))}
+          </select>
           {filtroTurma && (
             <button
               type="button"
@@ -121,7 +135,7 @@ export default function AvaliacoesCoordenacaoPage() {
               Limpar
             </button>
           )}
-        </form>
+        </div>
 
         {avaliacoes.length === 0 ? (
           <p className={styles.vazio}>Nenhuma avaliação encontrada.</p>
@@ -135,7 +149,7 @@ export default function AvaliacoesCoordenacaoPage() {
                 <div className={styles.cardHeader}>
                   <h3 className={styles.cardTitulo}>{a.titulo}</h3>
                   <span className={styles.cardData}>
-                    {new Date(a.data).toLocaleDateString("pt-BR")}
+                    {String(a.data).slice(0, 10).split("-").reverse().join("/")}
                   </span>
                 </div>
                 <p className={styles.cardLinha}>

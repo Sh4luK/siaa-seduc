@@ -1,6 +1,7 @@
 import re
 import hmac
 from functools import wraps
+from zoneinfo import ZoneInfo
 from urllib.parse import urlparse
 from urllib.parse import unquote
 from urllib.parse import urlencode
@@ -626,6 +627,34 @@ def resolver_disciplina_da_turma(turma_obj):
     return None
 
 
+def _disciplinas_do_boletim(aluno, vinculos, ano_letivo):
+    """Disciplinas que entram no boletim do aluno, montadas a partir dos
+    vínculos (AtravessaPor) da turma dele — e não da grade de horários, que
+    pode ainda não ter sido cadastrada. Se a mesma disciplina tiver mais de um
+    vínculo, usa o que já tem nota lançada para o aluno."""
+    disciplinas_map = {}
+    for vinculo in vinculos.select_related("professor"):
+        disciplina = resolver_disciplina_da_turma(vinculo)
+        if not disciplina:
+            continue
+
+        info = {"disciplina": disciplina, "turma_obj": vinculo, "professor": vinculo.professor}
+        atual = disciplinas_map.get(disciplina.id)
+        if atual is None:
+            disciplinas_map[disciplina.id] = info
+            continue
+
+        atual_tem_nota = Nota.objects.filter(
+            aluno=aluno, disciplina=disciplina, turma=atual["turma_obj"], ano_letivo=ano_letivo
+        ).exists()
+        if not atual_tem_nota and Nota.objects.filter(
+            aluno=aluno, disciplina=disciplina, turma=vinculo, ano_letivo=ano_letivo
+        ).exists():
+            disciplinas_map[disciplina.id] = info
+
+    return disciplinas_map
+
+
 @csrf_exempt
 @_exigir_sessao("PROFESSOR")
 def get_notas_aluno(request):
@@ -1068,6 +1097,42 @@ def get_disciplinas_da_turma(request):
 
 
 
+FUSO_ESCOLA = ZoneInfo("America/Fortaleza")
+
+
+def _hoje_escola():
+    """Data de hoje no fuso da escola (Piauí), não no UTC do servidor."""
+    return timezone.now().astimezone(FUSO_ESCOLA).date()
+
+
+def _situacao_edicao_frequencia(aula, data_aula):
+    """Diz se o professor pode lançar/alterar a frequência dessa aula.
+    Regra: só no próprio dia da aula; depois disso, apenas se a coordenação
+    reabrir a edição (liberada_ate). Aula confirmada pela coordenação fica
+    travada até ser reaberta. Retorna (pode_editar, motivo)."""
+    hoje = _hoje_escola()
+
+    if aula is not None and aula.liberada_ate and aula.liberada_ate >= hoje:
+        return True, ""
+    if data_aula > hoje:
+        return False, "Não é possível lançar frequência de uma data futura."
+    if aula is not None and aula.confirmada:
+        return False, "Esta aula já foi confirmada pela coordenação. Peça à coordenação para reabrir a edição."
+    if data_aula < hoje:
+        return False, "O prazo para lançar ou alterar esta frequência terminou (só no dia da aula). Peça à coordenação para reabrir a edição."
+    return True, ""
+
+
+def _dados_controle_aula(aula, data_aula):
+    pode_editar, motivo = _situacao_edicao_frequencia(aula, data_aula)
+    return {
+        "pode_editar": pode_editar,
+        "motivo_bloqueio": motivo,
+        "confirmada": bool(aula and aula.confirmada),
+        "liberada_ate": aula.liberada_ate.isoformat() if aula and aula.liberada_ate else None,
+    }
+
+
 @csrf_exempt
 @_exigir_sessao("PROFESSOR")
 def get_frequencia_turma(request):
@@ -1128,6 +1193,8 @@ def get_frequencia_turma(request):
         "conteudo_abordado": aula.assunto if aula else "",
         "estrategia_abordada": aula.estrategia_abordada if aula else "",
         "assunto": aula.assunto if aula else "",
+        "registrada": aula is not None,
+        **_dados_controle_aula(aula, data_selecionada),
         "total_alunos": len(resultado),
         "alunos": resultado
     })
@@ -1178,6 +1245,14 @@ def salvar_frequencia_turma(request):
             {"message": "Não foi possível resolver a disciplina associada a esta turma."},
             status=404
         )
+
+    aula_existente = Aula.objects.filter(
+        turma=turma, disciplina=disciplina, professor=professor, data=data_selecionada
+    ).first()
+    pode_editar, motivo = _situacao_edicao_frequencia(aula_existente, data_selecionada)
+    if not pode_editar:
+        return JsonResponse({"message": motivo}, status=403)
+
     Aula.objects.update_or_create(
         turma=turma, disciplina=disciplina, professor=professor, data=data_selecionada,
         defaults={
@@ -1257,6 +1332,7 @@ def get_registros_frequencia(request):
             "total_alunos": total_alunos,
             "total_presentes": total_presentes,
             "total_faltas": total_alunos - total_presentes,
+            **_dados_controle_aula(aula, aula.data),
         })
 
     return JsonResponse({
@@ -1264,6 +1340,161 @@ def get_registros_frequencia(request):
         "registros": resultado
     })
 
+
+# ---------------------------------------------------------------------------
+# Frequências na coordenação: listar, ver alunos, confirmar aula e reabrir
+# a edição para o professor depois do prazo.
+# ---------------------------------------------------------------------------
+
+def _aula_coordenacao_dict(aula):
+    registros = Frequencia.objects.filter(
+        turma=aula.turma, disciplina=aula.disciplina, professor=aula.professor, data=aula.data
+    )
+    total_alunos = registros.count()
+    total_presentes = registros.filter(presente=True).count()
+    return {
+        "id": aula.id,
+        "data": aula.data.isoformat(),
+        "turma_id": aula.turma_id,
+        "nome_turma": aula.turma.turma,
+        "disciplina": aula.disciplina.nome_disciplina,
+        "professor_id": aula.professor_id,
+        "professor": aula.professor.nome_completo,
+        "conteudo_abordado": aula.assunto,
+        "estrategia_abordada": aula.estrategia_abordada,
+        "total_alunos": total_alunos,
+        "total_presentes": total_presentes,
+        "total_faltas": total_alunos - total_presentes,
+        "confirmada": aula.confirmada,
+        "confirmada_em": aula.confirmada_em.isoformat() if aula.confirmada_em else None,
+        "confirmada_por": aula.confirmada_por.nome_completo if aula.confirmada_por else None,
+        "liberada_ate": aula.liberada_ate.isoformat() if aula.liberada_ate else None,
+        "edicao_professor_aberta": _situacao_edicao_frequencia(aula, aula.data)[0],
+    }
+
+
+def _aulas_da_coordenacao(coordenador):
+    return Aula.objects.filter(
+        turma__in=_vinculos_da_escola_do_coordenador(coordenador)
+    ).select_related("turma", "disciplina", "professor", "confirmada_por")
+
+
+@csrf_exempt
+@require_http_methods(["GET"])
+@_exigir_sessao("COORDENADOR")
+def frequencias_coordenacao(request):
+    """Aulas com frequência lançada. Filtros opcionais: turma (nome),
+    professor (id), situacao (pendentes|confirmadas), data_inicio, data_fim."""
+    aulas = _aulas_da_coordenacao(request.usuario_sessao)
+
+    turma = (request.GET.get("turma") or "").strip()
+    if turma:
+        aulas = aulas.filter(turma__turma=turma)
+
+    professor_id = (request.GET.get("professor") or "").strip()
+    if professor_id:
+        aulas = aulas.filter(professor_id=professor_id)
+
+    situacao = (request.GET.get("situacao") or "").strip()
+    if situacao == "pendentes":
+        aulas = aulas.filter(confirmada=False)
+    elif situacao == "confirmadas":
+        aulas = aulas.filter(confirmada=True)
+
+    try:
+        if request.GET.get("data_inicio"):
+            aulas = aulas.filter(data__gte=date.fromisoformat(request.GET["data_inicio"]))
+        if request.GET.get("data_fim"):
+            aulas = aulas.filter(data__lte=date.fromisoformat(request.GET["data_fim"]))
+    except ValueError:
+        return JsonResponse({"detail": "Data inválida. Use AAAA-MM-DD."}, status=400)
+
+    aulas = aulas.order_by("-data", "turma__turma", "disciplina__nome_disciplina")[:300]
+    resultado = [_aula_coordenacao_dict(aula) for aula in aulas]
+
+    return JsonResponse({"total": len(resultado), "aulas": resultado})
+
+
+@csrf_exempt
+@require_http_methods(["GET"])
+@_exigir_sessao("COORDENADOR")
+def frequencia_detalhe_coordenacao(request, aula_id):
+    aula = _aulas_da_coordenacao(request.usuario_sessao).filter(id=aula_id).first()
+    if not aula:
+        return JsonResponse({"detail": "Aula não encontrada."}, status=404)
+
+    presencas = {
+        f.aluno_id: f.presente
+        for f in Frequencia.objects.filter(
+            turma=aula.turma, disciplina=aula.disciplina, professor=aula.professor, data=aula.data
+        )
+    }
+    alunos = [
+        {
+            "aluno_id": aluno.id,
+            "posicao_ordem": aluno.posicao_ordem,
+            "nome_completo": aluno.nome_completo,
+            "presente": presencas.get(aluno.id),
+        }
+        for aluno in buscar_alunos_por_turma(aula.turma.turma)
+    ]
+
+    return JsonResponse({"aula": _aula_coordenacao_dict(aula), "alunos": alunos})
+
+
+def _ler_json(request):
+    try:
+        corpo = json.loads(request.body or "{}")
+    except (json.JSONDecodeError, UnicodeDecodeError):
+        return None
+    return corpo if isinstance(corpo, dict) else None
+
+
+@csrf_exempt
+@require_http_methods(["POST"])
+@_exigir_sessao("COORDENADOR")
+def frequencia_confirmar_coordenacao(request, aula_id):
+    """Body: {"confirmada": true|false}. Confirma (ou desfaz a confirmação)
+    de que a aula foi dada."""
+    aula = _aulas_da_coordenacao(request.usuario_sessao).filter(id=aula_id).first()
+    if not aula:
+        return JsonResponse({"detail": "Aula não encontrada."}, status=404)
+
+    corpo = _ler_json(request)
+    if corpo is None:
+        return JsonResponse({"detail": "JSON inválido."}, status=400)
+
+    if corpo.get("confirmada", True):
+        aula.confirmada = True
+        aula.confirmada_em = timezone.now()
+        aula.confirmada_por = request.usuario_sessao
+    else:
+        aula.confirmada = False
+        aula.confirmada_em = None
+        aula.confirmada_por = None
+    aula.save(update_fields=["confirmada", "confirmada_em", "confirmada_por", "atualizado_em"])
+
+    return JsonResponse({"aula": _aula_coordenacao_dict(aula)})
+
+
+@csrf_exempt
+@require_http_methods(["POST"])
+@_exigir_sessao("COORDENADOR")
+def frequencia_reabrir_coordenacao(request, aula_id):
+    """Body: {"reabrir": true|false}. Reabre a edição da frequência para o
+    professor até o fim do dia de hoje, ou fecha uma reabertura."""
+    aula = _aulas_da_coordenacao(request.usuario_sessao).filter(id=aula_id).first()
+    if not aula:
+        return JsonResponse({"detail": "Aula não encontrada."}, status=404)
+
+    corpo = _ler_json(request)
+    if corpo is None:
+        return JsonResponse({"detail": "JSON inválido."}, status=400)
+
+    aula.liberada_ate = _hoje_escola() if corpo.get("reabrir", True) else None
+    aula.save(update_fields=["liberada_ate", "atualizado_em"])
+
+    return JsonResponse({"aula": _aula_coordenacao_dict(aula)})
 
 
 @csrf_exempt
@@ -5107,34 +5338,71 @@ def avaliacoes_list_create(request):
     if request.method == "POST":
         try:
             body = json.loads(request.body)
-            disciplina_nome = body["disciplina"]
-            disciplina = Disciplina.objects.filter(nome_disciplina=disciplina_nome).first()
-            if not disciplina:
-                return JsonResponse({"message": f"Disciplina '{disciplina_nome}' não encontrada"}, status=400)
-            avaliacao = Avaliacao.objects.create(
-                professor=professor,
-                turma=body["turma"],
-                disciplina=disciplina,
-                titulo=body["titulo"],
-                descricao=body.get("descricao", ""),
-                data=body["data"],
-                ano_letivo=body["ano_letivo"],
-                texto_introdutorio=body.get("texto_introdutorio", ""),
-            )
-            questoes_criadas = []
-            for i, q in enumerate(body.get("questoes", [])):
-                questao = Questao.objects.create(
-                    avaliacao=avaliacao,
-                    ordem=i,
-                    enunciado=q["enunciado"],
-                    tipo=q["tipo"],
-                    linhas_resposta=q.get("linhas_resposta") or 2,
-                    topico=q.get("topico") or "",
-                )
-                questoes_criadas.append({"id": questao.id})
-                _sincronizar_alternativas_questao(questao, q.get("alternativas", []))
-                _sincronizar_subquestoes(questao, q.get("subquestoes"), i)
-            return JsonResponse({"id": avaliacao.id, "questoes": questoes_criadas}, status=201)
+
+            # Destinos: "vinculos" (ids de AtravessaPor do professor) cria uma
+            # avaliação por turma/disciplina, todas com as mesmas questões.
+            # Sem "vinculos", mantém o formato antigo (turma + disciplina).
+            destinos = []
+            vinculo_ids = body.get("vinculos")
+            if vinculo_ids:
+                vinculos = {
+                    v.id: v for v in AtravessaPor.objects.filter(professor=professor, id__in=vinculo_ids)
+                }
+                for vinculo_id in vinculo_ids:
+                    vinculo = vinculos.get(int(vinculo_id))
+                    if not vinculo:
+                        return JsonResponse({"message": "Turma/disciplina inválida para este professor."}, status=400)
+                    disciplina = resolver_disciplina_da_turma(vinculo)
+                    if not disciplina:
+                        return JsonResponse(
+                            {"message": f"Disciplina '{vinculo.disciplina_lecionada}' não encontrada"}, status=400
+                        )
+                    destinos.append((vinculo.turma, disciplina))
+            else:
+                disciplina_nome = body["disciplina"]
+                disciplina = Disciplina.objects.filter(nome_disciplina=disciplina_nome).first()
+                if not disciplina:
+                    return JsonResponse({"message": f"Disciplina '{disciplina_nome}' não encontrada"}, status=400)
+                destinos.append((body["turma"], disciplina))
+
+            criadas = []
+            with transaction.atomic():
+                for turma_nome, disciplina in destinos:
+                    avaliacao = Avaliacao.objects.create(
+                        professor=professor,
+                        turma=turma_nome,
+                        disciplina=disciplina,
+                        titulo=body["titulo"],
+                        descricao=body.get("descricao", ""),
+                        data=body["data"],
+                        ano_letivo=body["ano_letivo"],
+                        texto_introdutorio=body.get("texto_introdutorio", ""),
+                    )
+                    questoes_criadas = []
+                    for i, q in enumerate(body.get("questoes", [])):
+                        questao = Questao.objects.create(
+                            avaliacao=avaliacao,
+                            ordem=i,
+                            enunciado=q["enunciado"],
+                            tipo=q["tipo"],
+                            linhas_resposta=q.get("linhas_resposta") or 2,
+                            topico=q.get("topico") or "",
+                        )
+                        questoes_criadas.append({"id": questao.id})
+                        _sincronizar_alternativas_questao(questao, q.get("alternativas", []))
+                        _sincronizar_subquestoes(questao, q.get("subquestoes"), i)
+                    criadas.append({
+                        "id": avaliacao.id,
+                        "turma": turma_nome,
+                        "disciplina": disciplina.nome_disciplina,
+                        "questoes": questoes_criadas,
+                    })
+
+            return JsonResponse({
+                "id": criadas[0]["id"],
+                "questoes": criadas[0]["questoes"],
+                "avaliacoes": criadas,
+            }, status=201)
         except Exception as e:
             return JsonResponse({"message": str(e)}, status=400)
 
@@ -5521,6 +5789,11 @@ def opcoes_avaliacao(request):
         "professor": {"nome_completo": professor.nome_completo},
         "turmas": turmas,
         "disciplinas_por_turma": disciplinas_por_turma,
+        # Mesmo formato usado na criação de atividades (SeletorTurmas).
+        "vinculos": [
+            {"id": v.id, "turma": v.turma, "disciplina_lecionada": v.disciplina_lecionada}
+            for v in AtravessaPor.objects.filter(professor=professor).order_by("turma", "disciplina_lecionada")
+        ],
     })
 
 
@@ -6119,11 +6392,9 @@ def opcoes_notas_coordenacao(request):
     if not coordenador:
         return JsonResponse({"detail": "Não autenticado."}, status=401)
 
-    nome_escola = _nome_escola(coordenador.escola)
-
-    vinculos = AtravessaPor.objects.filter(
-        escola__iexact=nome_escola
-    ).select_related("professor").order_by("turma", "disciplina_lecionada")
+    vinculos = _vinculos_da_escola_do_coordenador(coordenador).select_related(
+        "professor"
+    ).order_by("turma", "disciplina_lecionada")
 
     return JsonResponse({
         "vinculos": [
@@ -6138,6 +6409,37 @@ def opcoes_notas_coordenacao(request):
     })
 
 
+def _mesma_escola(escola_a, escola_b):
+    """Compara nomes de escola ignorando espaços, acentos e maiúsculas, e
+    aceitando um contido no outro (ex.: 'CETI CALISTO LOBO' e
+    'CETI CALISTO LOBO - TERESINA')."""
+    a = _normalizar_texto(_nome_escola(escola_a))
+    b = _normalizar_texto(_nome_escola(escola_b))
+    if not a or not b:
+        return False
+    return a == b or a in b or b in a
+
+
+def _vinculos_da_escola_do_coordenador(coordenador):
+    """Vínculos (AtravessaPor) da escola do coordenador. Sem escola cadastrada
+    no coordenador, vale para todos — como nas demais telas da coordenação."""
+    todos = AtravessaPor.objects.all()
+    if not (coordenador.escola or "").strip():
+        return todos
+
+    escolas = todos.values_list("escola", flat=True).distinct()
+    da_escola = [e for e in escolas if _mesma_escola(coordenador.escola, e)]
+    return todos.filter(escola__in=da_escola)
+
+
+CAMPOS_NOTA_EXIBICAO = [
+    "nm1_t1", "nm2_t1", "nm3_t1", "mt_t1", "rpt_t1", "mtf_t1",
+    "nm1_t2", "nm2_t2", "nm3_t2", "mt_t2", "rpt_t2", "mtf_t2",
+    "nm1_t3", "nm2_t3", "nm3_t3", "mt_t3", "rpt_t3", "mtf_t3",
+    "ma", "pf", "maf", "rcf", "tgf", "rf",
+]
+
+
 @csrf_exempt
 @require_http_methods(["GET"])
 def notas_turma_coordenacao(request, vinculo_id):
@@ -6145,8 +6447,8 @@ def notas_turma_coordenacao(request, vinculo_id):
     if not coordenador:
         return JsonResponse({"detail": "Não autenticado."}, status=401)
 
-    vinculo = AtravessaPor.objects.filter(
-        id=vinculo_id, escola__iexact=_nome_escola(coordenador.escola)
+    vinculo = _vinculos_da_escola_do_coordenador(coordenador).filter(
+        id=vinculo_id
     ).select_related("professor").first()
     if not vinculo:
         return JsonResponse({"detail": "Vínculo não encontrado."}, status=404)
@@ -6164,19 +6466,9 @@ def notas_turma_coordenacao(request, vinculo_id):
             "nome_completo": aluno.nome_completo,
             "posicao_ordem": aluno.posicao_ordem,
             "notas": {
-                "nm1_t1": nota.nm1_t1 if nota else None, "nm2_t1": nota.nm2_t1 if nota else None,
-                "nm3_t1": nota.nm3_t1 if nota else None, "rpt_t1": nota.rpt_t1 if nota else None,
-                "nm1_t2": nota.nm1_t2 if nota else None, "nm2_t2": nota.nm2_t2 if nota else None,
-                "nm3_t2": nota.nm3_t2 if nota else None, "rpt_t2": nota.rpt_t2 if nota else None,
-                "nm1_t3": nota.nm1_t3 if nota else None, "nm2_t3": nota.nm2_t3 if nota else None,
-                "nm3_t3": nota.nm3_t3 if nota else None, "rpt_t3": nota.rpt_t3 if nota else None,
-                "ma": nota.ma if nota else None, "pf": nota.pf if nota else None,
-                "maf": nota.maf if nota else None, "rcf": nota.rcf if nota else None,
-                "tgf": nota.tgf if nota else 0, "rf": nota.rf if nota else "ND",
-            } if nota else {c: None for c in [
-                "nm1_t1","nm2_t1","nm3_t1","rpt_t1","nm1_t2","nm2_t2","nm3_t2","rpt_t2",
-                "nm1_t3","nm2_t3","nm3_t3","rpt_t3","ma","pf","maf","rcf","tgf","rf"
-            ]},
+                campo: getattr(nota, campo) if nota else None
+                for campo in CAMPOS_NOTA_EXIBICAO
+            },
         })
 
     return JsonResponse({
@@ -6574,20 +6866,7 @@ def boletim_aluno(request):
     ano_letivo = request.GET.get("ano_letivo", "2026")
 
     vinculos = buscar_atravessapor_por_turma(aluno.turma)
-    horarios = HorarioAula.objects.filter(turma__in=vinculos).select_related(
-        "turma", "turma__professor"
-    )
-
-    disciplinas_map = {}
-    for h in horarios:
-        disciplina = resolver_disciplina_da_turma(h.turma)
-        if not disciplina or disciplina.id in disciplinas_map:
-            continue
-        disciplinas_map[disciplina.id] = {
-            "disciplina": disciplina,
-            "turma_obj": h.turma,
-            "professor": h.turma.professor,
-        }
+    disciplinas_map = _disciplinas_do_boletim(aluno, vinculos, ano_letivo)
 
     boletim = []
     for info in sorted(disciplinas_map.values(), key=lambda x: x["disciplina"].nome_disciplina):
@@ -6606,12 +6885,15 @@ def boletim_aluno(request):
             "nm1_t1": nota.nm1_t1 if nota else None, "nm2_t1": nota.nm2_t1 if nota else None,
             "nm3_t1": nota.nm3_t1 if nota else None, "rpt_t1": nota.rpt_t1 if nota else None,
             "mt_t1": nota.mt_t1 if nota else None,
+            "mtf_t1": nota.mtf_t1 if nota else None,
             "nm1_t2": nota.nm1_t2 if nota else None, "nm2_t2": nota.nm2_t2 if nota else None,
             "nm3_t2": nota.nm3_t2 if nota else None, "rpt_t2": nota.rpt_t2 if nota else None,
             "mt_t2": nota.mt_t2 if nota else None,
+            "mtf_t2": nota.mtf_t2 if nota else None,
             "nm1_t3": nota.nm1_t3 if nota else None, "nm2_t3": nota.nm2_t3 if nota else None,
             "nm3_t3": nota.nm3_t3 if nota else None, "rpt_t3": nota.rpt_t3 if nota else None,
             "mt_t3": nota.mt_t3 if nota else None,
+            "mtf_t3": nota.mtf_t3 if nota else None,
             "ma": nota.ma if nota else None, "pf": nota.pf if nota else None,
             "maf": nota.maf if nota else None, "rcf": nota.rcf if nota else None,
             "tgf": nota.tgf if nota else 0,
@@ -7197,20 +7479,7 @@ def boletim_aluno_responsavel(request, aluno_id):
     ano_letivo = request.GET.get("ano_letivo", "2026")
 
     vinculos = buscar_atravessapor_por_turma(aluno.turma)
-    horarios = HorarioAula.objects.filter(turma__in=vinculos).select_related(
-        "turma", "turma__professor"
-    )
-
-    disciplinas_map = {}
-    for h in horarios:
-        disciplina = resolver_disciplina_da_turma(h.turma)
-        if not disciplina or disciplina.id in disciplinas_map:
-            continue
-        disciplinas_map[disciplina.id] = {
-            "disciplina": disciplina,
-            "turma_obj": h.turma,
-            "professor": h.turma.professor,
-        }
+    disciplinas_map = _disciplinas_do_boletim(aluno, vinculos, ano_letivo)
 
     boletim = []
     for info in sorted(disciplinas_map.values(), key=lambda x: x["disciplina"].nome_disciplina):
@@ -7227,10 +7496,13 @@ def boletim_aluno_responsavel(request, aluno_id):
             "disciplina": disciplina.nome_disciplina,
             "nm1_t1": nota.nm1_t1 if nota else None, "nm2_t1": nota.nm2_t1 if nota else None,
             "nm3_t1": nota.nm3_t1 if nota else None, "mt_t1": nota.mt_t1 if nota else None,
+            "rpt_t1": nota.rpt_t1 if nota else None, "mtf_t1": nota.mtf_t1 if nota else None,
             "nm1_t2": nota.nm1_t2 if nota else None, "nm2_t2": nota.nm2_t2 if nota else None,
             "nm3_t2": nota.nm3_t2 if nota else None, "mt_t2": nota.mt_t2 if nota else None,
+            "rpt_t2": nota.rpt_t2 if nota else None, "mtf_t2": nota.mtf_t2 if nota else None,
             "nm1_t3": nota.nm1_t3 if nota else None, "nm2_t3": nota.nm2_t3 if nota else None,
             "nm3_t3": nota.nm3_t3 if nota else None, "mt_t3": nota.mt_t3 if nota else None,
+            "rpt_t3": nota.rpt_t3 if nota else None, "mtf_t3": nota.mtf_t3 if nota else None,
             "ma": nota.ma if nota else None,
             "pf": nota.pf if nota else None,
             "maf": nota.maf if nota else None,
@@ -7986,20 +8258,7 @@ def boletim_aluno_pdf(request):
     ano_letivo = request.GET.get("ano_letivo", "2026")
 
     vinculos = buscar_atravessapor_por_turma(aluno.turma)
-    horarios = HorarioAula.objects.filter(turma__in=vinculos).select_related(
-        "turma", "turma__professor"
-    )
-
-    disciplinas_map = {}
-    for h in horarios:
-        disciplina = resolver_disciplina_da_turma(h.turma)
-        if not disciplina or disciplina.id in disciplinas_map:
-            continue
-        disciplinas_map[disciplina.id] = {
-            "disciplina": disciplina,
-            "turma_obj": h.turma,
-            "professor": h.turma.professor,
-        }
+    disciplinas_map = _disciplinas_do_boletim(aluno, vinculos, ano_letivo)
 
     linhas = []
     for info in sorted(disciplinas_map.values(), key=lambda x: x["disciplina"].nome_disciplina):
@@ -8059,20 +8318,7 @@ def boletim_aluno_pdf_responsavel(request, aluno_id):
     ano_letivo = request.GET.get("ano_letivo", "2026")
 
     vinculos = buscar_atravessapor_por_turma(aluno.turma)
-    horarios = HorarioAula.objects.filter(turma__in=vinculos).select_related(
-        "turma", "turma__professor"
-    )
-
-    disciplinas_map = {}
-    for h in horarios:
-        disciplina = resolver_disciplina_da_turma(h.turma)
-        if not disciplina or disciplina.id in disciplinas_map:
-            continue
-        disciplinas_map[disciplina.id] = {
-            "disciplina": disciplina,
-            "turma_obj": h.turma,
-            "professor": h.turma.professor,
-        }
+    disciplinas_map = _disciplinas_do_boletim(aluno, vinculos, ano_letivo)
 
     linhas = []
     for info in sorted(disciplinas_map.values(), key=lambda x: x["disciplina"].nome_disciplina):

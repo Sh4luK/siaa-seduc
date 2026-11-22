@@ -41,7 +41,7 @@ function calcularMedias(notas) {
     const rpt = paraNumero(notas[`rpt_t${t}`]);
     const mt = media(nms);
     let mtf = mt;
-    if (rpt !== null && mt !== null && mt < 6 && rpt >= mt) {
+    if (rpt !== null && mt !== null && rpt > mt) {
       mtf = rpt;
     }
     return { mt, mtf };

@@ -8,11 +8,6 @@ import styles from "./notasTurma.module.css";
 
 const API_BASE = "/backend-api";
 
-const CAMPOS = [
-  "nm1_t1", "nm2_t1", "nm3_t1", "rpt_t1",
-  "nm1_t2", "nm2_t2", "nm3_t2", "rpt_t2",
-  "nm1_t3", "nm2_t3", "nm3_t3", "rpt_t3",
-];
 
 function paraNumero(valor) {
   return valor === "" || valor === null || valor === undefined ? null : Number(valor);
@@ -39,9 +34,7 @@ function media(valores) {
 // Mesmo cálculo de Nota.calcular() no backend, para o professor ver as
 // médias atualizarem enquanto digita.
 // MT: média das três notas (NM1 + NM2 + NM3)/3. 
-// MTF: a RPT substitui a MT quando MT < 6 e RPT >= MT.
-// Quando substitui, tanto MT quanto MTF ficam iguais à RPT.
-// Se RPT < MT, não substitui e mantém MT.
+// MTF: a RPT substitui a MT quando é maior que ela (MTF = maior entre MT e RPT).
 // MA: média das MTFs. MAF = (MA × 6 + PF × 4) / 10.
 function calcularMedias(notas) {
   const trimestres = [1, 2, 3].map((t) => {
@@ -49,9 +42,7 @@ function calcularMedias(notas) {
     const rpt = paraNumero(notas[`rpt_t${t}`]);
     const mt = media(nms);
     let mtf = mt;
-    // RPT substitui MT apenas se MT < 6 e RPT >= MT
-    // Quando substitui, tanto MT quanto MTF ficam iguais à RPT
-    if (rpt !== null && mt !== null && mt < 6 && rpt >= mt) {
+    if (rpt !== null && mt !== null && rpt > mt) {
       mtf = rpt;
     }
     return { mt, mtf };
@@ -404,9 +395,10 @@ export default function NotasTurmaPage() {
                             <tr>
                               {[1, 2, 3].map((t) => (
                                 <Fragment key={t}>
-                                  <th>NM1</th><th>NM2</th><th>NM3</th><th>RPT</th>
+                                  <th>NM1</th><th>NM2</th><th>NM3</th>
                                   <th title="Média trimestral">MT</th>
-                                  <th title="Média trimestral final (RPT substitui MT se MT < 6 e RPT >= MT)">MTF</th>
+                                  <th title="Recuperação paralela do trimestre">RPT</th>
+                                  <th title="Média trimestral final (maior valor entre MT e RPT)">MTF</th>
                                 </Fragment>
                               ))}
                             </tr>
@@ -422,9 +414,10 @@ export default function NotasTurmaPage() {
                                 </td>
                                 {[1, 2, 3].map((trimestre) => {
                                   const { mt, mtf } = medias.trimestres[trimestre - 1];
+                                  const campoRpt = `rpt_t${trimestre}`;
                                   return (
                                     <Fragment key={trimestre}>
-                                      {CAMPOS.slice((trimestre - 1) * 4, trimestre * 4).map((campo) => (
+                                      {[1, 2, 3].map((n) => `nm${n}_t${trimestre}`).map((campo) => (
                                         <td key={campo}>
                                           <input
                                             type="text"
@@ -439,6 +432,15 @@ export default function NotasTurmaPage() {
                                         <span className={`${styles.calculadoBadge} ${corDaNota(mt)}`}>
                                           {mt ?? "—"}
                                         </span>
+                                      </td>
+                                      <td>
+                                        <input
+                                          type="text"
+                                          inputMode="decimal"
+                                          className={`${styles.input} ${corDaNota(aluno.notas[campoRpt])}`}
+                                          value={aluno.notas[campoRpt] ?? ""}
+                                          onChange={(e) => handleChange(aluno.aluno_id, campoRpt, e.target.value)}
+                                        />
                                       </td>
                                       <td>
                                         <span className={`${styles.calculadoBadge} ${corDaNota(mtf)}`}>
