@@ -211,31 +211,39 @@
   table.gabarito {
     width: 100%;
     border-collapse: collapse;
-    font-size: 9pt;
+    font-size: 8pt;
   }
   table.gabarito th,
   table.gabarito td {
     border: 1px solid #94a3b8;
-    padding: 6px 8px;
+    padding: 3px 5px;
     text-align: center;
   }
   table.gabarito th {
     background: #e2e8f0;
     font-weight: bold;
+    padding: 4px 5px;
   }
   .gabarito-col-questao {
     text-align: left !important;
     font-weight: bold;
+    width: 34px;
   }
   .gabarito-celula {
     text-align: center;
+    padding: 4px 6px;
   }
   .gabarito-circulo {
     display: inline-block;
-    width: 13px;
-    height: 13px;
-    border: 1.5px solid #000;
+    width: 12px;
+    height: 12px;
+    border: 1.2px solid #000;
     border-radius: 50%;
+  }
+  .gabarito-quebra td {
+    border: none;
+    height: 6px;
+    padding: 0;
   }
   .gabarito-subjetiva {
     font-style: italic;
@@ -339,7 +347,7 @@
     <table class="gabarito">
       <thead>
         <tr>
-          <th class="gabarito-col-questao">Questão</th>
+          <th class="gabarito-col-questao"></th>
           {% for letra in gabarito_letras %}
           <th>{{ letra }}</th>
           {% endfor %}
@@ -347,11 +355,14 @@
       </thead>
       <tbody>
         {% for linha in gabarito_linhas %}
+        {% if forloop.counter == 11 %}
+        <tr class="gabarito-quebra"><td colspan="{{ gabarito_letras|length|add:1 }}"></td></tr>
+        {% endif %}
         <tr>
           <td class="gabarito-col-questao">{{ linha.rotulo }}</td>
           {% if linha.tipo == "OBJETIVA" %}
             {% for letra in gabarito_letras %}
-            <td class="gabarito-celula"><span class="gabarito-circulo"></span></td>
+            <td class="gabarito-celula"><span class="gabarito-circulo">&nbsp;</span></td>
             {% endfor %}
           {% else %}
             <td class="gabarito-subjetiva" colspan="{{ gabarito_letras|length }}">Subjetiva</td>
