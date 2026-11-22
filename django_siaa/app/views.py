@@ -16,6 +16,9 @@ from django.core.files.base import ContentFile
 from django.views.decorators.csrf import csrf_exempt
 from django.forms.models import model_to_dict
 from django.conf import settings
+
+# Campos que nunca devem sair do backend em respostas JSON.
+CAMPOS_SENSIVEIS = ["senha", "ip"]
 import os
 from dotenv import load_dotenv
 from pathlib import Path
@@ -346,7 +349,7 @@ def auth_student(request):
         })
     try:
         return JsonResponse({
-            "student": model_to_dict(student),
+            "student": model_to_dict(student, exclude=CAMPOS_SENSIVEIS),
             "return": True
         })
     except:
@@ -387,7 +390,7 @@ def auth_teacher(request):
     try:
         return JsonResponse({
             "return": True,
-            "teacher": model_to_dict(teacher)
+            "teacher": model_to_dict(teacher, exclude=CAMPOS_SENSIVEIS)
         })
     except:
         return JsonResponse({
@@ -396,33 +399,38 @@ def auth_teacher(request):
         })
         
 def search_teacher(request):
-    nome_completo = request.GET.get("nome_completo").strip().upper()
+    nome_completo = (request.GET.get("nome_completo") or "").strip().upper()
 
-    try:
-        professor = Professor.objects.filter(nome_completo=nome_completo).first()
-        professor_dict = model_to_dict(professor)
-        if professor is None:
-            return JsonResponse({
-                "return": False
-            })
-        else:
-            return JsonResponse({
-                "return": True,
-                "teacher": professor_dict
-            })
-    except:
-        return JsonResponse({
-            "return": False,
-            "message": "Erro na procura do Professor."
-        })
+    if not nome_completo:
+        return JsonResponse(
+            {"return": False, "detail": "O parâmetro 'nome_completo' é obrigatório."},
+            status=400,
+        )
 
-        
+    professor = Professor.objects.filter(nome_completo=nome_completo).first()
+    if professor is None:
+        return JsonResponse({"return": False})
+
+    return JsonResponse({
+        "return": True,
+        "teacher": model_to_dict(professor, exclude=CAMPOS_SENSIVEIS)
+    })
+
+
 
 @csrf_exempt
 def get_turmas(request):
-    nome_completo = request.GET.get("nome_completo").strip().upper()
-    teacher = model_to_dict(Professor.objects.filter(nome_completo=nome_completo).first())
-    
+    nome_completo = (request.GET.get("nome_completo") or "").strip().upper()
+
+    if not nome_completo:
+        return JsonResponse({"detail": "O parâmetro 'nome_completo' é obrigatório."}, status=400)
+
+    professor = Professor.objects.filter(nome_completo=nome_completo).first()
+    if professor is None:
+        return JsonResponse({"detail": "Professor não encontrado."}, status=404)
+
+    teacher = model_to_dict(professor, exclude=CAMPOS_SENSIVEIS)
+
     turmas = AtravessaPor.objects.filter(professor_id=teacher["id"])
     turmas_dict = [model_to_dict(turma) for turma in turmas]
 
@@ -443,7 +451,7 @@ def get_disciplinas_lecionadas(request):
     if not professor_instance:
         return JsonResponse({"detail": "Professor não encontrado."}, status=404)
 
-    professor = model_to_dict(professor_instance)
+    professor = model_to_dict(professor_instance, exclude=CAMPOS_SENSIVEIS)
 
     disciplinas_lecionadas = Disciplina.objects.filter(professores=professor["id"])
     disciplinas_lecionadas_dict = [
@@ -491,7 +499,7 @@ def get_alunos_por_turma(request):
         turma_normalizada=Replace("turma", Value(" "), Value(""))
     ).filter(turma_normalizada__iexact=turma_normalizada)
 
-    alunos_dict = [model_to_dict(aluno) for aluno in alunos]
+    alunos_dict = [model_to_dict(aluno, exclude=CAMPOS_SENSIVEIS) for aluno in alunos]
 
     return JsonResponse({
         "alunos": alunos_dict,
@@ -2636,7 +2644,7 @@ def auth_coordenacao(request):
     try:
         return JsonResponse({
             "return": True,
-            "coordenador": model_to_dict(coordenador)
+            "coordenador": model_to_dict(coordenador, exclude=CAMPOS_SENSIVEIS)
         })
     except:
         return JsonResponse({
