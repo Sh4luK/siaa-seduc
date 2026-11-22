@@ -340,3 +340,10 @@
   opacity: 0.6;
   cursor: not-allowed;
 }
+
+.correcaoManualTexto {
+  margin: 0;
+  font-size: 0.82rem;
+  color: #5b6b85;
+  line-height: 1.4;
+}
