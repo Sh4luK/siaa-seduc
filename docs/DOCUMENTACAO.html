@@ -1,0 +1,761 @@
+<!DOCTYPE html><html lang='pt-BR'><head><meta charset='UTF-8'><title>SIAA-SEDUC — Documentação</title><style>
+body{font-family:Georgia,serif;max-width:900px;margin:40px auto;padding:0 20px;color:#1a2942;line-height:1.6}
+h1{color:#0b4f9e;border-bottom:3px solid #0b4f9e;padding-bottom:8px}
+h2{color:#0b4f9e;margin-top:2em} h3{color:#334155}
+table{border-collapse:collapse;width:100%;margin:1em 0;font-size:0.9em}
+th,td{border:1px solid #cbd5e1;padding:6px 10px;text-align:left}
+th{background:#e2e8f0} code{background:#f1f5f9;padding:1px 5px;border-radius:4px}
+pre{background:#0f172a;color:#e2e8f0;padding:12px;border-radius:8px;overflow-x:auto}
+pre code{background:none;color:inherit}
+hr{border:none;border-top:1px solid #cbd5e1;margin:2em 0}
+</style></head><body><h1 id="documentacao-completa-siaa-seduc">Documentação Completa — SIAA-SEDUC</h1>
+<p><strong>Sistema Integrado de Acompanhamento Acadêmico — SEDUC-PI</strong></p>
+<blockquote>
+<p>Documento técnico-acadêmico do projeto. Versão 1.0 — Novembro de 2025.</p>
+</blockquote>
+<hr />
+<h2 id="sumario">Sumário</h2>
+<ol>
+<li><a href="#1-visão-geral">Visão Geral</a></li>
+<li><a href="#2-arquitetura-do-sistema">Arquitetura do Sistema</a></li>
+<li><a href="#3-stack-tecnológica">Stack Tecnológica</a></li>
+<li><a href="#4-estrutura-do-repositório">Estrutura do Repositório</a></li>
+<li><a href="#5-backend--django">Backend — Django</a></li>
+<li><a href="#6-modelo-de-dados">Modelo de Dados</a></li>
+<li><a href="#7-api-rest">API REST</a></li>
+<li><a href="#8-frontend--nextjs">Frontend — Next.js</a></li>
+<li><a href="#9-módulos-funcionais">Módulos Funcionais</a></li>
+<li><a href="#10-fluxos-de-trabalho">Fluxos de Trabalho</a></li>
+<li><a href="#11-autenticação-e-sessões">Autenticação e Sessões</a></li>
+<li><a href="#12-geração-de-pdf">Geração de PDF</a></li>
+<li><a href="#13-segurança">Segurança</a></li>
+<li><a href="#14-configuração-e-execução">Configuração e Execução</a></li>
+<li><a href="#15-deploy-e-infraestrutura">Deploy e Infraestrutura</a></li>
+<li><a href="#16-limitações-conhecidas">Limitações Conhecidas</a></li>
+<li><a href="#17-glossário">Glossário</a></li>
+</ol>
+<hr />
+<hr/>
+
+<h2 id="1-visao-geral">1. Visão Geral</h2>
+<p>O <strong>SIAA-SEDUC</strong> é uma plataforma web de gestão escolar desenvolvida para a rede estadual de ensino do Piauí (SEDUC-PI), no âmbito do programa FAPEPI. O sistema integra os principais atores do ambiente escolar — <strong>administradores, coordenadores, professores, alunos e responsáveis</strong> — em um único ecossistema digital.</p>
+<h3 id="11-objetivos">1.1 Objetivos</h3>
+<ul>
+<li>Centralizar a gestão de dados acadêmicos (turmas, disciplinas, alunos, professores).</li>
+<li>Permitir o lançamento e acompanhamento de <strong>notas por trimestre</strong>, <strong>frequência</strong>, <strong>horários</strong> e <strong>conteúdos programados</strong>.</li>
+<li>Oferecer aos alunos e responsáveis visibilidade em tempo real sobre <strong>boletim, frequência, atividades, avaliações e comunicados</strong>.</li>
+<li>Disponibilizar ferramentas de <strong>avaliação digital</strong>: criação de provas com questões objetivas/subjetivas, emissão de PDF, gabarito e correção por fotografia do cartão-resposta.</li>
+<li>Incluir um <strong>módulo de blog</strong> para publicações da comunidade escolar.</li>
+</ul>
+<h3 id="12-perfis-de-usuario">1.2 Perfis de usuário</h3>
+<table>
+<thead>
+<tr>
+<th>Perfil</th>
+<th>Rota base</th>
+<th>Responsabilidades</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Administrador</td>
+<td><code>/admin</code></td>
+<td>Gestão global: escolas, coordenadores, professores, alunos, turmas e todos os módulos de dados</td>
+</tr>
+<tr>
+<td>Coordenador</td>
+<td><code>/coordenacao</code></td>
+<td>Gestão da escola: professores, alunos, turmas, horários, notas, comunicados, advertências, calendário</td>
+</tr>
+<tr>
+<td>Professor</td>
+<td><code>/professor</code></td>
+<td>Conteúdos, atividades, avaliações, frequência, notas, mensagens, calendário</td>
+</tr>
+<tr>
+<td>Aluno</td>
+<td><code>/aluno</code></td>
+<td>Boletim, frequência, atividades, conteúdos, cronograma, solicitações</td>
+</tr>
+<tr>
+<td>Responsável</td>
+<td><code>/responsavel</code></td>
+<td>Acompanhamento do aluno vinculado: boletim, frequência, comunicados, mensagens</td>
+</tr>
+<tr>
+<td>Blog</td>
+<td><code>/blog</code></td>
+<td>Publicações e comunidade</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<hr/>
+
+<h2 id="2-arquitetura-do-sistema">2. Arquitetura do Sistema</h2>
+<pre><code>┌─────────────────────────────────────────────────────────┐
+│                     NAVEGADOR (Cliente)                  │
+│              Next.js 16 — React 19 (App Router)          │
+└──────────────────────────┬──────────────────────────────┘
+                           │ fetch /backend-api/*
+                           ▼
+┌─────────────────────────────────────────────────────────┐
+│              Next.js Route Handlers (Proxy)              │
+│        /backend-api/api/[...path] → Django REST          │
+│        /backend-api/media/[...path] → arquivos           │
+└──────────────────────────┬──────────────────────────────┘
+                           │ HTTP (cookie de sessão)
+                           ▼
+┌─────────────────────────────────────────────────────────┐
+│                  Django 6 (Backend)                      │
+│   views.py (~8.800 linhas) — views function-based        │
+│   urls.py — ~200 endpoints REST                          │
+│   Serialização manual via JsonResponse                   │
+└──────────┬──────────────────────────────┬───────────────┘
+           │ ORM                          │
+           ▼                              ▼
+┌─────────────────────┐        ┌──────────────────────────┐
+│   PostgreSQL        │        │   Media (uploads)        │
+│   (produção)        │        │   django_siaa/media/     │
+│   SQLite (dev)      │        │   questões, correções,   │
+└─────────────────────┘        │   conteúdos, blog        │
+                               └──────────────────────────┘
+</code></pre>
+<h3 id="21-caracteristicas-arquiteturais">2.1 Características arquiteturais</h3>
+<ul>
+<li><strong>Monólito modular</strong>: backend Django concentrado em <code>app/views.py</code> com views function-based (não há ViewSets DRF — serialização é manual).</li>
+<li><strong>Proxy reverso no frontend</strong>: o Next.js expõe <code>/backend-api/*</code> que repassa ao Django, evitando problemas de CORS e centralizando a URL do backend.</li>
+<li><strong>Autenticação por cookie de sessão</strong>: sessões Django armazenadas em banco (<code>Sessao</code> model), propagadas via cookie <code>credentials: "include"</code>.</li>
+<li><strong>Renderização híbrida</strong>: páginas estáticas (SSG) para conteúdo público e dinâmicas (ƒ) para áreas autenticadas.</li>
+</ul>
+<hr />
+<hr/>
+
+<h2 id="3-stack-tecnologica">3. Stack Tecnológica</h2>
+<h3 id="31-backend-django_siaa">3.1 Backend (<code>django_siaa/</code>)</h3>
+<table>
+<thead>
+<tr>
+<th>Componente</th>
+<th>Tecnologia</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Framework</td>
+<td>Django ≥ 6.0</td>
+</tr>
+<tr>
+<td>API</td>
+<td>Django REST Framework (parcial — views function-based)</td>
+</tr>
+<tr>
+<td>Banco de dados</td>
+<td>PostgreSQL (produção) / SQLite (desenvolvimento local)</td>
+</tr>
+<tr>
+<td>PDF</td>
+<td>xhtml2pdf (Pisa), ReportLab, pypdf</td>
+</tr>
+<tr>
+<td>Imagens</td>
+<td>Pillow</td>
+</tr>
+<tr>
+<td>Planilhas</td>
+<td>openpyxl</td>
+</tr>
+<tr>
+<td>HTTP client</td>
+<td>requests</td>
+</tr>
+<tr>
+<td>Config</td>
+<td>python-dotenv, django-cors-headers, whitenoise</td>
+</tr>
+</tbody>
+</table>
+<h3 id="32-frontend-frontend">3.2 Frontend (<code>frontend/</code>)</h3>
+<table>
+<thead>
+<tr>
+<th>Componente</th>
+<th>Tecnologia</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Framework</td>
+<td>Next.js 16.2.6 (App Router, Turbopack)</td>
+</tr>
+<tr>
+<td>UI</td>
+<td>React 19.2.4</td>
+</tr>
+<tr>
+<td>Estilo</td>
+<td>CSS Modules (padrão do projeto)</td>
+</tr>
+<tr>
+<td>Compilador</td>
+<td>React Compiler (babel-plugin-react-compiler)</td>
+</tr>
+<tr>
+<td>Markdown</td>
+<td>react-markdown + remark-gfm (blog)</td>
+</tr>
+<tr>
+<td>Deploy</td>
+<td>Vercel</td>
+</tr>
+</tbody>
+</table>
+<h3 id="33-infraestrutura">3.3 Infraestrutura</h3>
+<ul>
+<li><strong>Frontend</strong>: Vercel (deploy automático via push).</li>
+<li><strong>Backend</strong>: Django + PostgreSQL, servido por WSGI/ASGI.</li>
+<li><strong>DevContainer</strong> e configurações VSCode incluídas no repositório.</li>
+</ul>
+<hr />
+<hr/>
+
+<h2 id="4-estrutura-do-repositorio">4. Estrutura do Repositório</h2>
+<pre><code>siaa-seduc/
+├── django_siaa/                  # Backend Django
+│   ├── manage.py
+│   ├── requirements.txt
+│   ├── db.sqlite3                # fallback dev
+│   ├── media/                    # uploads (gitignored)
+│   ├── *Exportados.json          # seeds de dados
+│   └── django_siaa/              # projeto
+│       ├── settings.py           # DEBUG→SQLite, prod→PostgreSQL
+│       ├── urls.py               # ~200 rotas API
+│       └── wsgi.py / asgi.py
+│   └── app/                      # app principal
+│       ├── models.py             # ~40 models
+│       ├── views.py              # ~8.800 linhas, views function-based
+│       ├── views_importacao.py   # importação de planilhas
+│       ├── pdf.py                # wrapper xhtml2pdf
+│       ├── migrations/           # 61+ migrations
+│       ├── templates/            # templates HTML→PDF
+│       │   ├── avaliacoes/pdf.html       # prova + gabarito
+│       │   ├── avaliacoes/pdf_folha.html # folha de respostas
+│       │   └── ...
+│       └── static/               # logos e assets
+│
+├── frontend/                     # Next.js
+│   ├── package.json
+│   └── src/app/                  # 114 páginas (App Router)
+│       ├── admin/                # painel administrativo
+│       ├── coordenacao/          # painel do coordenador
+│       ├── professor/            # painel do professor
+│       ├── aluno/                # painel do aluno
+│       ├── responsavel/          # painel do responsável
+│       ├── blog/                 # blog público
+│       ├── corrigir/             # correção (legado?)
+│       ├── backend-api/          # proxy → Django
+│       └── components/, utils/
+│
+├── docs/                         # esta documentação
+├── tests/                        # testes
+├── infra/                        # scripts de infra
+├── funcs/                        # funções auxiliares
+├── .github/                      # CI
+├── .devcontainer/                # ambiente dev
+└── README.md
+</code></pre>
+<hr />
+<hr/>
+
+<h2 id="5-backend-django">5. Backend — Django</h2>
+<h3 id="51-organizacao">5.1 Organização</h3>
+<ul>
+<li><strong><code>app/models.py</code></strong>: todos os models em um único arquivo (~700 linhas), agrupados por domínio.</li>
+<li><strong><code>app/views.py</code></strong>: views function-based com <code>@csrf_exempt</code> e <code>@require_http_methods</code>. Serialização manual via <code>JsonResponse</code>. Funções auxiliares privadas (<code>_prefixo</code>) para auth, parsing e formatação.</li>
+<li><strong><code>app/urls.py</code></strong> não existe — rotas estão em <code>django_siaa/urls.py</code> (~200 <code>path()</code>).</li>
+<li><strong><code>app/views_importacao.py</code></strong>: endpoints de importação de planilhas Excel (alunos, professores, turmas, disciplinas).</li>
+<li><strong><code>app/pdf.py</code></strong>: wrapper sobre <code>xhtml2pdf.pisa</code> com tratamento de erros.</li>
+</ul>
+<h3 id="52-padroes-de-codigo-observados">5.2 Padrões de código observados</h3>
+<ul>
+<li>Autenticação via helper <code>_*_logado(request)</code> por perfil (<code>_professor_atual</code>, <code>_admin_logado</code>, <code>_coordenador_atual</code>, etc.).</li>
+<li>Sessões em cookie assinada; model <code>Sessao</code> persiste sessões no banco.</li>
+<li>Uploads via <code>request.FILES</code> com <code>ImageField</code>/<code>FileField</code>.</li>
+<li>Consultas com <code>select_related</code>/<code>prefetch_related</code>/<code>annotate</code> para evitar N+1.</li>
+<li>Transações com <code>transaction.atomic()</code> em operações multi-tabela (ex.: edição de avaliações com questões/subquestões/alternativas).</li>
+</ul>
+<h3 id="53-versoes-e-migracoes">5.3 Versões e migrações</h3>
+<ul>
+<li>61+ migrations em <code>app/migrations/</code>.</li>
+<li>Na ausência do driver psycopg no ambiente local, migrations podem ser escritas manualmente seguindo o padrão <code>dependencies</code>/<code>operations</code>.</li>
+</ul>
+<hr />
+<hr/>
+
+<h2 id="6-modelo-de-dados">6. Modelo de Dados</h2>
+<p>O schema é relacional e centrado na escola. Abaixo os models por domínio.</p>
+<h3 id="61-pessoas-e-acessos">6.1 Pessoas e acessos</h3>
+<table>
+<thead>
+<tr>
+<th>Model</th>
+<th>Descrição</th>
+<th>Campos-chave</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Admin</code></td>
+<td>Administrador do sistema</td>
+<td><code>nome_completo</code>, <code>senha</code></td>
+</tr>
+<tr>
+<td><code>Coordenador</code></td>
+<td>Coordenador escolar</td>
+<td><code>nome_completo</code>, <code>senha</code>, <code>escola</code>, <code>ip</code></td>
+</tr>
+<tr>
+<td><code>Professor</code></td>
+<td>Docente</td>
+<td><code>nome_completo</code>, <code>senha</code>, <code>ip</code></td>
+</tr>
+<tr>
+<td><code>Estudante</code></td>
+<td>Aluno</td>
+<td><code>posicao_ordem</code>, <code>nome_completo</code>, <code>escola</code>, <code>serie</code>, <code>periodo</code>, <code>curso</code>, <code>turma</code>, <code>modo_de_ensino</code>, <code>senha</code>, <code>ip</code></td>
+</tr>
+<tr>
+<td><code>Responsavel</code></td>
+<td>Responsável legal</td>
+<td><code>nome_completo</code>, <code>senha</code>, <code>ip</code></td>
+</tr>
+<tr>
+<td><code>Blogger</code></td>
+<td>Autor do blog</td>
+<td>perfil público</td>
+</tr>
+<tr>
+<td><code>Sessao</code></td>
+<td>Sessão de login</td>
+<td>user_type, user_id, token, expiração</td>
+</tr>
+</tbody>
+</table>
+<h3 id="62-estrutura-academica">6.2 Estrutura acadêmica</h3>
+<table>
+<thead>
+<tr>
+<th>Model</th>
+<th>Descrição</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Escola</code></td>
+<td>Escola (INEP, endereço, contato)</td>
+</tr>
+<tr>
+<td><code>AtravessaPor</code></td>
+<td>Vínculo professor↔turma (<code>professor</code>, <code>escola</code>, <code>turma</code>, <code>etapa</code>, <code>disciplina_lecionada</code>)</td>
+</tr>
+<tr>
+<td><code>Disciplina</code></td>
+<td>Disciplina com M2M <code>professores</code></td>
+</tr>
+<tr>
+<td><code>HorarioAula</code></td>
+<td>Grade semanal (<code>turma</code>, <code>dia_semana</code> SEG–SEX, <code>hora_inicio</code>, <code>hora_fim</code>)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="63-avaliacao-do-aluno">6.3 Avaliação do aluno</h3>
+<table>
+<thead>
+<tr>
+<th>Model</th>
+<th>Descrição</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Nota</code></td>
+<td>Boletim por trimestre: NM1–3, RPT, MT, MTF por T1/T2/T3 + MA, PF, MAF, RCF, TGF, RF (status: CUR/AP/RE/DE/FA/AB/TR/CA/TT/TO). Unique por (aluno, disciplina, turma, professor, ano_letivo)</td>
+</tr>
+<tr>
+<td><code>Frequencia</code></td>
+<td>Presença/falta por aula (unique por aluno+disciplina+turma+professor+data)</td>
+</tr>
+<tr>
+<td><code>Aula</code></td>
+<td>Registro de aula (disciplina, professor, turma, data, assunto, estratégia)</td>
+</tr>
+<tr>
+<td><code>EstudoProgramado</code></td>
+<td>Lista de estudos do aluno</td>
+</tr>
+</tbody>
+</table>
+<h3 id="64-conteudo-pedagogico">6.4 Conteúdo pedagógico</h3>
+<table>
+<thead>
+<tr>
+<th>Model</th>
+<th>Descrição</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Conteudo</code></td>
+<td>Material publicado (arquivo, título, descrição, data)</td>
+</tr>
+<tr>
+<td><code>Atividade</code></td>
+<td>Atividade com prazo e arquivo</td>
+</tr>
+<tr>
+<td><code>AtividadeQuestao</code> / <code>AtividadeAlternativa</code></td>
+<td>Questões e alternativas de atividade</td>
+</tr>
+<tr>
+<td><code>AtividadeEnvio</code></td>
+<td>Envio do aluno (arquivo, status, alteração solicitada)</td>
+</tr>
+<tr>
+<td><code>AtividadeResposta</code></td>
+<td>Respostas texto do aluno</td>
+</tr>
+<tr>
+<td><code>Avaliacao</code></td>
+<td>Prova: título, descrição, texto introdutório, data, turma (string), disciplina, ano_letivo</td>
+</tr>
+<tr>
+<td><code>Questao</code></td>
+<td>Questão hierárquica (<code>questao_pai</code>, <code>letra_subquestao</code>, <code>ordem</code>, <code>enunciado</code>, <code>tipo</code> OBJETIVA/SUBJETIVA, <code>imagem</code>, <code>linhas_resposta</code>)</td>
+</tr>
+<tr>
+<td><code>Alternativa</code></td>
+<td>Alternativa com flag <code>correta</code> (gabarito)</td>
+</tr>
+<tr>
+<td><code>AvaliacaoCorrecao</code></td>
+<td>Correção por aluno: foto do gabarito (<code>imagem</code>) + <code>nota</code> (unique por avaliação+aluno)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="65-comunicacao">6.5 Comunicação</h3>
+<table>
+<thead>
+<tr>
+<th>Model</th>
+<th>Descrição</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Comunicado</code></td>
+<td>Aviso (autor: professor ou coordenador, turma opcional)</td>
+</tr>
+<tr>
+<td><code>Evento</code></td>
+<td>Evento do calendário (autor opcional, turma opcional)</td>
+</tr>
+<tr>
+<td><code>Advertencia</code></td>
+<td>Advertência/penalidade/suspensão com datas</td>
+</tr>
+<tr>
+<td><code>Conversa</code> / <code>MensagemChat</code></td>
+<td>Chat professor↔coordenação</td>
+</tr>
+<tr>
+<td><code>ConversaResponsavelProfessor</code>, <code>ConversaResponsavelCoordenador</code> + <code>MensagemChat*</code></td>
+<td>Chats do responsável</td>
+</tr>
+<tr>
+<td><code>VinculoResponsavel</code></td>
+<td>Vínculo responsável↔aluno</td>
+</tr>
+</tbody>
+</table>
+<h3 id="66-blog">6.6 Blog</h3>
+<p><code>Post</code>, <code>Comentario</code>, <code>Curtida</code>, <code>PerfilBlog</code> — publicações com markdown, comentários e curtidas.</p>
+<hr />
+<hr/>
+
+<h2 id="7-api-rest">7. API REST</h2>
+<p>~200 endpoints em <code>django_siaa/urls.py</code>. Convenção: <code>/api/&lt;perfil&gt;/&lt;recurso&gt;</code> com métodos GET/POST/PUT/DELETE. Serialização manual via <code>JsonResponse</code>. Todos os endpoints de área autenticada validam sessão via cookie.</p>
+<h3 id="71-principais-grupos">7.1 Principais grupos</h3>
+<table>
+<thead>
+<tr>
+<th>Prefixo</th>
+<th>Escopo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>/api/admin/*</code></td>
+<td>Painel admin: login/auth, escolas, coordenadores, professores, alunos, turmas, e <strong>CRUD genérico de módulos</strong> (<code>/api/admin/modulos/&lt;slug&gt;</code>)</td>
+</tr>
+<tr>
+<td><code>/api/coordenacao/*</code></td>
+<td>Gestão escolar: professores, alunos, turmas, horários, disciplinas, notas, comunicados, advertências, calendário, avaliações, mensagens, importação de planilhas</td>
+</tr>
+<tr>
+<td><code>/api/teacher/*</code></td>
+<td>Professor: auth, avaliações (CRUD + PDF + correções), questões/imagens, opções, alunos por turma, notas, conteúdos, atividades, frequência, calendário, comunicados, mensagens</td>
+</tr>
+<tr>
+<td><code>/api/students/*</code></td>
+<td>Aluno: dashboard, conteúdos, atividades (+envios), boletim, frequência, cronograma, solicitações</td>
+</tr>
+<tr>
+<td><code>/api/responsavel/*</code></td>
+<td>Responsável: dados do aluno vinculado, boletim, frequência, comunicados, mensagens</td>
+</tr>
+<tr>
+<td><code>/api/blog/*</code></td>
+<td>Posts, comentários, curtidas, perfil</td>
+</tr>
+</tbody>
+</table>
+<h3 id="72-destaques-de-endpoints">7.2 Destaques de endpoints</h3>
+<ul>
+<li><code>GET/POST /api/teacher/avaliacoes</code> — listagem/criação de avaliações.</li>
+<li><code>GET/PUT /api/teacher/avaliacoes/&lt;id&gt;</code> — detalhe com questões hierárquicas (prefetch) e atualização transacional completa.</li>
+<li><code>POST /api/teacher/avaliacoes/&lt;id&gt;/pdf</code> — emissão de PDF da prova + gabarito.</li>
+<li><code>GET /api/teacher/avaliacoes/&lt;id&gt;/correcoes</code> e <code>POST .../correcoes/salvar</code> — correções (foto + nota por aluno).</li>
+<li><code>POST /api/teacher/avaliacoes/questoes/&lt;id&gt;/imagem</code> — upload de imagem de questão (com verificação de ownership).</li>
+<li><code>/api/admin/modulos*</code> — CRUD genérico dirigido por registro <code>ADMIN_MODULES</code> (14 módulos).</li>
+<li><code>/api/coordenacao/importar/&lt;tipo&gt;</code> — importação de planilhas Excel.</li>
+</ul>
+<hr />
+<hr/>
+
+<h2 id="8-frontend-nextjs">8. Frontend — Next.js</h2>
+<h3 id="81-rotas-app-router">8.1 Rotas (App Router)</h3>
+<pre><code>/                          landing pública
+/admin                     painel administrativo (sidebar)
+/admin/{escolas,coordenadores,professores,alunos,turmas}
+/admin/modulos/[modulo]    CRUD genérico de dados
+/admin/login
+/coordenacao/*             visão geral, alunos, professores, turmas,
+                           horarios, disciplinas, notas, comunicados,
+                           advertencias, calendario, avaliacoes,
+                           mensagens, solicitacoes, importação
+/professor/*               dashboard, turmas, alunos, notas,
+                           frequencia, conteudos, atividades(+correção),
+                           avaliacoes (lista/novo/[id]/editar/corrigir),
+                           calendario, comunicados, mensagem, horarios
+/aluno/*                   dashboard, boletim, frequencia, conteudos,
+                           atividades(+envios), cronograma, horarios,
+                           solicitacoes
+/responsavel/[alunoId]/*   visão do aluno, boletim, frequencia,
+                           avaliacoes, calendario, comunicados,
+                           advertencias, horario, mensagens
+/blog                      posts, post/[id], perfil [user], novo, editar
+/corrigir/*                módulo de correção (legado/alternativo)
+/backend-api/*             proxy para o Django (api + media)
+</code></pre>
+<h3 id="82-padroes-frontend">8.2 Padrões frontend</h3>
+<ul>
+<li><strong>CSS Modules</strong> por página (<code>page.module.css</code>) — sem framework de UI.</li>
+<li>Autenticação verificada no cliente via <code>GET /api/*/auth</code> com <code>credentials: "include"</code>; redirect para login em 401.</li>
+<li>Fetches paralelos com <code>Promise.all</code> para reduzir tempo de carregamento.</li>
+<li>Proxy <code>/backend-api</code> encapsula a URL do backend (<code>src/app/backend-api/</code>).</li>
+<li>React Compiler habilitado; imagens via <code>next/image</code> (com exceções pontuais <code>&lt;img&gt;</code> para blobs de preview).</li>
+</ul>
+<hr />
+<hr/>
+
+<h2 id="9-modulos-funcionais">9. Módulos Funcionais</h2>
+<h3 id="91-avaliacoes-destaque">9.1 Avaliações (destaque)</h3>
+<p>Ciclo completo implementado:</p>
+<ol>
+<li><strong>Criação/Edição</strong> (<code>/professor/avaliacoes/novo</code>, <code>/editar</code>): título, data, turma, disciplina, texto introdutório, questões manuais ou extraídas de PDF, questões objetivas (alternativas A–E com flag <code>correta</code>) e subjetivas (linhas de resposta), subquestões aninhadas (a, b, c...) e upload de imagens por questão.</li>
+<li><strong>Emissão de PDF</strong>: prova formatada com cabeçalho, questões hierárquicas e <strong>tabela de gabarito</strong> (círculos para preencher) — gerada apenas quando 100% das questões são objetivas.</li>
+<li><strong>Visualização</strong> (<code>/[avaliacaoId]</code>): detalhe hierárquico, gabarito em tabela (letra correta por questão/subquestão), ações de editar/excluir/corrigir.</li>
+<li><strong>Correção</strong> (<code>/[avaliacaoId]/corrigir</code>): lista todos os alunos da turma da avaliação; para avaliações 100% objetivas, upload de foto do gabarito preenchido + nota; para avaliações com subjetivas, correção manual da nota. Dados persistidos em <code>AvaliacaoCorrecao</code>.</li>
+</ol>
+<h3 id="92-notas">9.2 Notas</h3>
+<p>Lançamento por trimestre (NM1–3, RPT, MT, MTF) com médias (MA, PF, MAF, RCF), carga horária (TGF) e situação final (RF). Acesso via <code>/professor/notas/[turmaId]</code> e <code>/coordenacao/notas/[turmaId]</code>.</p>
+<h3 id="93-frequencia-e-aulas">9.3 Frequência e aulas</h3>
+<p>Registro de presença por aula; aulas com assunto e estratégia; visão por turma e por aluno.</p>
+<h3 id="94-atividades">9.4 Atividades</h3>
+<p>Criação com arquivo e questões; alunos enviam arquivo/texto; professor corrige envios (<code>/professor/atividades/[id]/corrigir/[envioId]</code>); alunos podem solicitar novo envio.</p>
+<h3 id="95-comunicacao">9.5 Comunicação</h3>
+<p>Comunicados (turma ou geral), calendário de eventos, advertências/penalidades/suspensões, chat professor↔coordenação e responsável↔professor/coordenação.</p>
+<h3 id="96-administracao">9.6 Administração</h3>
+<p>Painel <code>/admin</code> com gestão cadastral (escolas, coordenadores, professores, alunos, turmas — incluindo renomear turma) e <strong>CRUD genérico de 14 módulos de dados</strong> via <code>/admin/modulos/[modulo]</code> (tabela + busca + modal de criação/edição + exclusão), além de importação de planilhas na coordenação.</p>
+<h3 id="97-blog">9.7 Blog</h3>
+<p>Publicações em markdown com comentários, curtidas e perfis de autores.</p>
+<hr />
+<hr/>
+
+<h2 id="10-fluxos-de-trabalho">10. Fluxos de Trabalho</h2>
+<h3 id="101-avaliacao-ponta-a-ponta">10.1 Avaliação — ponta a ponta</h3>
+<pre><code>Professor cria avaliação (questões+alternativas)
+        │
+        ├─► Emite PDF (prova + gabarito se 100% objetiva)
+        │
+        ├─► Imprime, aplica em sala
+        │
+        ▼
+Aluno responde → fotografa gabarito
+        │
+        ▼
+Professor /corrigir → upload foto + nota → &quot;Enviar nota&quot;
+        │
+        ▼
+AvaliacaoCorrecao persistida (imagem + nota por aluno)
+</code></pre>
+<h3 id="102-lancamento-de-notas">10.2 Lançamento de notas</h3>
+<p>Professor/coordenação acessa <code>/notas/[turmaId]</code> → edita campos por bimestre → salva → <code>Nota</code> atualizada (unique por aluno+disciplina+turma+professor+ano).</p>
+<h3 id="103-importacao-de-dados">10.3 Importação de dados</h3>
+<p>Coordenação envia planilha → <code>/api/coordenacao/importar/&lt;tipo&gt;</code> → <code>views_importacao.py</code> parseia via openpyxl → cria/atualiza registros em lote.</p>
+<hr />
+<hr/>
+
+<h2 id="11-autenticacao-e-sessoes">11. Autenticação e Sessões</h2>
+<ul>
+<li>Login por perfil: <code>POST /api/&lt;perfil&gt;/login</code> com <code>nome_completo</code>/<code>senha</code> (ou CPF/email conforme perfil).</li>
+<li>Senhas armazenadas em texto plano nos models (<code>senha = CharField</code>) — <strong>ver Limitações</strong>.</li>
+<li>Sessão Django persistida no model <code>Sessao</code> e entregue via cookie HttpOnly.</li>
+<li><code>credentials: "include"</code> em todos os fetches do frontend.</li>
+<li>Endpoints validam ownership (ex.: professor só acessa avaliações próprias; coordenador só sua escola).</li>
+</ul>
+<hr />
+<hr/>
+
+<h2 id="12-geracao-de-pdf">12. Geração de PDF</h2>
+<ul>
+<li>Engine: <strong>xhtml2pdf (Pisa)</strong> — HTML+CSS → PDF.</li>
+<li>Templates Django em <code>app/templates/avaliacoes/</code>:</li>
+<li><code>pdf.html</code> — prova completa: cabeçalho, dados da avaliação, questões hierárquicas, linhas de resposta, imagens e <strong>gabarito tabular com círculos CSS</strong> (<code>border</code>+<code>border-radius</code>, pois a Helvetica não tem glifo de círculo).</li>
+<li><code>pdf_folha.html</code> — folha de respostas alternativa.</li>
+<li>Restrições do Pisa contornadas: sem <code>linear-gradient</code>, sem <code>@page :first</code>, pseudo-elementos decorativos removidos, margens 0.5cm.</li>
+<li>Logos SIAA/SEDUC embutidos via <code>file://</code> a partir de <code>BASE_DIR/app/static/</code>.</li>
+</ul>
+<hr />
+<hr/>
+
+<h2 id="13-seguranca">13. Segurança</h2>
+<p><strong>Implementado:</strong>
+- Verificação de autenticação e ownership nos endpoints sensíveis.
+- Sessões por cookie (não JWT em localStorage).
+- <code>unique_together</code>/constraints no banco para integridade.
+- Validação de entrada básica (tipos, obrigatórios) nos novos endpoints genéricos.</p>
+<p><strong>Débitos técnicos (ver seção 16):</strong>
+- Senhas em texto plano.
+- CSRF desabilitado globalmente (<code>@csrf_exempt</code>) — aceitável para API por cookie somente se houver proteção equivalente; recomendo revisar.
+- Uploads sem validação rigorosa de tipo/tamanho em todos os endpoints.</p>
+<hr />
+<hr/>
+
+<h2 id="14-configuracao-e-execucao">14. Configuração e Execução</h2>
+<h3 id="141-backend">14.1 Backend</h3>
+<pre><code class="language-bash">cd django_siaa
+python -m venv venv &amp;&amp; source venv/bin/activate
+pip install -r requirements.txt
+cp .env.example .env   # configurar DATABASE_URL/SECRET_KEY
+python manage.py migrate
+python manage.py runserver
+</code></pre>
+<ul>
+<li><code>settings.py</code>: <code>DEBUG=True</code> → SQLite local; produção → PostgreSQL via env.</li>
+<li>Criação de admin: <code>python manage.py shell</code> → <code>Admin.objects.create(nome_completo="...", senha="...")</code>.</li>
+</ul>
+<h3 id="142-frontend">14.2 Frontend</h3>
+<pre><code class="language-bash">cd frontend
+npm install
+npm run dev      # desenvolvimento
+npm run build    # produção
+npm run lint     # eslint
+</code></pre>
+<ul>
+<li>Proxy <code>/backend-api</code> configurado para o Django (ver <code>src/app/backend-api/</code>).</li>
+<li>Deploy: Vercel (build <code>next build</code>).</li>
+</ul>
+<hr />
+<hr/>
+
+<h2 id="15-deploy-e-infraestrutura">15. Deploy e Infraestrutura</h2>
+<ul>
+<li><strong>Frontend</strong>: Vercel — deploy automático por push na branch principal.</li>
+<li><strong>Backend</strong>: Django + PostgreSQL; variáveis de ambiente via <code>.env</code>/<code>python-dotenv</code>.</li>
+<li><strong>Mídia</strong>: <code>django_siaa/media/</code> servida via rota <code>/backend-api/media/</code> no proxy.</li>
+<li><strong>CI</strong>: <code>.github/</code> presente; scripts em <code>infra/</code> e <code>commit.sh</code>.</li>
+</ul>
+<hr />
+<hr/>
+
+<h2 id="16-limitacoes-conhecidas">16. Limitações Conhecidas</h2>
+<ol>
+<li><strong>Senhas em texto plano</strong> em todos os models de usuário — recomenda-se migrar para hash (<code>make_password</code>/<code>check_password</code>).</li>
+<li><strong><code>@csrf_exempt</code> generalizado</strong> — a API depende apenas de cookie de sessão; avaliar CSRF token ou SameSite.</li>
+<li><strong>Validação de uploads</strong> inconsistente — nem todos os endpoints verificam MIME/tamanho.</li>
+<li><strong>Serialização manual</strong> em <code>views.py</code> — ~8.800 linhas; candidato a DRF serializers ou refatoração por domínio.</li>
+<li><strong>Sem testes automatizados</strong> significativos — <code>tests/</code> existe mas cobertura é limitada.</li>
+<li><strong>Correção de avaliações</strong> armazena foto + nota, mas <strong>não há correção automática</strong> (OMR/OCR) — a nota é informada manualmente pelo professor.</li>
+<li><strong><code>next build</code></strong> já foi bloqueado por erros de sintaxe em páginas de aluno — manter lint/build verde.</li>
+<li><strong>Campos <code>FileField</code></strong> (atividades/conteúdos) não são editáveis via CRUD genérico do admin.</li>
+<li><strong>Mensagens de chat</strong> não são gerenciáveis individualmente (apenas a conversa).</li>
+<li><strong>xhtml2pdf</strong> impõe restrições de CSS (sem gradientes, <code>:first</code>, pseudo-elementos complexos).</li>
+</ol>
+<hr />
+<hr/>
+
+<h2 id="17-glossario">17. Glossário</h2>
+<table>
+<thead>
+<tr>
+<th>Termo</th>
+<th>Significado</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>AtravessaPor</strong></td>
+<td>Modelo de vínculo professor↔turma ("atravessa" a turma)</td>
+</tr>
+<tr>
+<td><strong>Gabarito</strong></td>
+<td>Cartão-resposta / chave de correção das avaliações objetivas</td>
+</tr>
+<tr>
+<td><strong>NM / RPT / MT / MTF</strong></td>
+<td>Nota do bimestre / Recuperação / Média do Trimestre / Média Final Trimestre</td>
+</tr>
+<tr>
+<td><strong>MA / PF / MAF / RCF</strong></td>
+<td>Média Anual / Prova Final / Média Anual Final / Recuperação Final</td>
+</tr>
+<tr>
+<td><strong>RF</strong></td>
+<td>Resultado Final (CUR, AP, RE, DE, FA, AB, TR, CA, TT, TO)</td>
+</tr>
+<tr>
+<td><strong>TGF</strong></td>
+<td>Total de Frequência Global</td>
+</tr>
+<tr>
+<td><strong>Seduc Tec</strong></td>
+<td>Programa FAPEPI de bolsistas para desenvolvimento</td>
+</tr>
+<tr>
+<td><strong>FAPEPI</strong></td>
+<td>Fundação de Amparo à Pesquisa do Piauí</td>
+</tr>
+<tr>
+<td><strong>Pisa</strong></td>
+<td>Engine de conversão HTML→PDF usada pelo xhtml2pdf</td>
+</tr>
+<tr>
+<td><strong>OMR/OCR</strong></td>
+<td>Reconhecimento de marcas/dígitos (não implementado)</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<p><em>Fim da documentação. Para dúvidas ou contribuições, consultar o repositório e os padrões descritos na seção 5.2.</em></p>
+<hr/></body></html>
