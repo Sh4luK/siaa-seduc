@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import layoutStyles from "../../../../page.module.css";
 import styles from "./notas.module.css";
@@ -35,7 +35,7 @@ function media(valores) {
   return arredondar(validas.reduce((soma, nota) => soma + nota, 0) / validas.length);
 }
 
-const calcularMedias = useCallback((notas) => {
+function calcularMedias(notas) {
   const trimestres = [1, 2, 3].map((t) => {
     const nms = [1, 2, 3].map((n) => paraNumero(notas[`nm${n}_t${t}`]));
     const rpt = paraNumero(notas[`rpt_t${t}`]);
@@ -53,7 +53,7 @@ const calcularMedias = useCallback((notas) => {
   if (ma !== null) maf = pf === null ? ma : arredondar((ma * 6 + pf * 4) / 10);
 
   return { trimestres, ma, maf };
-}, []);
+}
 
 // Campos que aparecem como value de <input>/<select> — nunca podem ser null/undefined
 const CAMPOS_EDITAVEIS = [
@@ -186,7 +186,7 @@ export default function LancarNotasPage() {
   }, [notas.nm1_t1, notas.nm2_t1, notas.nm3_t1, notas.rpt_t1,
       notas.nm1_t2, notas.nm2_t2, notas.nm3_t2, notas.rpt_t2,
       notas.nm1_t3, notas.nm2_t3, notas.nm3_t3, notas.rpt_t3,
-      notas.pf, calcularMedias]);
+      notas.pf]);
 
   function handleChange(campo, valor) {
     if (campo !== "tgf") {

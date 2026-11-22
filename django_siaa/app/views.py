@@ -1,5 +1,6 @@
 import re
 import hmac
+from functools import wraps
 from urllib.parse import urlparse
 from urllib.parse import unquote
 from urllib.parse import urlencode
@@ -244,6 +245,68 @@ def _admin_logado(request):
     return Admin.objects.filter(id=sessao.referencia_id).first()
 
 
+_USUARIO_POR_TIPO = {
+    "ALUNO": _aluno_logado,
+    "PROFESSOR": _professor_logado,
+    "COORDENADOR": _coordenador_logado,
+    "RESPONSAVEL": _responsavel_logado,
+    "ADMIN": _admin_logado,
+}
+
+
+def _parametro_da_requisicao(request, nome):
+    """Lê um parâmetro da query string, de um form (multipart/urlencoded) ou
+    de um corpo JSON. Retorna None se ele não foi enviado."""
+    if nome in request.GET:
+        return request.GET.get(nome)
+    content_type = request.content_type or ""
+    if content_type.startswith("application/json"):
+        try:
+            body = json.loads(request.body or "{}")
+        except (json.JSONDecodeError, UnicodeDecodeError):
+            return None
+        return body.get(nome) if isinstance(body, dict) else None
+    if request.method == "POST":
+        return request.POST.get(nome)
+    return None
+
+
+def _normalizar_nome(valor):
+    return " ".join(str(valor).split()).upper()
+
+
+def _professor_confere(request, professor):
+    """Um professor só pode agir em nome de si mesmo: se a requisição informa
+    'professor' (id) ou 'nome_completo', eles precisam ser os do professor logado."""
+    professor_id = _parametro_da_requisicao(request, "professor")
+    if professor_id not in (None, "") and str(professor_id).strip() != str(professor.id):
+        return False
+    nome = _parametro_da_requisicao(request, "nome_completo")
+    if nome not in (None, "") and _normalizar_nome(nome) != _normalizar_nome(professor.nome_completo):
+        return False
+    return True
+
+
+def _exigir_sessao(*tipos):
+    """Decorator: a view só roda com uma sessão ativa de um dos tipos informados.
+    O usuário logado fica em request.usuario_sessao e o tipo em request.tipo_sessao."""
+    def decorator(view):
+        @wraps(view)
+        def wrapper(request, *args, **kwargs):
+            for tipo in tipos:
+                usuario = _USUARIO_POR_TIPO[tipo](request)
+                if usuario is None:
+                    continue
+                if tipo == "PROFESSOR" and not _professor_confere(request, usuario):
+                    return JsonResponse({"detail": "Acesso negado."}, status=403)
+                request.usuario_sessao = usuario
+                request.tipo_sessao = tipo
+                return view(request, *args, **kwargs)
+            return JsonResponse({"detail": "Não autenticado."}, status=401)
+        return wrapper
+    return decorator
+
+
 @csrf_exempt
 def index(request):
     return HttpResponse("Olá usuario! Esta é a API do SIAA.")
@@ -271,6 +334,7 @@ def AdminApiLoginSuperUser(request):
         return HttpResponse("error")
 
 @csrf_exempt
+@_exigir_sessao("ADMIN")
 def view_students(request):
     file = Path("/workspaces/siaa-seduc/infra/alunos_formatados.json")
     if not file.exists():
@@ -294,24 +358,18 @@ def view_students(request):
 
 # @csrf_exempt
 def search_student(request):
-    fullName = request.GET.get("fullname", "").strip().lower()
+    """Usada pela tela de login do aluno para saber se o nome digitado existe.
+    É pública, então só confirma o nome exato e não devolve outros dados."""
+    fullName = " ".join(request.GET.get("fullname", "").split())
 
-    students = Estudante.objects.all()
+    results = []
     if fullName:
-        students = students.filter(nome_completo__icontains=fullName)
-
-    results = [
-        {
-            "posicao_ordem": student.posicao_ordem,
-            "nome_completo": student.nome_completo,
-            "escola": student.escola,
-            "serie": student.serie,
-            "turma": student.turma,
-            "periodo": student.periodo,
-            "curso": student.curso,
-        }
-        for student in students
-    ]
+        alvo = _normalizar_nome(fullName)
+        results = [
+            {"nome_completo": student.nome_completo}
+            for student in Estudante.objects.filter(nome_completo__icontains=fullName)
+            if _normalizar_nome(student.nome_completo) == alvo
+        ][:1]
 
     return JsonResponse({
         "total_encontrado": len(results),
@@ -398,6 +456,7 @@ def auth_teacher(request):
             "message": "error"
         })
         
+@_exigir_sessao("PROFESSOR")
 def search_teacher(request):
     nome_completo = (request.GET.get("nome_completo") or "").strip().upper()
 
@@ -419,6 +478,7 @@ def search_teacher(request):
 
 
 @csrf_exempt
+@_exigir_sessao("PROFESSOR")
 def get_turmas(request):
     nome_completo = (request.GET.get("nome_completo") or "").strip().upper()
 
@@ -440,6 +500,7 @@ def get_turmas(request):
     })
 
 @csrf_exempt
+@_exigir_sessao("PROFESSOR")
 def get_disciplinas_lecionadas(request):
     nome_completo = request.GET.get("nome_completo", "").strip().upper()
 
@@ -463,6 +524,7 @@ def get_disciplinas_lecionadas(request):
 
 
 @csrf_exempt
+@_exigir_sessao("PROFESSOR")
 def get_turma(request):
     turma_id = request.GET.get("turma")
 
@@ -488,6 +550,7 @@ def get_turma(request):
     return JsonResponse({"turma": turma_dict})
 
 @csrf_exempt
+@_exigir_sessao("PROFESSOR")
 def get_alunos_por_turma(request):
     turma = request.GET.get("turma", "")
 
@@ -564,6 +627,7 @@ def resolver_disciplina_da_turma(turma_obj):
 
 
 @csrf_exempt
+@_exigir_sessao("PROFESSOR")
 def get_notas_aluno(request):
     aluno_id = request.GET.get("aluno")
     turma_id = request.GET.get("turma")
@@ -630,6 +694,7 @@ def get_notas_aluno(request):
 
 
 @csrf_exempt
+@_exigir_sessao("PROFESSOR")
 def salvar_notas(request):
     if request.method != "POST":
         return JsonResponse({"message": "Método não permitido."}, status=405)
@@ -724,6 +789,7 @@ def salvar_notas(request):
 
 
 @csrf_exempt
+@_exigir_sessao("PROFESSOR")
 def get_notas_turma(request):
     turma_id = request.GET.get("turma")
     professor_id = request.GET.get("professor")
@@ -797,6 +863,7 @@ def get_notas_turma(request):
 
 
 @csrf_exempt
+@_exigir_sessao("PROFESSOR")
 def salvar_notas_turma(request):
     if request.method != "POST":
         return JsonResponse({"message": "Método não permitido."}, status=405)
@@ -968,6 +1035,7 @@ def get_boletim_aluno(request):
 
 
 @csrf_exempt
+@_exigir_sessao("PROFESSOR")
 def get_disciplinas_da_turma(request):
     turma_id = request.GET.get("turma")
     professor_id = request.GET.get("professor")
@@ -1001,6 +1069,7 @@ def get_disciplinas_da_turma(request):
 
 
 @csrf_exempt
+@_exigir_sessao("PROFESSOR")
 def get_frequencia_turma(request):
     turma_id = request.GET.get("turma")
     professor_id = request.GET.get("professor")
@@ -1065,6 +1134,7 @@ def get_frequencia_turma(request):
 
 
 @csrf_exempt
+@_exigir_sessao("PROFESSOR")
 def salvar_frequencia_turma(request):
     if request.method != "POST":
         return JsonResponse({"message": "Método não permitido."}, status=405)
@@ -1155,6 +1225,7 @@ def salvar_frequencia_turma(request):
 
 
 @csrf_exempt
+@_exigir_sessao("PROFESSOR")
 def get_registros_frequencia(request):
     professor_id = request.GET.get("professor")
     ano_letivo = request.GET.get("ano_letivo", "2026")
@@ -1318,6 +1389,7 @@ def caminho_relativo_arquivo(arquivo_field):
 
 
 @csrf_exempt
+@_exigir_sessao("PROFESSOR")
 def get_conteudos(request):
     professor_id = request.GET.get("professor")
     mes = request.GET.get("mes")
@@ -1359,6 +1431,7 @@ def get_conteudos(request):
 
 
 @csrf_exempt
+@_exigir_sessao("PROFESSOR")
 def criar_conteudo(request):
     if request.method != "POST":
         return JsonResponse({"message": "Método não permitido."}, status=405)
@@ -1446,11 +1519,12 @@ def criar_conteudo(request):
 
 
 @csrf_exempt
+@_exigir_sessao("PROFESSOR")
 def deletar_conteudo(request, conteudo_id):
     if request.method != "DELETE":
         return JsonResponse({"message": "Método não permitido."}, status=405)
 
-    conteudo = Conteudo.objects.filter(id=conteudo_id).first()
+    conteudo = Conteudo.objects.filter(id=conteudo_id, professor=request.usuario_sessao).first()
     if not conteudo:
         return JsonResponse({"message": "Conteúdo não encontrado."}, status=404)
 
@@ -1460,6 +1534,7 @@ def deletar_conteudo(request, conteudo_id):
 
 
 @csrf_exempt
+@_exigir_sessao("PROFESSOR")
 def get_atividades(request):
     professor_id = request.GET.get("professor")
     mes = request.GET.get("mes")
@@ -1637,6 +1712,7 @@ def _questoes_pdf_atividade(atividade):
 
 
 @csrf_exempt
+@_exigir_sessao("PROFESSOR")
 def criar_atividade(request):
     if request.method != "POST":
         return JsonResponse({"message": "Método não permitido."}, status=405)
@@ -2498,11 +2574,12 @@ def responder_solicitacao_alteracao_envio(request, atividade_id, envio_id):
 
 
 @csrf_exempt
+@_exigir_sessao("PROFESSOR")
 def deletar_atividade(request, atividade_id):
     if request.method != "DELETE":
         return JsonResponse({"message": "Método não permitido."}, status=405)
 
-    atividade = Atividade.objects.filter(id=atividade_id).first()
+    atividade = Atividade.objects.filter(id=atividade_id, professor=request.usuario_sessao).first()
     if not atividade:
         return JsonResponse({"message": "Atividade não encontrada."}, status=404)
 
@@ -2600,12 +2677,13 @@ def criar_comunicado(request):
 
 
 @csrf_exempt
+@_exigir_sessao("PROFESSOR")
 def deletar_comunicado(request, comunicado_id):
     """Remove um comunicado."""
     if request.method != "DELETE":
         return JsonResponse({"message": "Método não permitido."}, status=405)
 
-    comunicado = Comunicado.objects.filter(id=comunicado_id).first()
+    comunicado = Comunicado.objects.filter(id=comunicado_id, professor=request.usuario_sessao).first()
     if not comunicado:
         return JsonResponse({"message": "Comunicado não encontrado."}, status=404)
 
@@ -2654,6 +2732,7 @@ def auth_coordenacao(request):
 
 
 @csrf_exempt
+@_exigir_sessao("COORDENADOR")
 def get_professores_coordenacao(request):
     professores = Professor.objects.all().order_by("nome_completo")
 
@@ -2688,6 +2767,7 @@ def get_professores_coordenacao(request):
 
 
 @csrf_exempt
+@_exigir_sessao("COORDENADOR")
 def criar_professor(request):
     if request.method != "POST":
         return JsonResponse({"message": "Método não permitido."}, status=405)
@@ -2772,6 +2852,7 @@ def get_escola_coordenador(request):
 
 
 @csrf_exempt
+@_exigir_sessao("COORDENADOR")
 def get_professor_detalhe(request, professor_id):
     professor = Professor.objects.filter(id=professor_id).first()
     if not professor:
@@ -2803,6 +2884,7 @@ def get_professor_detalhe(request, professor_id):
 
 
 @csrf_exempt
+@_exigir_sessao("COORDENADOR")
 def editar_professor(request, professor_id):
     if request.method != "POST":
         return JsonResponse({"message": "Método não permitido."}, status=405)
@@ -2894,6 +2976,7 @@ def editar_professor(request, professor_id):
     })
 
 @csrf_exempt
+@_exigir_sessao("COORDENADOR")
 def get_opcoes_cadastro_professor(request):
     turmas = list(
         AtravessaPor.objects.exclude(turma="")
@@ -2922,6 +3005,7 @@ def get_opcoes_cadastro_professor(request):
     })
 
 @csrf_exempt
+@_exigir_sessao("COORDENADOR")
 def deletar_professor(request, professor_id):
     if request.method != "DELETE":
         return JsonResponse({"message": "Método não permitido."}, status=405)
@@ -2956,6 +3040,7 @@ def deletar_professor(request, professor_id):
     })
 
 @csrf_exempt
+@_exigir_sessao("COORDENADOR")
 def get_alunos_coordenacao(request):
     alunos = Estudante.objects.all().order_by("nome_completo")
 
@@ -2980,6 +3065,7 @@ def get_alunos_coordenacao(request):
 
 
 @csrf_exempt
+@_exigir_sessao("COORDENADOR")
 def get_aluno_detalhe(request, aluno_id):
     aluno = Estudante.objects.filter(id=aluno_id).first()
     if not aluno:
@@ -3000,6 +3086,7 @@ def get_aluno_detalhe(request, aluno_id):
     })
 
 @csrf_exempt
+@_exigir_sessao("COORDENADOR")
 def editar_aluno(request, aluno_id):
     if request.method != "POST":
         return JsonResponse({"message": "Método não permitido."}, status=405)
@@ -3047,6 +3134,7 @@ def editar_aluno(request, aluno_id):
 
 
 @csrf_exempt
+@_exigir_sessao("COORDENADOR")
 def deletar_aluno(request, aluno_id):
     if request.method != "DELETE":
         return JsonResponse({"message": "Método não permitido."}, status=405)
@@ -3079,6 +3167,7 @@ def deletar_aluno(request, aluno_id):
 
 
 @csrf_exempt
+@_exigir_sessao("COORDENADOR")
 def criar_aluno(request):
     if request.method != "POST":
         return JsonResponse({"message": "Método não permitido."}, status=405)
@@ -3134,6 +3223,7 @@ def criar_aluno(request):
     })
 
 @csrf_exempt
+@_exigir_sessao("COORDENADOR")
 def get_opcoes_cadastro_aluno(request):
     turmas = list(
         Estudante.objects.exclude(turma="")
@@ -3169,6 +3259,7 @@ def _turma_normalizada(texto):
 
 
 @csrf_exempt
+@_exigir_sessao("COORDENADOR")
 def get_aluno_visao_geral(request, aluno_id):
     """
     Retorna, para um aluno específico: dados básicos, comunicados relevantes
@@ -3248,6 +3339,7 @@ def get_aluno_visao_geral(request, aluno_id):
 
 
 @csrf_exempt
+@_exigir_sessao("COORDENADOR")
 def criar_advertencia(request, aluno_id):
     """Registra uma nova advertência para o aluno."""
     if request.method != "POST":
@@ -3287,6 +3379,7 @@ def criar_advertencia(request, aluno_id):
 
 
 @csrf_exempt
+@_exigir_sessao("COORDENADOR")
 def deletar_advertencia(request, advertencia_id):
     """Remove uma advertência."""
     if request.method != "DELETE":
@@ -3301,6 +3394,7 @@ def deletar_advertencia(request, advertencia_id):
 
 
 @csrf_exempt
+@_exigir_sessao("COORDENADOR")
 def get_eventos_coordenacao(request):
     mes = request.GET.get("mes")
     ano = request.GET.get("ano")
@@ -3345,6 +3439,7 @@ def get_eventos_coordenacao(request):
 
 
 @csrf_exempt
+@_exigir_sessao("COORDENADOR")
 def get_evento_detalhe(request, evento_id):
     evento = Evento.objects.select_related("turma", "professor", "coordenador").filter(id=evento_id).first()
     if not evento:
@@ -3441,6 +3536,7 @@ def criar_evento_coordenacao(request):
 
 
 @csrf_exempt
+@_exigir_sessao("COORDENADOR")
 def editar_evento_coordenacao(request, evento_id):
     if request.method != "POST":
         return JsonResponse({"message": "Método não permitido."}, status=405)
@@ -3485,6 +3581,7 @@ def editar_evento_coordenacao(request, evento_id):
     return JsonResponse({"message": "Evento atualizado com sucesso."})
 
 @csrf_exempt
+@_exigir_sessao("COORDENADOR")
 def deletar_evento_coordenacao(request, evento_id):
     if request.method != "DELETE":
         return JsonResponse({"message": "Método não permitido."}, status=405)
@@ -3498,6 +3595,7 @@ def deletar_evento_coordenacao(request, evento_id):
 
 
 @csrf_exempt
+@_exigir_sessao("COORDENADOR")
 def get_lista_professores_simples(request):
     professores = Professor.objects.all().order_by("nome_completo")
 
@@ -3510,6 +3608,7 @@ def get_lista_professores_simples(request):
 
 
 @csrf_exempt
+@_exigir_sessao("COORDENADOR")
 def get_turmas_do_professor(request, professor_id):
     professor = Professor.objects.filter(id=professor_id).first()
     if not professor:
@@ -3533,6 +3632,7 @@ def get_turmas_do_professor(request, professor_id):
 
 
 @csrf_exempt
+@_exigir_sessao("COORDENADOR", "PROFESSOR")
 def get_comunicados_coordenacao(request):
     comunicados = Comunicado.objects.select_related("turma", "professor", "coordenador").order_by("-data")
 
@@ -3567,6 +3667,7 @@ def get_comunicados_coordenacao(request):
 
 
 @csrf_exempt
+@_exigir_sessao("COORDENADOR")
 def get_comunicado_detalhe(request, comunicado_id):
     comunicado = Comunicado.objects.select_related("turma", "professor", "coordenador").filter(id=comunicado_id).first()
     if not comunicado:
@@ -3661,6 +3762,7 @@ def criar_comunicado_coordenacao(request):
 
 
 @csrf_exempt
+@_exigir_sessao("COORDENADOR")
 def editar_comunicado_coordenacao(request, comunicado_id):
     if request.method != "POST":
         return JsonResponse({"message": "Método não permitido."}, status=405)
@@ -3709,6 +3811,7 @@ def editar_comunicado_coordenacao(request, comunicado_id):
 
 
 @csrf_exempt
+@_exigir_sessao("COORDENADOR")
 def deletar_comunicado_coordenacao(request, comunicado_id):
     if request.method != "DELETE":
         return JsonResponse({"message": "Método não permitido."}, status=405)
@@ -3722,6 +3825,7 @@ def deletar_comunicado_coordenacao(request, comunicado_id):
 
 
 @csrf_exempt
+@_exigir_sessao("COORDENADOR")
 def get_advertencias_coordenacao(request):
     """Lista advertências (alunos) e penalidades (professores)."""
     tipo = request.GET.get("tipo")  # opcional: ADVERTENCIA ou PENALIDADE
@@ -3757,6 +3861,7 @@ def get_advertencias_coordenacao(request):
 
 
 @csrf_exempt
+@_exigir_sessao("COORDENADOR")
 def get_advertencia_detalhe(request, advertencia_id):
     advertencia = Advertencia.objects.select_related("aluno", "professor", "coordenador").filter(id=advertencia_id).first()
     if not advertencia:
@@ -3876,6 +3981,7 @@ def criar_advertencia_coordenacao(request):
     })
 
 @csrf_exempt
+@_exigir_sessao("COORDENADOR")
 def editar_advertencia_coordenacao(request, advertencia_id):
     if request.method != "POST":
         return JsonResponse({"message": "Método não permitido."}, status=405)
@@ -3939,6 +4045,7 @@ def editar_advertencia_coordenacao(request, advertencia_id):
 
 
 @csrf_exempt
+@_exigir_sessao("COORDENADOR")
 def deletar_advertencia_coordenacao(request, advertencia_id):
     if request.method != "DELETE":
         return JsonResponse({"message": "Método não permitido."}, status=405)
@@ -3952,6 +4059,7 @@ def deletar_advertencia_coordenacao(request, advertencia_id):
 
 
 @csrf_exempt
+@_exigir_sessao("COORDENADOR")
 def gerar_advertencia_pdf(request, advertencia_id):
     advertencia = Advertencia.objects.select_related("aluno", "professor", "coordenador").filter(id=advertencia_id).first()
     if not advertencia:
@@ -3977,6 +4085,7 @@ def gerar_advertencia_pdf(request, advertencia_id):
 
 
 @csrf_exempt
+@_exigir_sessao("COORDENADOR")
 def get_turmas_coordenacao(request):
     registros = AtravessaPor.objects.exclude(turma="").values("turma", "etapa", "escola").distinct()
 
@@ -4003,6 +4112,7 @@ def get_turmas_coordenacao(request):
 
 
 @csrf_exempt
+@_exigir_sessao("COORDENADOR")
 def get_horarios_turma(request, nome_turma):
     nome_turma = unquote(nome_turma)
 
@@ -4042,6 +4152,7 @@ def get_horarios_turma(request, nome_turma):
 
 
 @csrf_exempt
+@_exigir_sessao("COORDENADOR")
 def get_opcoes_horario_turma(request, nome_turma):
     nome_turma = unquote(nome_turma)
 
@@ -4063,6 +4174,7 @@ def get_opcoes_horario_turma(request, nome_turma):
 
 
 @csrf_exempt
+@_exigir_sessao("COORDENADOR")
 def salvar_horario_turma(request, nome_turma):
     if request.method != "POST":
         return JsonResponse({"message": "Método não permitido."}, status=405)
@@ -4120,6 +4232,7 @@ def salvar_horario_turma(request, nome_turma):
     })
 
 @csrf_exempt
+@_exigir_sessao("COORDENADOR")
 def get_disciplinas_corrigir(request):
     disciplinas = Disciplina.objects.all().order_by("nome_disciplina")
 
@@ -4147,6 +4260,7 @@ def get_disciplinas_corrigir(request):
 
 
 @csrf_exempt
+@_exigir_sessao("COORDENADOR")
 def renomear_disciplina(request, disciplina_id):
     if request.method != "POST":
         return JsonResponse({"message": "Método não permitido."}, status=405)
@@ -4171,6 +4285,7 @@ def renomear_disciplina(request, disciplina_id):
 
 
 @csrf_exempt
+@_exigir_sessao("COORDENADOR")
 def criar_disciplina_corrigir(request):
     if request.method != "POST":
         return JsonResponse({"message": "Método não permitido."}, status=405)
@@ -4196,6 +4311,7 @@ def criar_disciplina_corrigir(request):
 
 
 @csrf_exempt
+@_exigir_sessao("COORDENADOR")
 def corrigir_nome_lecionado(request):
     if request.method != "POST":
         return JsonResponse({"message": "Método não permitido."}, status=405)
@@ -4222,6 +4338,7 @@ def corrigir_nome_lecionado(request):
 
 
 @csrf_exempt
+@_exigir_sessao("COORDENADOR")
 def get_turmas_corrigir(request):
     turmas_atravessa = set(
         AtravessaPor.objects.exclude(turma="").values_list("turma", flat=True).distinct()
@@ -4246,6 +4363,7 @@ def get_turmas_corrigir(request):
 
 
 @csrf_exempt
+@_exigir_sessao("COORDENADOR")
 def renomear_turma(request):
     if request.method != "POST":
         return JsonResponse({"message": "Método não permitido."}, status=405)
@@ -4450,6 +4568,7 @@ def remover_professor_turma(request):
 
 
 @csrf_exempt
+@_exigir_sessao("COORDENADOR")
 def get_alunos_corrigir(request):
     busca = request.GET.get("busca", "").strip()
 
@@ -4475,6 +4594,7 @@ def get_alunos_corrigir(request):
 
 
 @csrf_exempt
+@_exigir_sessao("COORDENADOR")
 def mover_aluno_turma(request, aluno_id):
     if request.method != "POST":
         return JsonResponse({"message": "Método não permitido."}, status=405)
@@ -4556,6 +4676,7 @@ def get_eventos_professor_visualizacao(request):
     })
 
 @csrf_exempt
+@_exigir_sessao("COORDENADOR")
 def get_disciplinas_coordenacao(request):
     disciplinas = Disciplina.objects.all().order_by("nome_disciplina")
 
@@ -4577,6 +4698,7 @@ def get_disciplinas_coordenacao(request):
 
 
 @csrf_exempt
+@_exigir_sessao("COORDENADOR")
 def renomear_disciplina_coordenacao(request, disciplina_id):
     if request.method != "POST":
         return JsonResponse({"message": "Método não permitido."}, status=405)
@@ -5761,6 +5883,7 @@ def criar_avaliacao(request):
 
 
 @csrf_exempt
+@_exigir_sessao("PROFESSOR")
 def gerar_avaliacao_pdf(request, avaliacao_id):
     avaliacao = Avaliacao.objects.select_related("turma").filter(id=avaliacao_id).first()
     if not avaliacao:
@@ -8031,6 +8154,7 @@ def horarios_professor(request):
 
 @csrf_exempt
 @require_http_methods(["GET"])
+@_exigir_sessao("COORDENADOR")
 def get_horarios_professor_coordenacao(request, professor_id):
     """Retorna a grade atual do professor, já com a atravessa_por_id de cada
     célula preenchida (necessário pro frontend saber o que já está selecionado)."""
@@ -8065,6 +8189,7 @@ def get_horarios_professor_coordenacao(request, professor_id):
 
 @csrf_exempt
 @require_http_methods(["GET"])
+@_exigir_sessao("COORDENADOR")
 def get_opcoes_horario_professor(request, professor_id):
     """Lista as combinações turma+disciplina que esse professor leciona —
     equivalente ao get_opcoes_horario_turma, só que o eixo é o professor,
@@ -8094,6 +8219,7 @@ def get_opcoes_horario_professor(request, professor_id):
 
 
 @csrf_exempt
+@_exigir_sessao("COORDENADOR")
 def salvar_horario_professor(request, professor_id):
     """
     Salva a grade de horários de UM professor. Diferente de salvar_horario_turma
