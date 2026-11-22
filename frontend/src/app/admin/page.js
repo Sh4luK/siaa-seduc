@@ -91,6 +91,7 @@ export default function AdminDashboardPage() {
   const [admin, setAdmin] = useState(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const [stats, setStats] = useState({ coordenadores: null, professores: null, alunos: null, turmas: null, escolas: null });
+  const [modulos, setModulos] = useState([]);
   const router = useRouter();
 
   useEffect(() => {
@@ -149,6 +150,11 @@ export default function AdminDashboardPage() {
     }
 
     carregarStats();
+
+    fetch(`${API_BASE}/api/admin/modulos`, { credentials: "include" })
+      .then((r) => (r.ok ? r.json() : []))
+      .then(setModulos)
+      .catch(() => setModulos([]));
   }, [authenticated]);
 
   if (loading) {
@@ -298,6 +304,34 @@ export default function AdminDashboardPage() {
                   <div className={styles.cardBody}>
                     <span className={styles.cardLabel}>{item.label}</span>
                     <span className={styles.cardDescription}>Gerencie {item.label.toLowerCase()} do sistema</span>
+                  </div>
+                  <span className={styles.cardArrow} aria-hidden="true">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M9 6l6 6l-6 6" />
+                    </svg>
+                  </span>
+                </Link>
+              ))}
+            </div>
+
+            <div className={styles.secaoDivisor}>
+              <h2 className={styles.secaoTitulo}>Gestão de dados</h2>
+              <p className={styles.secaoSubtitulo}>Cadastros, notas, avaliações e demais registros do sistema.</p>
+            </div>
+
+            <div className={styles.grid}>
+              {modulos.map((m) => (
+                <Link key={m.slug} href={`/admin/modulos/${m.slug}`} className={styles.card}>
+                  <span className={styles.iconCircle}>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M4 6h16" />
+                      <path d="M4 12h16" />
+                      <path d="M4 18h10" />
+                    </svg>
+                  </span>
+                  <div className={styles.cardBody}>
+                    <span className={styles.cardLabel}>{m.label}</span>
+                    <span className={styles.cardDescription}>Gerencie {m.label.toLowerCase()}</span>
                   </div>
                   <span className={styles.cardArrow} aria-hidden="true">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
