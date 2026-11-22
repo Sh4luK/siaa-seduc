@@ -5452,6 +5452,7 @@ def _gerar_pdf_avaliacao(avaliacao):
 
     gabarito_linhas = []
     letras_gabarito = set()
+    todas_objetivas = True
 
     def _linha_gabarito(rotulo, tipo, alternativas):
         if tipo == "OBJETIVA":
@@ -5481,6 +5482,8 @@ def _gerar_pdf_avaliacao(avaliacao):
                 "alternativas": alternativas_sq,
             })
             contador_sub += 1
+            if sq.tipo != "OBJETIVA":
+                todas_objetivas = False
             gabarito_linhas.append(_linha_gabarito(f"{contador_questoes}.{sq.letra_subquestao}", sq.tipo, alternativas_sq))
 
         # Adicionar separador de tópico se mudou
@@ -5494,6 +5497,8 @@ def _gerar_pdf_avaliacao(avaliacao):
                 })
 
         contador_questoes += 1
+        if q.tipo != "OBJETIVA":
+            todas_objetivas = False
         gabarito_linhas.insert(len(gabarito_linhas) - contador_sub, _linha_gabarito(str(contador_questoes), q.tipo, alternativas_q))
         questoes_contexto.append({
             "enunciado": q.enunciado,
@@ -5515,8 +5520,8 @@ def _gerar_pdf_avaliacao(avaliacao):
         "logo_seduc_url": logo_seduc_url,
         "data_hora": data_hora,
         "questoes": questoes_contexto,
-        "gabarito_linhas": gabarito_linhas,
-        "gabarito_letras": sorted(letras_gabarito),
+        "gabarito_linhas": gabarito_linhas if todas_objetivas else [],
+        "gabarito_letras": sorted(letras_gabarito) if todas_objetivas else [],
     }
 
     html_string = render_to_string("avaliacoes/pdf.html", contexto)
