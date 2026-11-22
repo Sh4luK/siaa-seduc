@@ -399,3 +399,22 @@
     text-align: center;
   }
 }
+
+.secaoDivisor {
+  padding-top: 1.5rem;
+  border-top: 1px solid #e2e8f0;
+  margin: 2rem 0 1rem;
+}
+
+.secaoTitulo {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #1a2942;
+  margin: 0 0 0.25rem;
+}
+
+.secaoSubtitulo {
+  font-size: 0.85rem;
+  color: #5b6b85;
+  margin: 0 0 1rem;
+}
