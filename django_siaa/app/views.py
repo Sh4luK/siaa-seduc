@@ -8309,3 +8309,428 @@ def editar_perfil_blog(request, nome_usuario):
     perfil.save()
 
     return JsonResponse({"message": "Perfil atualizado com sucesso.", "nome_usuario": perfil.nome_usuario})
+
+# ===================== ADMIN GENÉRICO (CRUD de módulos) =====================
+
+_ADMIN_FK_MODELS = {
+    "professor": Professor,
+    "aluno": Estudante,
+    "disciplina": Disciplina,
+    "turma": AtravessaPor,
+    "coordenador": Coordenador,
+    "responsavel": Responsavel,
+    "conversa": Conversa,
+}
+
+
+def _admin_fk_label(obj):
+    if obj is None:
+        return None
+    if isinstance(obj, AtravessaPor):
+        return f"{obj.turma} — {obj.professor.nome_completo if obj.professor else ''}".strip(" —")
+    nome = getattr(obj, "nome_completo", None) or getattr(obj, "nome_disciplina", None) or getattr(obj, "titulo", None)
+    return nome or str(obj)
+
+
+def _admin_field_spec(nome, rotulo, tipo="str", **kw):
+    d = {"nome": nome, "rotulo": rotulo, "tipo": tipo}
+    d.update(kw)
+    return d
+
+
+# Registro de módulos administráveis: slug -> definição
+ADMIN_MODULES = {
+    "disciplinas": {
+        "label": "Disciplinas",
+        "model": Disciplina,
+        "titulo": "nome_disciplina",
+        "campos": [
+            _admin_field_spec("nome_disciplina", "Nome da disciplina"),
+        ],
+    },
+    "atravessamentos": {
+        "label": "Turmas / Atravessamentos",
+        "model": AtravessaPor,
+        "titulo": "_turma_label",
+        "campos": [
+            _admin_field_spec("professor", "Professor", "fk", fk="professor", obrigatorio=True),
+            _admin_field_spec("escola", "Escola"),
+            _admin_field_spec("turma", "Turma", obrigatorio=True),
+            _admin_field_spec("etapa", "Etapa"),
+            _admin_field_spec("disciplina_lecionada", "Disciplina lecionada", "text"),
+        ],
+    },
+    "notas": {
+        "label": "Notas",
+        "model": Nota,
+        "titulo": "_nota_label",
+        "campos": [
+            _admin_field_spec("aluno", "Aluno", "fk", fk="aluno", obrigatorio=True),
+            _admin_field_spec("disciplina", "Disciplina", "fk", fk="disciplina", obrigatorio=True),
+            _admin_field_spec("professor", "Professor", "fk", fk="professor", obrigatorio=True),
+            _admin_field_spec("turma", "Turma", "fk", fk="turma", obrigatorio=True),
+            _admin_field_spec("ano_letivo", "Ano letivo", "int", obrigatorio=True),
+            _admin_field_spec("nm1_t1", "NM1 T1", "decimal"), _admin_field_spec("nm2_t1", "NM2 T1", "decimal"),
+            _admin_field_spec("nm3_t1", "NM3 T1", "decimal"), _admin_field_spec("rpt_t1", "Rpt T1", "decimal"),
+            _admin_field_spec("mt_t1", "MT T1", "decimal"), _admin_field_spec("mtf_t1", "MTF T1", "decimal"),
+            _admin_field_spec("nm1_t2", "NM1 T2", "decimal"), _admin_field_spec("nm2_t2", "NM2 T2", "decimal"),
+            _admin_field_spec("nm3_t2", "NM3 T2", "decimal"), _admin_field_spec("rpt_t2", "Rpt T2", "decimal"),
+            _admin_field_spec("mt_t2", "MT T2", "decimal"), _admin_field_spec("mtf_t2", "MTF T2", "decimal"),
+            _admin_field_spec("nm1_t3", "NM1 T3", "decimal"), _admin_field_spec("nm2_t3", "NM2 T3", "decimal"),
+            _admin_field_spec("nm3_t3", "NM3 T3", "decimal"), _admin_field_spec("rpt_t3", "Rpt T3", "decimal"),
+            _admin_field_spec("mt_t3", "MT T3", "decimal"), _admin_field_spec("mtf_t3", "MTF T3", "decimal"),
+            _admin_field_spec("ma", "MA", "decimal"), _admin_field_spec("pf", "PF", "decimal"),
+            _admin_field_spec("maf", "MAF", "decimal"), _admin_field_spec("rcf", "RCF", "decimal"),
+            _admin_field_spec("tgf", "TGF", "int"),
+            _admin_field_spec("rf", "RF", "choice"),
+        ],
+    },
+    "avaliacoes": {
+        "label": "Avaliações",
+        "model": Avaliacao,
+        "titulo": "titulo",
+        "campos": [
+            _admin_field_spec("titulo", "Título", obrigatorio=True),
+            _admin_field_spec("descricao", "Descrição", "text"),
+            _admin_field_spec("texto_introdutorio", "Texto introdutório", "text"),
+            _admin_field_spec("data", "Data", "date", obrigatorio=True),
+            _admin_field_spec("turma", "Turma (texto)", obrigatorio=True),
+            _admin_field_spec("disciplina", "Disciplina", "fk", fk="disciplina", obrigatorio=True),
+            _admin_field_spec("professor", "Professor", "fk", fk="professor", obrigatorio=True),
+            _admin_field_spec("ano_letivo", "Ano letivo", "int", obrigatorio=True),
+        ],
+    },
+    "atividades": {
+        "label": "Atividades",
+        "model": Atividade,
+        "titulo": "titulo",
+        "campos": [
+            _admin_field_spec("titulo", "Título", obrigatorio=True),
+            _admin_field_spec("descricao", "Descrição", "text"),
+            _admin_field_spec("data", "Data", "date", obrigatorio=True),
+            _admin_field_spec("data_entrega", "Data de entrega", "date"),
+            _admin_field_spec("professor", "Professor", "fk", fk="professor", obrigatorio=True),
+            _admin_field_spec("turma", "Turma", "fk", fk="turma", obrigatorio=True),
+            _admin_field_spec("disciplina", "Disciplina", "fk", fk="disciplina", obrigatorio=True),
+            _admin_field_spec("ano_letivo", "Ano letivo", "int", obrigatorio=True),
+        ],
+    },
+    "comunicados": {
+        "label": "Comunicados",
+        "model": Comunicado,
+        "titulo": "titulo",
+        "campos": [
+            _admin_field_spec("titulo", "Título", obrigatorio=True),
+            _admin_field_spec("mensagem", "Mensagem", "text", obrigatorio=True),
+            _admin_field_spec("data", "Data", "date"),
+            _admin_field_spec("professor", "Professor", "fk", fk="professor"),
+            _admin_field_spec("coordenador", "Coordenador", "fk", fk="coordenador"),
+            _admin_field_spec("turma", "Turma", "fk", fk="turma"),
+        ],
+    },
+    "eventos": {
+        "label": "Calendário / Eventos",
+        "model": Evento,
+        "titulo": "titulo",
+        "campos": [
+            _admin_field_spec("titulo", "Título", obrigatorio=True),
+            _admin_field_spec("descricao", "Descrição", "text"),
+            _admin_field_spec("data", "Data", "date", obrigatorio=True),
+            _admin_field_spec("professor", "Professor", "fk", fk="professor"),
+            _admin_field_spec("coordenador", "Coordenador", "fk", fk="coordenador"),
+            _admin_field_spec("turma", "Turma", "fk", fk="turma"),
+            _admin_field_spec("ano_letivo", "Ano letivo", "int"),
+        ],
+    },
+    "frequencias": {
+        "label": "Frequências",
+        "model": Frequencia,
+        "titulo": "_freq_label",
+        "campos": [
+            _admin_field_spec("aluno", "Aluno", "fk", fk="aluno", obrigatorio=True),
+            _admin_field_spec("disciplina", "Disciplina", "fk", fk="disciplina", obrigatorio=True),
+            _admin_field_spec("professor", "Professor", "fk", fk="professor", obrigatorio=True),
+            _admin_field_spec("turma", "Turma", "fk", fk="turma", obrigatorio=True),
+            _admin_field_spec("data", "Data", "date", obrigatorio=True),
+            _admin_field_spec("presente", "Presente", "bool"),
+            _admin_field_spec("ano_letivo", "Ano letivo", "int"),
+        ],
+    },
+    "conteudos": {
+        "label": "Conteúdos",
+        "model": Conteudo,
+        "titulo": "titulo",
+        "campos": [
+            _admin_field_spec("titulo", "Título", obrigatorio=True),
+            _admin_field_spec("descricao", "Descrição", "text"),
+            _admin_field_spec("data", "Data", "date", obrigatorio=True),
+            _admin_field_spec("professor", "Professor", "fk", fk="professor", obrigatorio=True),
+            _admin_field_spec("turma", "Turma", "fk", fk="turma", obrigatorio=True),
+            _admin_field_spec("disciplina", "Disciplina", "fk", fk="disciplina", obrigatorio=True),
+            _admin_field_spec("ano_letivo", "Ano letivo", "int"),
+        ],
+    },
+    "aulas": {
+        "label": "Aulas",
+        "model": Aula,
+        "titulo": "_aula_label",
+        "campos": [
+            _admin_field_spec("disciplina", "Disciplina", "fk", fk="disciplina", obrigatorio=True),
+            _admin_field_spec("professor", "Professor", "fk", fk="professor", obrigatorio=True),
+            _admin_field_spec("turma", "Turma", "fk", fk="turma", obrigatorio=True),
+            _admin_field_spec("data", "Data", "date", obrigatorio=True),
+            _admin_field_spec("assunto", "Assunto", "text"),
+            _admin_field_spec("estrategia_abordada", "Estratégia abordada", "text"),
+            _admin_field_spec("ano_letivo", "Ano letivo", "int"),
+        ],
+    },
+    "advertencias": {
+        "label": "Advertências",
+        "model": Advertencia,
+        "titulo": "titulo",
+        "campos": [
+            _admin_field_spec("tipo", "Tipo", "choice"),
+            _admin_field_spec("titulo", "Título", obrigatorio=True),
+            _admin_field_spec("descricao", "Descrição", "text", obrigatorio=True),
+            _admin_field_spec("data", "Data", "date"),
+            _admin_field_spec("aluno", "Aluno", "fk", fk="aluno"),
+            _admin_field_spec("professor", "Professor", "fk", fk="professor"),
+            _admin_field_spec("coordenador", "Coordenador", "fk", fk="coordenador"),
+            _admin_field_spec("is_suspensao", "Suspensão", "bool"),
+            _admin_field_spec("data_inicio_suspensao", "Início suspensão", "date"),
+            _admin_field_spec("data_termino_suspensao", "Término suspensão", "date"),
+        ],
+    },
+    "horarios": {
+        "label": "Horários",
+        "model": HorarioAula,
+        "titulo": "_horario_label",
+        "campos": [
+            _admin_field_spec("turma", "Turma", "fk", fk="turma", obrigatorio=True),
+            _admin_field_spec("dia_semana", "Dia da semana", "choice", obrigatorio=True),
+            _admin_field_spec("hora_inicio", "Hora início", "time", obrigatorio=True),
+            _admin_field_spec("hora_fim", "Hora fim", "time", obrigatorio=True),
+        ],
+    },
+    "estudos": {
+        "label": "Estudos Programados",
+        "model": EstudoProgramado,
+        "titulo": "titulo",
+        "campos": [
+            _admin_field_spec("titulo", "Título", obrigatorio=True),
+            _admin_field_spec("disciplina", "Disciplina (texto)"),
+            _admin_field_spec("data", "Data", "date", obrigatorio=True),
+            _admin_field_spec("concluido", "Concluído", "bool"),
+            _admin_field_spec("aluno", "Aluno", "fk", fk="aluno", obrigatorio=True),
+        ],
+    },
+    "responsaveis": {
+        "label": "Responsáveis",
+        "model": Responsavel,
+        "titulo": "nome_completo",
+        "campos": [
+            _admin_field_spec("nome_completo", "Nome completo", obrigatorio=True),
+            _admin_field_spec("senha", "Senha"),
+        ],
+    },
+    "conversas": {
+        "label": "Conversas",
+        "model": Conversa,
+        "titulo": "_conversa_label",
+        "campos": [
+            _admin_field_spec("professor", "Professor", "fk", fk="professor", obrigatorio=True),
+            _admin_field_spec("coordenador", "Coordenador", "fk", fk="coordenador", obrigatorio=True),
+        ],
+    },
+}
+
+
+def _admin_modulo(slug):
+    return ADMIN_MODULES.get(slug)
+
+
+def _admin_titulo(obj, spec):
+    t = spec["titulo"]
+    if t == "_turma_label":
+        return f"{obj.turma} — {_admin_fk_label(obj.professor) or ''}".strip(" —")
+    if t == "_nota_label":
+        return f"{_admin_fk_label(obj.aluno) or ''} · {_admin_fk_label(obj.disciplina) or ''} · {_admin_fk_label(obj.turma) or ''}".strip(" ·")
+    if t == "_freq_label":
+        return f"{_admin_fk_label(obj.aluno) or ''} · {obj.data}"
+    if t == "_aula_label":
+        return f"{_admin_fk_label(obj.disciplina) or ''} · {obj.data}"
+    if t == "_horario_label":
+        return f"{_admin_fk_label(obj.turma) or ''} · {obj.get_dia_semana_display()} {obj.hora_inicio}"
+    if t == "_conversa_label":
+        return f"{_admin_fk_label(obj.coordenador) or ''} ↔ {_admin_fk_label(obj.professor) or ''}"
+    v = getattr(obj, t, None)
+    return str(v) if v is not None else f"#{obj.pk}"
+
+
+def _admin_serialize(obj, spec):
+    dados = {"id": obj.pk, "_titulo": _admin_titulo(obj, spec)}
+    for c in spec["campos"]:
+        nome, tipo = c["nome"], c["tipo"]
+        valor = getattr(obj, nome)
+        if tipo == "fk":
+            dados[nome] = {"id": valor.id if valor else None, "label": _admin_fk_label(valor)}
+        elif tipo == "choice":
+            rotulo = getattr(obj, f"get_{nome}_display", lambda: valor)()
+            dados[nome] = {"valor": valor, "label": rotulo}
+        elif tipo == "decimal":
+            dados[nome] = float(valor) if valor is not None else None
+        elif tipo in ("date", "time"):
+            dados[nome] = valor.isoformat() if valor else None
+        elif tipo == "bool":
+            dados[nome] = bool(valor)
+        else:
+            dados[nome] = valor
+    return dados
+
+
+def _admin_parse_value(campo, valor):
+    tipo = campo["tipo"]
+    if valor in (None, ""):
+        return None
+    if tipo == "fk":
+        try:
+            return _ADMIN_FK_MODELS[campo["fk"]].objects.get(pk=int(valor))
+        except (_ADMIN_FK_MODELS[campo["fk"]].DoesNotExist, ValueError, KeyError):
+            raise ValueError(f"{campo['rotulo']}: registro inválido.")
+    if tipo == "int":
+        return int(valor)
+    if tipo == "decimal":
+        return Decimal(str(valor))
+    if tipo == "bool":
+        if isinstance(valor, str):
+            return valor.lower() in ("1", "true", "sim", "on")
+        return bool(valor)
+    if tipo == "date":
+        from datetime import date as _date
+        return _date.fromisoformat(str(valor)[:10])
+    if tipo == "time":
+        from datetime import time as _time
+        return _time.fromisoformat(str(valor)[:8])
+    return str(valor)
+
+
+@csrf_exempt
+@require_http_methods(["GET"])
+def admin_modulos(request):
+    if not _admin_logado(request):
+        return JsonResponse({"detail": "Não autenticado."}, status=401)
+    saida = []
+    for slug, m in ADMIN_MODULES.items():
+        campos = []
+        for c in m["campos"]:
+            cc = dict(c)
+            if c["tipo"] == "choice":
+                try:
+                    cc["opcoes"] = list(m["model"]._meta.get_field(c["nome"]).flatchoices)
+                except Exception:
+                    cc["opcoes"] = []
+            campos.append(cc)
+        saida.append({"slug": slug, "label": m["label"], "campos": campos})
+    return JsonResponse(saida, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(["GET"])
+def admin_modulo_opcoes(request):
+    if not _admin_logado(request):
+        return JsonResponse({"detail": "Não autenticado."}, status=401)
+    dados = {}
+    for chave, model in _ADMIN_FK_MODELS.items():
+        qs = model.objects.all()
+        if chave == "aluno":
+            qs = qs.order_by("nome_completo")
+        elif chave == "turma":
+            qs = qs.select_related("professor").order_by("turma", "professor__nome_completo")
+        dados[chave] = [{"id": o.pk, "label": _admin_fk_label(o)} for o in qs]
+    return JsonResponse(dados)
+
+
+@csrf_exempt
+@require_http_methods(["GET", "POST"])
+def admin_modulo_lista(request, slug):
+    if not _admin_logado(request):
+        return JsonResponse({"detail": "Não autenticado."}, status=401)
+    spec = _admin_modulo(slug)
+    if not spec:
+        return JsonResponse({"detail": "Módulo não encontrado."}, status=404)
+    model = spec["model"]
+
+    if request.method == "GET":
+        qs = model.objects.all()
+        # select_related nas FKs para evitar N+1
+        fks = [c["fk"] for c in spec["campos"] if c["tipo"] == "fk"]
+        fk_fields = [f"{c['fk']}" for c in spec["campos"] if c["tipo"] == "fk"]
+        # mapear chave de opção -> nome do campo no model (mesmo nome na maioria)
+        select_fields = []
+        for c in spec["campos"]:
+            if c["tipo"] == "fk":
+                # campo fk aponta para model; nome do campo no model é o nome do campo
+                select_fields.append(c["nome"])
+        if select_fields:
+            qs = qs.select_related(*select_fields)
+        limit = min(int(request.GET.get("limit", 500)), 2000)
+        return JsonResponse([_admin_serialize(o, spec) for o in qs[:limit]], safe=False)
+
+    # POST - criar
+    try:
+        body = json.loads(request.body or "{}")
+        dados = {}
+        for c in spec["campos"]:
+            if c["nome"] in body:
+                try:
+                    dados[c["nome"]] = _admin_parse_value(c, body[c["nome"]])
+                except (ValueError, InvalidOperation) as e:
+                    return JsonResponse({"detail": str(e)}, status=400)
+        obrigatorios = [c["rotulo"] for c in spec["campos"] if c.get("obrigatorio") and c["tipo"] != "bool" and not dados.get(c["nome"])]
+        if obrigatorios:
+            return JsonResponse({"detail": f"Campos obrigatórios: {', '.join(obrigatorios)}"}, status=400)
+        obj = model.objects.create(**dados)
+        return JsonResponse(_admin_serialize(obj, spec), status=201)
+    except json.JSONDecodeError:
+        return JsonResponse({"detail": "JSON inválido."}, status=400)
+    except Exception as e:
+        return JsonResponse({"detail": str(e)}, status=400)
+
+
+@csrf_exempt
+@require_http_methods(["GET", "PUT", "DELETE"])
+def admin_modulo_item(request, slug, pk):
+    if not _admin_logado(request):
+        return JsonResponse({"detail": "Não autenticado."}, status=401)
+    spec = _admin_modulo(slug)
+    if not spec:
+        return JsonResponse({"detail": "Módulo não encontrado."}, status=404)
+    obj = spec["model"].objects.filter(pk=pk).first()
+    if not obj:
+        return JsonResponse({"detail": "Registro não encontrado."}, status=404)
+
+    if request.method == "GET":
+        return JsonResponse(_admin_serialize(obj, spec))
+
+    if request.method == "DELETE":
+        obj.delete()
+        return JsonResponse({"detail": "Excluído."})
+
+    # PUT - atualizar (só campos enviados)
+    try:
+        body = json.loads(request.body or "{}")
+        dados = {}
+        for c in spec["campos"]:
+            if c["nome"] in body:
+                try:
+                    dados[c["nome"]] = _admin_parse_value(c, body[c["nome"]])
+                except (ValueError, InvalidOperation) as e:
+                    return JsonResponse({"detail": str(e)}, status=400)
+        for nome, valor in dados.items():
+            setattr(obj, nome, valor)
+        obj.save()
+        return JsonResponse(_admin_serialize(obj, spec))
+    except json.JSONDecodeError:
+        return JsonResponse({"detail": "JSON inválido."}, status=400)
+    except Exception as e:
+        return JsonResponse({"detail": str(e)}, status=400)
